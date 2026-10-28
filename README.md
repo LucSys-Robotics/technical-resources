@@ -13,18 +13,15 @@ This technical resource collection helps engineering teams evaluate wheeled mobi
 | [Chassis Kinematics](Chassis_Kinematics.md) | Differential, four-wheel skid-steer, Ackermann, Mecanum and omnidirectional models |
 | [Control and Feedback Interfaces](Control_and_Feedback_Interfaces.md) | Shared serial/CAN protocols, motion commands, feedback fields and integration checks |
 
-## Platforms covered in this release
+## Robot Platforms
 
-| LucSys Robotics platform | Technical reference coverage |
-|---|---|
-| LSR100 | Chassis hardware and electrical integration |
-| LSR200 | Chassis hardware and electrical integration |
-| LSR300mini | Chassis hardware and electrical integration |
-| LSR300pro | Chassis hardware and electrical integration |
-| E550 Series | Educational robot hardware and electrical integration |
-| LSR550 4WD | Four-wheel-drive hardware and electrical integration |
+LucSys Robotics offers a range of mobile robot platforms for research, education, and industrial applications.
 
-The serial and CAN control/feedback protocol families are applicable across the LucSys Robotics chassis range. The Ackermann command-conversion method applies to Ackermann configurations only. Interface connector locations, electrical limits, communication rates and mechanical parameters must be checked for the selected controller and hardware revision.
+Platform-specific technical resources, including CAD drawings, URDF models, meshes, and ROS integration documentation, are being added progressively.
+
+For detailed product specifications and available configurations, please visit our [official website](https://www.lucsysrobotics.com).
+
+For additional technical documents or pre-purchase evaluation resources, contact us at info@lucsysrobotics.com.
 
 ## Before integration
 
