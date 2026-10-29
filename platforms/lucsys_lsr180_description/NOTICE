@@ -1,0 +1,17 @@
+Third-Party Notices
+
+Certain robot description files were generated using SolidWorks to URDF Exporter, originally developed by Stephen Brawner.
+
+Project reference: http://wiki.ros.org/sw_urdf_exporter
+
+Applicable third-party copyright and license requirements remain in effect.
+
+Preserved original notices (verbatim)
+
+Third-party attribution
+
+This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wheeltec_robot_urdf/meshes/wiki.ros.org/sw_urdf_exporter
+
+ROS 2 dependencies are maintained and licensed by their respective projects.

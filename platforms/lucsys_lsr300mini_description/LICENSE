@@ -1,0 +1,15 @@
+LucSys Robotics — Technical Model Usage Terms
+
+The URDF and 3D mesh files in this package are provided for technical evaluation, simulation, and integration of LucSys Robotics platforms.
+
+These files are not distributed under an open-source license.
+
+Redistribution, resale, or public republication of these files, whether modified or unmodified, requires prior written permission from the applicable rights holder(s).
+
+All applicable third-party intellectual property rights remain reserved.
+
+For inquiries, please contact:
+
+LucSys Robotics
+info@lucsysrobotics.com
+https://www.lucsysrobotics.com
