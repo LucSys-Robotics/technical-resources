@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>lucsys_lsr200auto_ackermann_lite_description</name>
+  <name>lucsys_lsr200auto_akm_lite_description</name>
   <version>1.0.0</version>
-  <description>LucSys Robotics LSR200Auto-Ackermann Lite robot description for ROS 2 Humble.</description>
+  <description>LucSys Robotics LSR200Auto Ackermann Lite robot description for ROS 2 Humble.</description>
   <maintainer email="info@lucsysrobotics.com">LucSys Robotics</maintainer>
   <license>LicenseRef-LucSys-Technical-Model-Usage-Terms</license>
   <buildtool_depend>ament_cmake</buildtool_depend>

@@ -24,7 +24,7 @@
       },
       {
         "Class": "rviz_default_plugins/RobotModel",
-        "Name": "LucSys Robotics LSR200Auto-Ackermann Lite",
+        "Name": "LucSys Robotics LSR200Auto Ackermann Lite",
         "Enabled": true,
         "Description Source": "Topic",
         "Description Topic": {

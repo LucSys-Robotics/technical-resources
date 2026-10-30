@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<robot name="lucsys_lsr200auto_ackermann_lite">
+<robot name="lucsys_lsr200auto_akm_lite">
   <link name="base_link">
     <inertial>
       <origin xyz="-0.0283966067637906 0.00449390506381457 0.0692458862341471" rpy="0 0 0" />
@@ -9,7 +9,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/base_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/base_link.STL" />
       </geometry>
       <material name="lucsys_material_0">
         <color rgba="0.741176470588235 0.901960784313726 0.956862745098039 1" />
@@ -18,7 +18,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/base_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/base_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -31,7 +31,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/lf_wheel_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/lf_wheel_link.STL" />
       </geometry>
       <material name="lucsys_material_1">
         <color rgba="0.349019607843137 0.349019607843137 0.349019607843137 1" />
@@ -40,7 +40,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/lf_wheel_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/lf_wheel_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -59,7 +59,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/lb_wheel_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/lb_wheel_link.STL" />
       </geometry>
       <material name="lucsys_material_2">
         <color rgba="0.349019607843137 0.349019607843137 0.349019607843137 1" />
@@ -68,7 +68,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/lb_wheel_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/lb_wheel_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -87,7 +87,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/rf_wheel_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/rf_wheel_link.STL" />
       </geometry>
       <material name="lucsys_material_3">
         <color rgba="0.349019607843137 0.349019607843137 0.349019607843137 1" />
@@ -96,7 +96,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/rf_wheel_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/rf_wheel_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -115,7 +115,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/rb_wheel_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/rb_wheel_link.STL" />
       </geometry>
       <material name="lucsys_material_4">
         <color rgba="0.349019607843137 0.349019607843137 0.349019607843137 1" />
@@ -124,7 +124,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/rb_wheel_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/rb_wheel_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -143,7 +143,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/camera_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/camera_link.STL" />
       </geometry>
       <material name="lucsys_material_5">
         <color rgba="1 1 1 1" />
@@ -152,7 +152,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/camera_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/camera_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -171,7 +171,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/gyro_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/gyro_link.STL" />
       </geometry>
       <material name="lucsys_material_6">
         <color rgba="0.741176470588235 0.901960784313726 0.956862745098039 1" />
@@ -180,7 +180,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/gyro_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/gyro_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -199,7 +199,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/laser_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/laser_link.STL" />
       </geometry>
       <material name="lucsys_material_7">
         <color rgba="1 1 1 1" />
@@ -208,7 +208,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/laser_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/laser_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -227,7 +227,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/rtk_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/rtk_link.STL" />
       </geometry>
       <material name="lucsys_material_8">
         <color rgba="1 1 1 1" />
@@ -236,7 +236,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://lucsys_lsr200auto_ackermann_lite_description/meshes/lsr200auto_ackermann_lite/rtk_link.STL" />
+        <mesh filename="package://lucsys_lsr200auto_akm_lite_description/meshes/lsr200auto_akm_lite/rtk_link.STL" />
       </geometry>
     </collision>
   </link>

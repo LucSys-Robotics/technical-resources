@@ -8,8 +8,8 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
-PACKAGE = 'lucsys_lsr200auto_ackermann_lite_description'
-MODELS = {'lsr200auto_ackermann_lite': 'LSR200Auto-Ackermann Lite'}
+PACKAGE = 'lucsys_lsr200auto_akm_lite_description'
+MODELS = {'lsr200auto_akm_lite': 'LSR200Auto Ackermann Lite'}
 
 def _launch(context):
     share = Path(get_package_share_directory(PACKAGE))
