@@ -25,7 +25,7 @@ For additional technical documents or pre-purchase evaluation resources, contact
 
 ## ROS 2 Humble platform downloads
 
-25 independent description packages provide 36 URDF configurations. LSE550 includes 10 configurations in one package; LSV550 includes 3 in one package. Each package includes its own meshes, launch files, RViz configurations, LICENSE and NOTICE.
+26 independent description packages provide 37 URDF configurations. LSE550 includes 10 configurations in one package; LSV550 includes 3 in one package. Each package includes its own meshes, launch files, RViz configurations, LICENSE and NOTICE.
 
 Download one package ZIP below, or browse the [release page](https://github.com/LucSys-Robotics/technical-resources/releases/tag/ros2-humble-v1.0.0). Verify downloaded ZIPs using the release [SHA256SUMS.txt](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/SHA256SUMS.txt). ZIP downloads are stored in Releases, not duplicated in Git.
 
@@ -39,6 +39,7 @@ Download one package ZIP below, or browse the [release page](https://github.com/
 | LSR200Auto Ackermann Lite | [lucsys_lsr200auto_akm_lite_description](platforms/lucsys_lsr200auto_akm_lite_description/) | 1 | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/lucsys_lsr200auto_akm_lite_description.zip) |
 | LSR200Auto-AKM Pro | [lucsys_lsr200auto_akm_pro_description](platforms/lucsys_lsr200auto_akm_pro_description/) | 1 | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/lucsys_lsr200auto_akm_pro_description.zip) |
 | LSR200Auto-AKM Ultra | [lucsys_lsr200auto_akm_ultra_description](platforms/lucsys_lsr200auto_akm_ultra_description/) | 1 | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/lucsys_lsr200auto_akm_ultra_description.zip) |
+| LSR280 | [lucsys_lsr280_description](platforms/lucsys_lsr280_description/) | 1 | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/lucsys_lsr280_description.zip) |
 | LSR300mini | [lucsys_lsr300mini_description](platforms/lucsys_lsr300mini_description/) | 1 | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/lucsys_lsr300mini_description.zip) |
 | LSR300pro | [lucsys_lsr300pro_description](platforms/lucsys_lsr300pro_description/) | 1 | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/lucsys_lsr300pro_description.zip) |
 | LSR550-2WD | [lucsys_lsr550_2wd_description](platforms/lucsys_lsr550_2wd_description/) | 1 | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/lucsys_lsr550_2wd_description.zip) |
@@ -78,6 +79,7 @@ Download one package ZIP below, or browse the [release page](https://github.com/
 | LSR200Auto Ackermann Lite | [`lsr200auto_akm_lite`](platforms/lucsys_lsr200auto_akm_lite_description/urdf/lsr200auto_akm_lite.urdf) | [lucsys_lsr200auto_akm_lite_description](platforms/lucsys_lsr200auto_akm_lite_description/) |
 | LSR200Auto-AKM Pro | [`lsr200auto_akm_pro`](platforms/lucsys_lsr200auto_akm_pro_description/urdf/lsr200auto_akm_pro.urdf) | [lucsys_lsr200auto_akm_pro_description](platforms/lucsys_lsr200auto_akm_pro_description/) |
 | LSR200Auto-AKM Ultra | [`lsr200auto_akm_ultra`](platforms/lucsys_lsr200auto_akm_ultra_description/urdf/lsr200auto_akm_ultra.urdf) | [lucsys_lsr200auto_akm_ultra_description](platforms/lucsys_lsr200auto_akm_ultra_description/) |
+| LSR280 | [`lsr280`](platforms/lucsys_lsr280_description/urdf/lsr280.urdf) | [lucsys_lsr280_description](platforms/lucsys_lsr280_description/) |
 | LSR300mini | [`lsr300mini`](platforms/lucsys_lsr300mini_description/urdf/lsr300mini.urdf) | [lucsys_lsr300mini_description](platforms/lucsys_lsr300mini_description/) |
 | LSR300pro | [`lsr300pro`](platforms/lucsys_lsr300pro_description/urdf/lsr300pro.urdf) | [lucsys_lsr300pro_description](platforms/lucsys_lsr300pro_description/) |
 | LSR550-2WD | [`lsr550_2wd`](platforms/lucsys_lsr550_2wd_description/urdf/lsr550_2wd.urdf) | [lucsys_lsr550_2wd_description](platforms/lucsys_lsr550_2wd_description/) |

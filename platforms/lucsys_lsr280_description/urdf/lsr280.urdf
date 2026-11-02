@@ -1,0 +1,309 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="lucsys_lsr280">
+  <link name="base_link">
+    <inertial>
+      <origin xyz="-0.00753797834386813 -0.00814576137308423 0.203659052007732" rpy="0 0 0" />
+      <mass value="3.83753509134802" />
+      <inertia ixx="0.0690213522644573" ixy="6.3310630155369E-06" ixz="-0.00108874459642607" iyy="0.075412231675279" iyz="0.000103677497419522" izz="0.134765586841472" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/base_link.STL" />
+      </geometry>
+      <material name="lucsys_material_0">
+        <color rgba="0.741176470588235 0.901960784313726 0.956862745098039 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link name="rf_steer_link">
+    <inertial>
+      <origin xyz="-7.58230422892581E-11 0.00564153541988954 0.00604698440640848" rpy="0 0 0" />
+      <mass value="0.467711369013212" />
+      <inertia ixx="0.000425754119516289" ixy="7.54298178742571E-16" ixz="-3.69123515824386E-14" iyy="0.000451726615216854" iyz="-6.92990173961664E-15" izz="0.000706217744742119" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/rf_steer_link.STL" />
+      </geometry>
+      <material name="lucsys_material_1">
+        <color rgba="0.741176470588235 0.901960784313726 0.956862745098039 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/rf_steer_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="rf_steer_link" type="revolute">
+    <origin xyz="0.214 -0.1652 0.0864" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="rf_steer_link" />
+    <axis xyz="0 0 1" />
+    <limit lower="-1.57" upper="1.57" effort="0" velocity="0" />
+  </joint>
+  <link name="rf_wheel_link">
+    <inertial>
+      <origin xyz="4.83054429789576E-09 -0.000385227412223188 -0.0865001963373404" rpy="0 0 0" />
+      <mass value="0.595472207147975" />
+      <inertia ixx="0.000649716858839428" ixy="-1.01923145237361E-10" ixz="-1.51483222229343E-24" iyy="0.00104817179765492" iyz="1.05741091814864E-09" izz="0.000649695675212691" />
+    </inertial>
+    <visual>
+      <origin xyz="-0.000000 0.000385 0.086500" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/rf_wheel_link.STL" />
+      </geometry>
+      <material name="lucsys_material_2">
+        <color rgba="0.741176470588235 0.901960784313726 0.956862745098039 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.000000 0.000385 0.086500" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/rf_wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="rf_wheel_link" type="continuous">
+    <origin xyz="0 0.0002 -0.0865" rpy="0 0 0" />
+    <parent link="rf_steer_link" />
+    <child link="rf_wheel_link" />
+    <axis xyz="0 -1 0" />
+  </joint>
+  <link name="lf_steer_link">
+    <inertial>
+      <origin xyz="7.58230700448337E-11 -0.00564153541988963 0.00604698440640844" rpy="0 0 0" />
+      <mass value="0.467711369013212" />
+      <inertia ixx="0.000425754119516289" ixy="7.54305357997683E-16" ixz="3.69131723544446E-14" iyy="0.000451726615216855" iyz="6.92989030813649E-15" izz="0.000706217744742119" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/lf_steer_link.STL" />
+      </geometry>
+      <material name="lucsys_material_3">
+        <color rgba="0.741176470588235 0.901960784313726 0.956862745098039 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/lf_steer_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="lf_steer_link" type="revolute">
+    <origin xyz="0.214 0.1652 0.0864" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="lf_steer_link" />
+    <axis xyz="0 0 1" />
+    <limit lower="-1.57" upper="1.57" effort="0" velocity="0" />
+  </joint>
+  <link name="lf_wheel_link">
+    <inertial>
+      <origin xyz="-5.20844425921929E-09 0.000185227346942707 -1.96337340457891E-07" rpy="0 0 0" />
+      <mass value="0.595472207147977" />
+      <inertia ixx="0.00064971685883943" ixy="-1.01923145396449E-10" ixz="-6.10251145013779E-23" iyy="0.00104817179765493" iyz="-1.0574109181388E-09" izz="0.000649695675212693" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/lf_wheel_link.STL" />
+      </geometry>
+      <material name="lucsys_material_4">
+        <color rgba="0.741176470588235 0.901960784313726 0.956862745098039 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/lf_wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="lf_wheel_link" type="continuous">
+    <origin xyz="0 0.0002 -0.0865" rpy="0 0 0" />
+    <parent link="lf_steer_link" />
+    <child link="lf_wheel_link" />
+    <axis xyz="0 -1 0" />
+  </joint>
+  <link name="rb_steer_link">
+    <inertial>
+      <origin xyz="-7.58230700448337E-11 0.00564153541988954 0.00604698440640847" rpy="0 0 0" />
+      <mass value="0.467711369013212" />
+      <inertia ixx="0.00042575411951629" ixy="7.54383015235181E-16" ixz="-3.69123412639467E-14" iyy="0.000451726615216855" iyz="-6.93020398684759E-15" izz="0.000706217744742119" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/rb_steer_link.STL" />
+      </geometry>
+      <material name="lucsys_material_5">
+        <color rgba="0.741176470588235 0.901960784313726 0.956862745098039 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/rb_steer_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="rb_steer_link" type="revolute">
+    <origin xyz="-0.214 -0.1652 0.0864" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="rb_steer_link" />
+    <axis xyz="0 0 1" />
+    <limit lower="-1.57" upper="1.57" effort="0" velocity="0" />
+  </joint>
+  <link name="rb_wheel_link">
+    <inertial>
+      <origin xyz="-0.0601994266051517 -0.0191852273469427 -1.96337339644536E-07" rpy="0 0 0" />
+      <mass value="0.595472207147967" />
+      <inertia ixx="0.000649716858839405" ixy="-1.0192314513013E-10" ixz="-2.93130114350596E-24" iyy="0.0010481717976549" iyz="1.05741091832289E-09" izz="0.00064969567521269" />
+    </inertial>
+    <visual>
+      <origin xyz="0.060199 0.019185 0.000000" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/rb_wheel_link.STL" />
+      </geometry>
+      <material name="lucsys_material_6">
+        <color rgba="0.741176470588235 0.901960784313726 0.956862745098039 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.060199 0.019185 0.000000" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/rb_wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="rb_wheel_link" type="continuous">
+    <origin xyz="0 0.0002 -0.0865" rpy="0 0 0" />
+    <parent link="rb_steer_link" />
+    <child link="rb_wheel_link" />
+    <axis xyz="0 -1 0" />
+  </joint>
+  <link name="lb_steer_link">
+    <inertial>
+      <origin xyz="1.10340653280971E-10 -0.00564153541393558 0.00604698440640845" rpy="0 0 0" />
+      <mass value="0.467711369013212" />
+      <inertia ixx="0.000425754119516289" ixy="7.54300366401339E-16" ixz="3.69131660058652E-14" iyy="0.000451726615216855" iyz="6.9298922932142E-15" izz="0.000706217744742119" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/lb_steer_link.STL" />
+      </geometry>
+      <material name="lucsys_material_7">
+        <color rgba="0.741176470588235 0.901960784313726 0.956862745098039 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/lb_steer_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="lb_steer_link" type="revolute">
+    <origin xyz="-0.214 0.1652 0.0864" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="lb_steer_link" />
+    <axis xyz="0 0 1" />
+    <limit lower="-1.57" upper="1.57" effort="0" velocity="0" />
+  </joint>
+  <link name="lb_wheel_link">
+    <inertial>
+      <origin xyz="-5.20844425921929E-09 0.000185227346942762 -1.96337340527402E-07" rpy="0 0 0" />
+      <mass value="0.595472207147976" />
+      <inertia ixx="0.000649716858839427" ixy="-1.01923145556929E-10" ixz="-6.10255341203615E-23" iyy="0.00104817179765492" iyz="-1.05741091814961E-09" izz="0.00064969567521269" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/lb_wheel_link.STL" />
+      </geometry>
+      <material name="lucsys_material_8">
+        <color rgba="0.741176470588235 0.901960784313726 0.956862745098039 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/lb_wheel_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="lb_wheel_link" type="continuous">
+    <origin xyz="0 0.0002 -0.0865" rpy="0 0 0" />
+    <parent link="lb_steer_link" />
+    <child link="lb_wheel_link" />
+    <axis xyz="0 -1 0" />
+  </joint>
+  <link name="laser_link">
+    <inertial>
+      <origin xyz="-0.000677114505780341 -8.41356138404303E-06 -0.0219842258666881" rpy="0 0 0" />
+      <mass value="0.296686392465306" />
+      <inertia ixx="0.000210515439352395" ixy="-1.29266103728108E-07" ixz="-3.7480098701265E-06" iyy="0.000217646688126463" iyz="-6.02066912171458E-08" izz="0.000245285254690996" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/laser_link.STL" />
+      </geometry>
+      <material name="lucsys_material_9">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/laser_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="laser_link" type="fixed">
+    <origin xyz="0.2448 0 0.2562" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="laser_link" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="column_base_link">
+    <inertial>
+      <origin xyz="-0.0068177559606831 0.000540682078324438 0.0496371364033648" rpy="0 0 0" />
+      <mass value="0.72242859218225" />
+      <inertia ixx="0.00110402837532373" ixy="8.33436523962366E-07" ixz="2.01382892651993E-05" iyy="0.00111411833765427" iyz="-2.31646703103886E-07" izz="0.000761765408310719" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/column_base_link.STL" />
+      </geometry>
+      <material name="lucsys_material_10">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://lucsys_lsr280_description/meshes/lsr280/column_base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="column_base_link" type="fixed">
+    <origin xyz="0.00399301483404584 -6.18762544615299E-05 0.307000000000004" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="column_base_link" />
+    <axis xyz="0 0 0" />
+  </joint>
+</robot>
