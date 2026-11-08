@@ -9,11 +9,9 @@ English technical references for customers developing and integrating LucSys mob
 | Model / topic | Manual | Version / document date | Pages | Download |
 | --- | --- | --- | ---: | --- |
 | Shared ROS 2 integration reference | [ROS 2 / STM32 Communication Guide](LucSys_ROS2_STM32_Communication_Guide.pdf) | V1.1 · 2025-12-08 | 8 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LucSys_ROS2_STM32_Communication_Guide.pdf) |
-| LSR100, LSR180*, LSR200 Series, LSR280, LSR300 Mini and LSR300 Pro | [LSR100 / LSR180 / LSR200 / LSR280 / LSR300 — User and Development Manual](LucSys_LSR100_LSR180_LSR200_LSR280_LSR300_User_and_Development_Manual.pdf) | V1.2 · 2026-10-13 | 18 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LucSys_LSR100_LSR180_LSR200_LSR280_LSR300_User_and_Development_Manual.pdf) |
+| LSR100, LSR180, LSR200 Series, LSR280, LSR300 Mini and LSR300 Pro | [LSR100 / LSR180 / LSR200 / LSR280 / LSR300 — User and Development Manual](LucSys_LSR100_LSR180_LSR200_LSR280_LSR300_User_and_Development_Manual.pdf) | V1.2 · 2026-10-13 | 18 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LucSys_LSR100_LSR180_LSR200_LSR280_LSR300_User_and_Development_Manual.pdf) |
 | LSR550 series | [LSR550 — STM32 Chassis Development Manual](LucSys_LSR550_STM32_Chassis_Development_Manual.pdf) | V1.0 · 2024-08-28 | 14 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LucSys_LSR550_STM32_Chassis_Development_Manual.pdf) |
 | LSE550 and LSV550 | [LSE550 / LSV550 — STM32 Chassis Development Manual](LucSys_LSE550_LSV550_STM32_Chassis_Development_Manual.pdf) | V1.1 · 2025-02-19 | 16 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LucSys_LSE550_LSV550_STM32_Chassis_Development_Manual.pdf) |
-
-*LSR180 is included in the supplied document grouping, but is not explicitly listed in the manual's preface. Confirm controller and firmware compatibility with LucSys before applying model-specific procedures.
 
 ## What each manual covers
 
