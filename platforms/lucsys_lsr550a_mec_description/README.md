@@ -6,9 +6,12 @@
 | --- | --- | --- |
 | Development Manual | System architecture, robotic arm interfaces and development reference | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LSR550A_Development_Manual.pdf) |
 | C50C Controller Schematic | Controller connections, power interfaces, CAN and motor-driver references | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/electrical/LSR550A/LSR550A_C50C_Controller_Schematic.pdf) |
+| Robotic Arm STEP Model | 3D mechanical assembly reference for the robotic arm | [STEP](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/cad/LSR550A/LSR550A_Robotic_Arm.step) |
 | ROS 2 Mesh / URDF | Robot description, meshes and RViz resources | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/lucsys_lsr550a_mec_description.zip) |
 
 The C50C schematic is a controller-level electrical reference. It is not a complete robot wiring-harness diagram or an approved wiring diagram for a specific delivered hardware revision. Confirm the controller revision and connector assignments against the delivered hardware before making connections.
+
+This STEP file provides a robotic arm assembly reference and does not represent a complete chassis CAD model.
 
 ## ROS 2 Humble Model
 
