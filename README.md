@@ -15,13 +15,14 @@ This technical resource collection helps engineering teams evaluate wheeled mobi
 
 ## Development manuals (PDF)
 
-Choose the chassis manual for your model, and use the shared communication guide for ROS 2 integration. All four manuals are in English. [Browse the manual library](manuals/README.md).
+Choose the chassis manual for your model, and use the shared communication guide for ROS 2 integration. All manuals are in English. [Browse the manual library](manuals/README.md).
 
 | Model / topic | Manual | Version / document date | Pages | Download |
 | --- | --- | --- | ---: | --- |
 | Shared ROS 2 integration reference | [ROS 2 / STM32 Communication Guide](manuals/LucSys_ROS2_STM32_Communication_Guide.pdf) | V1.1 · 2025-12-08 | 8 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LucSys_ROS2_STM32_Communication_Guide.pdf) |
 | LSR100, LSR180, LSR200 Series, LSR280, LSR300 Mini and LSR300 Pro | [LSR100 / LSR180 / LSR200 / LSR280 / LSR300 — User and Development Manual](manuals/LucSys_LSR100_LSR180_LSR200_LSR280_LSR300_User_and_Development_Manual.pdf) | V1.2 · 2026-10-13 | 18 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LucSys_LSR100_LSR180_LSR200_LSR280_LSR300_User_and_Development_Manual.pdf) |
 | LSR550 series | [LSR550 — STM32 Chassis Development Manual](manuals/LucSys_LSR550_STM32_Chassis_Development_Manual.pdf) | V1.0 · 2024-08-28 | 14 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LucSys_LSR550_STM32_Chassis_Development_Manual.pdf) |
+| LSR550A | [LSR550A Development Manual](manuals/LSR550A_Development_Manual.pdf) | V1.1 · 2026-11-16 | 30 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LSR550A_Development_Manual.pdf) |
 | LSE550 and LSV550 | [LSE550 / LSV550 — STM32 Chassis Development Manual](manuals/LucSys_LSE550_LSV550_STM32_Chassis_Development_Manual.pdf) | V1.1 · 2025-02-19 | 16 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LucSys_LSE550_LSV550_STM32_Chassis_Development_Manual.pdf) |
 
 ## Robot Platforms
@@ -66,7 +67,7 @@ Download one package ZIP below, or browse the [release page](https://github.com/
 | LSR550-Omni-Premium | [lucsys_lsr550_omni_premium_description](platforms/lucsys_lsr550_omni_premium_description/) | 1 | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/lucsys_lsr550_omni_premium_description.zip) |
 | LSR550-Omni-Ultimate | [lucsys_lsr550_omni_ultimate_description](platforms/lucsys_lsr550_omni_ultimate_description/) | 1 | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/lucsys_lsr550_omni_ultimate_description.zip) |
 | LSR550A-4WD | [lucsys_lsr550a_4wd_description](platforms/lucsys_lsr550a_4wd_description/) | 1 | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/lucsys_lsr550a_4wd_description.zip) |
-| LSR550A-MEC | [lucsys_lsr550a_mec_description](platforms/lucsys_lsr550a_mec_description/) | 1 | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/lucsys_lsr550a_mec_description.zip) |
+| LSR550A-MEC | [lucsys_lsr550a_mec_description](platforms/lucsys_lsr550a_mec_description/) · [Technical Resources](platforms/lucsys_lsr550a_mec_description/README.md) | 1 | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/lucsys_lsr550a_mec_description.zip) |
 | LSV550 | [lucsys_lsv550_description](platforms/lucsys_lsv550_description/) | 3 | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/lucsys_lsv550_description.zip) |
 
 ### Configuration index

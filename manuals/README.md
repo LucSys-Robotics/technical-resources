@@ -11,6 +11,7 @@ English technical references for customers developing and integrating LucSys mob
 | Shared ROS 2 integration reference | [ROS 2 / STM32 Communication Guide](LucSys_ROS2_STM32_Communication_Guide.pdf) | V1.1 · 2025-12-08 | 8 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LucSys_ROS2_STM32_Communication_Guide.pdf) |
 | LSR100, LSR180, LSR200 Series, LSR280, LSR300 Mini and LSR300 Pro | [LSR100 / LSR180 / LSR200 / LSR280 / LSR300 — User and Development Manual](LucSys_LSR100_LSR180_LSR200_LSR280_LSR300_User_and_Development_Manual.pdf) | V1.2 · 2026-10-13 | 18 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LucSys_LSR100_LSR180_LSR200_LSR280_LSR300_User_and_Development_Manual.pdf) |
 | LSR550 series | [LSR550 — STM32 Chassis Development Manual](LucSys_LSR550_STM32_Chassis_Development_Manual.pdf) | V1.0 · 2024-08-28 | 14 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LucSys_LSR550_STM32_Chassis_Development_Manual.pdf) |
+| LSR550A | [LSR550A Development Manual](LSR550A_Development_Manual.pdf) | V1.1 · 2026-11-16 | 30 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LSR550A_Development_Manual.pdf) |
 | LSE550 and LSV550 | [LSE550 / LSV550 — STM32 Chassis Development Manual](LucSys_LSE550_LSV550_STM32_Chassis_Development_Manual.pdf) | V1.1 · 2025-02-19 | 16 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LucSys_LSE550_LSV550_STM32_Chassis_Development_Manual.pdf) |
 
 ## What each manual covers
@@ -19,6 +20,8 @@ English technical references for customers developing and integrating LucSys mob
 - **[LSR100 / LSR180 / LSR200 / LSR280 / LSR300 — User and Development Manual](LucSys_LSR100_LSR180_LSR200_LSR280_LSR300_User_and_Development_Manual.pdf):** C63A chassis hardware, operation, motion control, communication and STM32 firmware.
 - **[LSR550 — STM32 Chassis Development Manual](LucSys_LSR550_STM32_Chassis_Development_Manual.pdf):** Chassis hardware, drive kinematics, motor control, STM32 architecture and firmware programming.
 - **[LSE550 / LSV550 — STM32 Chassis Development Manual](LucSys_LSE550_LSV550_STM32_Chassis_Development_Manual.pdf):** Educational robot chassis, drive configurations, control interfaces and STM32 firmware programming.
+
+- **[LSR550A Development Manual](LSR550A_Development_Manual.pdf):** Mobile robot and robotic arm development reference.
 
 ## Reading and downloading
 
