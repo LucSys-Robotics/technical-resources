@@ -1,3 +1,10 @@
+# Copyright 2026 LucSys Robotics - integration and maintenance changes only.
+#
+# LucSys Robotics distributes this source under supplier authorization.
+# LucSys Robotics is responsible for integration and maintenance only.
+# This notice does not grant an additional open-source license.
+# Third-party components retain their respective licenses and notices.
+
 """Start the base driver; explicitly opt into localization and model publishing."""
 from pathlib import Path
 

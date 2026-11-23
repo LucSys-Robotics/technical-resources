@@ -1,3 +1,10 @@
+# Copyright 2026 LucSys Robotics - integration and maintenance changes only.
+#
+# LucSys Robotics distributes this source under supplier authorization.
+# LucSys Robotics is responsible for integration and maintenance only.
+# This notice does not grant an additional open-source license.
+# Third-party components retain their respective licenses and notices.
+
 """Launch the chassis driver with explicit hardware settings."""
 from pathlib import Path
 import warnings
@@ -14,7 +21,8 @@ from launch_ros.actions import Node
 def launch_nodes(context):
     """Resolve the selected profile without assuming hardware compatibility."""
     share = Path(get_package_share_directory('lucsys_chassis_driver'))
-    cfg = yaml.safe_load(Path(LaunchConfiguration('lucsys_param_yaml').perform(context)).read_text())
+    cfg = yaml.safe_load(Path(LaunchConfiguration(
+        'lucsys_param_yaml').perform(context)).read_text())
     compat = yaml.safe_load((share / 'config/legacy_compatibility.yaml').read_text())
     imu_path = LaunchConfiguration('imu_mode_yaml').perform(context)
     imu_cfg = yaml.safe_load(Path(imu_path).read_text()) if imu_path else cfg
@@ -65,7 +73,8 @@ def launch_nodes(context):
 
 def generate_launch_description():
     """Declare serial and configuration arguments."""
-    default = str(Path(get_package_share_directory('lucsys_chassis_driver')) / 'config/lucsys_param.yaml')
+    default = str(Path(get_package_share_directory(
+        'lucsys_chassis_driver')) / 'config/lucsys_param.yaml')
     args = {
         'lucsys_param_yaml': default, 'imu_mode_yaml': '', 'imu_mode': '', 'car_mode': '',
         'usart_port_name': '/dev/lucsys_controller', 'serial_baud_rate': '115200',

@@ -22,7 +22,7 @@ colcon build --cmake-args -DBUILD_TESTING=OFF
 source install/setup.bash
 ```
 
-The production build was executed in Ubuntu 22.04 / Humble ARM64. rosdep is a dependency-installation recipe; dependencies were installed explicitly in the validation container. Upstream style-lint suites are not represented as passing. Third-party serial-library headers and notices retain their original terms. LucSys Robotics prepares and maintains the application-source distribution. The application-code license is unspecified; no new open-source license is granted by this maintenance notice. Third-party terms remain applicable.
+The production build was executed in Ubuntu 22.04 / Humble ARM64. rosdep is a dependency-installation recipe; dependencies were installed explicitly in the validation container. The candidate test run reports 246 tests, zero errors/failures and 53 upstream cppcheck skips. A direct cppcheck run completed with two pre-existing alloca warnings in the unchanged third-party serial library. Third-party serial-library headers and notices retain their original terms. LucSys Robotics prepares and maintains the application-source distribution. Supplier-authorized application distribution is documented by LicenseRef-LucSys-Supplier-Authorization and lucsys_chassis_driver/NOTICE.md; no new open-source license is granted by this maintenance notice. Third-party terms remain applicable.
 
 ## Connect and inspect
 
@@ -36,7 +36,7 @@ ros2 topic echo /imu/data_raw
 ros2 topic echo /PowerVoltage
 ```
 
-The default legacy device alias and ROS node name remain functional compatibility identifiers; the command above overrides the port. Topic names and wire data were not changed by packaging.
+The default device is /dev/lucsys_controller and the default node is lucsys_robot; the command above overrides the port. Legacy compatibility is described below. Topic names and wire data were not changed by packaging.
 
 A motion-command example, validated against a virtual serial peer only:
 
@@ -96,3 +96,16 @@ For example, `lucsys_lsr550a_mec_description` contains `lsr550a_mec.urdf`. This 
 Sensor transforms from historical profiles are disabled by default. Publish only confirmed transforms; the standalone `robot_mode_description.launch.py` supports `publish_static_tf:=true`. Avoid publishing duplicate transforms already present in a URDF. The `lucsys_sensors.launch.py` entry starts only the base driver unless `start_lidar:=true` or `start_camera:=true` is requested. Requested external sensor drivers must be installed separately. Explicitly configured ultrasonic avoidance is never silently disabled when its package is missing.
 
 Runtime and static validation are separate from Keil compilation and physical-robot validation. This candidate must not be treated as verified firmware for every hardware revision.
+
+### Candidate verification
+
+To run all registered checks after a test-enabled build:
+
+```bash
+colcon build
+source install/setup.bash
+colcon test --executor sequential
+colcon test-result --verbose
+```
+
+The maintenance-notice checker validates the declared notice format, not legal provenance. Third-party licenses remain unchanged. The inverse-square-root routine now uses a defined 32-bit memcpy representation instead of reading a float through a platform-sized long pointer; its original constant and Newton iteration are retained. Sanitizer tests cover 10,001 positive inputs. Virtual serial tests verify feedback and velocity frames, with and without EKF/model startup; these are not physical-robot tests.

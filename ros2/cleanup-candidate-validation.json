@@ -15,18 +15,33 @@
   "host_kinematics": "PASS: 7 groups, 2000000 random cases for T1/T2/T3",
   "host_rc_oled": "PASS",
   "all_colcon_tests": {
-    "tests": 1370,
-    "failures": 1169,
+    "tests": 246,
+    "failures": 0,
     "errors": 0,
-    "skipped": 53
+    "skipped": 53,
+    "skip_reason": "ament_cppcheck skips cppcheck 2.7 for upstream performance issues"
   },
   "outstanding": [
-    "ROS style/documentation/copyright-header checks are not all passing",
     "Native Keil build not run; toolchain unavailable",
-    "No physical robot or delivered firmware matching validation"
+    "No physical robot or delivered firmware matching validation",
+    "53 ament cppcheck skips; direct check reports two pre-existing third-party alloca warnings"
   ],
   "stable_downloads_replaced": false,
   "legacy_names": "Intentionally retained only in config/legacy_compatibility.yaml and test/test_launch_contracts.py",
   "third_party_notices": "PRESERVED",
-  "unmapped_variants": "Neutral REF1 and REF2, not assigned to LucSys models"
+  "unmapped_variants": "Neutral REF1 and REF2, not assigned to LucSys models",
+  "direct_cppcheck": {
+    "result": "COMPLETED_WITH_WARNINGS",
+    "scope": "ROS source packages and LSR550A model; warning/performance/portability checks",
+    "warnings": [
+      "Unmodified third-party serial_ros2/src/serial.cc lines 182 and 218 use alloca"
+    ],
+    "limits": "Default maximum of 12 preprocessor configurations; not exhaustive"
+  },
+  "ros_inverse_sqrt": {
+    "change": "Replace undefined long-pointer punning with 32-bit memcpy; retain 0x5f375a86 and one Newton step",
+    "validation": "10001 positive inputs, relative error <= 0.002, ASan/UBSan pass"
+  },
+  "notice_checks": "PASS: supplier-authorized LucSys maintenance notice via ament plugin; positive and negative tests; no new open-source grant",
+  "validation_date": "2026-11-23"
 }

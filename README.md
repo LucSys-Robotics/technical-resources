@@ -1,4 +1,4 @@
-> **Candidate branch — not a stable release.** Supplier-name cleanup and explicit ROS startup are under validation. Base and EKF/model pseudo-terminal tests pass; static checks and Keil/hardware validation remain incomplete. Existing download links still point to the previous stable edition. See [candidate results](ros2/cleanup-candidate-validation.json) and the [startup/migration instructions](ros2/chassis-drivers/humble-20260903/README.md#candidate-cleanup-and-explicit-startup).
+> **Candidate branch — not a stable release.** Supplier-name cleanup and explicit ROS startup are under validation. Build and base/EKF/model pseudo-terminal tests pass. The ROS suite reports 246 tests, zero failures and 53 upstream cppcheck skips; a direct check reports two third-party warnings. Keil/hardware validation remains incomplete. Existing download links still point to the previous stable edition. See [candidate results](ros2/cleanup-candidate-validation.json) and the [startup/migration instructions](ros2/chassis-drivers/humble-20260903/README.md#candidate-cleanup-and-explicit-startup).
 
 # LucSys Robotics — Mobile Robot Technical Resources
 

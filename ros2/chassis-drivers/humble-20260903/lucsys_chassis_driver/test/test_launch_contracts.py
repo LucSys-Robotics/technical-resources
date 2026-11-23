@@ -1,3 +1,10 @@
+# Copyright 2026 LucSys Robotics - integration and maintenance changes only.
+#
+# LucSys Robotics distributes this source under supplier authorization.
+# LucSys Robotics is responsible for integration and maintenance only.
+# This notice does not grant an additional open-source license.
+# Third-party components retain their respective licenses and notices.
+
 """Test explicit model selection and narrowly scoped legacy compatibility."""
 import importlib.util
 from pathlib import Path
@@ -59,6 +66,7 @@ class LaunchContracts(unittest.TestCase):
     def test_legacy_device_fallback(self):
         """Use an existing old device only when the new default is absent."""
         original = Path.exists
+
         def exists(path):
             if str(path).startswith('/dev/'):
                 return str(path) == '/dev/wheeltec_controller'
@@ -85,7 +93,8 @@ class LaunchContracts(unittest.TestCase):
         module = load('robot_mode_description')
         with self.assertRaisesRegex(ValueError, 'model_name'):
             module.spawn_robot_nodes(context(start_state_publisher='true',
-                model_package='lucsys_lsr550a_mec_description', model_name='../other'))
+                                             model_package='lucsys_lsr550a_mec_description',
+                                             model_name='../other'))
 
 
 if __name__ == '__main__':
