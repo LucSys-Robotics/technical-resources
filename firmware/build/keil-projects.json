@@ -1,0 +1,170 @@
+[
+  {
+    "project": "firmware/controllers/C30D/v2-gmr-20260921/USER/LUCSYS.uvprojx",
+    "target": "FreeRTOS",
+    "device": "STM32F407ZG",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/controllers/C50C/20261104/USER/LUCSYS.uvprojx",
+    "target": "Akm_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/controllers/C50C/20261104/USER/LUCSYS.uvprojx",
+    "target": "Diff_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/controllers/C50C/20261104/USER/LUCSYS.uvprojx",
+    "target": "Mec_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/controllers/C50C/20261104/USER/LUCSYS.uvprojx",
+    "target": "4WD_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/controllers/C50C/20261104/USER/LUCSYS.uvprojx",
+    "target": "Omni_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/MDK-ARM/LUCSYS.uvprojx",
+    "target": "LUCSYS",
+    "device": "STM32F407VETx",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARM_Compiler_5.06u7",
+    "pack": "Keil.STM32F4xx_DFP.3.1.1",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/controllers/C63A/lsr280-20261013/MDK-ARM/LUCSYS.uvprojx",
+    "target": "LUCSYS",
+    "device": "STM32F407VETx",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.3.1.1",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/models/LSR550A/v1-20251204/4wd/USER/LUCSYS.uvprojx",
+    "target": "FreeRTOS",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/models/LSR550A/v1-20251204/differential/USER/LUCSYS.uvprojx",
+    "target": "FreeRTOS",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/models/LSR550A/v1-20251204/mecanum/USER/LUCSYS.uvprojx",
+    "target": "FreeRTOS",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/models/LSR550A/v2-20261012/USER/LUCSYS.uvprojx",
+    "target": "Akm_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/models/LSR550A/v2-20261012/USER/LUCSYS.uvprojx",
+    "target": "Diff_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/models/LSR550A/v2-20261012/USER/LUCSYS.uvprojx",
+    "target": "Mec_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/models/LSR550A/v2-20261012/USER/LUCSYS.uvprojx",
+    "target": "4WD_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARM_Compiler_5.06u7",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/models/LSR550A/v2-20261012/USER/LUCSYS.uvprojx",
+    "target": "Omni_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/models/LSR550A/v2.1-20261012/USER/LUCSYS.uvprojx",
+    "target": "Akm_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/models/LSR550A/v2.1-20261012/USER/LUCSYS.uvprojx",
+    "target": "Diff_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/models/LSR550A/v2.1-20261012/USER/LUCSYS.uvprojx",
+    "target": "Mec_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/models/LSR550A/v2.1-20261012/USER/LUCSYS.uvprojx",
+    "target": "4WD_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  },
+  {
+    "project": "firmware/models/LSR550A/v2.1-20261012/USER/LUCSYS.uvprojx",
+    "target": "Omni_Car",
+    "device": "STM32F407VE",
+    "compiler": "5060960::V5.06 update 7 (build 960)::.\\ARMCC",
+    "pack": "Keil.STM32F4xx_DFP.2.9.0",
+    "status": "NOT_COMPILED"
+  }
+]

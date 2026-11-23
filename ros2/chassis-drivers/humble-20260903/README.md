@@ -18,7 +18,7 @@ cp -R technical-resources/ros2/chassis-drivers/humble-20260903/{lucsys_chassis_d
 cd ~/lucsys_driver_ws
 source /opt/ros/humble/setup.bash
 rosdep install --from-paths src --ignore-src -r -y
-colcon build --cmake-args -DBUILD_TESTING=OFF
+colcon build --cmake-args -DBUILD_TESTING=ON
 source install/setup.bash
 ```
 
@@ -75,7 +75,7 @@ TXT notes use `CHANGELOG.txt` (and `VERSION_NOTES.txt` where present); Keil proj
 
 ## Candidate cleanup and explicit startup
 
-This candidate uses LucSys names while preserving only necessary legacy device and model aliases in `config/legacy_compatibility.yaml`. Third-party library authors and license notices are retained. Internal identifier renaming does not change controller values or protocols. Unconfirmed reference variants remain unchanged rather than being assigned to a LucSys model.
+This customer candidate uses LucSys names without legacy device fallback or model aliases. Historical deployments have a separate repository-level compatibility overlay, excluded from customer archives. Third-party library authors and license notices are retained. Internal identifier renaming does not change controller values or protocols. Unconfirmed reference variants remain unchanged rather than being assigned to a LucSys model.
 
 Install dependencies from the package manifests using `rosdep install --from-paths src --ignore-src -r -y`, then build and source the workspace. Base startup no longer implicitly starts EKF, model, camera or LiDAR components:
 
@@ -83,7 +83,7 @@ Install dependencies from the package manifests using `rosdep install --from-pat
 ros2 launch lucsys_chassis_driver lucsys_chassis_driver.launch.py usart_port_name:=/dev/ttyUSB0 car_mode:=<confirmed_configuration_key>
 ```
 
-Select the actual serial device and confirmed controller configuration. No udev rule is installed automatically. The default `/dev/lucsys_controller` falls back to an existing legacy device alias only when the new device is absent. Explicit paths always take priority. Set `legacy_compatibility:=false` to disable device fallback. `node_name:=<previous_node_name>` supports deployments whose ROS configuration depends on an old node name. Direct `ros2 run` callers must supply their actual serial path explicitly when the new default is unavailable.
+Select the actual serial device and confirmed controller configuration. No udev rule is installed automatically. The default /dev/lucsys_controller is never replaced by another device. Supply usart_port_name explicitly when using /dev/ttyUSB0 or another actual port. External ultrasonic avoidance requires an explicit installed package; it is never silently disabled.
 
 To enable EKF, add `start_ekf:=true`; this requires `robot_localization`. To publish a model, install the matching existing LucSys model package and supply all of:
 
@@ -102,7 +102,7 @@ Runtime and static validation are separate from Keil compilation and physical-ro
 To run all registered checks after a test-enabled build:
 
 ```bash
-colcon build
+colcon build --cmake-args -DBUILD_TESTING=ON
 source install/setup.bash
 colcon test --executor sequential
 colcon test-result --verbose

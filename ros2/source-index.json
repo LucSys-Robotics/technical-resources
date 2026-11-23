@@ -13,8 +13,8 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/README.md",
-      "sha256": "719e4572fb43a9a3e50017fa29f0554feec1c940b039784b9067050181d319a2",
-      "size": 10062
+      "sha256": "7c6885030887d2524970551372ede91ac025a8f63a77ef1b5e974b2e926f1494",
+      "size": 9978
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/VALIDATION.md",
@@ -57,14 +57,9 @@
       "size": 189
     },
     {
-      "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/legacy_compatibility.yaml",
-      "sha256": "6a6df44c1c14da103788ba366ddb923303becac524afab37c39db2297175d819",
-      "size": 442
-    },
-    {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/lucsys_param.yaml",
-      "sha256": "f4e0e1aeacd18b270917b49432b1b43ae88f1ba01a5f83bc3942a1dcf2a07ac5",
-      "size": 2059
+      "sha256": "76128430d58c96f216c3aacd5770384ee08b75e8e8f178e59843ae65b4c52f74",
+      "size": 1460
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/lucsys_param_back.yaml",
@@ -73,8 +68,8 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/robot_model.yaml",
-      "sha256": "cb09b1d34a6aab97be24c7d182cec3c2be92a4d44e3eb7a06df9f55a644322f4",
-      "size": 11780
+      "sha256": "669fe6df40411dd88250f57253c2af034bc9983fd47ff8ee05e0f2d56d584982",
+      "size": 2568
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/include/lucsys_chassis_driver/Quaternion_Solution.h",
@@ -88,8 +83,8 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/base_serial.launch.py",
-      "sha256": "e65e51f3c300ad53c1d09171dde6d8397207c7f0b2b86c4dcd712c8661661070",
-      "size": 4492
+      "sha256": "d53afe6c691f0f08bcd844d73204eacec83f1ffc46f542858670c43aef361691",
+      "size": 3776
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/imu_processor.launch.py",
@@ -113,8 +108,8 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_lidar.launch.py",
-      "sha256": "0febe8081d451d9c661c7e161106e7fd09aeb969a9c8481d7ffca9be7b630679",
-      "size": 7952
+      "sha256": "02396325f185af79225d59bc58e9c98b2dd3e9c063fc98863f02b7502990e18a",
+      "size": 7483
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_sensors.launch.py",
@@ -123,8 +118,8 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/robot_mode_description.launch.py",
-      "sha256": "575eea95a357c8736dfc674058966ec6e3c8902b937ce4b48de5f96e09ee9153",
-      "size": 4177
+      "sha256": "582cb5a54279d30885f4eaf35a2c88950fe2629ba57add0b56b1b8f6fc1ff98a",
+      "size": 3819
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/msg/Position.msg",
@@ -148,8 +143,8 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/src/lucsys_chassis.cpp",
-      "sha256": "7e2cfb83a2e00b88f6ef2e93c60fd299c99d99e31ba5271e5749b9923d005fb4",
-      "size": 44295
+      "sha256": "76da2f479d47374e41497555b6ad0b7d442d993a2e84f49371832914f63ee4ec",
+      "size": 44287
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/test/notice_plugin/lucsys_notice.py",
@@ -173,8 +168,8 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/test/test_launch_contracts.py",
-      "sha256": "a8c7f544601e48512097899ce23b112ad3006be836b3c37c5e5ee584a7426f83",
-      "size": 4660
+      "sha256": "07be3011bcca91d536efac189b03864f90130d82332d8c3fc521eb967c7f610c",
+      "size": 4037
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/test/test_notice_policy.py",
@@ -268,13 +263,13 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/tests/serial_smoke.py",
-      "sha256": "0ab3d680cbec810acc4fee30de56d1596d28a1c0da40550bc90206eac41c3956",
-      "size": 2539
+      "sha256": "bff0af461d5ab3318b01f23e7340319cd69b43692ba0c66a5e7f880be873da9c",
+      "size": 2543
     },
     {
       "path": "ros2/cleanup-candidate-validation.json",
-      "sha256": "b21dbbbe35705f78cdec958cd75098984ed267ad0623f9f87f256aa53271d94f",
-      "size": 2135
+      "sha256": "229ea6a2017b382d9ab6419afc1f253828aca872e0812503edd9b37486391dd3",
+      "size": 2623
     }
   ]
 }

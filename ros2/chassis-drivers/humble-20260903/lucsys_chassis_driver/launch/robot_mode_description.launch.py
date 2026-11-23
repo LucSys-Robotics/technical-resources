@@ -37,15 +37,9 @@ def spawn_robot_nodes(context):
             Node(package='joint_state_publisher', executable='joint_state_publisher'),
         ])
     if value('publish_static_tf').lower() == 'true':
-        share = Path(get_package_share_directory('lucsys_chassis_driver'))
         cfg = yaml.safe_load(Path(value('lucsys_param_yaml')).read_text())
-        aliases = yaml.safe_load(
-            (share / 'config/legacy_compatibility.yaml').read_text())['model_aliases']
-        original_mode = value('car_mode') or cfg['car_mode']
-        mode = aliases.get(original_mode, original_mode)
+        mode = value('car_mode') or cfg['car_mode']
         profiles = yaml.safe_load(Path(value('robot_model_yaml')).read_text())['robot_model']
-        if mode not in profiles and original_mode in profiles:
-            mode = original_mode
         if mode not in profiles:
             raise ValueError('No transform profile for car_mode: ' + mode)
         for key, child in {'base_to_laser': 'laser', 'base_to_camera': 'camera_link',

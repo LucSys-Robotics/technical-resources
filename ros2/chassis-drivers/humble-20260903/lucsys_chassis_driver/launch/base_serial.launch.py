@@ -7,7 +7,6 @@
 
 """Launch the chassis driver with explicit hardware settings."""
 from pathlib import Path
-import warnings
 
 import yaml
 from ament_index_python.packages import get_package_share_directory
@@ -20,21 +19,13 @@ from launch_ros.actions import Node
 
 def launch_nodes(context):
     """Resolve the selected profile without assuming hardware compatibility."""
-    share = Path(get_package_share_directory('lucsys_chassis_driver'))
     cfg = yaml.safe_load(Path(LaunchConfiguration(
         'lucsys_param_yaml').perform(context)).read_text())
-    compat = yaml.safe_load((share / 'config/legacy_compatibility.yaml').read_text())
     imu_path = LaunchConfiguration('imu_mode_yaml').perform(context)
     imu_cfg = yaml.safe_load(Path(imu_path).read_text()) if imu_path else cfg
     imu = LaunchConfiguration('imu_mode').perform(context) or imu_cfg['imu_mode']
     mode = LaunchConfiguration('car_mode').perform(context) or cfg['car_mode']
-    mode = compat['model_aliases'].get(mode, mode)
     port = LaunchConfiguration('usart_port_name').perform(context)
-    legacy = LaunchConfiguration('legacy_compatibility').perform(context).lower() == 'true'
-    if legacy and port == '/dev/lucsys_controller' and not Path(port).exists():
-        if Path(compat['controller_device']).exists():
-            port = compat['controller_device']
-            warnings.warn('Using a legacy serial-device alias; migrate to /dev/lucsys_controller.')
     params = {
         'usart_port_name': port,
         'serial_baud_rate': int(LaunchConfiguration('serial_baud_rate').perform(context)),
@@ -47,8 +38,6 @@ def launch_nodes(context):
     actions = []
     if cfg['ultrasonic_avoid']:
         package = LaunchConfiguration('ultrasonic_package').perform(context)
-        if not package and legacy:
-            package = compat['ultrasonic_package']
         if not package:
             raise ValueError('Ultrasonic avoidance is enabled: specify its installed package.')
         sensor = Path(get_package_share_directory(package)) / 'launch/ultrasonic_pose.launch.py'
@@ -78,7 +67,7 @@ def generate_launch_description():
     args = {
         'lucsys_param_yaml': default, 'imu_mode_yaml': '', 'imu_mode': '', 'car_mode': '',
         'usart_port_name': '/dev/lucsys_controller', 'serial_baud_rate': '115200',
-        'legacy_compatibility': 'true', 'ultrasonic_package': '', 'node_name': 'lucsys_robot',
+        'ultrasonic_package': '', 'node_name': 'lucsys_robot',
     }
     return LaunchDescription([
         *[DeclareLaunchArgument(key, default_value=value) for key, value in args.items()],

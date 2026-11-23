@@ -868,7 +868,7 @@ turn_on_robot::turn_on_robot()
   this->declare_parameter<std::string>("odom_frame_id", "odom");
   this->declare_parameter<std::string>("robot_frame_id", "base_footprint");
   this->declare_parameter<std::string>("gyro_frame_id", "gyro_link");
-  this->declare_parameter<std::string>("car_mode", "mini_mec");
+  this->declare_parameter<std::string>("car_mode", "");
   this->declare_parameter<double>("odom_x_scale", 1.0);
   this->declare_parameter<double>("odom_y_scale", 1.0);
   this->declare_parameter<double>("odom_z_scale_positive", 1.0);

@@ -1,5 +1,6 @@
-param([string]$Compiler='E:\ZZZ---engineering software---ZZZ\mingw64\bin\gcc.exe')
+param([string]$Compiler='gcc.exe')
 $ErrorActionPreference='Stop'
+$Compiler=(Get-Command $Compiler -ErrorAction Stop).Source
 $src=[Text.Encoding]::GetEncoding(936).GetString([IO.File]::ReadAllBytes((Join-Path $PSScriptRoot '../../LUCSYS_APP/RobotControl_task_v2.c')))
 function Extract([string]$name){
  $m=[regex]::Match($src,'static void '+$name+'\([^;]*?\)\s*\{'); if(-not $m.Success){throw $name}

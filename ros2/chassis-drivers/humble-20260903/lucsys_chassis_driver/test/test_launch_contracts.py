@@ -5,7 +5,7 @@
 # This notice does not grant an additional open-source license.
 # Third-party components retain their respective licenses and notices.
 
-"""Test explicit model selection and narrowly scoped legacy compatibility."""
+"""Test explicit model selection and independent customer configuration."""
 import importlib.util
 from pathlib import Path
 import unittest
@@ -32,7 +32,7 @@ def context(**overrides):
         'robot_model_yaml': str(ROOT / 'config/robot_model.yaml'),
         'imu_mode_yaml': '', 'imu_mode': '', 'car_mode': '',
         'usart_port_name': '/dev/lucsys_controller', 'serial_baud_rate': '115200',
-        'legacy_compatibility': 'true', 'ultrasonic_package': '', 'node_name': 'lucsys_robot',
+        'ultrasonic_package': '', 'node_name': 'lucsys_robot',
         'start_state_publisher': 'false', 'publish_static_tf': 'false',
         'model_package': '', 'model_name': '',
         **overrides,
@@ -41,7 +41,7 @@ def context(**overrides):
 
 
 class LaunchContracts(unittest.TestCase):
-    """Prevent implicit hardware/model assumptions and broken migration paths."""
+    """Prevent implicit hardware/model assumptions and device substitution."""
 
     def base_params(self, **args):
         """Return the driver parameters without spawning processes."""
@@ -55,26 +55,15 @@ class LaunchContracts(unittest.TestCase):
         self.assertEqual(self.base_params(usart_port_name='/dev/test_robot')['usart_port_name'],
                          '/dev/test_robot')
 
-    def test_legacy_model_aliases_preserve_selection(self):
-        """Old and new names produce the same driver configuration."""
-        for old, new in [('R680A_mec_arm', 'LSR550A_mec_arm'),
-                         ('R680A_4wd_arm', 'LSR550A_4wd_arm'),
-                         ('S100_diff', 'LSR100_diff'), ('S200_4wd', 'LSR200_4wd'),
-                         ('S300_pro', 'LSR300_pro'), ('S300_mini', 'LSR300_mini')]:
-            self.assertEqual(self.base_params(car_mode=old), self.base_params(car_mode=new))
+    def test_confirmed_mode_is_not_rewritten(self):
+        """Keep explicit LucSys mode values unchanged."""
+        for mode in ('LSR550A_mec_arm', 'LSR550A_4wd_arm', 'LSR200_4wd'):
+            self.assertEqual(self.base_params(car_mode=mode)['car_mode'], mode)
 
-    def test_legacy_device_fallback(self):
-        """Use an existing old device only when the new default is absent."""
-        original = Path.exists
-
-        def exists(path):
-            if str(path).startswith('/dev/'):
-                return str(path) == '/dev/wheeltec_controller'
-            return original(path)
-        with patch.object(Path, 'exists', exists):
-            self.assertEqual(self.base_params()['usart_port_name'], '/dev/wheeltec_controller')
-            self.assertEqual(self.base_params(legacy_compatibility='false')['usart_port_name'],
-                             '/dev/lucsys_controller')
+    def test_default_device_is_not_substituted(self):
+        """A missing device must not silently select another controller."""
+        with patch.object(Path, 'exists', return_value=False):
+            self.assertEqual(self.base_params()['usart_port_name'], '/dev/lucsys_controller')
 
     def test_disabled_model_has_no_dependencies(self):
         """Base operation does not require a model package or sensor transforms."""

@@ -13,7 +13,7 @@ frame=bytearray([0x7b,0])+bytearray(struct.pack('>hhh',100,0,0))+bytearray(struc
 for b in frame:bcc^=b
 frame+=bytes([bcc,0x7d]);assert len(frame)==24
 import tempfile
-log=tempfile.TemporaryFile(mode='w+');proc=subprocess.Popen(['ros2','run','lucsys_chassis_driver','lucsys_chassis_node','--ros-args','-p',f'usart_port_name:={device}','-p','car_mode:=senior_diff'],stdout=log,stderr=log)
+log=tempfile.TemporaryFile(mode='w+');proc=subprocess.Popen(['ros2','run','lucsys_chassis_driver','lucsys_chassis_node','--ros-args','-p',f'usart_port_name:={device}','-p','car_mode:=LSR550A_mec_arm'],stdout=log,stderr=log)
 def io():
  while running:
   os.write(master,frame)

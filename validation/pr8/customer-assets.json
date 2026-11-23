@@ -1,0 +1,138 @@
+[
+  {
+    "file": "lucsys_c50c_20261104.zip",
+    "source": "firmware/controllers/C50C/20261104"
+  },
+  {
+    "file": "lucsys_c30d_v2_gmr_20260921.zip",
+    "source": "firmware/controllers/C30D/v2-gmr-20260921"
+  },
+  {
+    "file": "lucsys_lsr100_lsr180_lsr200_lsr300_20260127.zip",
+    "source": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127"
+  },
+  {
+    "file": "lucsys_lsr280_20261013.zip",
+    "source": "firmware/controllers/C63A/lsr280-20261013"
+  },
+  {
+    "file": "lucsys_ros2_humble_20260903.zip",
+    "source": "ros2/chassis-drivers/humble-20260903"
+  },
+  {
+    "file": "lucsys_lsr550a_v1-20251204.zip",
+    "source": "firmware/models/LSR550A/v1-20251204"
+  },
+  {
+    "file": "lucsys_lsr550a_v2-20261012.zip",
+    "source": "firmware/models/LSR550A/v2-20261012"
+  },
+  {
+    "file": "lucsys_lsr550a_v2_1-20261012.zip",
+    "source": "firmware/models/LSR550A/v2.1-20261012"
+  },
+  {
+    "file": "lucsys_lse550_description.zip",
+    "source": "platforms/lucsys_lse550_description"
+  },
+  {
+    "file": "lucsys_lsr100_description.zip",
+    "source": "platforms/lucsys_lsr100_description"
+  },
+  {
+    "file": "lucsys_lsr180_description.zip",
+    "source": "platforms/lucsys_lsr180_description"
+  },
+  {
+    "file": "lucsys_lsr200_description.zip",
+    "source": "platforms/lucsys_lsr200_description"
+  },
+  {
+    "file": "lucsys_lsr200auto_4wd_description.zip",
+    "source": "platforms/lucsys_lsr200auto_4wd_description"
+  },
+  {
+    "file": "lucsys_lsr200auto_akm_lite_description.zip",
+    "source": "platforms/lucsys_lsr200auto_akm_lite_description"
+  },
+  {
+    "file": "lucsys_lsr200auto_akm_pro_description.zip",
+    "source": "platforms/lucsys_lsr200auto_akm_pro_description"
+  },
+  {
+    "file": "lucsys_lsr200auto_akm_ultra_description.zip",
+    "source": "platforms/lucsys_lsr200auto_akm_ultra_description"
+  },
+  {
+    "file": "lucsys_lsr280_description.zip",
+    "source": "platforms/lucsys_lsr280_description"
+  },
+  {
+    "file": "lucsys_lsr300mini_description.zip",
+    "source": "platforms/lucsys_lsr300mini_description"
+  },
+  {
+    "file": "lucsys_lsr300pro_description.zip",
+    "source": "platforms/lucsys_lsr300pro_description"
+  },
+  {
+    "file": "lucsys_lsr550_2wd_description.zip",
+    "source": "platforms/lucsys_lsr550_2wd_description"
+  },
+  {
+    "file": "lucsys_lsr550_4wd_premium_independent_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_4wd_premium_independent_suspension_description"
+  },
+  {
+    "file": "lucsys_lsr550_4wd_premium_oscillating_axle_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_4wd_premium_oscillating_axle_suspension_description"
+  },
+  {
+    "file": "lucsys_lsr550_akm_flagship_independent_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_akm_flagship_independent_suspension_description"
+  },
+  {
+    "file": "lucsys_lsr550_akm_premium_oscillating_axle_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_akm_premium_oscillating_axle_suspension_description"
+  },
+  {
+    "file": "lucsys_lsr550_akm_ultimate_oscillating_axle_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_akm_ultimate_oscillating_axle_suspension_description"
+  },
+  {
+    "file": "lucsys_lsr550_mec_flagship_independent_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_mec_flagship_independent_suspension_description"
+  },
+  {
+    "file": "lucsys_lsr550_mec_premium_independent_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_mec_premium_independent_suspension_description"
+  },
+  {
+    "file": "lucsys_lsr550_mec_premium_oscillating_axle_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_mec_premium_oscillating_axle_suspension_description"
+  },
+  {
+    "file": "lucsys_lsr550_mec_ultimate_oscillating_axle_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_mec_ultimate_oscillating_axle_suspension_description"
+  },
+  {
+    "file": "lucsys_lsr550_omni_premium_description.zip",
+    "source": "platforms/lucsys_lsr550_omni_premium_description"
+  },
+  {
+    "file": "lucsys_lsr550_omni_ultimate_description.zip",
+    "source": "platforms/lucsys_lsr550_omni_ultimate_description"
+  },
+  {
+    "file": "lucsys_lsr550a_4wd_description.zip",
+    "source": "platforms/lucsys_lsr550a_4wd_description"
+  },
+  {
+    "file": "lucsys_lsr550a_mec_description.zip",
+    "source": "platforms/lucsys_lsr550a_mec_description"
+  },
+  {
+    "file": "lucsys_lsv550_description.zip",
+    "source": "platforms/lucsys_lsv550_description"
+  }
+]

@@ -1,0 +1,187 @@
+[
+  {
+    "package": "lucsys_lse550_description",
+    "model": "lse550_4wd_four_axis_arm",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lse550_description",
+    "model": "lse550_4wd",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lse550_description",
+    "model": "lse550_akm",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lse550_description",
+    "model": "lse550_diff",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lse550_description",
+    "model": "lse550_mec_four_axis_arm",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lse550_description",
+    "model": "lse550_mec_six_axis_arm",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lse550_description",
+    "model": "lse550_mec",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lse550_description",
+    "model": "lse550_omni",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lse550_description",
+    "model": "lse550_tank_four_axis_arm",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lse550_description",
+    "model": "lse550_tank",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr100_description",
+    "model": "lsr100",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr180_description",
+    "model": "lsr180",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr200_description",
+    "model": "lsr200",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr200auto_4wd_description",
+    "model": "lsr200auto_4wd",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr200auto_akm_lite_description",
+    "model": "lsr200auto_akm_lite",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr200auto_akm_pro_description",
+    "model": "lsr200auto_akm_pro",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr200auto_akm_ultra_description",
+    "model": "lsr200auto_akm_ultra",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr280_description",
+    "model": "lsr280",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr300mini_description",
+    "model": "lsr300mini",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr300pro_description",
+    "model": "lsr300pro",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr550_2wd_description",
+    "model": "lsr550_2wd",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr550_4wd_premium_independent_suspension_description",
+    "model": "lsr550_4wd_premium_independent_suspension",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr550_4wd_premium_oscillating_axle_suspension_description",
+    "model": "lsr550_4wd_premium_oscillating_axle_suspension",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr550_akm_flagship_independent_suspension_description",
+    "model": "lsr550_akm_flagship_independent_suspension",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr550_akm_premium_oscillating_axle_suspension_description",
+    "model": "lsr550_akm_premium_oscillating_axle_suspension",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr550_akm_ultimate_oscillating_axle_suspension_description",
+    "model": "lsr550_akm_ultimate_oscillating_axle_suspension",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr550_mec_flagship_independent_suspension_description",
+    "model": "lsr550_mec_flagship_independent_suspension",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr550_mec_premium_independent_suspension_description",
+    "model": "lsr550_mec_premium_independent_suspension",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr550_mec_premium_oscillating_axle_suspension_description",
+    "model": "lsr550_mec_premium_oscillating_axle_suspension",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr550_mec_ultimate_oscillating_axle_suspension_description",
+    "model": "lsr550_mec_ultimate_oscillating_axle_suspension",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr550_omni_premium_description",
+    "model": "lsr550_omni_premium",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr550_omni_ultimate_description",
+    "model": "lsr550_omni_ultimate",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr550a_4wd_description",
+    "model": "lsr550a_4wd",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsr550a_mec_description",
+    "model": "lsr550a_mec",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsv550_description",
+    "model": "lsv550_4wd",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsv550_description",
+    "model": "lsv550_akm",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  },
+  {
+    "package": "lucsys_lsv550_description",
+    "model": "lsv550_mec",
+    "result": "LAUNCH_RESOLUTION_AND_MESH_PATHS_PASS"
+  }
+]

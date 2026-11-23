@@ -5,7 +5,7 @@
     "files": 1992,
     "result": "PASS after explicit identifier/display-label mappings; no parameter or control-flow changes"
   },
-  "ros_build": "PASS: 3 driver packages plus one existing model package",
+  "ros_build": "PASS: 29 packages (3 driver packages + 26 model packages) in a fresh ROS Humble container using rosdep",
   "ros_base_serial": "PASS",
   "ros_ekf_model_serial": "PASS: base driver, EKF, LSR550A Mecanum model and joint publisher alive; pseudo-terminal only",
   "compatibility_tests": {
@@ -27,12 +27,12 @@
     "53 ament cppcheck skips; direct check reports two pre-existing third-party alloca warnings"
   ],
   "stable_downloads_replaced": false,
-  "legacy_names": "Intentionally retained only in config/legacy_compatibility.yaml and test/test_launch_contracts.py",
+  "legacy_names": "Only in repository-level compatibility overlay and audit/history records; excluded from customer ZIPs",
   "third_party_notices": "PRESERVED",
   "unmapped_variants": "Neutral REF1 and REF2, not assigned to LucSys models",
   "direct_cppcheck": {
     "result": "COMPLETED_WITH_WARNINGS",
-    "scope": "ROS source packages and LSR550A model; warning/performance/portability checks",
+    "scope": "All ROS driver/model sources",
     "warnings": [
       "Unmodified third-party serial_ros2/src/serial.cc lines 182 and 218 use alloca"
     ],
@@ -43,5 +43,14 @@
     "validation": "10001 positive inputs, relative error <= 0.002, ASan/UBSan pass"
   },
   "notice_checks": "PASS: supplier-authorized LucSys maintenance notice via ament plugin; positive and negative tests; no new open-source grant",
-  "validation_date": "2026-11-23"
+  "validation_date": "2026-11-23",
+  "customer_package_scan": {
+    "archives": 34,
+    "identity_matches": 0,
+    "private_path_matches": 0
+  },
+  "final_report": "validation/pr8/README.md",
+  "stm32_build": "NOT RUN: all 9 projects / 21 targets; Windows script and exact toolchain inventory provided",
+  "model_launch_resolution": "PASS: 37 configurations, including installed mesh paths",
+  "ros_protocol_equivalence": "PASS: four command frames and feedback match public main c3de982 and previous candidate d5d5927"
 }

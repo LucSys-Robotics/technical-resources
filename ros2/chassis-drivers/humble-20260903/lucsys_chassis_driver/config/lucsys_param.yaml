@@ -1,21 +1,5 @@
-# Optional model number Enter the corresponding car_mode
-  # mini_mec/mini_akm/mini_tank/mini_4wd/mini_diff/mini_omni
-  # V550_4wd/V550_akm/V550_mec
-  
-  # senior_akm/top_akm_bs/top_akm_dl
-  # senior_mec_bs/senior_mec_dl/top_mec_bs/top_mec_dl/top_mec_EightDrive/flagship_mec_bs/flagship_mec_dl
-  # senior_omni/top_omni
-  # senior_4wd_bs/senior_4wd_dl/flagship_4wd_bs/flagship_4wd_dl/top_4wd_bs/top_4wd_dl
-  # senior_diff/four_wheel_diff_bs/four_wheel_diff_dl
-  # LSR100_diff/LSR200_4wd/V650_diff
-
-  # autoware_senior_akm/autoware_top_akm_single_antenna/autoware_top_akm_dual_antenna/
-
-  # LSR550A_4wd_arm/LSR550A_mec_arm    
-  # LSR300_pro/LSR300_mini/eco65
-
-car_mode:  mini_mec
-      
+# Use an explicitly confirmed LucSys configuration; no model is inferred.
+car_mode: ""
 # Enable and disable the NAV2 navigation ultrasonic obstacle avoidance function false disable true on
 # This configuration is only valid for models equipped with ultrasonic hardware
 ultrasonic_avoid: false

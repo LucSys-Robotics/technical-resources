@@ -93,13 +93,6 @@ def include_lidar_launch(context, *args, **kwargs):
                 'config', 'lslidar_x10.yaml'
             )
             lidar_port = cfg['x10']['lidar_port']
-            compat_path = Path(get_package_share_directory(
-                'lucsys_chassis_driver')) / 'config/legacy_compatibility.yaml'
-            legacy_port = load_yaml(compat_path)['lidar_device']
-            if lidar_port == '/dev/lucsys_lidar' and not Path(
-                    lidar_port).exists() and Path(legacy_port).exists():
-                lidar_port = legacy_port
-                print('Using legacy LiDAR device alias; migrate to /dev/lucsys_lidar.')
             x10_cfg = yaml.safe_load(template_yaml.read_text())[
                 'x10']['lslidar_driver_node']['ros__parameters']
 

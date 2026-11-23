@@ -12,6 +12,21 @@
       "size": 2749
     },
     {
+      "path": "firmware/build/README.md",
+      "sha256": "5be5866e1737ec333214593df0c7a4e67c7dc3f29c501a4d755b4ece1f146cd9",
+      "size": 1906
+    },
+    {
+      "path": "firmware/build/build-all.ps1",
+      "sha256": "692061f1be64c88be1ef8681ab2666b238fa3f5938ffe3fd14e5a24a5bdcc605",
+      "size": 1350
+    },
+    {
+      "path": "firmware/build/keil-projects.json",
+      "sha256": "ea9ab6ef45ea49ea5f7599a94ed25d877b8db17f34d5c5de0091e04e92f6ac89",
+      "size": 5808
+    },
+    {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/AutoRecharge/AutoRecharge.c",
       "sha256": "ed770913615e1f64c9e41f5ee36a5f356ef3a398756f3a27efd209860871bd51",
       "size": 1260
@@ -5158,8 +5173,8 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/control_regression.ps1",
-      "sha256": "64c7a0f87b9110744b22c5fd05425329c7cac4b487a9feb0cf88e2cb8cafd966",
-      "size": 3094
+      "sha256": "74eb718760c8334815d5b0dc0673e9df247188732d9c5936ef555093b7ff7197",
+      "size": 3103
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/main.c",
