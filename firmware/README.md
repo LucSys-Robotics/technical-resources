@@ -1,5 +1,7 @@
 # LucSys Robotics — STM32 source references
 
+[Find all development resources for your model](../models/README.md)
+
 Complete source projects are provided for study and configuration-specific development. Select the controller, encoder variant and target before building. A source snapshot is not proof of the firmware installed in a delivered robot.
 
 | Controller branch | Snapshot | Project and development guide | Scope |

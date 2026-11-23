@@ -4,6 +4,21 @@
 
 This technical resource collection helps engineering teams evaluate wheeled mobile robot hardware, communication interfaces and integration requirements before purchasing or deploying a platform.
 
+## Find resources for your model
+
+**[Open the model resource directory](models/README.md)** to find ROS 2 driver source, model packages, STM32 source status and build instructions in one place. Unconfirmed hardware/firmware associations are explicitly marked. Shared code is linked without duplicate storage.
+
+- [LSR100](models/LSR100/README.md)
+- [LSR180](models/LSR180/README.md)
+- [LSR200](models/LSR200/README.md)
+- [LSR200Auto](models/LSR200Auto/README.md)
+- [LSR280](models/LSR280/README.md)
+- [LSR300](models/LSR300/README.md)
+- [LSR550](models/LSR550/README.md)
+- [LSR550A](models/LSR550A/README.md)
+- [LSE550](models/LSE550/README.md)
+- [LSV550](models/LSV550/README.md)
+
 ## Technical guides
 
 | Guide | Description |
@@ -32,7 +47,7 @@ Choose the chassis manual for your model, and use the shared communication guide
 - [LSR180 / LSR200 / LSR280 / LSR300: C63A electrical references](manuals/LSR180-LSR200-LSR280-LSR300/README.md)
 - [Controller revision selection and English schematics](electrical/controllers/README.md)
 
-These references require an exact hardware/configuration match. They do not add complete STM32 firmware or ROS hardware-driver archives. Existing Humble model packages and download links remain available below. [Resource SHA256 index](electrical/resource-index.json).
+These electrical and mechanical references require an exact hardware/configuration match. For available STM32 source, ROS 2 drivers and model downloads, use the [model resource directory](models/README.md). [Resource SHA256 index](electrical/resource-index.json).
 
 ## Robot Platforms
 

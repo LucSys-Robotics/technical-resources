@@ -1,5 +1,7 @@
 # LucSys Robotics — ROS 2 development resources
 
+[Find all development resources for your model](../models/README.md)
+
 [Humble chassis-driver source and Quick Start](chassis-drivers/humble-20260903/README.md)
 
 This release contains a real serial chassis driver, message definitions and its serial-library dependency. It complements the existing robot-description packages. It is not a complete navigation or sensor SDK.

@@ -1,5 +1,7 @@
 # LucSys Robotics — LSR100
 
+[All LSR100 development resources: ROS 2 driver, model packages and STM32 status](../../models/LSR100/README.md)
+
 ROS 2 Humble robot description.
 
 Extract this package into your ROS 2 workspace `src` directory, then run from the workspace root:

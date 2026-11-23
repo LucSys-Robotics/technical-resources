@@ -1,5 +1,7 @@
 # LucSys Robotics — LSE550
 
+[All LSE550 development resources: ROS 2 driver, model packages and STM32 status](../../models/LSE550/README.md)
+
 ROS 2 Humble robot description.
 
 Extract this package into your ROS 2 workspace `src` directory, then run from the workspace root:

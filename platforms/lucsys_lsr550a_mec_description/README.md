@@ -1,5 +1,7 @@
 # LucSys Robotics — LSR550A Technical Resources
 
+[All LSR550A development resources: ROS 2 driver, model packages and STM32 status](../../models/LSR550A/README.md)
+
 ## Technical Documentation
 
 | Resource | Description | Download |
