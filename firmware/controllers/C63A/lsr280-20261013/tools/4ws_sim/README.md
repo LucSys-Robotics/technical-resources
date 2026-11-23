@@ -50,7 +50,7 @@ T4 扫描 5 种工况：直行↔自转、直行↔横移、**低速+自转**（
 #define EPS_CONTINUITY  0.05f    // 速度矢量连续性 m/s
 ```
 
-车型参数（轮距/轴距/转向半径）也在 `main.c` 顶部，与 `robot_select_init.h` 的 T280 保持一致。换车型时同步修改。
+车型参数（轮距/轴距/转向半径）也在 `main.c` 顶部，与 `robot_select_init.h` 中对应的LSR280车型定义 保持一致。换车型时同步修改。
 
 ## 编译说明
 
@@ -69,7 +69,7 @@ PowerShell：
 
 ```powershell
 $env:Path = "E:\ZZZ---engineering software---ZZZ\mingw64\bin;$env:Path"
-Set-Location "D:\N100_SyncFile\LUCSYS_Project\07_T280\LUCSYS - end\tools\4ws_sim"
+Set-Location "tools/4ws_sim"
 mingw32-make run
 ```
 
@@ -77,7 +77,7 @@ cmd：
 
 ```bat
 set PATH=E:\ZZZ---engineering software---ZZZ\mingw64\bin;%PATH%
-cd /d "D:\N100_SyncFile\LUCSYS_Project\07_T280\LUCSYS - end\tools\4ws_sim"
+cd tools\4ws_sim
 mingw32-make run
 ```
 
