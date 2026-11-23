@@ -92,4 +92,4 @@ Before direct control:
 4. Test the zero-motion command, emergency stop, remote takeover and communication-loss behavior independently.
 5. Use the hardware and mechanical specifications for the exact platform; do not transplant command tables or electrical pinouts between robot models.
 
-The message descriptions above are intended for technical evaluation and do not constitute a safety certification or a guarantee of firmware-specific stop behavior. Source code and firmware are provided separately as applicable to the purchased configuration.
+The message descriptions above are intended for technical evaluation and do not constitute a safety certification or a guarantee of firmware-specific stop behavior. Published STM32 and ROS 2 source packages are directly available from the [model resource pages](models/README.md); select the project matching the hardware configuration.

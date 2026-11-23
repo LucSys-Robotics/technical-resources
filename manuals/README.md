@@ -1,5 +1,9 @@
 # LucSys Robotics — Development Manuals
 
+[Browse by Robot Model](../models/README.md) · [Development FAQ](../FAQ.md)
+
+[Electrical wiring references](../electrical/LSR550/README.md) · [Controller schematics](../electrical/controllers/README.md) · [Controller CAD](../cad/controllers/README.md) · [Hardware overview](../Hardware_and_System_Overview.md) · [Electrical integration](../Electrical_Integration_Overview.md) · [Kinematics](../Chassis_Kinematics.md) · [Control and feedback](../Control_and_Feedback_Interfaces.md)
+
 English technical references for customers developing and integrating LucSys mobile robot platforms.
 
 [Back to technical resources](../README.md) · [ROS 2 model downloads](../README.md#ros-2-humble-platform-downloads)

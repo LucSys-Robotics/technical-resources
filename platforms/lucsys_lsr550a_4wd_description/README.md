@@ -1,6 +1,6 @@
 # LucSys Robotics — LSR550A-4WD
 
-[All LSR550A development resources: ROS 2 driver, model packages and STM32 status](https://github.com/LucSys-Robotics/technical-resources/blob/development-source-20261123/models/LSR550A/README.md)
+**[Complete LSR550A Development Resources & Ordering](https://github.com/LucSys-Robotics/technical-resources/blob/main/models/LSR550A/README.md)** — STM32 source, ROS 2 driver, manuals, electrical references and product options.
 
 ROS 2 Humble robot description.
 

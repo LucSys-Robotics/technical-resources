@@ -1,14 +1,14 @@
 # LucSys Robotics — LSR550A STM32 version references
 
-[LSR550A resources](https://github.com/LucSys-Robotics/technical-resources/blob/development-source-20261123/models/LSR550A/README.md)
+[LSR550A resources](https://github.com/LucSys-Robotics/technical-resources/blob/main/models/LSR550A/README.md)
 
 These are the LSR550A archives supplied by LucSys, cross-checked against their bundled version note, Keil projects and existing LSR550A documentation. They are separate from the LSR550 source project. Source availability is established; the firmware installed on a specific delivered robot is **not yet identified**.
 
 | Version | Snapshot date | Source / compiler / build instructions | Download |
 | --- | --- | --- | --- |
-| V1 | 2025-12-04 | [Source and build instructions](https://github.com/LucSys-Robotics/technical-resources/blob/development-source-20261123/firmware/models/LSR550A/v1-20251204/README.md) | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/development-source-20261123/lucsys_lsr550a_v1-20251204.zip) |
-| V2 | 2026-10-12 | [Source and build instructions](https://github.com/LucSys-Robotics/technical-resources/blob/development-source-20261123/firmware/models/LSR550A/v2-20261012/README.md) | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/development-source-20261123/lucsys_lsr550a_v2-20261012.zip) |
-| V2.1 | 2026-10-12 | [Source and build instructions](https://github.com/LucSys-Robotics/technical-resources/blob/development-source-20261123/firmware/models/LSR550A/v2.1-20261012/README.md) | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/development-source-20261123/lucsys_lsr550a_v2_1-20261012.zip) |
+| V1 | 2025-12-04 | [Source and build instructions](https://github.com/LucSys-Robotics/technical-resources/blob/main/firmware/models/LSR550A/v1-20251204/README.md) | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/development-source-20261123/lucsys_lsr550a_v1-20251204.zip) |
+| V2 | 2026-10-12 | [Source and build instructions](https://github.com/LucSys-Robotics/technical-resources/blob/main/firmware/models/LSR550A/v2-20261012/README.md) | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/development-source-20261123/lucsys_lsr550a_v2-20261012.zip) |
+| V2.1 | 2026-10-12 | [Source and build instructions](https://github.com/LucSys-Robotics/technical-resources/blob/main/firmware/models/LSR550A/v2.1-20261012/README.md) | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/development-source-20261123/lucsys_lsr550a_v2_1-20261012.zip) |
 
 [ZIP SHA256 checksums](https://github.com/LucSys-Robotics/technical-resources/releases/download/development-source-20261123/SHA256SUMS.txt)
 
