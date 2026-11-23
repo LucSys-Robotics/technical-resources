@@ -1,6 +1,6 @@
 # LucSys Robotics — LSR550A V2.1 STM32 source
 
-Snapshot: 2026-10-12. [Version selection](https://github.com/LucSys-Robotics/technical-resources/blob/development-source-20261123/firmware/models/LSR550A/README.md) · [LSR550A resource entry](https://github.com/LucSys-Robotics/technical-resources/blob/development-source-20261123/models/LSR550A/README.md)
+Snapshot: 2026-10-12. [Version selection](https://github.com/LucSys-Robotics/technical-resources/blob/main/firmware/models/LSR550A/README.md) · [LSR550A resource entry](https://github.com/LucSys-Robotics/technical-resources/blob/main/models/LSR550A/README.md)
 
 This is a versioned LSR550A chassis/arm-command integration reference, not proof of the firmware installed on a particular robot. It is not a separate complete arm-actuator firmware SDK. Do not substitute LSR550 firmware or assume the latest snapshot matches the delivered unit.
 

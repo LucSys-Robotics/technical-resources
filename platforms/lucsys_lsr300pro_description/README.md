@@ -1,6 +1,6 @@
 # LucSys Robotics — LSR300pro
 
-[All LSR300 development resources: ROS 2 driver, model packages and STM32 status](https://github.com/LucSys-Robotics/technical-resources/blob/development-source-20261123/models/LSR300/README.md)
+**[Complete LSR300 Development Resources & Ordering](https://github.com/LucSys-Robotics/technical-resources/blob/main/models/LSR300/README.md)** — STM32 source, ROS 2 driver, manuals, electrical references and product options.
 
 ROS 2 Humble robot description.
 

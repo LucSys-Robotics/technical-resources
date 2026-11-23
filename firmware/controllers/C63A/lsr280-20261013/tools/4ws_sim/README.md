@@ -92,4 +92,4 @@ This host test covers the pure kinematics in `4ws_v2.c`. It does not verify:
 - Actual steering-motor tracking under load.
 - CAN communications or motor-driver behavior.
 
-Use the scripts in the parent `tools/` directory (`datalog_recv.py`, `datalog_plot.py`, `datalog_compare.py`) to observe those behaviors during an appropriately controlled hardware test. See [the data-logging guide](https://github.com/LucSys-Robotics/technical-resources/blob/development-source-20261123/firmware/controllers/C63A/lsr280-20261013/tools/datalog_README.md). Host-test success is not vehicle or safety validation.
+Use the scripts in the parent `tools/` directory (`datalog_recv.py`, `datalog_plot.py`, `datalog_compare.py`) to observe those behaviors during an appropriately controlled hardware test. See [the data-logging guide](https://github.com/LucSys-Robotics/technical-resources/blob/main/firmware/controllers/C63A/lsr280-20261013/tools/datalog_README.md). Host-test success is not vehicle or safety validation.
