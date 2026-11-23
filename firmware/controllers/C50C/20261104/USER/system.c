@@ -1,6 +1,5 @@
 /* LucSys Robotics distribution maintenance.
- * Published and commercially rebranded with authorization.
- * No claim of original authorship; third-party license terms remain applicable.
+ * Third-party license terms remain applicable.
  * 版本：V3.5
  * 修改时间：2021-01-29
  * Version: V3.5

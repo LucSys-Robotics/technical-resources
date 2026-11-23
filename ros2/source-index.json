@@ -7,9 +7,14 @@
       "size": 3195
     },
     {
+      "path": "ros2/chassis-drivers/humble-20260903/NOTICE.md",
+      "sha256": "5361b5b12035c4bdbfa308a522f88389007f852a70e3c199b031d2edc5df58d1",
+      "size": 316
+    },
+    {
       "path": "ros2/chassis-drivers/humble-20260903/README.md",
-      "sha256": "d8a0a6a2726ecc6744a19b6306be09123bc117034773143f963e36b500daa840",
-      "size": 5646
+      "sha256": "3d75396c33f68f1a86c47bbf1a031db15303b87ce89280d7600ec3665d62d5eb",
+      "size": 5708
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/VALIDATION.md",
@@ -118,8 +123,8 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/package.xml",
-      "sha256": "87a017af67b36e0a2dd7ca5ad737c11e8bff0635da853cac62cc603ecad3e662",
-      "size": 1470
+      "sha256": "306973cd031483faedfc760a26b9c76d8eec46c5845fcb014bfdd90091059d8f",
+      "size": 1456
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/src/ImuProcessor.cpp",
@@ -153,8 +158,8 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_robot_msg/package.xml",
-      "sha256": "bd79b9708c3dc0d230113fa37cf424d7c1e8787e2550691eec666ccb88451959",
-      "size": 817
+      "sha256": "fcfbf1e1a65a4bed589523a4d0b92d9d09e503f2ecdac94dd93d4dba44ce5cf3",
+      "size": 803
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/serial_ros2/CMakeLists.txt",

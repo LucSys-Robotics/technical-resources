@@ -2,7 +2,7 @@
 #define __CONTROL_H
 #include "sys.h"
   /**************************************************************************
-Distribution maintenance: LucSys Robotics (authorized rebranding)
+Distribution maintenance: LucSys Robotics 
 **************************************************************************/
 #define PI 3.14159265
 #define ZHONGZHI 0 

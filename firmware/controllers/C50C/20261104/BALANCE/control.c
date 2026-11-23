@@ -1,7 +1,7 @@
 #include "control.h"	
 #include "filter.h"	
   /**************************************************************************
-Distribution maintenance: LucSys Robotics (authorized rebranding)
+Distribution maintenance: LucSys Robotics 
 **************************************************************************/
 
 u8 Flag_Target,Flag_Change;                             //相关标志位

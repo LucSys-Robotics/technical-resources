@@ -1,6 +1,6 @@
 #include "filter.h"
   /**************************************************************************
-Distribution maintenance: LucSys Robotics (authorized rebranding)
+Distribution maintenance: LucSys Robotics 
 **************************************************************************/
 float K1 =0.02; 
 float angle, angle_dot; 	

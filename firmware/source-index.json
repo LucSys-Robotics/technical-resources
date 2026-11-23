@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "firmware/README.md",
-      "sha256": "e147cfb2ef2ff1b8484a3e38b87a664398eb1cdb3981e154dcd2b845e6821965",
-      "size": 2544
+      "sha256": "d47448c06d3a1c0bc149fc92c1432c2bb42673f80a5abd7be04aac4cf58dde93",
+      "size": 2438
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/AutoRecharge/AutoRecharge.c",
@@ -18,13 +18,13 @@
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/BALANCE/DataScope_DP.C",
-      "sha256": "821ec487de748e8d12e0a2c1508c12342111f08034b655c8e7a76f25ffc05784",
-      "size": 2890
+      "sha256": "ef1170e543acc3cb366483e9c28d6b8d6d72f5100d350b031eaa491906a9645c",
+      "size": 2867
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/BALANCE/DataScope_DP.h",
-      "sha256": "c898834859237e05f2ea25bbbc5fd3fc3ad6f6ad61a0d2bca10bc58b40d94404",
-      "size": 585
+      "sha256": "07f5bca5706476e42b89673435942096824686e09ff2610be799f26c948df472",
+      "size": 562
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/BALANCE/balance.c",
@@ -38,23 +38,23 @@
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/BALANCE/control.c",
-      "sha256": "aaf252e42226f0721065dc5da769ce1b2be7e5d60d4ceca830603c94f36b07bb",
-      "size": 10402
+      "sha256": "d79db2c5952794bbc3bd162f655bf9ccae5ca01ac58ddd3ff8fe520a7acc3c03",
+      "size": 10379
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/BALANCE/control.h",
-      "sha256": "5128c3a31434177b532e634f593e8e21be07ce3556f6a2a74d6343acf6f5d68f",
-      "size": 1235
+      "sha256": "63500931e19d895e705cd4a3a104c79021eccb3cfe8a10ee58805f2b3c85058b",
+      "size": 1212
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/BALANCE/filter.c",
-      "sha256": "479598ab80bbebb01b6acdbcd19d3ed16b504ed32fe2790cbd4a82b4510f79e3",
-      "size": 2104
+      "sha256": "f64865ecbb7c147f7864564f7c905c8df26b6e70291c278ad91b17b1de01a64b",
+      "size": 2081
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/BALANCE/filter.h",
-      "sha256": "55a7b92d62b9d3cf4aef65a32028b5bde813473804d0ef03a6a6ba61bd8dea39",
-      "size": 419
+      "sha256": "bbfd50f59446f61e29bb4b10ffa6108d175e0453eb39018715b0ef8b6179cce7",
+      "size": 396
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/BALANCE/imu_task.c",
@@ -88,8 +88,8 @@
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/BALANCE/system.c",
-      "sha256": "a2ac7a9ce20c5b904c3ea872d7853d24da2b5340f16676d268ae65914d91f705",
-      "size": 8800
+      "sha256": "4bbc7bded5968b17c96f496a6f0de2161398adf313200cd83b2dbd7a807a9e8d",
+      "size": 8707
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/BALANCE/system.h",
@@ -998,8 +998,8 @@
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/HARDWARE/dma.h",
-      "sha256": "e927669188365b2ccd7022010b3e74c6a59954d74e8b8901164b266135452e33",
-      "size": 567
+      "sha256": "5977259fe95ef96489e95a6b0be006e1b08fa31594ec661c8f0b586a57d6ea00",
+      "size": 544
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/HARDWARE/encoder.c",
@@ -1013,13 +1013,13 @@
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/HARDWARE/exti.c",
-      "sha256": "37086335751791544210b1622e028bcd8da29d6b881810b7831796883062a7a0",
-      "size": 775
+      "sha256": "a57a8f650e39734b1b9cd5c76aaad0ea4d580b0af7c7d0c8c6247c3774327cc3",
+      "size": 752
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/HARDWARE/exti.h",
-      "sha256": "8558d9c51a7a4b62ace318848a7ca798e11a3daf8f792685756b380e077d8e4f",
-      "size": 442
+      "sha256": "9fe01155bf8d958f38e4c9d978b6a4be74ae9132a0709655ad894ee1d014245e",
+      "size": 419
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/HARDWARE/key.c",
@@ -1098,8 +1098,8 @@
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/README.md",
-      "sha256": "67d24f3786d9036ce84de076527b5625c077d0540ba1059371694442735426f1",
-      "size": 2935
+      "sha256": "c29ce15304f98b06c162b2e8dcbb4f9ef203fede0eea069e6df2f10efdd00fd6",
+      "size": 2873
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/SYSTEM/delay/delay.c",
@@ -1158,8 +1158,8 @@
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/USER/main.c",
-      "sha256": "da3386e605919dccab8875566ab204a351d0e422abe211eb9d94640c193a218c",
-      "size": 2866
+      "sha256": "514db0defb3a3cdd256334ec90498fe8e1cda2a0b55c45ba92dccfcd8bb0c89f",
+      "size": 2773
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/USER/stm32f4xx.h",
@@ -1213,8 +1213,8 @@
     },
     {
       "path": "firmware/controllers/C50C/20261104/BALANCE/Inc/control.h",
-      "sha256": "1cb0aae6596026267be8bdee860b7a25e0b70e73e68ab8b2d70502fdcbbd8e0b",
-      "size": 1203
+      "sha256": "1a415d78d98c2d53c127647ac2d2428398a7412c7df28a2a14b9b2ab70966e57",
+      "size": 1180
     },
     {
       "path": "firmware/controllers/C50C/20261104/BALANCE/Inc/data_task.h",
@@ -1223,8 +1223,8 @@
     },
     {
       "path": "firmware/controllers/C50C/20261104/BALANCE/Inc/filter.h",
-      "sha256": "23f4b0c967ba2436db377035344d1697f4523c06b1230400afb141d2b7783482",
-      "size": 409
+      "sha256": "c8e378982a5211dcc3c389a37bc098357c66a9836c8d2c9c9fa4a1ca7fc14c87",
+      "size": 386
     },
     {
       "path": "firmware/controllers/C50C/20261104/BALANCE/Inc/imu_task.h",
@@ -1273,8 +1273,8 @@
     },
     {
       "path": "firmware/controllers/C50C/20261104/BALANCE/control.c",
-      "sha256": "5e05fd54ec702b7590079ce9ba32ad5b88df730e47b38cbfbcf8a905abad8002",
-      "size": 10144
+      "sha256": "829abeaedd44c29ed1f3bcbb6d74b760ac539bc0fbc142c1af19f17b886920f9",
+      "size": 10121
     },
     {
       "path": "firmware/controllers/C50C/20261104/BALANCE/data_task.c",
@@ -1283,8 +1283,8 @@
     },
     {
       "path": "firmware/controllers/C50C/20261104/BALANCE/filter.c",
-      "sha256": "434f624d78a6217bf4865048667aee537b03f83afce34fc0ba6a85023274514a",
-      "size": 2037
+      "sha256": "2d111bb55bed9e07b2d04313134792591130df97a32e425216bc2d09938080a7",
+      "size": 2014
     },
     {
       "path": "firmware/controllers/C50C/20261104/BALANCE/imu_task.c",
@@ -1993,8 +1993,8 @@
     },
     {
       "path": "firmware/controllers/C50C/20261104/HARDWARE/DataScope_DP.C",
-      "sha256": "d7c7e2b827c46ece07540ca321bae12b92728b9e40b9b7201bdbe355b993c7e0",
-      "size": 2801
+      "sha256": "ea06a4596743ed58902839f358ceb151429ee9d8c48505e792bd667edf7c21cd",
+      "size": 2778
     },
     {
       "path": "firmware/controllers/C50C/20261104/HARDWARE/I2C.c",
@@ -2028,8 +2028,8 @@
     },
     {
       "path": "firmware/controllers/C50C/20261104/HARDWARE/Inc/DataScope_DP.h",
-      "sha256": "e7cff16d8c718c1a3dbf29f56c93437998de6561fdaa4356baacb6d5eb47f5c3",
-      "size": 565
+      "sha256": "e1d7c719a26ec14bd2d47bfb216cece6a979fddd3ac55c41e829ba991271c889",
+      "size": 542
     },
     {
       "path": "firmware/controllers/C50C/20261104/HARDWARE/Inc/I2C.h",
@@ -2073,8 +2073,8 @@
     },
     {
       "path": "firmware/controllers/C50C/20261104/HARDWARE/Inc/dma.h",
-      "sha256": "2fc86ab9fd255bd7a225627b1d681f6f989877c1003499f0134f8a2433e9399e",
-      "size": 547
+      "sha256": "b773cf4376c4bab293f7c02c57898a70a064680f80a41c817193a6923c42f39f",
+      "size": 524
     },
     {
       "path": "firmware/controllers/C50C/20261104/HARDWARE/Inc/driver_d50a.h",
@@ -2093,8 +2093,8 @@
     },
     {
       "path": "firmware/controllers/C50C/20261104/HARDWARE/Inc/exti.h",
-      "sha256": "cd76e33c979169235ebf72047e7c0767e3299cd433d9f40e23052111040d9240",
-      "size": 408
+      "sha256": "8727f3c1ba6a64077d5f2fe5484b4733278dd6388be0f58f12e20ae1e4631e49",
+      "size": 385
     },
     {
       "path": "firmware/controllers/C50C/20261104/HARDWARE/Inc/key.h",
@@ -2203,8 +2203,8 @@
     },
     {
       "path": "firmware/controllers/C50C/20261104/HARDWARE/exti.c",
-      "sha256": "4495f1df1436027f6d596818b1f18227c5cf01ee6beab6ddd709c64ee412b87f",
-      "size": 747
+      "sha256": "8e23ba1a3a8077b9dbef83ed8609b33c754ba7c3059b3b7355a2a0e5ab98750a",
+      "size": 724
     },
     {
       "path": "firmware/controllers/C50C/20261104/HARDWARE/key.c",
@@ -2338,8 +2338,8 @@
     },
     {
       "path": "firmware/controllers/C50C/20261104/README.md",
-      "sha256": "878a362bcfab1a4f089dc9a3ee84aaf5633b64ef6d1479d5f83d75c5c4ffcb59",
-      "size": 3919
+      "sha256": "7ee6d08d01340254fe12e892cee2357705c9aa9ff5d040280ee44cd8f39bb437",
+      "size": 3857
     },
     {
       "path": "firmware/controllers/C50C/20261104/SYSTEM/delay/delay.c",
@@ -2548,8 +2548,8 @@
     },
     {
       "path": "firmware/controllers/C50C/20261104/USER/main.c",
-      "sha256": "21b8bddb7dec1b3ac03be40ae1081976fbb1c688c4e027a49b4b48235dbb99b4",
-      "size": 3172
+      "sha256": "d1cc65cecc2f33299789b03a8f169dd088d65b35ca571e97ce619251f2866cd4",
+      "size": 3079
     },
     {
       "path": "firmware/controllers/C50C/20261104/USER/stm32f4xx.h",
@@ -2573,8 +2573,8 @@
     },
     {
       "path": "firmware/controllers/C50C/20261104/USER/system.c",
-      "sha256": "f84e2719743cefbad0dc5f4cb59f804102a95c610d7362dcb3d1f97651886c54",
-      "size": 7065
+      "sha256": "570e762e1cb29b62ca455a565ac222e36fe63d896020a0c01384aa292da4b813",
+      "size": 6972
     },
     {
       "path": "firmware/controllers/C50C/20261104/USER/system.h",
@@ -3783,8 +3783,8 @@
     },
     {
       "path": "firmware/controllers/C63A/s-series-20260127/README.md",
-      "sha256": "da5a243d0553a843f7a9f1e81aa84361170430bbdc2580d8e5df5b6c67bf59d7",
-      "size": 3330
+      "sha256": "a0c081759071c5e44eb055be1aae714125ca8b3aea371db484e852b6c7155aeb",
+      "size": 3268
     },
     {
       "path": "firmware/controllers/C63A/s-series-20260127/USB_HOST/App/WiredPS2_gamepad.c",
@@ -5063,8 +5063,8 @@
     },
     {
       "path": "firmware/controllers/C63A/t-series-20261013/README.md",
-      "sha256": "c6130d7a984d60920cd43a1e79ee1b561dcf72767a908ec2b1b2bc4cb9a4e0cd",
-      "size": 3330
+      "sha256": "38805fe5e79abf54f255a35a8f6718c81ea3f34471215a83e964e01200da53ee",
+      "size": 3268
     },
     {
       "path": "firmware/controllers/C63A/t-series-20261013/USB_HOST/App/WiredPS2_gamepad.c",
