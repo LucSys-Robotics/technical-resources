@@ -98,4 +98,3 @@ LSR200 and LSR200Auto-4WD use the same verified base mechanical model. LSR200Aut
 ### Model usage terms
 
 These model files are not distributed under an open-source license. Redistribution, resale or public republication requires prior written permission from the applicable rights holder(s). Read the LICENSE and NOTICE included in each package; third-party notices remain applicable. Contact [LucSys Robotics](https://www.lucsysrobotics.com) at info@lucsysrobotics.com.
-
