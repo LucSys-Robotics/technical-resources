@@ -5143,8 +5143,8 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/README.md",
-      "sha256": "b18858e5e68a2b09c3c4716bde6c42973f0251e392de7133fa996313d3fe4977",
-      "size": 4600
+      "sha256": "1addd881a8f2b89ca75bb3f698c8520f4a2d3a73ed5dca98dc7e517d06eed255",
+      "size": 4511
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/control_regression.ps1",
@@ -5168,8 +5168,8 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/datalog_README.md",
-      "sha256": "5f71e72bfcaeae0593ccbbfc4455ecf979ab2c06aab3d22a2f08446dc11b4da9",
-      "size": 8524
+      "sha256": "fb6c11db38101c4ec23b021c56be4c636f30341311978cbcabf5055a3877b229",
+      "size": 8526
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/datalog_compare.py",
