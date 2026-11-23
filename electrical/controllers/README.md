@@ -33,6 +33,6 @@ C50C V4.3 notes identify an OLED pin change from D5/D6 to E0/E1 with a changed w
 
 [Shared communication guide](../../manuals/LucSys_ROS2_STM32_Communication_Guide.pdf) · [ROS 2 Humble description packages](../../README.md#ros-2-humble-platform-downloads)
 
-No complete STM32 firmware source or ROS hardware-driver archive is added by this release. Description packages are model/visualization resources, not a complete control stack. Never flash firmware or change motor-control parameters based only on a shared controller name.
+Selected [complete STM32 source projects](../../firmware/README.md) are now available; choose the exact branch before use. The separately published [ROS 2 serial chassis driver](../../ros2/README.md) includes source and build instructions. Description packages are model/visualization resources, not a complete control stack. Never flash firmware or change motor-control parameters based only on a shared controller name.
 
 Product selection and purchasing: [LucSys Robotics](https://www.lucsysrobotics.com).
