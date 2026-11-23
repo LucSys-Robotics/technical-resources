@@ -123,7 +123,7 @@ void TIMx_PWM1_Mode_Init(GPIO_TypeDef* GPIOx,uint16_t PINx,TIM_TypeDef* TIMx,uin
     TIM_Cmd(TIMx, ENABLE);
 }
 
-static void MiniBalance_Motor_Init(void)
+static void LucSys_Motor_Init(void)
 {
 	//Turn on the corresponding pin clock
 	ENABLE_AIN1_CLOCK;
@@ -154,7 +154,7 @@ static void MiniBalance_Motor_Init(void)
 	DIN1 = 0; DIN2 = 0;
 }
 
-static void V1_0_MiniBalance_Motor_Init(void)
+static void V1_0_LucSys_Motor_Init(void)
 {
 	//Turn on the corresponding pin clock
 	ENABLE_AIN1_CLOCK;
@@ -193,9 +193,9 @@ Function: Initialization of motor PWM pins
 Entry parameters: arr: auto-reset value, psc: clock predivision count
 Return value: none
 **************************************************************************/
-void MiniBalance_PWM_Init(u16 arr,u16 psc)
+void LucSys_PWM_Init(u16 arr,u16 psc)
 {
-	MiniBalance_Motor_Init();//Initialize the motor direction pin
+	LucSys_Motor_Init();//Initialize the motor direction pin
 	
 	//Enable PWM-corresponding timers and pin port clocks
 	ENABLE_PWMA_TIM_CLOCK;
@@ -218,9 +218,9 @@ void MiniBalance_PWM_Init(u16 arr,u16 psc)
 	
 }
 
-void V1_0_MiniBalance_PWM_Init(u16 arr,u16 psc)
+void V1_0_LucSys_PWM_Init(u16 arr,u16 psc)
 {
-	V1_0_MiniBalance_Motor_Init();//Initialize the motor direction pin
+	V1_0_LucSys_Motor_Init();//Initialize the motor direction pin
 	
 	//Enable PWM-corresponding timers and pin port clocks
 	ENABLE_PWMA_TIM_CLOCK;

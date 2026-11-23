@@ -29,3 +29,7 @@ LucSys Robotics prepares and maintains this distribution. Third-party copyright/
 Chinese source comments and accompanying TXT/Markdown explanations have been translated into English. Executable code, runtime messages, protocol strings, configuration values and firmware selection logic are unchanged. Runtime console output may therefore still contain Chinese. Changelogs describe historical source changes, not verified behavior of every delivered vehicle. Match the controller, hardware revision and firmware version before use.
 
 TXT notes use `CHANGELOG.txt` (and `VERSION_NOTES.txt` where present); Keil project references were updated accordingly. Earlier source releases remain available for comparison. Translation does not add hardware compatibility or safety guarantees.
+
+## Unmapped reference branches
+
+`REF1` and `REF2` are neutral internal identifiers for inherited reference branches. Their association with a LucSys model is unconfirmed. Renaming preserves their enum values, parameters and control logic; it does not authorize selecting them for a delivered robot. Do not infer an LSR model from these identifiers.

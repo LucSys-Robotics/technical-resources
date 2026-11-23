@@ -17,5 +17,7 @@
   "model_associations": "UNCHANGED",
   "original_archives": "UNCHANGED",
   "native_keil_build": "NOT_RUN",
-  "hardware_tests": "NOT_RUN"
+  "hardware_tests": "NOT_RUN",
+  "validated_commit": "c3de9824226b8a72715c8caa7412c8d0ecba660a",
+  "scope": "Historical English translation edition; not validation of this cleanup candidate"
 }

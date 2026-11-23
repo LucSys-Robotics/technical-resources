@@ -189,8 +189,8 @@ void RCJoystick_IC_CaptureCallback(TIM_HandleTypeDef *htim,BaseType_t* woken)
     //The remote control command of model aircraft is processed
     //Processing remote control commands for model aircraft
 	cmd.Vx = LX * (float)Remote_RCvelocity/500.0f;
-	// T280 supports lateral motion on receiver channel 4 (left stick X).
-	if( RobotHardWareParam.CarType == T280 )
+	// LSR280 supports lateral motion on receiver channel 4 (left stick X).
+	if( RobotHardWareParam.CarType == LSR280 )
 		cmd.Vy = -LY * (float)Remote_RCvelocity/500.0f;
 	else
 		cmd.Vy = 0;

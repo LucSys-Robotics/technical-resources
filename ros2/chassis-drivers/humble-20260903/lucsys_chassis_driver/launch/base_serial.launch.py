@@ -1,188 +1,77 @@
-import os
-import yaml
+"""Launch the chassis driver with explicit hardware settings."""
 from pathlib import Path
+import warnings
+
+import yaml
+from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
-from launch.actions import GroupAction, IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from ament_index_python.packages import get_package_share_directory
-from launch_ros.actions import ComposableNodeContainer
-
-from launch_ros.descriptions import ComposableNode
 
 
-# -------------------------------------------------
-# Utility function: Read YAML
-# -------------------------------------------------
-def load_yaml(file_path: str) -> dict:
-    return yaml.safe_load(Path(file_path).read_text())
-
-
-# -------------------------------------------------
-# Generate a list of nodes based on imu_mode
-# -------------------------------------------------
-def include_imu_launch(context, *args, **kwargs):
-    # 1) Read default imu_mode (in yaml)
-    cfg_path = LaunchConfiguration('imu_mode_yaml').perform(context)
-    cfg = load_yaml(cfg_path)
-    imu_mode = LaunchConfiguration('imu_mode').perform(context) or cfg['imu_mode']
-    print(f'imu_mode:{imu_mode}')
-
-    #ultrasonic_avoid = LaunchConfiguration('imu_mode').perform(context) or cfg['ultrasonic_avoid']
-    
-
-    parm_file = LaunchConfiguration('lucsys_param_yaml').perform(context)
-    car_cfg = load_yaml(parm_file)
-    car_mode = LaunchConfiguration('car_mode').perform(context) or car_cfg['car_mode']
-
-    ultrasonic_avoid =  car_cfg['ultrasonic_avoid']
-    print(f'ultrasonic_avoid:{ultrasonic_avoid}')
-
-    # Public parameters
-    common_params = {
-        'usart_port_name': '/dev/wheeltec_controller',
-        'serial_baud_rate': 115200,
-        'robot_frame_id': 'base_footprint',
-        'odom_frame_id': 'odom_combined',
-        'cmd_vel': 'cmd_vel',
-        'akm_cmd_vel': 'none',
-        'product_number': 0,
-        'odom_x_scale': 1.0,
-        'odom_y_scale': 1.0,
-        'odom_z_scale_positive': 1.0,
-        'odom_z_scale_negative': 1.0,
-        'car_mode': car_mode,
-        'ultrasonic_avoid': ultrasonic_avoid
+def launch_nodes(context):
+    """Resolve the selected profile without assuming hardware compatibility."""
+    share = Path(get_package_share_directory('lucsys_chassis_driver'))
+    cfg = yaml.safe_load(Path(LaunchConfiguration('lucsys_param_yaml').perform(context)).read_text())
+    compat = yaml.safe_load((share / 'config/legacy_compatibility.yaml').read_text())
+    imu_path = LaunchConfiguration('imu_mode_yaml').perform(context)
+    imu_cfg = yaml.safe_load(Path(imu_path).read_text()) if imu_path else cfg
+    imu = LaunchConfiguration('imu_mode').perform(context) or imu_cfg['imu_mode']
+    mode = LaunchConfiguration('car_mode').perform(context) or cfg['car_mode']
+    mode = compat['model_aliases'].get(mode, mode)
+    port = LaunchConfiguration('usart_port_name').perform(context)
+    legacy = LaunchConfiguration('legacy_compatibility').perform(context).lower() == 'true'
+    if legacy and port == '/dev/lucsys_controller' and not Path(port).exists():
+        if Path(compat['controller_device']).exists():
+            port = compat['controller_device']
+            warnings.warn('Using a legacy serial-device alias; migrate to /dev/lucsys_controller.')
+    params = {
+        'usart_port_name': port,
+        'serial_baud_rate': int(LaunchConfiguration('serial_baud_rate').perform(context)),
+        'robot_frame_id': 'base_footprint', 'odom_frame_id': 'odom_combined',
+        'cmd_vel': 'cmd_vel', 'akm_cmd_vel': 'none', 'product_number': 0,
+        'odom_x_scale': 1.0, 'odom_y_scale': 1.0,
+        'odom_z_scale_positive': 1.0, 'odom_z_scale_negative': 1.0,
+        'car_mode': mode, 'ultrasonic_avoid': cfg['ultrasonic_avoid'],
     }
-
-    nodes = []
-    remappings=[('imu/data_raw', 'imu/data_board')]
-    # Chassis driver node
-
-    if ultrasonic_avoid:
-        nodes.append(
-                    IncludeLaunchDescription(
-                        PythonLaunchDescriptionSource([
-                            os.path.join(
-                                get_package_share_directory('wheeltec_ultrasonic'),
-                                'launch',
-                                'ultrasonic_pose.launch.py'
-                            )
-                        ])
-                    )
-            )
-        
-    if imu_mode == 'stm32':
-        remappings = []
-        
-    wheeltec_node = Node(
-        package='lucsys_chassis_driver',
-        executable='lucsys_chassis_node',
-        output='screen',
-        parameters=[common_params],
-        remappings=remappings,
-    )
-    nodes.append(wheeltec_node)
-    if imu_mode == 'stm32':
-        remappings = []
-    elif imu_mode == 'H30':
-        nodes.append(
-                    IncludeLaunchDescription(
-                        PythonLaunchDescriptionSource([
-                            os.path.join(
-                                get_package_share_directory('yesense_std_ros2'),
-                                'launch',
-                                'yesense_node.launch.py'
-                            )
-                        ])
-                    )
-            )
-    elif imu_mode == 'N300pro':
-        nodes.append(
-                    IncludeLaunchDescription(
-                        PythonLaunchDescriptionSource([
-                            os.path.join(
-                                get_package_share_directory('hipnuc_imu'),
-                                'launch',
-                                'imu_spec_msg.launch.py'
-                            )
-                        ])
-                    )
-            )
-
-    else:
-        raise ValueError(f'Unsupported imu_mode: {imu_mode}')
-    return nodes
+    actions = []
+    if cfg['ultrasonic_avoid']:
+        package = LaunchConfiguration('ultrasonic_package').perform(context)
+        if not package and legacy:
+            package = compat['ultrasonic_package']
+        if not package:
+            raise ValueError('Ultrasonic avoidance is enabled: specify its installed package.')
+        sensor = Path(get_package_share_directory(package)) / 'launch/ultrasonic_pose.launch.py'
+        actions.append(IncludeLaunchDescription(PythonLaunchDescriptionSource(str(sensor))))
+    if imu not in ('stm32', 'H30', 'N300pro'):
+        raise ValueError('Unsupported imu_mode: ' + imu)
+    actions.append(Node(
+        package='lucsys_chassis_driver', executable='lucsys_chassis_node',
+        name=LaunchConfiguration('node_name').perform(context),
+        output='screen', parameters=[params],
+        remappings=[] if imu == 'stm32' else [('imu/data_raw', 'imu/data_board')],
+    ))
+    if imu != 'stm32':
+        package, filename = {
+            'H30': ('yesense_std_ros2', 'yesense_node.launch.py'),
+            'N300pro': ('hipnuc_imu', 'imu_spec_msg.launch.py'),
+        }[imu]
+        sensor = Path(get_package_share_directory(package)) / 'launch' / filename
+        actions.append(IncludeLaunchDescription(PythonLaunchDescriptionSource(str(sensor))))
+    return actions
 
 
-# -------------------------------------------------
-# Main entry
-# -------------------------------------------------
 def generate_launch_description():
-
-    # 2) Declare parameters that can be overridden
-    declare_imu_path = DeclareLaunchArgument(
-        'imu_mode_yaml',
-        default_value=os.path.join(
-        get_package_share_directory('lucsys_chassis_driver'),
-        'config', 'lucsys_param.yaml'
-        ),
-        description='Path to imu_mode.yaml'
-    )
-    declare_imu_mode = DeclareLaunchArgument(
-        'imu_mode',
-        default_value='',
-        description='stm32 or H30 or N300pro'
-    )
-
-    declare_carparam_mode = DeclareLaunchArgument(
-        'lucsys_param_yaml',
-        default_value=os.path.join(
-            get_package_share_directory('lucsys_chassis_driver'),
-            'config', 'lucsys_param.yaml'),
-        description='Path to lucsys_param.yaml'
-    )
-    # Add a declaration for car_mode
-    declare_car_mode = DeclareLaunchArgument(
-        'car_mode',
-        default_value='',
-        description='Car mode configuration'
-    )
-    
-    imu_bias_remover_node = ComposableNode(
-    package='imu_processors',
-    plugin='imu_processors::ImuBiasRemover',
-    name='imu_bias_remover',
-    parameters=[{
-        'use_odom': True,
-        'odom_threshold': 0.005,
-        'accumulator_alpha': 0.001
-    }],
-    remappings=[
-        ('imu', '/imu/data_raw'),
-        ('cmd_vel', '/cmd_vel'),
-        ('imu_biased', '/imu/data_biased')
-    ]
-    )
-    imu_container = ComposableNodeContainer(
-    name='imu_container',
-    namespace='',
-    package='rclcpp_components',
-    executable='component_container_mt',
-    composable_node_descriptions=[
-        imu_bias_remover_node
-    ],
-    output='screen',)
-
-
-    # 3) Use OpaqueFunction to generate nodes at runtime
+    """Declare serial and configuration arguments."""
+    default = str(Path(get_package_share_directory('lucsys_chassis_driver')) / 'config/lucsys_param.yaml')
+    args = {
+        'lucsys_param_yaml': default, 'imu_mode_yaml': '', 'imu_mode': '', 'car_mode': '',
+        'usart_port_name': '/dev/lucsys_controller', 'serial_baud_rate': '115200',
+        'legacy_compatibility': 'true', 'ultrasonic_package': '', 'node_name': 'lucsys_robot',
+    }
     return LaunchDescription([
-        declare_imu_path,
-        declare_imu_mode,
-        declare_carparam_mode,
-        declare_car_mode,
-        #imu_container,
-        OpaqueFunction(function=include_imu_launch)
+        *[DeclareLaunchArgument(key, default_value=value) for key, value in args.items()],
+        OpaqueFunction(function=launch_nodes),
     ])

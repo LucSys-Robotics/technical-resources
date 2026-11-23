@@ -1,0 +1,32 @@
+{
+  "status": "CANDIDATE_NOT_STABLE",
+  "baseline_commit": "c3de9824226b8a72715c8caa7412c8d0ecba660a",
+  "firmware_token_comparison": {
+    "files": 1992,
+    "result": "PASS after explicit identifier/display-label mappings; no parameter or control-flow changes"
+  },
+  "ros_build": "PASS: 3 driver packages plus one existing model package",
+  "ros_base_serial": "PASS",
+  "ros_ekf_model_serial": "PASS: base driver, EKF, LSR550A Mecanum model and joint publisher alive; pseudo-terminal only",
+  "compatibility_tests": {
+    "tests": 6,
+    "result": "PASS"
+  },
+  "host_kinematics": "PASS: 7 groups, 2000000 random cases for T1/T2/T3",
+  "host_rc_oled": "PASS",
+  "all_colcon_tests": {
+    "tests": 1370,
+    "failures": 1169,
+    "errors": 0,
+    "skipped": 53
+  },
+  "outstanding": [
+    "ROS style/documentation/copyright-header checks are not all passing",
+    "Native Keil build not run; toolchain unavailable",
+    "No physical robot or delivered firmware matching validation"
+  ],
+  "stable_downloads_replaced": false,
+  "legacy_names": "Intentionally retained only in config/legacy_compatibility.yaml and test/test_launch_contracts.py",
+  "third_party_notices": "PRESERVED",
+  "unmapped_variants": "Neutral REF1 and REF2, not assigned to LucSys models"
+}

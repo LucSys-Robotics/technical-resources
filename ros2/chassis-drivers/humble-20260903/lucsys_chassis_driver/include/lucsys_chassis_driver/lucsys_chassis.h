@@ -1,6 +1,6 @@
 
-#ifndef __WHEELTEC_ROBOT_H_
-#define __WHEELTEC_ROBOT_H_
+#ifndef __LUCSYS_ROBOT_H_
+#define __LUCSYS_ROBOT_H_
 
 #include <iostream>
 #include <string.h>

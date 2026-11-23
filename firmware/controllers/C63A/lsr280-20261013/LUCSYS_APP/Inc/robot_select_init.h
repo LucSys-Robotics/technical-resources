@@ -15,50 +15,50 @@ typedef struct{
 	float WheelPerimeter;//Wheel circumference
 }RobotParmentType_t;
 
-//S300 track and diameter
-#define S300_Wheelspacing 0.398
-#define S300_Diameter 0.20
+//LSR300 track and diameter
+#define LSR300_Wheelspacing 0.398
+#define LSR300_Diameter 0.20
 
-//S150 track and diameter
-#define S150_Wheelspacing 0.26
-#define S150_Diameter 0.13
+//REF1 track and diameter
+#define REF1_Wheelspacing 0.26
+#define REF1_Diameter 0.13
 
-//S100 track and track width
-#define S100_Wheelspacing 0.2272f
-#define S100_Diameter 0.13
+//LSR100 track and track width
+#define LSR100_Wheelspacing 0.2272f
+#define LSR100_Diameter 0.13
 
-//S200 track and diameter
-#define S200_Wheelspacing 0.23 //Half track width
-#define S200_axlespacing  0.15//Half wheelbase
-#define S200_Diameter 0.205
+//LSR200 track and diameter
+#define LSR200_Wheelspacing 0.23 //Half track width
+#define LSR200_axlespacing  0.15//Half wheelbase
+#define LSR200_Diameter 0.205
 
-#define S200_OUTDOOR_Wheelspacing 0.23 //Half track width
-#define S200_OUTDOOR_axlespacing  0.15//Half wheelbase
-#define S200_OUTDOOR_Diameter 0.205
+#define LSR200_OUTDOOR_Wheelspacing 0.23 //Half track width
+#define LSR200_OUTDOOR_axlespacing  0.15//Half wheelbase
+#define LSR200_OUTDOOR_Diameter 0.205
 
-//S260 track and diameter
-#define S260_Wheelspacing 0.29  //Half track width
+//REF2 track and diameter
+#define REF2_Wheelspacing 0.29  //Half track width
 
-//The S260's wheelbase is not a true wheelbase in the strict sense; it needs to be coordinated and adjusted to an appropriate value based on IMU data
-#define S260_axlespacing  0.08  //Half wheelbase
-#define S260_Diameter 0.205
+//The REF2's wheelbase is not a true wheelbase in the strict sense; it needs to be coordinated and adjusted to an appropriate value based on IMU data
+#define REF2_axlespacing  0.08  //Half wheelbase
+#define REF2_Diameter 0.205
 
 //Four-wheel steering chassis, wheelbase, and wheelbase
-#define T280_Wheelspacing 0.335
-#define T280_axlespacing  0.43
-#define T280_Diameter     0.13
+#define LSR280_Wheelspacing 0.335
+#define LSR280_axlespacing  0.43
+#define LSR280_Diameter     0.13
 
-#define T280_WheelTurnSpeed 40
+#define LSR280_WheelTurnSpeed 40
 
 //Enumeration of models
 enum CAR_MODE{
-	S300,
-	S200,
-	S200_OUTDOOR, //S200 Outdoor Edition
-	S300Mini,
-	S100,
-	S260,
-	T280,
+	LSR300,
+	LSR200,
+	LSR200_OUTDOOR, //LSR200 Outdoor Edition
+	LSR300Mini,
+	LSR100,
+	REF2,
+	LSR280,
 	Number_of_CAR
 };
 

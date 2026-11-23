@@ -7,12 +7,12 @@
   # senior_omni/top_omni
   # senior_4wd_bs/senior_4wd_dl/flagship_4wd_bs/flagship_4wd_dl/top_4wd_bs/top_4wd_dl
   # senior_diff/four_wheel_diff_bs/four_wheel_diff_dl
-  # S100_diff/S200_4wd/V650_diff
+  # LSR100_diff/LSR200_4wd/V650_diff
 
   # autoware_senior_akm/autoware_top_akm_single_antenna/autoware_top_akm_dual_antenna/
 
-  # R680A_4wd_arm/R680A_mec_arm    
-  # S300_pro/S300_mini/eco65
+  # LSR550A_4wd_arm/LSR550A_mec_arm    
+  # LSR300_pro/LSR300_mini/eco65
 
 car_mode:  mini_mec
       
@@ -30,7 +30,7 @@ lidar_type: ls_M10P_uart
 
 # ls_M10/ls_N10 series single-line radars can be modified
 x10:
-  lidar_port: /dev/wheeltec_lidar  # LiDAR serial port name; leave empty for Ethernet
+  lidar_port: /dev/lucsys_lidar  # LiDAR serial port name; leave empty for Ethernet
   angle_disable_min: [11000]         # Minimum LiDAR scan clipping angle; integer, e.g. 12000; unit: 0.01 degrees
   angle_disable_max: [25000]        # Maximum LiDAR scan clipping angle; integer, e.g. 24000; unit: 0.01 degrees
 

@@ -58,15 +58,15 @@ void APPshow_task(void* param)
 		
 		switch(RobotHardWareParam.CarType)
 		{
-			case S300:case S300Mini:case S100:
+			case LSR300:case LSR300Mini:case LSR100:
 				showLeftWheel = RobotControlParam.MotorA.feedback*1000;
 				showRightWheel = RobotControlParam.MotorB.feedback*1000;
 				break;
-			case S200:case S200_OUTDOOR:
+			case LSR200:case LSR200_OUTDOOR:
 				showLeftWheel = RobotControlParam.MotorA.feedback*1000;
 				showRightWheel = RobotControlParam.MotorD.feedback*1000;
 				break;
-			case S260:
+			case REF2:
 				showLeftWheel = RobotControlParam.MotorA.feedback*1000;
 				showRightWheel = RobotControlParam.MotorF.feedback*1000;
 				break;

@@ -294,30 +294,30 @@ typedef struct {
 //Grouping ultrasound according to different vehicle models
 void GetRangerGroup(RangerGroup_t** group,uint8_t* groupNum)
 {
-	//S260 six-wheeler and S200 outdoor autonomous driving robot are both suitable for this ultrasonic grouping
-//	static RangerHALObj* RangerGroup1_List_S260[] = { &RangerHAL_A,&RangerHAL_D,&RangerHAL_F };
-//	static RangerHALObj* RangerGroup2_List_S260[] = { &RangerHAL_B,&RangerHAL_E}; 
-//	static RangerHALObj* RangerGroup3_List_S260[] = { &RangerHAL_C}; 
-//	static RangerGroup_t GroupManager_List_S260[] = {
-//		{ RangerGroup1_List_S260,sizeof(RangerGroup1_List_S260)/sizeof(RangerGroup1_List_S260[0]) } , 
-//		{ RangerGroup2_List_S260,sizeof(RangerGroup2_List_S260)/sizeof(RangerGroup2_List_S260[0]) } , 
-//		{ RangerGroup3_List_S260,sizeof(RangerGroup3_List_S260)/sizeof(RangerGroup3_List_S260[0]) } , 
+	//REF2 six-wheeler and LSR200 outdoor autonomous driving robot are both suitable for this ultrasonic grouping
+//	static RangerHALObj* RangerGroup1_List_REF2[] = { &RangerHAL_A,&RangerHAL_D,&RangerHAL_F };
+//	static RangerHALObj* RangerGroup2_List_REF2[] = { &RangerHAL_B,&RangerHAL_E}; 
+//	static RangerHALObj* RangerGroup3_List_REF2[] = { &RangerHAL_C}; 
+//	static RangerGroup_t GroupManager_List_REF2[] = {
+//		{ RangerGroup1_List_REF2,sizeof(RangerGroup1_List_REF2)/sizeof(RangerGroup1_List_REF2[0]) } , 
+//		{ RangerGroup2_List_REF2,sizeof(RangerGroup2_List_REF2)/sizeof(RangerGroup2_List_REF2[0]) } , 
+//		{ RangerGroup3_List_REF2,sizeof(RangerGroup3_List_REF2)/sizeof(RangerGroup3_List_REF2[0]) } , 
 //	};
 	
 	//Group version 2
-	static RangerHALObj* RangerGroup1_List_S260[] = { &RangerHAL_A,&RangerHAL_E };
-	static RangerHALObj* RangerGroup2_List_S260[] = { &RangerHAL_C,&RangerHAL_F}; 
-	static RangerHALObj* RangerGroup3_List_S260[] = { &RangerHAL_B}; 
-	static RangerHALObj* RangerGroup4_List_S260[] = { &RangerHAL_D}; 
-	static RangerGroup_t GroupManager_List_S260[] = {
-		{ RangerGroup1_List_S260,sizeof(RangerGroup1_List_S260)/sizeof(RangerGroup1_List_S260[0]) } , 
-		{ RangerGroup2_List_S260,sizeof(RangerGroup2_List_S260)/sizeof(RangerGroup2_List_S260[0]) } , 
-		{ RangerGroup3_List_S260,sizeof(RangerGroup3_List_S260)/sizeof(RangerGroup3_List_S260[0]) } ,
-		{ RangerGroup4_List_S260,sizeof(RangerGroup4_List_S260)/sizeof(RangerGroup4_List_S260[0]) } ,
+	static RangerHALObj* RangerGroup1_List_REF2[] = { &RangerHAL_A,&RangerHAL_E };
+	static RangerHALObj* RangerGroup2_List_REF2[] = { &RangerHAL_C,&RangerHAL_F}; 
+	static RangerHALObj* RangerGroup3_List_REF2[] = { &RangerHAL_B}; 
+	static RangerHALObj* RangerGroup4_List_REF2[] = { &RangerHAL_D}; 
+	static RangerGroup_t GroupManager_List_REF2[] = {
+		{ RangerGroup1_List_REF2,sizeof(RangerGroup1_List_REF2)/sizeof(RangerGroup1_List_REF2[0]) } , 
+		{ RangerGroup2_List_REF2,sizeof(RangerGroup2_List_REF2)/sizeof(RangerGroup2_List_REF2[0]) } , 
+		{ RangerGroup3_List_REF2,sizeof(RangerGroup3_List_REF2)/sizeof(RangerGroup3_List_REF2[0]) } ,
+		{ RangerGroup4_List_REF2,sizeof(RangerGroup4_List_REF2)/sizeof(RangerGroup4_List_REF2[0]) } ,
 
 	};
 	
-	//S300 ultrasonic grouping
+	//LSR300 ultrasonic grouping
 	static RangerHALObj* RangerGroup1_List_S300[] = { &RangerHAL_A,&RangerHAL_C,&RangerHAL_E };
 	static RangerHALObj* RangerGroup2_List_S300[] = { &RangerHAL_B,&RangerHAL_D,&RangerHAL_F}; 
 	static RangerGroup_t GroupManager_List_S300[] = {
@@ -325,29 +325,29 @@ void GetRangerGroup(RangerGroup_t** group,uint8_t* groupNum)
 		{ RangerGroup2_List_S300,sizeof(RangerGroup2_List_S300)/sizeof(RangerGroup2_List_S300[0]) } , 
 	};
 	
-	//S300 Mini ultrasonic grouping
-	static RangerHALObj* RangerGroup1_List_S150[] = { &RangerHAL_A,&RangerHAL_C,&RangerHAL_E };
-	static RangerHALObj* RangerGroup2_List_S150[] = { &RangerHAL_B,&RangerHAL_D}; 
-	static RangerGroup_t GroupManager_List_S150[] = {
-		{ RangerGroup1_List_S150,sizeof(RangerGroup1_List_S150)/sizeof(RangerGroup1_List_S150[0]) } , 
-		{ RangerGroup2_List_S150,sizeof(RangerGroup2_List_S150)/sizeof(RangerGroup2_List_S150[0]) } , 
+	//LSR300 Mini ultrasonic grouping
+	static RangerHALObj* RangerGroup1_List_REF1[] = { &RangerHAL_A,&RangerHAL_C,&RangerHAL_E };
+	static RangerHALObj* RangerGroup2_List_REF1[] = { &RangerHAL_B,&RangerHAL_D}; 
+	static RangerGroup_t GroupManager_List_REF1[] = {
+		{ RangerGroup1_List_REF1,sizeof(RangerGroup1_List_REF1)/sizeof(RangerGroup1_List_REF1[0]) } , 
+		{ RangerGroup2_List_REF1,sizeof(RangerGroup2_List_REF1)/sizeof(RangerGroup2_List_REF1[0]) } , 
 	};
 	
 	//Select different groups according to the vehicle model
-	if( RobotHardWareParam.CarType == S200_OUTDOOR || RobotHardWareParam.CarType == S260 )
+	if( RobotHardWareParam.CarType == LSR200_OUTDOOR || RobotHardWareParam.CarType == REF2 )
 	{
-		*group = GroupManager_List_S260;
-		*groupNum = sizeof(GroupManager_List_S260)/sizeof(GroupManager_List_S260[0]);
+		*group = GroupManager_List_REF2;
+		*groupNum = sizeof(GroupManager_List_REF2)/sizeof(GroupManager_List_REF2[0]);
 	}
-	else if( RobotHardWareParam.CarType == S300 )
+	else if( RobotHardWareParam.CarType == LSR300 )
 	{
 		*group = GroupManager_List_S300;
 		*groupNum = sizeof(GroupManager_List_S300)/sizeof(GroupManager_List_S300[0]);
 	}
-	else if( RobotHardWareParam.CarType == S300Mini )
+	else if( RobotHardWareParam.CarType == LSR300Mini )
 	{
-		*group = GroupManager_List_S150;
-		*groupNum = sizeof(GroupManager_List_S150)/sizeof(GroupManager_List_S150[0]);
+		*group = GroupManager_List_REF1;
+		*groupNum = sizeof(GroupManager_List_REF1)/sizeof(GroupManager_List_REF1[0]);
 	}
 	
 	//For models without ultrasonic technology, grouping will not be performed; in this case, ultrasonic tasks will be deleted and the corresponding interrupts will be disabled to save system resources

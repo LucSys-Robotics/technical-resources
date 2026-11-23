@@ -77,7 +77,7 @@ static uint8_t SteeringHomeFailed = 0;
 #define TURN_FULL_SPEED_DEG        20.0f
 #define CMD_CHANGE_EPS_V           0.005f
 #define CMD_CHANGE_EPS_W           0.01f
-#define T280_MAX_DRIVE_RPM         1000.0f
+#define LSR280_MAX_DRIVE_RPM         1000.0f
 #define ENCODER_COUNTS_PER_REV     16384.0f  //Steering motor encoder counts per revolution
 #define COUNTS_PER_DEG             (ENCODER_COUNTS_PER_REV/360.0f)
 #define HOMING_TIMEOUT_MS          5000      //Power-on zero timeout (ms)
@@ -259,7 +259,7 @@ void RobotControl_task(void* param)
 	//Set only two nonzero initial values here: chassis mechanical parameters and default steering speed.
 	FourWSCar_param_init(&s_car,RobotHardWareParam.WheelSpacing,RobotHardWareParam.AxleSpacing,0,RobotHardWareParam.WheelPerimeter);
 	s_sentCar = s_car;
-	for(uint8_t si=0;si<WHEEL_COUNT;si++) s_steer.speed[si]=T280_WheelTurnSpeed;
+	for(uint8_t si=0;si<WHEEL_COUNT;si++) s_steer.speed[si]=LSR280_WheelTurnSpeed;
 
 	//Wait for all steering motors to reset
 	if( SteeringHoming(HOMING_TIMEOUT_MS)!=0 )
@@ -538,7 +538,7 @@ static void Steer_Solve(const RobotControlCMDType_t* cmd,uint16_t taskFreq)
 		float tmpT = 0;
 		if( max_path > 5 )
 		{
-			tmpT = (float)max_path/(float)T280_WheelTurnSpeed;
+			tmpT = (float)max_path/(float)LSR280_WheelTurnSpeed;
 		}
 
 		for(uint8_t i=0;i<WHEEL_COUNT;i++)
@@ -547,7 +547,7 @@ static void Steer_Solve(const RobotControlCMDType_t* cmd,uint16_t taskFreq)
 			if( tmpT!=0 ) s_steer.speed[i] = total_path[i]/tmpT;
 
 			if( s_steer.speed[i] < 5 ) s_steer.speed[i] = 5;
-			if( s_steer.speed[i] > T280_WheelTurnSpeed ) s_steer.speed[i] = T280_WheelTurnSpeed;
+			if( s_steer.speed[i] > LSR280_WheelTurnSpeed ) s_steer.speed[i] = LSR280_WheelTurnSpeed;
 		}
 
 		//deceleration hold gate criterion is only evaluated when recalculating targets (relying on rawPos calculated for the current cycle)
@@ -720,7 +720,7 @@ static void Drive_Output(void)
 	s_drive.rpm[WHEEL_C] = linearVel_to_rpm(s_sentCar.TargetMotorC.speed,s_car.hardware.WheelPerimeter);
 	s_drive.rpm[WHEEL_D] = linearVel_to_rpm(s_sentCar.TargetMotorD.speed,s_car.hardware.WheelPerimeter);
 	//Normalize all wheel speeds together to prevent individual driver limits from distorting the motion ratios
-	_4ws_LimitWheelRPM(s_drive.rpm,T280_MAX_DRIVE_RPM);
+	_4ws_LimitWheelRPM(s_drive.rpm,LSR280_MAX_DRIVE_RPM);
 
 	if( RobotControlParam.en_flag==1 && s_steerSendFault==0 )
 	{
@@ -872,7 +872,7 @@ static void Robot_Housekeeping(uint8_t* driverCheck,uint16_t taskFreq,TickType_t
 	static uint32_t LowPowerTipsCnt = 0;
 	switch( RobotHardWareParam.CarType )
 	{
-		case S200:case S200_OUTDOOR:case S260:
+		case LSR200:case LSR200_OUTDOOR:case REF2:
 			if( RobotControlParam.LowPowerFlag )
 			{
 				LowPowerTipsCnt++;
@@ -992,8 +992,8 @@ static uint8_t SteeringHoming(uint32_t timeout_ms)
 	TickType_t lastSend = start;
 
 	//Issue one zero-back instruction first
-	set_MotorPos(&Driver1,0,T280_WheelTurnSpeed,0,T280_WheelTurnSpeed);
-	set_MotorPos(&Driver2,0,T280_WheelTurnSpeed,0,T280_WheelTurnSpeed);
+	set_MotorPos(&Driver1,0,LSR280_WheelTurnSpeed,0,LSR280_WheelTurnSpeed);
+	set_MotorPos(&Driver2,0,LSR280_WheelTurnSpeed,0,LSR280_WheelTurnSpeed);
 
 	while(1)
 	{
@@ -1014,8 +1014,8 @@ static uint8_t SteeringHoming(uint32_t timeout_ms)
 		if( xTaskGetTickCount() - lastSend >= pdMS_TO_TICKS(HOMING_RESEND_MS) )
 		{
 			lastSend = xTaskGetTickCount();
-			set_MotorPos(&Driver1,0,T280_WheelTurnSpeed,0,T280_WheelTurnSpeed);
-			set_MotorPos(&Driver2,0,T280_WheelTurnSpeed,0,T280_WheelTurnSpeed);
+			set_MotorPos(&Driver1,0,LSR280_WheelTurnSpeed,0,LSR280_WheelTurnSpeed);
+			set_MotorPos(&Driver2,0,LSR280_WheelTurnSpeed,0,LSR280_WheelTurnSpeed);
 		}
 	}
 }
@@ -1428,10 +1428,10 @@ static void Linear_IMUHelp(RobotControlCMDType_t* cmdtarget)
 	switch( RobotHardWareParam.CarType )
 	{
 		//Different models have different PID parameters when adjusting in a straight line, which is related to body weight, body structure, and motor
-		case S100: linear_helpkp = 0.03f; linear_helpkd = 0.007f; break;
-		case S300Mini: linear_helpkp = 0.08f; linear_helpkd = 0.01f; break;
-		case S300: linear_helpkp = 0.06f; linear_helpkd = 0.015f; break;
-		case T280: linear_helpkp = 0.6f; linear_helpkd = 0.15f; break;
+		case LSR100: linear_helpkp = 0.03f; linear_helpkd = 0.007f; break;
+		case LSR300Mini: linear_helpkp = 0.08f; linear_helpkd = 0.01f; break;
+		case LSR300: linear_helpkp = 0.06f; linear_helpkd = 0.015f; break;
+		case LSR280: linear_helpkp = 0.6f; linear_helpkd = 0.15f; break;
 		default:break;
 	}
 

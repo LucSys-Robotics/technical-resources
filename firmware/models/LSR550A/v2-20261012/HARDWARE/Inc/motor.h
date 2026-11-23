@@ -7,8 +7,8 @@
 //Interfaces open to the public
 #define SERVO_INIT     1500                             //Servo zero point // servo zero point
 #define FULL_DUTYCYCLE 16800                            //Wheel motor full-duty-cycle value; depends on initialization settings.
-void MiniBalance_PWM_Init(u16 arr,u16 psc);            //DC motor initialization
-void V1_0_MiniBalance_PWM_Init(u16 arr,u16 psc);      //DC motor initialization
+void LucSys_PWM_Init(u16 arr,u16 psc);            //DC motor initialization
+void V1_0_LucSys_PWM_Init(u16 arr,u16 psc);      //DC motor initialization
 void Servo_Senior_Init(u16 arr,u16 psc,int servomid); //Initialize high-spec Ackermann servo
 void Servo_Top_Init(u16 arr,u16 psc,int servomid);    //Initialize top-spec Ackermann servo
 void TIM9_Init(u16 arr,u16 psc);

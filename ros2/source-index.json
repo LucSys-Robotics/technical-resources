@@ -13,8 +13,8 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/README.md",
-      "sha256": "d5d1dee25a1e00b8e3da78be0aafcc590d07084416b7aa636812841f966828f5",
-      "size": 6457
+      "sha256": "0a81e603f098478585e348032a7df011209b56c01677f041ba816016bf794e6c",
+      "size": 9076
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/VALIDATION.md",
@@ -23,8 +23,8 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/CMakeLists.txt",
-      "sha256": "38843f35ed2d130f7fbd765579366e8fffabd570ae62119921a8c1cd13e082ba",
-      "size": 2500
+      "sha256": "5cfb73772298e80ea68104c4b6a5ccfd841c69a26adb87fa16855ce010d79b90",
+      "size": 2616
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/camera_info.yaml",
@@ -52,19 +52,24 @@
       "size": 189
     },
     {
+      "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/legacy_compatibility.yaml",
+      "sha256": "6a6df44c1c14da103788ba366ddb923303becac524afab37c39db2297175d819",
+      "size": 442
+    },
+    {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/lucsys_param.yaml",
-      "sha256": "e78e50e727d2228800b4d413877ddd72f2e3c255d9fe2eef7237821865f456a9",
-      "size": 2049
+      "sha256": "f4e0e1aeacd18b270917b49432b1b43ae88f1ba01a5f83bc3942a1dcf2a07ac5",
+      "size": 2059
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/lucsys_param_back.yaml",
-      "sha256": "1911a07a0a0ed03475f0bba5cac75250a2758cc49bd2b8f99eff55a231b10f1f",
-      "size": 2048
+      "sha256": "46ac7dd6072d632ac5d653c8508b2853d00fa85adf1e5d85774fb8ec597529d3",
+      "size": 2058
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/robot_model.yaml",
-      "sha256": "6c8ac99e289dec5007e7e0b707a335a82d95e107e7176cffe4f06a76ce9dc166",
-      "size": 11768
+      "sha256": "cb09b1d34a6aab97be24c7d182cec3c2be92a4d44e3eb7a06df9f55a644322f4",
+      "size": 11780
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/include/lucsys_chassis_driver/Quaternion_Solution.h",
@@ -73,13 +78,13 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/include/lucsys_chassis_driver/lucsys_chassis.h",
-      "sha256": "91e2d88aa1917cc5e91b6b820d34b98acb22166fd00a08d94a0782cd3624e51c",
-      "size": 13061
+      "sha256": "7ae6967161dc76977ff7ab2b0bdea17cbb3720a2984bdabdee72a6a25652be2d",
+      "size": 13057
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/base_serial.launch.py",
-      "sha256": "e6b758ac235267a3de7ba95e714bca96fbcf4fa9b9a4b21af34edc30307aae18",
-      "size": 6155
+      "sha256": "83a3171aff9ec49dec6ab7f9d297a2d13fb102cba73083321fc54d520c3ba697",
+      "size": 4116
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/imu_processor.launch.py",
@@ -93,8 +98,8 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_chassis_driver.launch.py",
-      "sha256": "0c43a7ddf5171e9798ceca1f7557ee63aaeb7ab93bae00efcf71cb06b9caba86",
-      "size": 2576
+      "sha256": "6c4c8108cd8a69656dc401b4f74a28c3b653992d3959af40f76207c76230c771",
+      "size": 1451
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_ekf.launch.py",
@@ -103,18 +108,18 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_lidar.launch.py",
-      "sha256": "d29a3f1b1c381541442422a234fb53b2d94c37810c9e5b0cf415371efabd94b8",
-      "size": 6926
+      "sha256": "47df0df1cc0fb9f350f28028e2734714e1bbd647de99acdb5304e02786bad2bc",
+      "size": 7357
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_sensors.launch.py",
-      "sha256": "305566e91edd673e467ee61e01768e1278e75a1cfef341cf3fbd2a58ee03d5af",
-      "size": 1199
+      "sha256": "ca3d0c28652593216e2d9e45e5ee23fb12561c0c1dd1c743fa8ebc51543b35af",
+      "size": 1337
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/robot_mode_description.launch.py",
-      "sha256": "eeb2158dc24dede2a34b4cab3f21f71af61edae2734a475931999f43a7c931d4",
-      "size": 6811
+      "sha256": "b21dba646a343a901e0a4b2185a1505ccec231d0bb524653d42aeba41b4453a9",
+      "size": 3767
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/msg/Position.msg",
@@ -123,8 +128,8 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/package.xml",
-      "sha256": "306973cd031483faedfc760a26b9c76d8eec46c5845fcb014bfdd90091059d8f",
-      "size": 1456
+      "sha256": "67edb8b3bfc56c19655eb0f7e56b089cbd0455de3a206aa429b64cc3b278c386",
+      "size": 1820
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/src/ImuProcessor.cpp",
@@ -138,8 +143,13 @@
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/src/lucsys_chassis.cpp",
-      "sha256": "cdd27b3764a7c8809c68d7582c0b67a6c936bf67dc9c2a413659dffcc46c8c79",
-      "size": 43181
+      "sha256": "6fb3e80295a55ebe718f5ca1e9bf8025b00acf3c0494fe067088e28902f79fba",
+      "size": 43177
+    },
+    {
+      "path": "ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/test/test_launch_contracts.py",
+      "sha256": "46f62c4af2f41f531709c4684ec5303c027b9366189ce33bf12f25c8302719e6",
+      "size": 4227
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/lucsys_robot_msg/CMakeLists.txt",
@@ -230,6 +240,11 @@
       "path": "ros2/chassis-drivers/humble-20260903/tests/serial_smoke.py",
       "sha256": "0ab3d680cbec810acc4fee30de56d1596d28a1c0da40550bc90206eac41c3956",
       "size": 2539
+    },
+    {
+      "path": "ros2/cleanup-candidate-validation.json",
+      "sha256": "e7bd0c734a5824b41a0d80c57ae2f6bceac2c3800bedf790151ab2d1b54551e1",
+      "size": 1264
     }
   ]
 }

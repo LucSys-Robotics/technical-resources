@@ -29,10 +29,10 @@ static TIM_HandleTypeDef htim4;
 #define TIM_RESET_CAPTUREPOLARITY(t,c) ((void)0)
 #define TIM_SET_CAPTUREPOLARITY(t,c,p) ((void)0)
 #define PI 3.14159265358979323846f
-enum { T280, S300, RCJOY_CMD };
+enum { LSR280, LSR300, RCJOY_CMD };
 typedef struct { int LX,LY,RX,RY; uint8_t freq; } RC_REMOTE_t;
 typedef struct { int cmdsource; float Vx,Vy,Vz; } RobotControlCMDType_t;
-static struct { int CarType; } RobotHardWareParam={T280};
+static struct { int CarType; } RobotHardWareParam={LSR280};
 static struct { int defalutSpeed; } RobotControlParam={500};
 typedef int RTOSDebugPrivateVar;
 static uint8_t UpdateFreq(RTOSDebugPrivateVar *v){(void)v;return 50;}
@@ -78,9 +78,9 @@ int main(void){
  command(1000,2000,1500,1000);expect(0.5f,0.5f,PI/4);
  command(1000,1000,1500,1000);expect(-0.5f,0.5f,-PI/4);
  command(2500,1500,1500,1500);expect(0,-0.5f,0);
- RobotHardWareParam.CarType=S300;
+ RobotHardWareParam.CarType=LSR300;
  command(1000,2000,1500,1500);expect(0.5f,0,0);
- RobotHardWareParam.CarType=T280;
+ RobotHardWareParam.CarType=LSR280;
  /* Lateral-only commands must continue to be queued beyond idleCount's limit. */
  for(int i=0;i<20;i++){command(1000,1500,1500,1500);expect(0,0.5f,0);}
  /* Queue failure must revoke RC unlock, as it did before this change. */
@@ -90,7 +90,7 @@ int main(void){
  return 0;
 }
 '''
-with tempfile.TemporaryDirectory(prefix='t280_rc_regression_') as folder:
+with tempfile.TemporaryDirectory(prefix='lsr280_rc_regression_') as folder:
     p=Path(folder); c=p/'rc_test.c';exe=p/'rc_test.exe'
     c.write_text(pre+source+post,encoding='utf-8')
     env=dict(os.environ);env['PATH']=str(Path(args.compiler).parent)+os.pathsep+env.get('PATH','')

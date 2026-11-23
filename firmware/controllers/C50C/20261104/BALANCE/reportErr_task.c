@@ -148,12 +148,12 @@ void ReportErrTask(void* param)
 				
 //				switch( RobotHardWareParam.CarType )
 //				{
-//					case S300: sprintf(err_info,"S300\r\n"); break;
-//					case S300Mini: sprintf(err_info,"S300 Mini \r\n"); break;
-//					case S200: sprintf(err_info,"S200\r\n"); break;
-//					case S200_OUTDOOR: sprintf(err_info,"S200 OUTDOOR\r\n"); break;
-//					case S260: sprintf(err_info,"S260\r\n"); break;
-//					case S100: sprintf(err_info,"S100\r\n"); break;
+//					case LSR300: sprintf(err_info,"LSR300\r\n"); break;
+//					case LSR300Mini: sprintf(err_info,"LSR300 Mini \r\n"); break;
+//					case LSR200: sprintf(err_info,"LSR200\r\n"); break;
+//					case LSR200_OUTDOOR: sprintf(err_info,"LSR200 OUTDOOR\r\n"); break;
+//					case REF2: sprintf(err_info,"REF2\r\n"); break;
+//					case LSR100: sprintf(err_info,"LSR100\r\n"); break;
 //				}
 //				report_interface(err_info,strlen(err_info));
 				

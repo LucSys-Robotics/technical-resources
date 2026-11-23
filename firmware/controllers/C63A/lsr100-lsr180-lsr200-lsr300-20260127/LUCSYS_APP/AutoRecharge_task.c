@@ -49,7 +49,7 @@ void AutoRechargeTask(void* param)
 			cmd.Vx = (float)((short)(msg.buffer[0]<<8|msg.buffer[1]))/1000.0f;
 			cmd.Vz = (float)((short)(msg.buffer[4]<<8|msg.buffer[5]))/1000.0f;
 			//Models with rear ultrasound can slow down based on the distance of the rear ultrasound
-			if( RobotHardWareParam.CarType==S200_OUTDOOR || RobotHardWareParam.CarType==S260 )
+			if( RobotHardWareParam.CarType==LSR200_OUTDOOR || RobotHardWareParam.CarType==REF2 )
 			{
 				if( RangerHAL_E.dis < 0.5f || RangerHAL_F.dis < 0.5f )
 					cmd.Vx/=2.0f;

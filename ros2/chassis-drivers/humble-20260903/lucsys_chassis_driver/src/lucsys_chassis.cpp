@@ -695,7 +695,7 @@ Date: January 28, 2021
 Function: Constructor, executed only once, for initialization
 Function: Constructor, executed only once, used for initialization
 ***************************************/
-turn_on_robot::turn_on_robot():rclcpp::Node ("wheeltec_robot")
+turn_on_robot::turn_on_robot():rclcpp::Node ("lucsys_robot")
 {
     // Initialize member variables
   check_AutoCharge_data = false;
@@ -734,7 +734,7 @@ turn_on_robot::turn_on_robot():rclcpp::Node ("wheeltec_robot")
   
   this->declare_parameter<int>("serial_baud_rate",115200);
 
-  this->declare_parameter<std::string>("usart_port_name", "/dev/wheeltec_controller");
+  this->declare_parameter<std::string>("usart_port_name", "/dev/lucsys_controller");
   this->declare_parameter<std::string>("odom_frame_id", "odom");
   this->declare_parameter<std::string>("robot_frame_id", "base_footprint");
   this->declare_parameter<std::string>("gyro_frame_id", "gyro_link");

@@ -52,7 +52,7 @@ int main(void){
  puts("PASS: raw command isolation, command expiry, per-wheel watchdog, watchdog reset");return 0;
 }
 "@
-$out=Join-Path $env:TEMP 't280_control_regression.c';$exe=Join-Path $env:TEMP 't280_control_regression.exe'
+$out=Join-Path $env:TEMP 'lsr280_control_regression.c';$exe=Join-Path $env:TEMP 'lsr280_control_regression.exe'
 [IO.File]::WriteAllText($out,$pre+(Extract 'Robot_FailSafe')+(Extract 'Robot_CmdReceive')+(Extract 'Steer_Watchdog')+$post,[Text.UTF8Encoding]::new($false))
 $env:Path=(Split-Path $Compiler)+';'+$env:Path
 & $Compiler -std=c99 -Wall -Wextra -O2 $out -o $exe

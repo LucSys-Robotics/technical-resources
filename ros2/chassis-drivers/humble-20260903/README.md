@@ -72,3 +72,27 @@ See [electrical references](../../../electrical/controllers/README.md) and the [
 Chinese source comments and accompanying TXT/Markdown explanations have been translated into English. Executable code, runtime messages, protocol strings, configuration values and firmware selection logic are unchanged. Runtime console output may therefore still contain Chinese. Changelogs describe historical source changes, not verified behavior of every delivered vehicle. Match the controller, hardware revision and firmware version before use.
 
 TXT notes use `CHANGELOG.txt` (and `VERSION_NOTES.txt` where present); Keil project references were updated accordingly. Earlier source releases remain available for comparison. Translation does not add hardware compatibility or safety guarantees.
+
+## Candidate cleanup and explicit startup
+
+This candidate uses LucSys names while preserving only necessary legacy device and model aliases in `config/legacy_compatibility.yaml`. Third-party library authors and license notices are retained. Internal identifier renaming does not change controller values or protocols. Unconfirmed reference variants remain unchanged rather than being assigned to a LucSys model.
+
+Install dependencies from the package manifests using `rosdep install --from-paths src --ignore-src -r -y`, then build and source the workspace. Base startup no longer implicitly starts EKF, model, camera or LiDAR components:
+
+```bash
+ros2 launch lucsys_chassis_driver lucsys_chassis_driver.launch.py usart_port_name:=/dev/ttyUSB0 car_mode:=<confirmed_configuration_key>
+```
+
+Select the actual serial device and confirmed controller configuration. No udev rule is installed automatically. The default `/dev/lucsys_controller` falls back to an existing legacy device alias only when the new device is absent. Explicit paths always take priority. Set `legacy_compatibility:=false` to disable device fallback. `node_name:=<previous_node_name>` supports deployments whose ROS configuration depends on an old node name. Direct `ros2 run` callers must supply their actual serial path explicitly when the new default is unavailable.
+
+To enable EKF, add `start_ekf:=true`; this requires `robot_localization`. To publish a model, install the matching existing LucSys model package and supply all of:
+
+```text
+start_state_publisher:=true model_package:=<exact_lucsys_description_package> model_name:=<existing_urdf_basename>
+```
+
+For example, `lucsys_lsr550a_mec_description` contains `lsr550a_mec.urdf`. This is a model selection example, not confirmation of a particular delivered controller/firmware. The launcher does not infer model compatibility or substitute a different model.
+
+Sensor transforms from historical profiles are disabled by default. Publish only confirmed transforms; the standalone `robot_mode_description.launch.py` supports `publish_static_tf:=true`. Avoid publishing duplicate transforms already present in a URDF. The `lucsys_sensors.launch.py` entry starts only the base driver unless `start_lidar:=true` or `start_camera:=true` is requested. Requested external sensor drivers must be installed separately. Explicitly configured ultrasonic avoidance is never silently disabled when its package is missing.
+
+Runtime and static validation are separate from Keil compilation and physical-robot validation. This candidate must not be treated as verified firmware for every hardware revision.

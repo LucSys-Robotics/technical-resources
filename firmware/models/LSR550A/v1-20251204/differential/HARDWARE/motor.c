@@ -8,7 +8,7 @@ Function: Initialize motor orientation pins
 Entry parameters: None
 Return value: none
 **************************************************************************/
-void MiniBalance_Motor_Init(void)
+void LucSys_Motor_Init(void)
 {
   GPIO_InitTypeDef  GPIO_InitStructure;
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA|RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOC|RCC_AHB1Periph_GPIOD, ENABLE);//Enable the GPIOB C D clock
@@ -57,7 +57,7 @@ Function: Initialization of motor PWM pins
 Entry parameters: arr: auto-reset value, psc: clock predivision count
 Return value: none
 **************************************************************************/
-void MiniBalance_PWM_Init(u16 arr,u16 psc)
+void LucSys_PWM_Init(u16 arr,u16 psc)
 {		 					 
 	GPIO_InitTypeDef GPIO_InitStructure;
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
