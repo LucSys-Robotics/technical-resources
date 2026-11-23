@@ -141,6 +141,10 @@ LSR200 and LSR200Auto-4WD use the same verified base mechanical model. LSR200Aut
 
 These model files are not distributed under an open-source license. Redistribution, resale or public republication requires prior written permission from the applicable rights holder(s). Read the LICENSE and NOTICE included in each package; third-party notices remain applicable. Contact [LucSys Robotics](https://www.lucsysrobotics.com) at info@lucsysrobotics.com.
 
+## ROS 2 chassis-driver source
+
+[Source, build instructions and development FAQ](ros2/README.md). The Humble serial driver, message package and serial dependency build in Ubuntu 22.04 ARM64; a virtual serial peer validates commands and feedback. Exact delivered-firmware compatibility and hardware safety remain configuration-specific.
+
 ## Before integration
 
 - Confirm the exact platform configuration, voltage supply, and available connections.
@@ -148,4 +152,4 @@ These model files are not distributed under an open-source license. Redistributi
 - Check the ROS/ROS 2 software version against the package provided for your configuration.
 - Verify motion-axis directions and safety behavior on the delivered controller before sending live motion commands.
 
-**Document scope:** These guides provide engineering reference information, not a substitute for product-specific specifications, service instructions or safety testing. Source code, firmware and deployment images are not part of this public collection. For product-specific connection drawings and software delivery information, contact LucSys Robotics.
+**Document scope:** These guides provide engineering reference information, not a substitute for product-specific specifications, service instructions or safety testing. The ROS 2 chassis-driver source is available below; complete STM32 firmware and deployment images are not included in this release. For product-specific connection drawings and software delivery information, contact LucSys Robotics.

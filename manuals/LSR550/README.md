@@ -28,3 +28,7 @@ Choose the precise model and drive configuration in the platform index. A family
 **How do I connect my own computer or sensors?** Start with the shared communication guide and exact controller drawing. Match voltage, pinout, interface and firmware before connection; custom integration and safety validation remain project-specific.
 
 Product selection and purchasing: [LucSys Robotics](https://www.lucsysrobotics.com).
+
+## ROS 2 chassis-driver source
+
+[Humble source and Quick Start](../../ros2/chassis-drivers/humble-20260903/README.md) · [Development FAQ](../../ros2/README.md). This is a serial hardware driver, not only a URDF package. Three packages built in Ubuntu 22.04 / Humble ARM64 and passed a virtual-serial command/feedback test. Select it by the actual protocol and firmware; no all-configuration compatibility or safety guarantee is implied.
