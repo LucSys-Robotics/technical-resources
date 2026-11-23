@@ -1,0 +1,1 @@
+Robots with a wired PS2 controller use code version V1; robots with a multimode controller use V2.

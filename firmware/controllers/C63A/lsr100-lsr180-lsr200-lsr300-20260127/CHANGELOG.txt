@@ -1,0 +1,16 @@
+HISTORICAL SOURCE CHANGELOG
+Translated from the supplied version history. Entries describe changes in the source branch, not verified behavior or fitted equipment on every delivered robot.
+
+2025.10.24
+1. Reworked the codebase and migrated to the HAL library. Added multimode controller input.
+2. For operating instructions, see the LSR100 / LSR180 / LSR200 / LSR300 chassis user and development manual.
+
+
+2025.12.25
+1. Added IP-frame reception on UART3.
+2. Added IP-address display on the screen and in Bluetooth diagnostics.
+
+2926.1.27 [date as written in the original; not silently corrected]
+1. Fixed incorrect OLED display content for LSR300 Mini.
+2. Fixed abnormal remote-control speed adjustment through the Bluetooth app.
+3. Made minor adjustments to ultrasonic capture parameters.

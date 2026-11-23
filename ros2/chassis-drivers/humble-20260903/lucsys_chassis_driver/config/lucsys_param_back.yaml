@@ -1,0 +1,50 @@
+# Optional model number Enter the corresponding car_mode
+  # mini_mec/mini_akm/mini_tank/mini_4wd/mini_diff/mini_omni
+  # V550_4wd/V550_akm/V550_mec
+  
+  # senior_akm/top_akm_bs/top_akm_dl
+  # senior_mec_bs/senior_mec_dl/top_mec_bs/top_mec_dl/top_mec_EightDrive/flagship_mec_bs/flagship_mec_dl
+  # senior_omni/top_omni
+  # senior_4wd_bs/senior_4wd_dl/flagship_4wd_bs/flagship_4wd_dl/top_4wd_bs/top_4wd_dl
+  # senior_diff/four_wheel_diff_bs/four_wheel_diff_dl
+  # LSR100_diff/LSR200_4wd/V650_diff
+
+  # autoware_senior_akm/autoware_top_akm_single_antenna/autoware_top_akm_dual_antenna/
+
+  # LSR550A_4wd_arm/LSR550A_mec_arm    
+  # LSR300_pro/LSR300_mini/eco65
+
+car_mode:  mini_mec
+      
+# Enable and disable the NAV2 navigation ultrasonic obstacle avoidance function false disable true on
+# This configuration is only valid for models equipped with ultrasonic hardware
+ultrasonic_avoid: false
+
+# Optional radar model Fill in the corresponding lidar_type
+  # ls_M10_uart ls_M10_net ls_M10P_uart ls_M10P_net  ls_M10P_uart_double
+  # ls_N10_uart ls_N10_net ls_N10Plus_uart ls_N10Plus_net  
+  # ldstl19p ldstl06nbj ldstl19n rplidar_c1  
+  # lscx
+
+lidar_type: ls_N10Plus_uart     
+
+# ls_M10/ls_N10 series single-line radars can be modified
+x10:
+  lidar_port: /dev/lucsys_lidar  # LiDAR serial port name; leave empty for Ethernet
+  angle_disable_min: [11000]         # Minimum LiDAR scan clipping angle; integer, e.g. 12000; unit: 0.01 degrees
+  angle_disable_max: [25000]        # Maximum LiDAR scan clipping angle; integer, e.g. 24000; unit: 0.01 degrees
+
+# LSCX series multi-line radars can be modified
+lscx:
+  angle_disable_min: [12000]        # Minimum LiDAR scan clipping angle; integer, e.g. 12000; unit: 0.01 degrees
+  angle_disable_max: [24000]         # Maximum LiDAR scan clipping angle; integer, e.g. 24000; unit: 0.01 degrees
+
+# Optional IMU model Enter the corresponding imu_mode
+  # stm32  H30  N300pro
+
+imu_mode: stm32 
+
+# Optional camera models Enter the corresponding camera_mode
+  # astra  astra_pro   dabai_u3   gemini   usb
+
+camera_mode: astra

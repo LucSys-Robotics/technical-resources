@@ -1,0 +1,148 @@
+### ekf config file ###
+carto_ekf_filter_node:
+    ros__parameters:
+        # -------------------------------
+        # Generic filter configuration
+        # -------------------------------
+        frequency: 10.0  # Determine how many times the EKF outputs position estimates per second, which means 1 second outputs 20 times. Note: The frequency of the input data (/odom, /imu_data_raw) needs to be considered.
+        sensor_timeout: 1.5  # If a sensor hasn't sent messages for this long, the EKF stops using its data, only predicting without correcting. This prevents a faulty sensor from freezing the filter.
+
+        two_d_mode: true  
+        # Whether the robot operates in a planar environment, true means zeroing the 3D pose variable in each measurement
+        # Indicates the robot only moves on a flat surface, unconcerned with up-down (Z) changes or roll/pitch
+        # Filters ignore Z, roll, pitch, and their velocity and acceleration, using only two dimensions (X, Y, yaw)
+
+        transform_time_offset: 0.0  #Output TF time offset (a few milliseconds into the future); required by some systems.
+        transform_timeout: 0.1  #TF lookup timeout. 0 means get the latest value immediately
+                            #For example, when EKF waits for the TF of odom → base_link, it waits at most 0.1 seconds (100 milliseconds) to find the TF; if it hasn't reached it, it skips this time
+                            #If the settings are too large, the system may wait too long, causing data delays
+        print_diagnostics: false   #Whether diagnostic information is printed in the terminal
+        debug: false               #Whether to enable "Debug Mode" to let EKF write all runtime logs to files.
+        debug_out_file: /tmp/lucsys_ekf_debug.txt #Specify the path to debug the output file (only effective when debug: true).
+
+        publish_tf: false  # Whether to publish TF conversions for Odom → base_link
+        publish_acceleration: false  # Whether to publish the topic about linear acceleration /accel/filtered (generally not required)
+
+        # -------------------------------
+        # Coordinate system settings
+        # -------------------------------
+        # Coordinate system definition
+        map_frame: map                     # Global fixed map coordinates (no continuous drift, but possible jumps)
+        odom_frame: odom_combined          # Odometry coordinates (continuous, accurate short-term, drift over time)
+        base_link_frame: base_footprint    # Robot's own coordinates (moving with the robot)
+        world_frame: odom_combined         # Which world coordinate the EKF outputs (set to odom frame id if fusing only odom+imu)
+        # -------------------------------
+        # Sensor input: Odom (encoder)
+        # -------------------------------
+
+        odom0: odom  # Odometry topic name
+
+        # Odometry fusion configuration: select variables from /odom to fuse
+        odom0_config: [false, false, false,
+                       false, false, false,
+                       true,  true,  false,
+                       false, false, true,
+                       false, false, false]
+                  # Location [x_pos, y_pos, z_pos,
+                  # Posture: roll, pitch, yaw,
+                  # Linear velocity x_vel, y_vel, z_vel,
+                  # Angular velocity roll_vel, pitch_vel, yaw_vel,
+                  # Acceleration x_accel, y_accel, z_accel]
+
+                  # About y_vel:
+                  #If the robot cannot move horizontally, y_vel=0, this value can be combined to improve stability (provided the covariance is not set to maximum).
+                  # About z_vel:
+                  #Because two_d_mode=true, z_vel is forced to 0 and does not need to be added.
+        odom0_queue_size: 5        # The length of the cache queue in which the filter receives ODOM data
+        odom0_nodelay: false       # Network transmission delay control (whether tcpNoDelay is enabled, and TCP's Nagle algorithm disabled)
+        odom0_differential: true  # True means converting absolute position/attitude to velocity (differential fusion)
+
+        odom0_relative: false  # Whether all Odom measurements are relative to the time of the first measurement
+        # -------------------------------
+        # Sensor input: IMU
+        # -------------------------------
+        imu0:  /imu/data_raw  #  /imu/data_raw    #/imu/data_filtered
+        imu0_config: [false, false, false,
+                      false, false, true,
+                      false, false, false,
+                      false, false, true,
+                      false, false, false]
+                    # Location [x_pos, y_pos, z_pos,
+                    # Posture: roll, pitch, yaw,
+                    # Linear velocity x_vel, y_vel, z_vel,
+                    # Angular velocity roll_vel, pitch_vel, yaw_vel,
+                    # Acceleration x_accel, y_accel, z_accel]
+
+                    # Y acceleration does not change instantaneously, so fusion does not merge Y acceleration
+                    # Noise in the Y direction is loud; wheeled robots do not accelerate laterally; it is recommended to set to false to avoid posture drift
+
+        imu0_nodelay: false      # Network transmission latency control
+        imu0_differential: false  # Differential mode: If set to true, the sensor's pose data will not be directly fused but converted into speed,
+                                 # Calculate differences between measurements so the filter fuses changes (velocity), rather than absolute positions
+        imu0_relative: true     # IMU measurement itself is a relative variation
+        imu0_queue_size: 5       # IMU message cache length; high-frequency IMU can be appropriately increased
+
+        # Abnormal Data Filtering Threshold (Markov Distance): These are thresholds for rejecting outliers, used to avoid "pollution filtering" of erroneous data.
+        # Compare the measured value with the current estimate; if the threshold is exceeded, the frame data is rejected
+        imu0_pose_rejection_threshold: 20.0   # Posture anomaly filtering (such as roll/pitch/yaw jump changes)
+        imu0_twist_rejection_threshold: 1.542 # Angular velocity abnormality filtering (e.g., yaw_vel jumps)
+        imu0_linear_acceleration_rejection_threshold: 10.0 # Acceleration anomaly filtering
+
+        imu0_remove_gravitational_acceleration: true  # Whether gravity components are removed from IMU acceleration (true means automatic weight reduction)
+
+        # -------------------------------
+        # Control input (cmd_vel) — optional
+        # -------------------------------
+        # Integrated IMU acceleration does not require enabling control input, otherwise it will be duplicated
+        use_control: false      # If IMU acceleration has been integrated, it remains false; when set to true, it uses /cmd_vel prediction mode to convert linear velocity and angular velocity to "acceleration terms for prediction."
+                                #If false, the following parameters can be ignored: [stamped_control, control_timeout, control_config, acceleration_limits, deceleration_limits,
+                                #acceleration_gains，deceleration_gains]
+
+        stamped_control: false  # Control message type: false means using /cmd_vel; if true, using /cmd_vel_stamped
+        control_timeout: 0.2    # No longer use controls after timeout: If no new commands are found within 0.2 seconds, the old control input prediction will no longer be used
+        control_config: [true, false, false, false, false, true]  # Control input items (vx, vy, vz, vroll, vpitch, vyaw)
+                                                                  # indicates that the robot can control forward velocity vx and angular velocity yaw
+        acceleration_limits: [1.3, 0.0, 0.0, 0.0, 0.0, 3.4]  # Maximum acceleration in all directions
+        deceleration_limits: [1.3, 0.0, 0.0, 0.0, 0.0, 4.5]  # Maximum deceleration in all directions
+        acceleration_gains: [0.8, 0.0, 0.0, 0.0, 0.0, 0.9]   # Smoothing coefficient of acceleration variation
+                                                             # vx direction acceleration 80%, yaw direction 90%
+        deceleration_gains: [1.0, 0.0, 0.0, 0.0, 0.0, 1.0]   # Smoothing coefficient of deceleration variation
+
+        # -------------------------------
+        # State process noise (adjustable)
+        # -------------------------------
+        process_noise_covariance: [0.05, 0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.05, 0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.06, 0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.03, 0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.03, 0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.06, 0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.025, 0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.025, 0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.04, 0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.01, 0.0,    0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.01, 0.0,    0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.02, 0.0,    0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.01, 0.0,    0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.01, 0.0,
+                                   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.015]
+
+        # -------------------------------
+        # Output-state covariance control
+        # -------------------------------
+        initial_estimate_covariance: [1e-9, 0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    1e-9, 0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    1e-9, 0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    1e-9, 0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    1e-9, 0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    1e-9, 0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    1e-9, 0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    1e-9, 0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    1e-9, 0.0,     0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    1e-9,  0.0,     0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     1e-9,  0.0,     0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     1e-9,  0.0,    0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     1e-9, 0.0,    0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    1e-9, 0.0,
+                                      0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,     0.0,    0.0,    1e-9]
+

@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.8)
+project(lucsys_lsr550_mec_premium_independent_suspension_description NONE)
+find_package(ament_cmake REQUIRED)
+install(DIRECTORY urdf meshes rviz launch DESTINATION share/${PROJECT_NAME})
+install(FILES README.md NOTICE LICENSE DESTINATION share/${PROJECT_NAME})
+ament_package()

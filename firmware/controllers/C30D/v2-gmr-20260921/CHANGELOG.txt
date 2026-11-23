@@ -1,0 +1,47 @@
+HISTORICAL SOURCE CHANGELOG
+Translated from the supplied version history. Entries describe changes in the source branch, not verified behavior or fitted equipment on every delivered robot.
+
+2023.12.04
+1. Improved RC data acquisition.
+2. Added residual-PWM clearing when the robot is not on a slope.
+3. Improved voltage-acquisition logic.
+4. Disabled smoothing during automatic recharging to improve motor response.
+5. Added an app button to enable automatic recharging: second button in the first row.
+6. Merged automatic-recharging functionality into the standard chassis code and updated host-communication logic.
+7. Updated automatic-recharging logic: added access to its identification code, online detection of charging equipment, reporting of whether automatic recharging is enabled, and reporting of the number of received infrared signals.
+
+2024.04.28
+1. Added support for USB wired and wireless controllers.
+2. Improved PS2 control: corrected slow speed response and unstable speed increment/decrement adjustment.
+
+2025.02.18
+1. Added LSV550 Mecanum and 4WD configurations, identified in the project as Mec-V and 4WD-V.
+
+2025.03.18
+1. Updated the USB controller driver.
+2. Corrected a typographical error in the TurnOff function.
+
+2025.05.8
+1. Updated the USB driver for multimode controller support.
+2. Corrected the differential-drive track-width value.
+3. Added nonvolatile storage for PID parameters and default speed, enabled through the app's save-parameters setting.
+
+2025.06.10
+1. Added an app-adjustable straight-line correction coefficient with nonvolatile storage.
+2. Improved battery-state calculation logic.
+
+2025.09.25
+1. Moved self-test logic into a separate task.
+2. Improved source-code comments.
+
+2025.12.26
+1. Added IP-frame reception on UART3.
+2. Added IP-address display on the screen and in Bluetooth diagnostics.
+
+2026.08.21
+1. Fixed the low-voltage alarm remaining active after voltage recovery.
+
+2026.09.21
+1. Disabled vibration on the multimode controller.
+
+

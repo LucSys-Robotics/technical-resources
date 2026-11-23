@@ -1,0 +1,24 @@
+HISTORICAL SOURCE CHANGELOG
+Translated from the supplied version history. Entries describe changes in the source branch, not verified behavior or fitted equipment on every delivered robot.
+
+2023.08.15
+1. Changed the board revision from C50B to C50C.
+2. Added automatic clearing of residual motor PWM when the robot stops on non-sloped ground.
+3. Disabled smoothing during automatic recharging to improve motor response.
+
+
+2023.12.04
+1. Improved RC receiver signal-processing logic.
+2. Updated robot self-test logic.
+3. Updated robot voltage-measurement logic.
+4. Added an app button to enable automatic recharging: second button in the first row.
+5. Changed RGB indications during automatic recharging: red = normal; yellow = automatic recharging enabled; purple = charging.
+6. Merged automatic-recharging functionality into the standard chassis code and updated host-communication logic.
+7. Updated automatic-recharging logic: added access to its identification code, online detection of charging equipment, reporting of whether automatic recharging is enabled, and reporting of the number of received infrared signals.
+
+
+2024.1.16
+Added arm-control code for stepper motors with integrated drivers.
+
+2025.11.27
+1. Improved the robotic-arm motion-control code and structure; fixed missed steps during arm control.
