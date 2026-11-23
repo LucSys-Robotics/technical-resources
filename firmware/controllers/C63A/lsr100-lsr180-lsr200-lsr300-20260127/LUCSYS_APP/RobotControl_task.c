@@ -121,19 +121,19 @@ void RobotControl_task(void* param)
 		{	
 			switch( RobotHardWareParam.CarType )
 			{
-				case S260: //6-wheeled vehicles
+				case REF2: //6-wheeled vehicles
 					set_MotorRPM(&Driver1,RobotControlParam.MotorA.target,RobotControlParam.MotorF.target);
 					set_MotorRPM(&Driver2,RobotControlParam.MotorB.target,RobotControlParam.MotorE.target);
 					set_MotorRPM(&Driver3,RobotControlParam.MotorC.target,RobotControlParam.MotorD.target);
 					break;
-				case S200:case S200_OUTDOOR: //Four-wheel drive vehicles
+				case LSR200:case LSR200_OUTDOOR: //Four-wheel drive vehicles
 					set_MotorRPM(&Driver1,RobotControlParam.MotorA.target,RobotControlParam.MotorD.target);
 					set_MotorRPM(&Driver2,RobotControlParam.MotorB.target,RobotControlParam.MotorC.target);
 					break;
-				case S300: case S100: //Two-wheel differential
+				case LSR300: case LSR100: //Two-wheel differential
 					set_MotorRPM(&Driver1,RobotControlParam.MotorA.target,RobotControlParam.MotorB.target);
 					break;
-				case S300Mini:
+				case LSR300Mini:
 					set_MotorRPM(&Driver1,-RobotControlParam.MotorA.target,-RobotControlParam.MotorB.target);
 					break;
 			}
@@ -231,7 +231,7 @@ void RobotControl_task(void* param)
 		static uint32_t LowPowerTipsCnt = 0;
 		switch( RobotHardWareParam.CarType )
 		{
-			case S200:case S200_OUTDOOR:case S260:
+			case LSR200:case LSR200_OUTDOOR:case REF2:
 				if( RobotControlParam.LowPowerFlag )
 				{
 					LowPowerTipsCnt++;
@@ -553,21 +553,21 @@ static void Robot_Forwardkinematics(RobotControlParmentType_t* robot,const Robot
 {
 	switch( robot_hw->CarType )
 	{
-		case S260:
+		case REF2:
 		{
 			robot->feedbackVx = (robot->MotorA.feedback + robot->MotorB.feedback + robot->MotorC.feedback + robot->MotorD.feedback + robot->MotorE.feedback + robot->MotorF.feedback )/6.0f;
 			robot->feedbackVy = 0;
 			robot->feedbackVz = (-robot->MotorA.feedback - robot->MotorB.feedback - robot->MotorC.feedback + robot->MotorD.feedback + robot->MotorE.feedback + robot->MotorF.feedback)/6.0f/(robot_hw->WheelSpacing+robot_hw->AxleSpacing);
 			break;
 		}
-		case S200:case S200_OUTDOOR:
+		case LSR200:case LSR200_OUTDOOR:
 		{
 			robot->feedbackVx = (robot->MotorA.feedback + robot->MotorB.feedback + robot->MotorC.feedback + robot->MotorD.feedback )/4.0f;
 			robot->feedbackVy = 0;
 			robot->feedbackVz = (-robot->MotorA.feedback - robot->MotorB.feedback + robot->MotorC.feedback + robot->MotorD.feedback )/4.0f/(robot_hw->WheelSpacing+robot_hw->AxleSpacing);
 			break;
 		}
-		case S300:case S300Mini:case S100:
+		case LSR300:case LSR300Mini:case LSR100:
 		{
 			robot->feedbackVx = (robot->MotorA.feedback+robot->MotorB.feedback)/2.0f;
 			robot->feedbackVy = 0;
@@ -646,7 +646,7 @@ static void Drive_Motor(const RobotControlCMDType_t* target)
 	float RightWheelDiff = wheelCoefficient(RobotControlParam.LineDiffParam,0);
 	
 	//Kinematic solutions for six-wheelers
-	if( RobotHardWareParam.CarType == S260 )
+	if( RobotHardWareParam.CarType == REF2 )
 	{
 		//Four-wheel drive model Wheelbase is not a true wheelbase; it needs to be coordinated to an appropriate value based on IMU data
 		RobotControlParam.MotorA.target = smooth.Vx - smooth.Vz*(RobotHardWareParam.AxleSpacing+RobotHardWareParam.WheelSpacing);
@@ -682,7 +682,7 @@ static void Drive_Motor(const RobotControlCMDType_t* target)
 	}
 	
 	//Four-wheel drive vehicles
-	else if( RobotHardWareParam.CarType == S200 || RobotHardWareParam.CarType == S200_OUTDOOR )
+	else if( RobotHardWareParam.CarType == LSR200 || RobotHardWareParam.CarType == LSR200_OUTDOOR )
 	{
 		//Obtain the linear velocity
 		RobotControlParam.MotorA.target = smooth.Vx - smooth.Vz*(RobotHardWareParam.AxleSpacing+RobotHardWareParam.WheelSpacing);
@@ -710,8 +710,8 @@ static void Drive_Motor(const RobotControlCMDType_t* target)
 	}
 	
 	//Two-wheel differential
-	else if( RobotHardWareParam.CarType == S300 || RobotHardWareParam.CarType == S300Mini ||
-              RobotHardWareParam.CarType == S100 )
+	else if( RobotHardWareParam.CarType == LSR300 || RobotHardWareParam.CarType == LSR300Mini ||
+              RobotHardWareParam.CarType == LSR100 )
 	{
 		RobotControlParam.MotorA.target = smooth.Vx - smooth.Vz * RobotHardWareParam.WheelSpacing / 2.0f; 
 		RobotControlParam.MotorB.target = smooth.Vx + smooth.Vz * RobotHardWareParam.WheelSpacing / 2.0f; 
@@ -722,8 +722,8 @@ static void Drive_Motor(const RobotControlCMDType_t* target)
 		RobotControlParam.MotorA.target = -linearVel_to_rpm(RobotControlParam.MotorA.target,RobotHardWareParam.WheelPerimeter);
 		RobotControlParam.MotorB.target = linearVel_to_rpm(RobotControlParam.MotorB.target,RobotHardWareParam.WheelPerimeter);
 		
-		//The S300 wheels are installed in the opposite direction
-		if( RobotHardWareParam.CarType == S300 || RobotHardWareParam.CarType == S300Mini)
+		//The LSR300 wheels are installed in the opposite direction
+		if( RobotHardWareParam.CarType == LSR300 || RobotHardWareParam.CarType == LSR300Mini)
 		{
 			RobotControlParam.MotorA.target=-RobotControlParam.MotorA.target;
 			RobotControlParam.MotorB.target=-RobotControlParam.MotorB.target;
@@ -808,7 +808,7 @@ static void ranger_avoid(RobotControlCMDType_t* target)
 	static uint8_t FilterCnt = 0;
 	
 	//Determine whether obstacle avoidance is needed, and set the obstacle avoidance distance accordingly
-	if( RobotHardWareParam.CarType == S300 )
+	if( RobotHardWareParam.CarType == LSR300 )
 	{
 		if( RangerHAL_A.dis < 0.4f || RangerHAL_B.dis < 0.4f || RangerHAL_C.dis < 0.4f || 
 			RangerHAL_D.dis < 0.4f || RangerHAL_E.dis < 0.4f || RangerHAL_F.dis < 0.4f )
@@ -819,7 +819,7 @@ static void ranger_avoid(RobotControlCMDType_t* target)
 		
 		if( FilterCnt >= 5 ) FilterCnt=5,avoid_front=1;
 	}
-	else if( RobotHardWareParam.CarType == S300Mini )
+	else if( RobotHardWareParam.CarType == LSR300Mini )
 	{
 		if( RangerHAL_A.dis < 0.4f || RangerHAL_B.dis < 0.4f || RangerHAL_C.dis < 0.4f || 
 			RangerHAL_D.dis < 0.4f || RangerHAL_E.dis < 0.4f )
@@ -830,7 +830,7 @@ static void ranger_avoid(RobotControlCMDType_t* target)
 		
 		if( FilterCnt >= 5 ) FilterCnt=5,avoid_front=1;
 	}
-	else if( RobotHardWareParam.CarType == S200_OUTDOOR || RobotHardWareParam.CarType == S260 )
+	else if( RobotHardWareParam.CarType == LSR200_OUTDOOR || RobotHardWareParam.CarType == REF2 )
 	{
 		static uint8_t BackFilterCnt = 0 ; //Rear obstacle avoidance sensor
 		if( RangerHAL_A.dis < 0.4f || RangerHAL_B.dis < 0.4f || RangerHAL_C.dis < 0.4f || 
@@ -855,7 +855,7 @@ static void ranger_avoid(RobotControlCMDType_t* target)
 	if( avoid_front == 0 && avoid_back==0 ) return;
 	
 	//Obstacle-avoidance logic varies by chassis type
-	if( RobotHardWareParam.CarType == S300 )
+	if( RobotHardWareParam.CarType == LSR300 )
 	{
 		if( target->Vx > 0 )
 		{
@@ -873,7 +873,7 @@ static void ranger_avoid(RobotControlCMDType_t* target)
 			tips->AddTask(3,100);
 		}
 	}
-	else if( RobotHardWareParam.CarType == S300Mini )
+	else if( RobotHardWareParam.CarType == LSR300Mini )
 	{
 		if( target->Vx > 0 )
 		{
@@ -891,7 +891,7 @@ static void ranger_avoid(RobotControlCMDType_t* target)
 			tips->AddTask(3,100);
 		}
 	}
-	else if( RobotHardWareParam.CarType == S200_OUTDOOR || RobotHardWareParam.CarType == S260 )
+	else if( RobotHardWareParam.CarType == LSR200_OUTDOOR || RobotHardWareParam.CarType == REF2 )
 	{
 		//Avoid obstacles in front
 		if( target->Vx > 0 && avoid_front==1 )
@@ -946,9 +946,9 @@ static void Linear_IMUHelp(RobotControlCMDType_t* target)
 	switch( RobotHardWareParam.CarType )
 	{
 		//Different models have different PID parameters when adjusting in a straight line, which is related to body weight, body structure, and motor
-		case S100: linear_helpkp = 0.03f; linear_helpkd = 0.007f; break;
-		case S300Mini: linear_helpkp = 0.04f; linear_helpkd = 0.005f; break;
-		case S300: linear_helpkp = 0.06f; linear_helpkd = 0.015f; break;
+		case LSR100: linear_helpkp = 0.03f; linear_helpkd = 0.007f; break;
+		case LSR300Mini: linear_helpkp = 0.04f; linear_helpkd = 0.005f; break;
+		case LSR300: linear_helpkp = 0.06f; linear_helpkd = 0.015f; break;
 		default:break;
 	}
 	

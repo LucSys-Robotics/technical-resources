@@ -1,5 +1,6 @@
-param([string]$Compiler='E:\ZZZ---engineering software---ZZZ\mingw64\bin\gcc.exe')
+param([string]$Compiler='gcc.exe')
 $ErrorActionPreference='Stop'
+$Compiler=(Get-Command $Compiler -ErrorAction Stop).Source
 $src=[Text.Encoding]::GetEncoding(936).GetString([IO.File]::ReadAllBytes((Join-Path $PSScriptRoot '../../LUCSYS_APP/RobotControl_task_v2.c')))
 function Extract([string]$name){
  $m=[regex]::Match($src,'static void '+$name+'\([^;]*?\)\s*\{'); if(-not $m.Success){throw $name}
@@ -52,7 +53,7 @@ int main(void){
  puts("PASS: raw command isolation, command expiry, per-wheel watchdog, watchdog reset");return 0;
 }
 "@
-$out=Join-Path $env:TEMP 't280_control_regression.c';$exe=Join-Path $env:TEMP 't280_control_regression.exe'
+$out=Join-Path $env:TEMP 'lsr280_control_regression.c';$exe=Join-Path $env:TEMP 'lsr280_control_regression.exe'
 [IO.File]::WriteAllText($out,$pre+(Extract 'Robot_FailSafe')+(Extract 'Robot_CmdReceive')+(Extract 'Steer_Watchdog')+$post,[Text.UTF8Encoding]::new($false))
 $env:Path=(Split-Path $Compiler)+';'+$env:Path
 & $Compiler -std=c99 -Wall -Wextra -O2 $out -o $exe

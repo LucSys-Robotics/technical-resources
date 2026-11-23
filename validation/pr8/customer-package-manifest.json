@@ -1,0 +1,206 @@
+[
+  {
+    "file": "lucsys_c50c_20261104.zip",
+    "source": "firmware/controllers/C50C/20261104",
+    "sha256": "6e604c4a5cfde5f64336a9f6556a6ac4cac256f416d628d143540857bf7b60b9",
+    "files": 280
+  },
+  {
+    "file": "lucsys_c30d_v2_gmr_20260921.zip",
+    "source": "firmware/controllers/C30D/v2-gmr-20260921",
+    "sha256": "c18b6d559dfcff4bbb572ccb6eaf75f5a5adceb1b06cd22abd29ae69f8f38e6e",
+    "files": 239
+  },
+  {
+    "file": "lucsys_lsr100_lsr180_lsr200_lsr300_20260127.zip",
+    "source": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127",
+    "sha256": "627eb4f5bc9de0ee8997f2761006baaa539f6cfb7ffd2fa1767541598226c033",
+    "files": 249
+  },
+  {
+    "file": "lucsys_lsr280_20261013.zip",
+    "source": "firmware/controllers/C63A/lsr280-20261013",
+    "sha256": "47b76462c8da740b95fd463bf37e93675e77eb29e3a4385f9377f928f9da332f",
+    "files": 269
+  },
+  {
+    "file": "lucsys_ros2_humble_20260903.zip",
+    "source": "ros2/chassis-drivers/humble-20260903",
+    "sha256": "38847971cbc7ded9c652d8f5816c4fec17049b717efd1bc8da1371bc14e452a7",
+    "files": 52
+  },
+  {
+    "file": "lucsys_lsr550a_v1-20251204.zip",
+    "source": "firmware/models/LSR550A/v1-20251204",
+    "sha256": "acaae8099add8ebdc776dd3c8d7162acaf0edc3b92de27b86b16ffda1a383ced",
+    "files": 577
+  },
+  {
+    "file": "lucsys_lsr550a_v2-20261012.zip",
+    "source": "firmware/models/LSR550A/v2-20261012",
+    "sha256": "3f77bc435e016d9756e5039b8213863b1855cb83b336c2f309e7edc96aa5e565",
+    "files": 263
+  },
+  {
+    "file": "lucsys_lsr550a_v2_1-20261012.zip",
+    "source": "firmware/models/LSR550A/v2.1-20261012",
+    "sha256": "d27b4fb3c3ecd7cb38eefda74796ff86acfa0e78fb937aaa57b7a8951c696e46",
+    "files": 266
+  },
+  {
+    "file": "lucsys_lse550_description.zip",
+    "source": "platforms/lucsys_lse550_description",
+    "sha256": "3b4d126ae99c20732aad5a3037d1a40065d3154cdcb00fefb3af183f5c56f1d3",
+    "files": 169
+  },
+  {
+    "file": "lucsys_lsr100_description.zip",
+    "source": "platforms/lucsys_lsr100_description",
+    "sha256": "15206109237091e60fcf8ca62b8d2f3c1de0c61cec6e81d3fd122516c7965819",
+    "files": 14
+  },
+  {
+    "file": "lucsys_lsr180_description.zip",
+    "source": "platforms/lucsys_lsr180_description",
+    "sha256": "3d9d9dd28e8dbfe67b5830963287c348d326ec5d2596b7a184ca0424c1842c26",
+    "files": 17
+  },
+  {
+    "file": "lucsys_lsr200_description.zip",
+    "source": "platforms/lucsys_lsr200_description",
+    "sha256": "402b096811bd1326695c359b4c9794e78ea34191870a99dc12c73b9dc34c424c",
+    "files": 17
+  },
+  {
+    "file": "lucsys_lsr200auto_4wd_description.zip",
+    "source": "platforms/lucsys_lsr200auto_4wd_description",
+    "sha256": "3c9b4721a1dd8248a8f0963e66835b52079797302f3c7dc6d43d2560ac476295",
+    "files": 17
+  },
+  {
+    "file": "lucsys_lsr200auto_akm_lite_description.zip",
+    "source": "platforms/lucsys_lsr200auto_akm_lite_description",
+    "sha256": "179999eaf85c31313e7b5ee37b7b364f0ecb712e4065554d9ede1d9b5126b9f3",
+    "files": 17
+  },
+  {
+    "file": "lucsys_lsr200auto_akm_pro_description.zip",
+    "source": "platforms/lucsys_lsr200auto_akm_pro_description",
+    "sha256": "fb568418fecee288f27bd029b44fd3589302126bfb95f3ba9c484e389a2e9a9c",
+    "files": 16
+  },
+  {
+    "file": "lucsys_lsr200auto_akm_ultra_description.zip",
+    "source": "platforms/lucsys_lsr200auto_akm_ultra_description",
+    "sha256": "fca0dba56b12dc192cbf4692fee92c498db25eaf223011d452e19b48ef7ac759",
+    "files": 16
+  },
+  {
+    "file": "lucsys_lsr280_description.zip",
+    "source": "platforms/lucsys_lsr280_description",
+    "sha256": "c5e7406abb9084939df1be1866e9d1392b3b18452214c34377e96446df8c7a97",
+    "files": 19
+  },
+  {
+    "file": "lucsys_lsr300mini_description.zip",
+    "source": "platforms/lucsys_lsr300mini_description",
+    "sha256": "c09b62f56f1768e124fff3cf55f2dab2bc12cc1dfdc49c5b92ef275cf86b3d48",
+    "files": 22
+  },
+  {
+    "file": "lucsys_lsr300pro_description.zip",
+    "source": "platforms/lucsys_lsr300pro_description",
+    "sha256": "dbd1cfa669c56503abbec8f83c4916d0581524925fac08b94b11c4d750040bda",
+    "files": 22
+  },
+  {
+    "file": "lucsys_lsr550_2wd_description.zip",
+    "source": "platforms/lucsys_lsr550_2wd_description",
+    "sha256": "3224034b20eeb14bb3a90fbd676d4bbc0a7074feabe8ba5a948bc9377be0a254",
+    "files": 15
+  },
+  {
+    "file": "lucsys_lsr550_4wd_premium_independent_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_4wd_premium_independent_suspension_description",
+    "sha256": "96a5ae147fa883f42b7bf78ba815ce9cfe90988717c51ce039e419d163f0471e",
+    "files": 16
+  },
+  {
+    "file": "lucsys_lsr550_4wd_premium_oscillating_axle_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_4wd_premium_oscillating_axle_suspension_description",
+    "sha256": "bf562eb79bba2c8777b5512dfb91423beaf0dc0318d671c336726f36e292c74d",
+    "files": 16
+  },
+  {
+    "file": "lucsys_lsr550_akm_flagship_independent_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_akm_flagship_independent_suspension_description",
+    "sha256": "bce28d56cfaffcc88bf850c11849133cf9bba3d532ca907c444aec53c9b2f77a",
+    "files": 18
+  },
+  {
+    "file": "lucsys_lsr550_akm_premium_oscillating_axle_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_akm_premium_oscillating_axle_suspension_description",
+    "sha256": "2a59b2fe262a1852ef1d634fde9639fcca53f48184b8d564c2e9cefcde702731",
+    "files": 16
+  },
+  {
+    "file": "lucsys_lsr550_akm_ultimate_oscillating_axle_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_akm_ultimate_oscillating_axle_suspension_description",
+    "sha256": "8a487869ea3bb6a20e129eca0c156949fe261bfdf5e2967c1588e00e4fae99ef",
+    "files": 18
+  },
+  {
+    "file": "lucsys_lsr550_mec_flagship_independent_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_mec_flagship_independent_suspension_description",
+    "sha256": "8a2494a901b1ba06e517b7a385e652d58f45ae6b34d5d77f151f3b288cbc769d",
+    "files": 16
+  },
+  {
+    "file": "lucsys_lsr550_mec_premium_independent_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_mec_premium_independent_suspension_description",
+    "sha256": "b23e721473e50f895868124cd886b749ec63ed7d5519b5ac63d97b2d5f493eef",
+    "files": 16
+  },
+  {
+    "file": "lucsys_lsr550_mec_premium_oscillating_axle_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_mec_premium_oscillating_axle_suspension_description",
+    "sha256": "2fb830f3e1f8d55a8f988462a6dbab77a7138fa022c835a527fdf88a84a85143",
+    "files": 16
+  },
+  {
+    "file": "lucsys_lsr550_mec_ultimate_oscillating_axle_suspension_description.zip",
+    "source": "platforms/lucsys_lsr550_mec_ultimate_oscillating_axle_suspension_description",
+    "sha256": "3134e00b1d15d55b7dffe4fe092eae2a32f6cccc2a4ed59e9b9fda6293ff078e",
+    "files": 16
+  },
+  {
+    "file": "lucsys_lsr550_omni_premium_description.zip",
+    "source": "platforms/lucsys_lsr550_omni_premium_description",
+    "sha256": "cc521963232300115c33139dd80eff5cd49b740af2ffd979bda11adae5fa3d74",
+    "files": 15
+  },
+  {
+    "file": "lucsys_lsr550_omni_ultimate_description.zip",
+    "source": "platforms/lucsys_lsr550_omni_ultimate_description",
+    "sha256": "85eaa2abe8f4e10b8eda62e22ab2885ad8fb95381c3fc81e285919e266f2258a",
+    "files": 15
+  },
+  {
+    "file": "lucsys_lsr550a_4wd_description.zip",
+    "source": "platforms/lucsys_lsr550a_4wd_description",
+    "sha256": "6b63e32cf452d73ff158244806af3e765ea1d84470f8a38e8f726d8d5543cbbf",
+    "files": 26
+  },
+  {
+    "file": "lucsys_lsr550a_mec_description.zip",
+    "source": "platforms/lucsys_lsr550a_mec_description",
+    "sha256": "6329996c0d929cde8f479bfc2e52f6386202baed907716d30ec016257bcefbd7",
+    "files": 26
+  },
+  {
+    "file": "lucsys_lsv550_description.zip",
+    "source": "platforms/lucsys_lsv550_description",
+    "sha256": "3c01715d0c4bb52bc3ff95cf293cdcf74974dbad1d78b30f49b7af6e2c2b0827",
+    "files": 36
+  }
+]

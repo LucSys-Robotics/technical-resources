@@ -1187,7 +1187,7 @@ int8_t ServoDriver_Enable(ServoDriverHWType_t* driver)
 	}
 	else if( driver->initMode == PosMode )
 	{
-		comm_state += set_MotorPos(driver,0,T280_WheelTurnSpeed,0,T280_WheelTurnSpeed);
+		comm_state += set_MotorPos(driver,0,LSR280_WheelTurnSpeed,0,LSR280_WheelTurnSpeed);
 	}
 
 
@@ -1553,7 +1553,7 @@ uint8_t ServoDriver_Init(ServoDriverHWType_t* driver)
 		//TPDO1 (current/temperature) only maps to hub motors. The hollow motor used for steering does not have current or temperature data collection hardware,
 		//Applying this mapping to PosMode drive 1/2 will only cause all SDOs to time out (about 0.45 seconds boot delay per drive).
 		//and no data can be obtained. Confirmed as hardware limitations, do not add more.
-		if( RobotHardWareParam.CarType == T280 )
+		if( RobotHardWareParam.CarType == LSR280 )
 			comm_state += ServoDriver_MappingTPDO1_CurrentTemperature(driver,(0x290+driver->NodeID-1));
 		comm_state += ServoDriver_Enable(driver);            //Enable motor
 	}
@@ -1564,7 +1564,7 @@ uint8_t ServoDriver_Init(ServoDriverHWType_t* driver)
 		comm_state += set_ControlMode(driver,1); //Set position control
 		comm_state += ServoDriver_Enable(driver);            //Enable motor
 		comm_state += ServoDriver_MappingTPDO0_Pos(driver,(0x190+driver->NodeID-1));//TPDO0 mapping position
-		comm_state += set_MotorPos(driver,0,T280_WheelTurnSpeed,0,T280_WheelTurnSpeed);  //Set position to 0
+		comm_state += set_MotorPos(driver,0,LSR280_WheelTurnSpeed,0,LSR280_WheelTurnSpeed);  //Set position to 0
 	}
 	
 	comm_state += set_hearbeatTime(driver,5000);         //Set the heartbeat time

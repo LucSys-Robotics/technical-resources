@@ -1,0 +1,2 @@
+[ament_copyright.license]
+lucsys_supplier_authorization = lucsys_notice:supplier_authorization

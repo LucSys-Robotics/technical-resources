@@ -1,0 +1,14 @@
+{
+  "firmware_source_files_byte_identical_to_d5d5927": 1992,
+  "ros_cpp": "Byte-identical except empty non-kinematic car_mode default; protocol and control code unchanged",
+  "retained_transform_profiles": [
+    "LSR100_diff",
+    "LSR200_4wd",
+    "LSR550A_4wd_arm",
+    "LSR550A_mec_arm",
+    "LSR300_pro",
+    "LSR300_mini"
+  ],
+  "transform_values": "EXACTLY_EQUAL",
+  "keil_file_references": 1542
+}

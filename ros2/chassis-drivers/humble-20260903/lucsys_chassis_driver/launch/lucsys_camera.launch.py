@@ -1,19 +1,26 @@
-import os, yaml
+# Copyright 2026 LucSys Robotics - integration and maintenance changes only.
+#
+# LucSys Robotics distributes this source under supplier authorization.
+# LucSys Robotics is responsible for integration and maintenance only.
+# This notice does not grant an additional open-source license.
+# Third-party components retain their respective licenses and notices.
+
+import os
+import yaml
 from pathlib import Path
-import launch_ros.actions
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import (DeclareLaunchArgument, GroupAction,
-                            IncludeLaunchDescription, SetEnvironmentVariable, OpaqueFunction)
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.launch_description_sources import AnyLaunchDescriptionSource
-from launch_ros.parameter_descriptions import ParameterFile
-from launch.substitutions import LaunchConfiguration, PythonExpression
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+
 
 def load_yaml(file_path: Path) -> dict:
     with open(file_path, 'r') as f:
         return yaml.safe_load(f)
+
 
 def spawn_camera_nodes(context, *args, **kwargs):
     # 1. Get yaml file path
@@ -28,16 +35,12 @@ def spawn_camera_nodes(context, *args, **kwargs):
     # 3. Construct camera nodes
     astra_dir = get_package_share_directory('astra_camera')
     astra_launch_dir = os.path.join(astra_dir, 'launch')
-    
+
     usbcam_dir = get_package_share_directory('usb_cam')
     usbcam_launch_dir = os.path.join(usbcam_dir, 'launch')
-    
-    usbcam_arg = DeclareLaunchArgument(
-        'video_device', default_value='/dev/video0',
-        description='video device serial number.'
-    )
 
-    if camera_mode_.startswith('astra') or camera_mode_.startswith('dabai') or camera_mode_.startswith('gemini'):
+    if camera_mode_.startswith('astra') or camera_mode_.startswith(
+            'dabai') or camera_mode_.startswith('gemini'):
         camera_launch = IncludeLaunchDescription(
             AnyLaunchDescriptionSource(os.path.join(astra_launch_dir, file_name)),
             launch_arguments=[('enable_d2c_viewer', 'True')]
@@ -58,11 +61,12 @@ def spawn_camera_nodes(context, *args, **kwargs):
         arguments=['raw', 'compressed'],
         remappings=[
             ('in', '/camera/color/image_raw'),
-            ('out/compressed', '/camera/color/image_raw/compressed')  
+            ('out/compressed', '/camera/color/image_raw/compressed')
         ],
         parameters=[{
             'format': 'jpeg',
-            'jpeg_quality': 85  # 0~100, the higher the value, the clearer but the higher the bandwidth usage
+            # 0~100, the higher the value, the clearer but the higher the bandwidth usage
+            'jpeg_quality': 85
         }]
     )
 
@@ -73,7 +77,7 @@ def spawn_camera_nodes(context, *args, **kwargs):
         arguments=['raw', 'compressedDepth'],
         remappings=[
             ('in', '/camera/depth/image_raw'),
-            ('out/compressedDepth', '/camera/depth/image_raw/compressed')  
+            ('out/compressedDepth', '/camera/depth/image_raw/compressed')
         ],
         output='screen'
     )
@@ -81,6 +85,7 @@ def spawn_camera_nodes(context, *args, **kwargs):
     actions.append(compress_color)
     actions.append(compress_depth)
     return actions
+
 
 def generate_launch_description():
     return LaunchDescription([

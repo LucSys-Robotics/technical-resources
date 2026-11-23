@@ -1,0 +1,83 @@
+Starting >>> lucsys_lse550_description
+Finished <<< lucsys_lse550_description [1.26s]
+Starting >>> lucsys_lsr100_description
+Finished <<< lucsys_lsr100_description [0.29s]
+Starting >>> lucsys_lsr180_description
+Finished <<< lucsys_lsr180_description [0.34s]
+Starting >>> lucsys_lsr200_description
+Finished <<< lucsys_lsr200_description [0.50s]
+Starting >>> lucsys_lsr200auto_4wd_description
+Finished <<< lucsys_lsr200auto_4wd_description [0.49s]
+Starting >>> lucsys_lsr200auto_akm_lite_description
+Finished <<< lucsys_lsr200auto_akm_lite_description [0.34s]
+Starting >>> lucsys_lsr200auto_akm_pro_description
+Finished <<< lucsys_lsr200auto_akm_pro_description [0.37s]
+Starting >>> lucsys_lsr200auto_akm_ultra_description
+Finished <<< lucsys_lsr200auto_akm_ultra_description [0.40s]
+Starting >>> lucsys_lsr280_description
+Finished <<< lucsys_lsr280_description [0.25s]
+Starting >>> lucsys_lsr300mini_description
+Finished <<< lucsys_lsr300mini_description [0.31s]
+Starting >>> lucsys_lsr300pro_description
+Finished <<< lucsys_lsr300pro_description [0.33s]
+Starting >>> lucsys_lsr550_2wd_description
+Finished <<< lucsys_lsr550_2wd_description [0.39s]
+Starting >>> lucsys_lsr550_4wd_premium_independent_suspension_description
+Finished <<< lucsys_lsr550_4wd_premium_independent_suspension_description [0.39s]
+Starting >>> lucsys_lsr550_4wd_premium_oscillating_axle_suspension_description
+Finished <<< lucsys_lsr550_4wd_premium_oscillating_axle_suspension_description [0.32s]
+Starting >>> lucsys_lsr550_akm_flagship_independent_suspension_description
+Finished <<< lucsys_lsr550_akm_flagship_independent_suspension_description [0.43s]
+Starting >>> lucsys_lsr550_akm_premium_oscillating_axle_suspension_description
+Finished <<< lucsys_lsr550_akm_premium_oscillating_axle_suspension_description [0.36s]
+Starting >>> lucsys_lsr550_akm_ultimate_oscillating_axle_suspension_description
+Finished <<< lucsys_lsr550_akm_ultimate_oscillating_axle_suspension_description [0.44s]
+Starting >>> lucsys_lsr550_mec_flagship_independent_suspension_description
+Finished <<< lucsys_lsr550_mec_flagship_independent_suspension_description [0.38s]
+Starting >>> lucsys_lsr550_mec_premium_independent_suspension_description
+Finished <<< lucsys_lsr550_mec_premium_independent_suspension_description [0.39s]
+Starting >>> lucsys_lsr550_mec_premium_oscillating_axle_suspension_description
+Finished <<< lucsys_lsr550_mec_premium_oscillating_axle_suspension_description [0.34s]
+Starting >>> lucsys_lsr550_mec_ultimate_oscillating_axle_suspension_description
+Finished <<< lucsys_lsr550_mec_ultimate_oscillating_axle_suspension_description [0.38s]
+Starting >>> lucsys_lsr550_omni_premium_description
+Finished <<< lucsys_lsr550_omni_premium_description [0.33s]
+Starting >>> lucsys_lsr550_omni_ultimate_description
+Finished <<< lucsys_lsr550_omni_ultimate_description [0.31s]
+Starting >>> lucsys_lsr550a_4wd_description
+Finished <<< lucsys_lsr550a_4wd_description [0.28s]
+Starting >>> lucsys_lsr550a_mec_description
+Finished <<< lucsys_lsr550a_mec_description [0.38s]
+Starting >>> lucsys_lsv550_description
+Finished <<< lucsys_lsv550_description [0.50s]
+Starting >>> lucsys_robot_msg
+Finished <<< lucsys_robot_msg [2.09s]
+Starting >>> serial
+--- stderr: serial
+/audit/archive-ws/src/lucsys_ros2_humble_20260903/serial_ros2/src/impl/list_ports/list_ports_linux.cc: In function ‘std::vector<std::__cxx11::basic_string<char> > glob(const std::vector<std::__cxx11::basic_string<char> >&)’:
+/audit/archive-ws/src/lucsys_ros2_humble_20260903/serial_ros2/src/impl/list_ports/list_ports_linux.cc:66:40: warning: comparison of integer expressions of different signedness: ‘int’ and ‘size_t’ {aka ‘long unsigned int’} [-Wsign-compare]
+   66 |     for(int path_index = 0; path_index < glob_results.gl_pathc; path_index++)
+      |                             ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+/audit/archive-ws/src/lucsys_ros2_humble_20260903/serial_ros2/src/impl/list_ports/list_ports_linux.cc:57:9: warning: variable ‘glob_retval’ set but not used [-Wunused-but-set-variable]
+   57 |     int glob_retval = glob(patterns[0].c_str(), 0, NULL, &glob_results);
+      |         ^~~~~~~~~~~
+/audit/archive-ws/src/lucsys_ros2_humble_20260903/serial_ros2/src/impl/list_ports/list_ports_linux.cc: In function ‘std::string format(const char*, ...)’:
+/audit/archive-ws/src/lucsys_ros2_humble_20260903/serial_ros2/src/impl/list_ports/list_ports_linux.cc:246:31: warning: comparison of integer expressions of different signedness: ‘int’ and ‘size_t’ {aka ‘long unsigned int’} [-Wsign-compare]
+  246 |         else if( return_value >= buffer_size_bytes )
+      |                  ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+---
+Finished <<< serial [0.60s]
+Starting >>> lucsys_chassis_driver
+--- stderr: lucsys_chassis_driver
+/audit/archive-ws/src/lucsys_ros2_humble_20260903/lucsys_chassis_driver/src/lucsys_chassis.cpp: In destructor ‘virtual turn_on_robot::~turn_on_robot()’:
+/audit/archive-ws/src/lucsys_ros2_humble_20260903/lucsys_chassis_driver/src/lucsys_chassis.cpp:1017:21: warning: unsigned conversion from ‘int16_t’ {aka ‘short int’} to ‘uint8_t’ {aka ‘unsigned char’} changes value from ‘1570’ to ‘34’ [-Woverflow]
+ 1017 |   Send_Data.tx[4] = (int16_t)(1.5707 * 1000);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~
+/audit/archive-ws/src/lucsys_ros2_humble_20260903/lucsys_chassis_driver/src/lucsys_chassis.cpp:1020:21: warning: unsigned conversion from ‘int16_t’ {aka ‘short int’} to ‘uint8_t’ {aka ‘unsigned char’} changes value from ‘391’ to ‘135’ [-Woverflow]
+ 1020 |   Send_Data.tx[6] = (int16_t)(0.3917 * 1000);
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~
+---
+Finished <<< lucsys_chassis_driver [9.53s]
+
+Summary: 29 packages finished [22.9s]
+  2 packages had stderr output: lucsys_chassis_driver serial

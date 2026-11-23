@@ -1,0 +1,136 @@
+[
+  {
+    "branch": "candidate/lucsys-branding-and-ros-startup",
+    "commit": "d5d5927d9d181d513a7dea9854ad3cd285a6a45c",
+    "matching_files": [
+      "d5d5927d9d181d513a7dea9854ad3cd285a6a45c:platforms/lucsys_lsr180_description/NOTICE",
+      "d5d5927d9d181d513a7dea9854ad3cd285a6a45c:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/legacy_compatibility.yaml",
+      "d5d5927d9d181d513a7dea9854ad3cd285a6a45c:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/test/test_launch_contracts.py"
+    ],
+    "returncode": 0
+  },
+  {
+    "branch": "main",
+    "commit": "c3de9824226b8a72715c8caa7412c8d0ecba660a",
+    "matching_files": [
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v1-20251204/4wd/BALANCE/system.c",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v1-20251204/4wd/HARDWARE/motor.c",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v1-20251204/4wd/HARDWARE/motor.h",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v1-20251204/differential/BALANCE/system.c",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v1-20251204/differential/HARDWARE/motor.c",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v1-20251204/differential/HARDWARE/motor.h",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v1-20251204/mecanum/BALANCE/system.c",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v1-20251204/mecanum/HARDWARE/motor.c",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v1-20251204/mecanum/HARDWARE/motor.h",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v2-20261012/HARDWARE/Inc/motor.h",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v2-20261012/HARDWARE/motor.c",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v2-20261012/USER/system.c",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v2.1-20261012/HARDWARE/Inc/motor.h",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v2.1-20261012/HARDWARE/motor.c",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:firmware/models/LSR550A/v2.1-20261012/USER/system.c",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:platforms/lucsys_lsr180_description/NOTICE",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/lucsys_param.yaml",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/lucsys_param_back.yaml",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/robot_model.yaml",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/include/lucsys_chassis_driver/lucsys_chassis.h",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/base_serial.launch.py",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_chassis_driver.launch.py",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_sensors.launch.py",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/robot_mode_description.launch.py",
+      "c3de9824226b8a72715c8caa7412c8d0ecba660a:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/src/lucsys_chassis.cpp"
+    ],
+    "returncode": 0
+  },
+  {
+    "branch": "publish/inline-english-schematics-2026-11-23",
+    "commit": "bdd4030a4bf921c15aa4034eb5888ef852066858",
+    "matching_files": [
+      "bdd4030a4bf921c15aa4034eb5888ef852066858:platforms/lucsys_lsr180_description/NOTICE"
+    ],
+    "returncode": 0
+  },
+  {
+    "branch": "publish/intake-2026-11-23",
+    "commit": "43c1c1a16ee04692e321063d954303d3bfee46bd",
+    "matching_files": [
+      "43c1c1a16ee04692e321063d954303d3bfee46bd:platforms/lucsys_lsr180_description/NOTICE"
+    ],
+    "returncode": 0
+  },
+  {
+    "branch": "publish/lucsys-model-names-2026-11-23",
+    "commit": "ddff8d1a38fe556b9286aee39e666cfa8936dfb8",
+    "matching_files": [
+      "ddff8d1a38fe556b9286aee39e666cfa8936dfb8:platforms/lucsys_lsr180_description/NOTICE",
+      "ddff8d1a38fe556b9286aee39e666cfa8936dfb8:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/lucsys_param.yaml",
+      "ddff8d1a38fe556b9286aee39e666cfa8936dfb8:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/lucsys_param_back.yaml",
+      "ddff8d1a38fe556b9286aee39e666cfa8936dfb8:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/robot_model.yaml",
+      "ddff8d1a38fe556b9286aee39e666cfa8936dfb8:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/include/lucsys_chassis_driver/lucsys_chassis.h",
+      "ddff8d1a38fe556b9286aee39e666cfa8936dfb8:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/base_serial.launch.py",
+      "ddff8d1a38fe556b9286aee39e666cfa8936dfb8:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_chassis_driver.launch.py",
+      "ddff8d1a38fe556b9286aee39e666cfa8936dfb8:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_sensors.launch.py",
+      "ddff8d1a38fe556b9286aee39e666cfa8936dfb8:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/robot_mode_description.launch.py",
+      "ddff8d1a38fe556b9286aee39e666cfa8936dfb8:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/src/lucsys_chassis.cpp"
+    ],
+    "returncode": 0
+  },
+  {
+    "branch": "publish/lucsys-tool-doc-names-2026-11-23",
+    "commit": "e5c72864bc5157a048b69998af1302a7c863cf71",
+    "matching_files": [
+      "e5c72864bc5157a048b69998af1302a7c863cf71:platforms/lucsys_lsr180_description/NOTICE",
+      "e5c72864bc5157a048b69998af1302a7c863cf71:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/lucsys_param.yaml",
+      "e5c72864bc5157a048b69998af1302a7c863cf71:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/lucsys_param_back.yaml",
+      "e5c72864bc5157a048b69998af1302a7c863cf71:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/robot_model.yaml",
+      "e5c72864bc5157a048b69998af1302a7c863cf71:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/include/lucsys_chassis_driver/lucsys_chassis.h",
+      "e5c72864bc5157a048b69998af1302a7c863cf71:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/base_serial.launch.py",
+      "e5c72864bc5157a048b69998af1302a7c863cf71:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_chassis_driver.launch.py",
+      "e5c72864bc5157a048b69998af1302a7c863cf71:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_sensors.launch.py",
+      "e5c72864bc5157a048b69998af1302a7c863cf71:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/robot_mode_description.launch.py",
+      "e5c72864bc5157a048b69998af1302a7c863cf71:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/src/lucsys_chassis.cpp"
+    ],
+    "returncode": 0
+  },
+  {
+    "branch": "publish/ros2-chassis-source-2026-11-23",
+    "commit": "4c7443e7dfae21185466095dfb624f9b7be469aa",
+    "matching_files": [
+      "4c7443e7dfae21185466095dfb624f9b7be469aa:platforms/lucsys_lsr180_description/NOTICE",
+      "4c7443e7dfae21185466095dfb624f9b7be469aa:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/lucsys_param.yaml",
+      "4c7443e7dfae21185466095dfb624f9b7be469aa:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/lucsys_param_back.yaml",
+      "4c7443e7dfae21185466095dfb624f9b7be469aa:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/robot_model.yaml",
+      "4c7443e7dfae21185466095dfb624f9b7be469aa:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/include/lucsys_chassis_driver/lucsys_chassis.h",
+      "4c7443e7dfae21185466095dfb624f9b7be469aa:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/base_serial.launch.py",
+      "4c7443e7dfae21185466095dfb624f9b7be469aa:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_chassis_driver.launch.py",
+      "4c7443e7dfae21185466095dfb624f9b7be469aa:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_sensors.launch.py",
+      "4c7443e7dfae21185466095dfb624f9b7be469aa:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/robot_mode_description.launch.py",
+      "4c7443e7dfae21185466095dfb624f9b7be469aa:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/src/lucsys_chassis.cpp"
+    ],
+    "returncode": 0
+  },
+  {
+    "branch": "publish/source-maintenance-notices-2026-11-23",
+    "commit": "0cbf2d086416da5a021f73cec25e84428004dd26",
+    "matching_files": [
+      "0cbf2d086416da5a021f73cec25e84428004dd26:platforms/lucsys_lsr180_description/NOTICE",
+      "0cbf2d086416da5a021f73cec25e84428004dd26:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/lucsys_param.yaml",
+      "0cbf2d086416da5a021f73cec25e84428004dd26:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/lucsys_param_back.yaml",
+      "0cbf2d086416da5a021f73cec25e84428004dd26:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/config/robot_model.yaml",
+      "0cbf2d086416da5a021f73cec25e84428004dd26:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/include/lucsys_chassis_driver/lucsys_chassis.h",
+      "0cbf2d086416da5a021f73cec25e84428004dd26:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/base_serial.launch.py",
+      "0cbf2d086416da5a021f73cec25e84428004dd26:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_chassis_driver.launch.py",
+      "0cbf2d086416da5a021f73cec25e84428004dd26:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/lucsys_sensors.launch.py",
+      "0cbf2d086416da5a021f73cec25e84428004dd26:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/launch/robot_mode_description.launch.py",
+      "0cbf2d086416da5a021f73cec25e84428004dd26:ros2/chassis-drivers/humble-20260903/lucsys_chassis_driver/src/lucsys_chassis.cpp"
+    ],
+    "returncode": 0
+  },
+  {
+    "branch": "publish/wiring-label-cleanup-2026-11-23",
+    "commit": "ddee88b350bd437a4b5b10b580117aec6e691b44",
+    "matching_files": [
+      "ddee88b350bd437a4b5b10b580117aec6e691b44:platforms/lucsys_lsr180_description/NOTICE"
+    ],
+    "returncode": 0
+  }
+]

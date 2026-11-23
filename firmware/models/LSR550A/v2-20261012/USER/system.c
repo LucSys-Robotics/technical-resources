@@ -39,7 +39,7 @@ void systemInit(void)
 		//Initialize the hardware of the older version of the C50C
 		V1_0_LED_Init();
 		V1_0_CAN1_Mode_Init(1,3,3,6,0);
-		V1_0_MiniBalance_PWM_Init(16799,0);
+		V1_0_LucSys_PWM_Init(16799,0);
 		
 		//Initialize the hardware interface to the PS2 controller
 		//Initialize the hardware interface connected to the PS2 controller
@@ -69,7 +69,7 @@ void systemInit(void)
 		
 		//Initialize motor speed control and, for controlling motor speed, PWM frequency 10kHz
 		//Initialize motor speed control and control motor speed, PWM frequency 10KHZ
-		MiniBalance_PWM_Init(16799,0);  //Advanced timer TIM8 frequency is 168M; full PWM is 16799; frequency=168M/((16799+1)*(0+1))=10k
+		LucSys_PWM_Init(16799,0);  //Advanced timer TIM8 frequency is 168M; full PWM is 16799; frequency=168M/((16799+1)*(0+1))=10k
 	
 		//MPU6050 is initialized to read the vehicle's three-axis attitude,
 		//three-axis angular velocity and three-axis acceleration information

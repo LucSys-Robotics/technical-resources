@@ -1,0 +1,4 @@
+f163e6d Prepare LucSys branding cleanup and explicit ROS startup candidate
+c3de982 Translate source comments and documentation into English without changing executable behavior
+cf235fb Publish LSR550A versioned STM32 references and link confirmed LSR200Auto shared source
+c06975b Publish Humble chassis driver with validated serial Quick Start

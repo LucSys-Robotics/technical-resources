@@ -1,0 +1,21 @@
+{
+  "result": "PASS",
+  "full": false,
+  "expected_command_frames": [
+    "7b00000064000000001f7d",
+    "7b0000ff380096fed4007d",
+    "7b00000000ff9c00c8d07d",
+    "7b00000000000000007b7d"
+  ],
+  "feedback_topics": [
+    "PowerVoltage",
+    "imu/data_raw",
+    "odom"
+  ],
+  "voltage": 24.0,
+  "odom_velocity": 0.10000000149011612,
+  "silent_peer": "PASS",
+  "required_nodes": [
+    "lucsys_robot"
+  ]
+}

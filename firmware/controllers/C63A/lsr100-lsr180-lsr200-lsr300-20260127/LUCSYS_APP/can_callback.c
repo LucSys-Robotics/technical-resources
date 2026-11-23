@@ -170,7 +170,7 @@ static void WheelSpeedCalculation(uint8_t NodeId,float Lrpm,float Rrpm)
 	switch(RobotHardWareParam.CarType)
 	{
 		//Single-drive models
-		case S300:
+		case LSR300:
 			if( NodeId==1 )
 			{
 				RobotControlParam.MotorA.feedback = Lvel;
@@ -178,7 +178,7 @@ static void WheelSpeedCalculation(uint8_t NodeId,float Lrpm,float Rrpm)
 			}
 			break;
 		//Single-drive models
-		case S300Mini:case S100:
+		case LSR300Mini:case LSR100:
 			if( NodeId==1 )
 			{
 				RobotControlParam.MotorA.feedback = -Lvel;
@@ -186,7 +186,7 @@ static void WheelSpeedCalculation(uint8_t NodeId,float Lrpm,float Rrpm)
 			}
 			break;
 		//Dual drive
-		case S200:case S200_OUTDOOR:
+		case LSR200:case LSR200_OUTDOOR:
 			if( NodeId==1 )
 			{
 				RobotControlParam.MotorA.feedback = Lvel;
@@ -199,7 +199,7 @@ static void WheelSpeedCalculation(uint8_t NodeId,float Lrpm,float Rrpm)
 			}
 			break;
 		//3 drivers
-		case S260:
+		case REF2:
 			if( NodeId==1 )
 			{
 				RobotControlParam.MotorA.feedback = Lvel;

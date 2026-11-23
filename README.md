@@ -1,3 +1,5 @@
+> **Candidate branch — not a stable release.** Customer archives are separated from historical compatibility. See [final verification report](validation/pr8/README.md). Build and base/EKF/model pseudo-terminal tests pass. The ROS suite reports 246 tests, zero failures and 53 upstream cppcheck skips; a direct check reports two third-party warnings. Keil/hardware validation remains incomplete. Existing download links still point to the previous stable edition. See [candidate results](ros2/cleanup-candidate-validation.json) and the [startup/migration instructions](ros2/chassis-drivers/humble-20260903/README.md#candidate-cleanup-and-explicit-startup).
+
 # LucSys Robotics — Mobile Robot Technical Resources
 
 **Hardware integration · Chassis control · ROS development**

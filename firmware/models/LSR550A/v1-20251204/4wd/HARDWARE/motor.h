@@ -67,8 +67,8 @@
 #define SERVO_INIT 1500  //Servo zero point // servo zero point
 
 void Enable_Pin(void);
-void MiniBalance_PWM_Init(u16 arr,u16 psc);
-void MiniBalance_Motor_Init(void);
+void LucSys_PWM_Init(u16 arr,u16 psc);
+void LucSys_Motor_Init(void);
 void Servo_PWM_Init(u16 arr,u16 psc);
 void TIM9_Init(u16 arr,u16 psc);
 #endif

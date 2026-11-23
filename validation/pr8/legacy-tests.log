@@ -1,0 +1,14 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-6.2.5, py-1.10.0, pluggy-0.13.0
+rootdir: /audit
+plugins: ament-pep257-0.12.15, ament-xmllint-0.12.15, launch-testing-ros-0.19.14, ament-copyright-0.12.15, launch-testing-1.0.15, ament-lint-0.12.15, ament-flake8-0.12.15, colcon-core-0.21.3
+collected 6 items
+
+../legacy/lucsys_chassis_driver/test/test_launch_contracts.py ......     [100%]
+
+=============================== warnings summary ===============================
+legacy/lucsys_chassis_driver/test/test_launch_contracts.py::LaunchContracts::test_legacy_device_fallback
+  Warning: Using a legacy serial-device alias; migrate to /dev/lucsys_controller.
+
+-- Docs: https://docs.pytest.org/en/stable/warnings.html
+========================= 6 passed, 1 warning in 0.06s =========================

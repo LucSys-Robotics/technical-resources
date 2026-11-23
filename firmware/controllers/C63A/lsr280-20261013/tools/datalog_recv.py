@@ -387,7 +387,7 @@ def _on_sigint(signum, frame):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="T280 底盘数据观察接收端")
+    ap = argparse.ArgumentParser(description="LSR280 底盘数据观察接收端")
     ap.add_argument("group",
                     help="数据组编号, 如 01. 生成 <组名>_data.csv 等4个文件")
     ap.add_argument("--port", default="/dev/ttyCH343USB0", help="串口设备")

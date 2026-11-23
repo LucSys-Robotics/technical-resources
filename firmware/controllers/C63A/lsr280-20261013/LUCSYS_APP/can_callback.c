@@ -190,7 +190,7 @@ static void WheelSpeedCalculation(uint8_t NodeId,float Lrpm,float Rrpm)
 	switch(RobotHardWareParam.CarType)
 	{
 		//Single-drive models
-		case S300:
+		case LSR300:
 			if( NodeId==1 )
 			{
 				RobotControlParam.MotorA.feedbackSpeed = Lvel;
@@ -198,7 +198,7 @@ static void WheelSpeedCalculation(uint8_t NodeId,float Lrpm,float Rrpm)
 			}
 			break;
 		//Single-drive models
-		case S300Mini:case S100:
+		case LSR300Mini:case LSR100:
 			if( NodeId==1 )
 			{
 				RobotControlParam.MotorA.feedbackSpeed = -Lvel;
@@ -206,7 +206,7 @@ static void WheelSpeedCalculation(uint8_t NodeId,float Lrpm,float Rrpm)
 			}
 			break;
 		//Dual drive
-		case S200:case S200_OUTDOOR:
+		case LSR200:case LSR200_OUTDOOR:
 			if( NodeId==1 )
 			{
 				RobotControlParam.MotorA.feedbackSpeed = Lvel;
@@ -219,7 +219,7 @@ static void WheelSpeedCalculation(uint8_t NodeId,float Lrpm,float Rrpm)
 			}
 			break;
 		//3 drivers
-		case S260:
+		case REF2:
 			if( NodeId==1 )
 			{
 				RobotControlParam.MotorA.feedbackSpeed = Lvel;
@@ -238,7 +238,7 @@ static void WheelSpeedCalculation(uint8_t NodeId,float Lrpm,float Rrpm)
 			break;
 			
 		//Four wheels and four turns
-		case T280:
+		case LSR280:
 			if( NodeId==1 )
 			{
 				RobotControlParam.MotorA.ori_pos = Lrpm;
@@ -268,7 +268,7 @@ static int16_t ReadInt16LE(const uint8_t* data)
 	return (int16_t)((uint16_t)data[0] | ((uint16_t)data[1] << 8));
 }
 
-// Driver3 controls wheel A/B and Driver4 controls wheel C/D on T280.
+// Driver3 controls wheel A/B and Driver4 controls wheel C/D on LSR280.
 // Drive commands for all four wheel motors are inverted, so invert current
 // feedback as well to keep its sign consistent with wheel feedbackSpeed.
 static void WheelTelemetryCalculation(uint8_t NodeId,int16_t Lcurrent,int16_t Rcurrent,int16_t Ltemperature,int16_t Rtemperature)
@@ -278,7 +278,7 @@ static void WheelTelemetryCalculation(uint8_t NodeId,int16_t Lcurrent,int16_t Rc
 	float leftTemperature = (float)Ltemperature * WHEEL_TEMPERATURE_SCALE;
 	float rightTemperature = (float)Rtemperature * WHEEL_TEMPERATURE_SCALE;
 
-	if( RobotHardWareParam.CarType != T280 ) return;
+	if( RobotHardWareParam.CarType != LSR280 ) return;
 
 	if( NodeId == 3 )
 	{

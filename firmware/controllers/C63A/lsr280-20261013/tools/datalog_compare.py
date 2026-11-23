@@ -150,7 +150,7 @@ def fmt(v):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="T280 两组数据对比")
+    ap = argparse.ArgumentParser(description="LSR280 两组数据对比")
     ap.add_argument("before", help="改动前的数据组, 如 04")
     ap.add_argument("after", help="改动后的数据组, 如 05")
     ap.add_argument("--logdir", default="./logs")

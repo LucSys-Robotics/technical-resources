@@ -18,11 +18,11 @@ cp -R technical-resources/ros2/chassis-drivers/humble-20260903/{lucsys_chassis_d
 cd ~/lucsys_driver_ws
 source /opt/ros/humble/setup.bash
 rosdep install --from-paths src --ignore-src -r -y
-colcon build --cmake-args -DBUILD_TESTING=OFF
+colcon build --cmake-args -DBUILD_TESTING=ON
 source install/setup.bash
 ```
 
-The production build was executed in Ubuntu 22.04 / Humble ARM64. rosdep is a dependency-installation recipe; dependencies were installed explicitly in the validation container. Upstream style-lint suites are not represented as passing. Third-party serial-library headers and notices retain their original terms. LucSys Robotics prepares and maintains the application-source distribution. The application-code license is unspecified; no new open-source license is granted by this maintenance notice. Third-party terms remain applicable.
+The production build was executed in Ubuntu 22.04 / Humble ARM64. rosdep is a dependency-installation recipe; dependencies were installed explicitly in the validation container. The candidate test run reports 246 tests, zero errors/failures and 53 upstream cppcheck skips. A direct cppcheck run completed with two pre-existing alloca warnings in the unchanged third-party serial library. Third-party serial-library headers and notices retain their original terms. LucSys Robotics prepares and maintains the application-source distribution. Supplier-authorized application distribution is documented by LicenseRef-LucSys-Supplier-Authorization and lucsys_chassis_driver/NOTICE.md; no new open-source license is granted by this maintenance notice. Third-party terms remain applicable.
 
 ## Connect and inspect
 
@@ -36,7 +36,7 @@ ros2 topic echo /imu/data_raw
 ros2 topic echo /PowerVoltage
 ```
 
-The default legacy device alias and ROS node name remain functional compatibility identifiers; the command above overrides the port. Topic names and wire data were not changed by packaging.
+The default device is /dev/lucsys_controller and the default node is lucsys_robot; the command above overrides the port. Legacy compatibility is described below. Topic names and wire data were not changed by packaging.
 
 A motion-command example, validated against a virtual serial peer only:
 
@@ -72,3 +72,40 @@ See [electrical references](../../../electrical/controllers/README.md) and the [
 Chinese source comments and accompanying TXT/Markdown explanations have been translated into English. Executable code, runtime messages, protocol strings, configuration values and firmware selection logic are unchanged. Runtime console output may therefore still contain Chinese. Changelogs describe historical source changes, not verified behavior of every delivered vehicle. Match the controller, hardware revision and firmware version before use.
 
 TXT notes use `CHANGELOG.txt` (and `VERSION_NOTES.txt` where present); Keil project references were updated accordingly. Earlier source releases remain available for comparison. Translation does not add hardware compatibility or safety guarantees.
+
+## Candidate cleanup and explicit startup
+
+This customer candidate uses LucSys names without legacy device fallback or model aliases. Historical deployments have a separate repository-level compatibility overlay, excluded from customer archives. Third-party library authors and license notices are retained. Internal identifier renaming does not change controller values or protocols. Unconfirmed reference variants remain unchanged rather than being assigned to a LucSys model.
+
+Install dependencies from the package manifests using `rosdep install --from-paths src --ignore-src -r -y`, then build and source the workspace. Base startup no longer implicitly starts EKF, model, camera or LiDAR components:
+
+```bash
+ros2 launch lucsys_chassis_driver lucsys_chassis_driver.launch.py usart_port_name:=/dev/ttyUSB0 car_mode:=<confirmed_configuration_key>
+```
+
+Select the actual serial device and confirmed controller configuration. No udev rule is installed automatically. The default /dev/lucsys_controller is never replaced by another device. Supply usart_port_name explicitly when using /dev/ttyUSB0 or another actual port. External ultrasonic avoidance requires an explicit installed package; it is never silently disabled.
+
+To enable EKF, add `start_ekf:=true`; this requires `robot_localization`. To publish a model, install the matching existing LucSys model package and supply all of:
+
+```text
+start_state_publisher:=true model_package:=<exact_lucsys_description_package> model_name:=<existing_urdf_basename>
+```
+
+For example, `lucsys_lsr550a_mec_description` contains `lsr550a_mec.urdf`. This is a model selection example, not confirmation of a particular delivered controller/firmware. The launcher does not infer model compatibility or substitute a different model.
+
+Sensor transforms from historical profiles are disabled by default. Publish only confirmed transforms; the standalone `robot_mode_description.launch.py` supports `publish_static_tf:=true`. Avoid publishing duplicate transforms already present in a URDF. The `lucsys_sensors.launch.py` entry starts only the base driver unless `start_lidar:=true` or `start_camera:=true` is requested. Requested external sensor drivers must be installed separately. Explicitly configured ultrasonic avoidance is never silently disabled when its package is missing.
+
+Runtime and static validation are separate from Keil compilation and physical-robot validation. This candidate must not be treated as verified firmware for every hardware revision.
+
+### Candidate verification
+
+To run all registered checks after a test-enabled build:
+
+```bash
+colcon build --cmake-args -DBUILD_TESTING=ON
+source install/setup.bash
+colcon test --executor sequential
+colcon test-result --verbose
+```
+
+The maintenance-notice checker validates the declared notice format, not legal provenance. Third-party licenses remain unchanged. The inverse-square-root routine now uses a defined 32-bit memcpy representation instead of reading a float through a platform-sized long pointer; its original constant and Newton iteration are retained. Sanitizer tests cover 10,001 positive inputs. Virtual serial tests verify feedback and velocity frames, with and without EKF/model startup; these are not physical-robot tests.

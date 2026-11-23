@@ -1,0 +1,240 @@
+[
+  {
+    "release": "source-2026-11-23-en",
+    "files": 2196,
+    "identity_match_count": 57,
+    "examples": [
+      {
+        "file": "lucsys_c50c_20261104.zip!lucsys_c50c_20261104/BALANCE/reportErr_task.c",
+        "tokens": [
+          "S100",
+          "S200",
+          "S200_OUTDOOR",
+          "S260",
+          "S300",
+          "S300Mini"
+        ]
+      },
+      {
+        "file": "lucsys_lsr100_lsr180_lsr200_lsr300_20260127.zip!lucsys_lsr100_lsr180_lsr200_lsr300_20260127/LUCSYS_APP/AutoRecharge_task.c",
+        "tokens": [
+          "S200_OUTDOOR",
+          "S260"
+        ]
+      },
+      {
+        "file": "lucsys_lsr100_lsr180_lsr200_lsr300_20260127.zip!lucsys_lsr100_lsr180_lsr200_lsr300_20260127/LUCSYS_APP/Inc/robot_select_init.h",
+        "tokens": [
+          "S100",
+          "S100_Diameter",
+          "S100_Wheelspacing",
+          "S150",
+          "S150_Diameter",
+          "S150_Wheelspacing",
+          "S200",
+          "S200_Diameter",
+          "S200_OUTDOOR",
+          "S200_OUTDOOR_Diameter",
+          "S200_OUTDOOR_Wheelspacing",
+          "S200_OUTDOOR_axlespacing",
+          "S200_Wheelspacing",
+          "S200_axlespacing",
+          "S260",
+          "S260_Diameter",
+          "S260_Wheelspacing",
+          "S260_axlespacing",
+          "S300",
+          "S300Mini",
+          "S300_Diameter",
+          "S300_Wheelspacing"
+        ]
+      },
+      {
+        "file": "lucsys_lsr100_lsr180_lsr200_lsr300_20260127.zip!lucsys_lsr100_lsr180_lsr200_lsr300_20260127/LUCSYS_APP/RobotControl_task.c",
+        "tokens": [
+          "S100",
+          "S200",
+          "S200_OUTDOOR",
+          "S260",
+          "S300",
+          "S300Mini"
+        ]
+      }
+    ]
+  },
+  {
+    "release": "lsr550a-source-2026-11-23",
+    "files": 1109,
+    "identity_match_count": 16,
+    "examples": [
+      {
+        "file": "lucsys_lsr550a_v1-20251204.zip!LSR550A/v1-20251204/4wd/BALANCE/system.c",
+        "tokens": [
+          "MiniBalance"
+        ]
+      },
+      {
+        "file": "lucsys_lsr550a_v1-20251204.zip!LSR550A/v1-20251204/4wd/HARDWARE/motor.c",
+        "tokens": [
+          "MiniBalance"
+        ]
+      },
+      {
+        "file": "lucsys_lsr550a_v1-20251204.zip!LSR550A/v1-20251204/4wd/HARDWARE/motor.h",
+        "tokens": [
+          "MiniBalance"
+        ]
+      },
+      {
+        "file": "lucsys_lsr550a_v1-20251204.zip!LSR550A/v1-20251204/differential/BALANCE/system.c",
+        "tokens": [
+          "MiniBalance"
+        ]
+      }
+    ]
+  },
+  {
+    "release": "source-2026-11-23-lucsys-models",
+    "files": 1087,
+    "identity_match_count": 41,
+    "examples": [
+      {
+        "file": "lucsys_c50c_20261104.zip!lucsys_c50c_20261104/BALANCE/reportErr_task.c",
+        "tokens": [
+          "S100",
+          "S200",
+          "S200_OUTDOOR",
+          "S260",
+          "S300",
+          "S300Mini"
+        ]
+      },
+      {
+        "file": "lucsys_lsr100_lsr180_lsr200_lsr300_20260127.zip!lucsys_lsr100_lsr180_lsr200_lsr300_20260127/LUCSYS_APP/AutoRecharge_task.c",
+        "tokens": [
+          "S200_OUTDOOR",
+          "S260"
+        ]
+      },
+      {
+        "file": "lucsys_lsr100_lsr180_lsr200_lsr300_20260127.zip!lucsys_lsr100_lsr180_lsr200_lsr300_20260127/LUCSYS_APP/Inc/robot_select_init.h",
+        "tokens": [
+          "S100",
+          "S100_Diameter",
+          "S100_Wheelspacing",
+          "S100\u8f6e\u8ddd",
+          "S150",
+          "S150_Diameter",
+          "S150_Wheelspacing",
+          "S150\u8f6e\u8ddd",
+          "S200",
+          "S200_Diameter",
+          "S200_OUTDOOR",
+          "S200_OUTDOOR_Diameter",
+          "S200_OUTDOOR_Wheelspacing",
+          "S200_OUTDOOR_axlespacing",
+          "S200_Wheelspacing",
+          "S200_axlespacing",
+          "S200\u6237\u5916\u7248",
+          "S200\u6237\u5916\u7248\u672c",
+          "S200\u8f6e\u8ddd",
+          "S260",
+          "S260_Diameter",
+          "S260_Wheelspacing",
+          "S260_axlespacing",
+          "S260\u8f6e\u8ddd",
+          "S260\u8f74\u8ddd\u4e0d\u662f\u771f\u6b63\u610f\u4e49\u4e0a\u7684\u8f74\u8ddd",
+          "S300",
+          "S300Mini",
+          "S300_Diameter",
+          "S300_Wheelspacing",
+          "S300\u8f6e\u8ddd"
+        ]
+      },
+      {
+        "file": "lucsys_lsr100_lsr180_lsr200_lsr300_20260127.zip!lucsys_lsr100_lsr180_lsr200_lsr300_20260127/LUCSYS_APP/RobotControl_task.c",
+        "tokens": [
+          "S100",
+          "S200",
+          "S200_OUTDOOR",
+          "S260",
+          "S300",
+          "S300Mini",
+          "S300\u8f6e\u5b50\u5b89\u88c5\u65b9\u5411\u4e3a\u53cd\u5411"
+        ]
+      }
+    ]
+  },
+  {
+    "release": "source-2026-11-23",
+    "files": 1087,
+    "identity_match_count": 45,
+    "examples": [
+      {
+        "file": "lucsys_c50c_20261104.zip!lucsys_c50c_20261104/BALANCE/reportErr_task.c",
+        "tokens": [
+          "S100",
+          "S200",
+          "S200_OUTDOOR",
+          "S260",
+          "S300",
+          "S300Mini"
+        ]
+      },
+      {
+        "file": "lucsys_c63a_s_20260127.zip!lucsys_c63a_s_20260127/LUCSYS_APP/AutoRecharge_task.c",
+        "tokens": [
+          "S200_OUTDOOR",
+          "S260"
+        ]
+      },
+      {
+        "file": "lucsys_c63a_s_20260127.zip!lucsys_c63a_s_20260127/LUCSYS_APP/Inc/robot_select_init.h",
+        "tokens": [
+          "S100",
+          "S100_Diameter",
+          "S100_Wheelspacing",
+          "S100\u8f6e\u8ddd",
+          "S150",
+          "S150_Diameter",
+          "S150_Wheelspacing",
+          "S150\u8f6e\u8ddd",
+          "S200",
+          "S200_Diameter",
+          "S200_OUTDOOR",
+          "S200_OUTDOOR_Diameter",
+          "S200_OUTDOOR_Wheelspacing",
+          "S200_OUTDOOR_axlespacing",
+          "S200_Wheelspacing",
+          "S200_axlespacing",
+          "S200\u6237\u5916\u7248",
+          "S200\u6237\u5916\u7248\u672c",
+          "S200\u8f6e\u8ddd",
+          "S260",
+          "S260_Diameter",
+          "S260_Wheelspacing",
+          "S260_axlespacing",
+          "S260\u8f6e\u8ddd",
+          "S260\u8f74\u8ddd\u4e0d\u662f\u771f\u6b63\u610f\u4e49\u4e0a\u7684\u8f74\u8ddd",
+          "S300",
+          "S300Mini",
+          "S300_Diameter",
+          "S300_Wheelspacing",
+          "S300\u8f6e\u8ddd"
+        ]
+      },
+      {
+        "file": "lucsys_c63a_s_20260127.zip!lucsys_c63a_s_20260127/LUCSYS_APP/RobotControl_task.c",
+        "tokens": [
+          "S100",
+          "S200",
+          "S200_OUTDOOR",
+          "S260",
+          "S300",
+          "S300Mini",
+          "S300\u8f6e\u5b50\u5b89\u88c5\u65b9\u5411\u4e3a\u53cd\u5411"
+        ]
+      }
+    ]
+  }
+]

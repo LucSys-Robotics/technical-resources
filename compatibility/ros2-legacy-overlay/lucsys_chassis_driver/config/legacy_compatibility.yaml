@@ -1,0 +1,12 @@
+# Compatibility only: old deployed names are accepted, not recommended defaults.
+# Remove aliases only after existing installations have migrated.
+model_aliases:
+  R680A_4wd_arm: LSR550A_4wd_arm
+  R680A_mec_arm: LSR550A_mec_arm
+  S100_diff: LSR100_diff
+  S200_4wd: LSR200_4wd
+  S300_pro: LSR300_pro
+  S300_mini: LSR300_mini
+controller_device: /dev/wheeltec_controller
+lidar_device: /dev/wheeltec_lidar
+ultrasonic_package: wheeltec_ultrasonic

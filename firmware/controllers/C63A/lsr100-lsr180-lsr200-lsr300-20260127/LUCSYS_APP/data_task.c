@@ -118,8 +118,8 @@ void RobotDataTransmitTask(void* param)
 		autorechargerbuffer[6] = Calculate_BCC(autorechargerbuffer,6);
 		
 		//Send corresponding data depending on the vehicle model
-		if( RobotHardWareParam.CarType == S300 || RobotHardWareParam.CarType == S300Mini ||
- 			RobotHardWareParam.CarType == S200_OUTDOOR || RobotHardWareParam.CarType == S260 )
+		if( RobotHardWareParam.CarType == LSR300 || RobotHardWareParam.CarType == LSR300Mini ||
+ 			RobotHardWareParam.CarType == LSR200_OUTDOOR || RobotHardWareParam.CarType == REF2 )
 		{
 			uint8_t tmp[BaseFRAME_LEN+RangerFRAME_LEN+ChargeFRAME_LEN]={0};
 			uint8_t *ptr = tmp;
@@ -175,7 +175,7 @@ void RobotDataTransmitTask(void* param)
 //			if( RobotControlParam.DebugLevel == 0 )
 //				HAL_UART_Transmit_DMA(&huart1,tmp,sizeof(tmp)/sizeof(tmp[0]));
 		}
-		else if( RobotHardWareParam.CarType == S200 || RobotHardWareParam.CarType == S100 )
+		else if( RobotHardWareParam.CarType == LSR200 || RobotHardWareParam.CarType == LSR100 )
 		{
 			uint8_t tmp[BaseFRAME_LEN+ChargeFRAME_LEN]={0};
 			uint8_t *ptr = tmp;
@@ -217,7 +217,7 @@ void RobotDataTransmitTask(void* param)
 		uint8_t chargerControlSend[8]={0};
 		switch(RobotHardWareParam.CarType)
 		{
-			case S300:case S300Mini:case S100:
+			case LSR300:case LSR300Mini:case LSR100:
 				if( RobotControlParam.MotorA.feedback>0 ) chargerControlSend[0]=1;
 				else if( RobotControlParam.MotorA.feedback<0 ) chargerControlSend[0]=2;
 				else chargerControlSend[0]=0;
@@ -226,7 +226,7 @@ void RobotDataTransmitTask(void* param)
 				else if( RobotControlParam.MotorB.feedback<0 ) chargerControlSend[1]=2;
 				else chargerControlSend[1]=0;
 				break;
-			case S200:
+			case LSR200:
 				if( RobotControlParam.MotorA.feedback>0 ) chargerControlSend[0]=1;
 				else if( RobotControlParam.MotorA.feedback<0 ) chargerControlSend[0]=2;
 				else chargerControlSend[0]=0;
@@ -236,7 +236,7 @@ void RobotDataTransmitTask(void* param)
 				else chargerControlSend[1]=0;
 				break;
 			//Models with rear ultrasonic sensors do not require charging equipment to detect wheel movement. Automatic deceleration
-			case S260:case S200_OUTDOOR:
+			case REF2:case LSR200_OUTDOOR:
 				chargerControlSend[0]=0;
 				chargerControlSend[1]=0;
 				break;

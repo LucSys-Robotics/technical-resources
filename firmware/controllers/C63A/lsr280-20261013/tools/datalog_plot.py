@@ -145,7 +145,7 @@ def resolve_group(group, logdir, outdir):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="T280 data observation plots")
+    ap = argparse.ArgumentParser(description="LSR280 data observation plots")
     ap.add_argument("group",
                     help="数据组编号, 如 01; 也可直接给 *_data.csv 路径")
     ap.add_argument("--logdir", default="./logs", help="数据目录")
