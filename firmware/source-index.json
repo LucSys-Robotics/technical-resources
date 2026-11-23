@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "firmware/README.md",
-      "sha256": "d47448c06d3a1c0bc149fc92c1432c2bb42673f80a5abd7be04aac4cf58dde93",
-      "size": 2438
+      "sha256": "e27bc0e4cb286e00cca523b01a989a3b1bf20d022eb05eeb7c55d87d59050009",
+      "size": 2481
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/AutoRecharge/AutoRecharge.c",
@@ -2602,2592 +2602,2592 @@
       "size": 2320
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/.mxproject",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/.mxproject",
       "sha256": "9f632974df3b9b834c4ba34c3096b31eea3f0ca24e6b06fb59e9541184b723ad",
       "size": 20164
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Inc/FreeRTOSConfig.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Inc/FreeRTOSConfig.h",
       "sha256": "d74279e05068c53f50fac341c3a4567cea3e068a4f03a444730e34897833aab3",
       "size": 8174
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Inc/adc.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Inc/adc.h",
       "sha256": "66905dff3dfd7ffe143329d4be86c1bbd2398b27937a46f42093bfd10620c454",
       "size": 1345
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Inc/can.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Inc/can.h",
       "sha256": "6969ab2fbb77c30dbb108ac7c5b8aa71216d32edcad49ee46b6a48225941c846",
       "size": 1406
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Inc/dma.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Inc/dma.h",
       "sha256": "4800df9bb60edf45f266a060814fd4199270adcfe90c635f4a3d1d3fa10b4f3a",
       "size": 1393
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Inc/gpio.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Inc/gpio.h",
       "sha256": "92b391aae985f5b7b6fcbfc37daf922842a683a44045b4d55712007e860ec0ef",
       "size": 1313
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Inc/main.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Inc/main.h",
       "sha256": "555d6aec6a7b01b212c7689990400852f39c470486c5ff8dfcdb89a6c59b7c28",
       "size": 4405
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Inc/stm32f4xx_hal_conf.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Inc/stm32f4xx_hal_conf.h",
       "sha256": "fedcf29c91ea96027636fa51348f4aa5b7adbf19ad890abefb3d87561f5496d6",
       "size": 20018
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Inc/stm32f4xx_it.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Inc/stm32f4xx_it.h",
       "sha256": "dbb725a93a31fb601db9cd75b7905a68680cd27b7dc14cd3ed29e182a794a628",
       "size": 2365
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Inc/tim.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Inc/tim.h",
       "sha256": "124c03b92585acdd7a768acfb8e426bdb52fed52005e4b617f32393d35d2575c",
       "size": 1706
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Inc/usart.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Inc/usart.h",
       "sha256": "013242a7e3162b6d7462142e9f0eecc62e29b6a21f914082e1d6dbd36e1f5384",
       "size": 1568
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Src/adc.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Src/adc.c",
       "sha256": "6b2167fb4f2d18fda1350bbf83dfcf652e20e6960c3b488b0431dce3b99df852",
       "size": 4633
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Src/can.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Src/can.c",
       "sha256": "ad1abd3d1f6bd6db2a2ad48bd2c4ea52c90f44bd63914ab483e215617e2602e5",
       "size": 5891
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Src/dma.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Src/dma.c",
       "sha256": "b342863257dfb74d70e86e56a2a96ed755617bb397cb6370cb44cbf7e7c1700c",
       "size": 2205
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Src/freertos.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Src/freertos.c",
       "sha256": "1a5c4d68233a40adda3da0710d87efd3cfd8e87e0485c049a27d9af143fcf71c",
       "size": 12152
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Src/gpio.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Src/gpio.c",
       "sha256": "9b17b5dc19176e8706cfb1f16dc6cb0b8daaf602c8ffd68926a98cd0bd775dd5",
       "size": 5271
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Src/main.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Src/main.c",
       "sha256": "7c26bbc5f5ddd53af61a0980f6cf83ffca55a6a6cb3e2d8399c64d7af80ab6c2",
       "size": 10781
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Src/stm32f4xx_hal_msp.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Src/stm32f4xx_hal_msp.c",
       "sha256": "3372414b1364389a0e6496d5abc5c496baad61e108e32c32dd22afa07fce0b1a",
       "size": 2321
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Src/stm32f4xx_hal_timebase_tim.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Src/stm32f4xx_hal_timebase_tim.c",
       "sha256": "854283a5ddb2dd5fb1447029dfecfbf5e8f9b02d14973d7f126b2f37631ccd1d",
       "size": 4475
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Src/stm32f4xx_it.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Src/stm32f4xx_it.c",
       "sha256": "7484a015ad3bc89ef939e839329b355e28b63b0f1a3a2576b550bb569502935d",
       "size": 10093
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Src/system_stm32f4xx.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Src/system_stm32f4xx.c",
       "sha256": "4cdbb9f76062106db72992a392da854a984db96d78040ef4cf4b53afa5948899",
       "size": 27582
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Src/tim.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Src/tim.c",
       "sha256": "0623034850436f412fad24d7dfd47877fb9d543f42bc9b288fb92a26ffc09408",
       "size": 17580
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Core/Src/usart.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Core/Src/usart.c",
       "sha256": "77bf3eb0018db445e6e96a36fe23e3bee12f91e13ed58ddbb987ea122481e2ee",
       "size": 12964
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h",
       "sha256": "e4e38f39dc15f3d79d3eab5270396b260381898c67b6da9578d96d59b8ed99dc",
       "size": 1208799
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
       "sha256": "d3f227f83e5ab4a27baa3ff90aa5b08dc8af961c1a6bbfb8b29c422a806a33c9",
       "size": 12228
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h",
       "sha256": "6ba46a957d0c32196d03304b981db5be8c3969d41953a53a364ca861085277d1",
       "size": 2318
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Device/ST/STM32F4xx/LICENSE.txt",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Device/ST/STM32F4xx/LICENSE.txt",
       "sha256": "d65cad1327eb8dae95d0aeab71fb22505f99a3d7cd1ce2530d7d40c52aece002",
       "size": 377
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/cachel1_armv7.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/cachel1_armv7.h",
       "sha256": "6cdb5b324f2fd1bb5b2f47298ba6e6777e735d7cad3bb8d942cd36e2c6e65328",
       "size": 12498
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/cmsis_armcc.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/cmsis_armcc.h",
       "sha256": "d074534d7106cec83474b3b0a897bd2553e1a8895ecbd54f4f4fb25928066eee",
       "size": 28887
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/cmsis_armclang.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/cmsis_armclang.h",
       "sha256": "11b39b96ddc1125124762b3423a77b90dd40ea5b4582a3513830245046b24311",
       "size": 49920
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/cmsis_armclang_ltm.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/cmsis_armclang_ltm.h",
       "sha256": "8621969ea669a1b230ff2125a760ef66d575c48cb45e9e457f768909abcbda46",
       "size": 57949
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/cmsis_compiler.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/cmsis_compiler.h",
       "sha256": "869640702d811c4c63abb52206715c891a93fd03be954df5ad40d378355af3d6",
       "size": 9764
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/cmsis_gcc.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/cmsis_gcc.h",
       "sha256": "3d4e265d0aa42f888385ccf073666e6ebb5ec9f834760b9da27c474e177f708d",
       "size": 65585
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/cmsis_iccarm.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/cmsis_iccarm.h",
       "sha256": "f28119adbc81fb0e3c957c9aebe8fb423ad93634e76ead3caa2b0818d2e123ae",
       "size": 30071
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/cmsis_version.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/cmsis_version.h",
       "sha256": "8cda7ac3ff6f0eb5e83c4fe613dd195151b24da54167f5c3c007e599a03f1edc",
       "size": 1719
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_armv81mml.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_armv81mml.h",
       "sha256": "255663bc446feb00e341d682f7f78ec6f301a5c1802d856bcdd18d7552393dff",
       "size": 280868
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_armv8mbl.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_armv8mbl.h",
       "sha256": "b5a662723f65a9fe1fbde82b83681daec28aadb78c2dc95e531d6fb6bb396dde",
       "size": 117226
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_armv8mml.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_armv8mml.h",
       "sha256": "17021c385f47945f2376fbb30f2f2e3fc28bd0f3d97eb857d212c192c54ab3fc",
       "size": 186400
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_cm0.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_cm0.h",
       "sha256": "5cc53e723ee0e97455233f8dee892940209e2fff66071d66d74bab56c528b199",
       "size": 42595
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_cm0plus.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_cm0plus.h",
       "sha256": "a19e24c136145b4c72630d0ab7c83a7aef010f3ba165e34c56a05057a2d9fed5",
       "size": 50964
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_cm1.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_cm1.h",
       "sha256": "c243c4afb291068fe7078d2911b2f0001e78a4d5466c26728611b06147d65c2b",
       "size": 43605
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_cm23.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_cm23.h",
       "sha256": "b6fb9bb5faedffe8eec563550e21dc9097c9f64956258b2af51e6d4d88ca4411",
       "size": 123853
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_cm3.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_cm3.h",
       "sha256": "0fb7749ea828cad4fded65bbeefc3fd0cff1effbb7c784f7086526fd69e26719",
       "size": 111472
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_cm33.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_cm33.h",
       "sha256": "d5c5fc559cbbbc1e495af4ac2ea81959bcadb35aa69ecb1c20d183c3ed9cfeae",
       "size": 192801
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_cm35p.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_cm35p.h",
       "sha256": "e52a069ffdacdbf000ffcc6f1766f0dcdfef1bb60f5e8ca0602bcbcfd2b69fa1",
       "size": 192816
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_cm4.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_cm4.h",
       "sha256": "d59a9e3ed4cf43a3c74a2e48f344d41be2b6363ef9394ea2c551052fe553a6af",
       "size": 123104
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_cm55.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_cm55.h",
       "sha256": "bf661f2b792ad123795207bafd405d6b250690c65a28232a92485d6fdbb76d98",
       "size": 322267
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_cm7.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_cm7.h",
       "sha256": "a361f5ff7b053831cdbbc068eae9609cd6681414c9a95c26df582d686a2378b8",
       "size": 141314
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_cm85.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_cm85.h",
       "sha256": "062019526b524285bee161459f65ce7c9bf827c2ceabc4101fd150f6d80b37f5",
       "size": 313000
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_sc000.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_sc000.h",
       "sha256": "4ec2d6ff893658c6bb7b1c56e6256087f3a2ed1e662c226e4ba11cfaad28d05d",
       "size": 47592
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_sc300.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_sc300.h",
       "sha256": "4ca0e6f1fec869e4942c70028ce2f3c9ae00a65a69c35f467840af3fc3d03ae5",
       "size": 110441
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/core_starmc1.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/core_starmc1.h",
       "sha256": "47978dc5bfb51c5edd09178d99c9b9163d500d48181985da4ead5a3c20d9a85b",
       "size": 196647
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/mpu_armv7.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/mpu_armv7.h",
       "sha256": "de1b5eb9ed566527b66dc06f4ecb6a43ab6800f7dac47e87c9cb42984dca41bb",
       "size": 12006
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/mpu_armv8.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/mpu_armv8.h",
       "sha256": "467a5ce9d65d9b37fc32e01001ed184500d56576f303713d27b76e68dd67911c",
       "size": 11722
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/pac_armv81.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/pac_armv81.h",
       "sha256": "f3497af055e95873809e4a79420e2b08915582466cef2eb4235d8e03faa7c3ab",
       "size": 6268
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/pmu_armv8.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/pmu_armv8.h",
       "sha256": "ef9aa2f1c5b03bea488d4b74d33db14acdc6c87e500273d68d75a6d3902a4f62",
       "size": 23123
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/Include/tz_context.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/Include/tz_context.h",
       "sha256": "7fcc21fc190f6fd970390e9caaa6a86d72fd10f9edf4efab36f12aecf1a8baa0",
       "size": 2757
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/CMSIS/LICENSE.txt",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/CMSIS/LICENSE.txt",
       "sha256": "e03ba41d7fab20700769fe4118bab50d800cb74f990353a05d2f5fff1c228363",
       "size": 11558
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h",
       "sha256": "7d48f139a6ff1dde6668fe4b032beb4938c7c15481ccf0850b2ea60d93c6111b",
       "size": 240031
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h",
       "sha256": "78f46c52267d3bb7a68349fbf02ecd9f6e2e375e3feb80ac0829a870bddcd514",
       "size": 12980
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h",
       "sha256": "5a9cd8e4b06ea0bda4a6f0568cf581a214461ef0fa8f15f39fa8599aa0399ff2",
       "size": 46618
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc_ex.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc_ex.h",
       "sha256": "10d9c6114a3c455342ad6e897a26adc29c03ec1c08165b4d640dc165ae4cfb24",
       "size": 26168
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_can.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_can.h",
       "sha256": "441e5e2fcd403120e32d994b0f5aab39eba79cb966701426314e0ff66d3a96a0",
       "size": 44390
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h",
       "sha256": "93d85a6ea4fbdbc7543f0822844c8f74f610fc2f61bcd95265b8e48a19cde09e",
       "size": 17405
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h",
       "sha256": "c6f30eaa09b8a72e7f503c757f312745ec10c317d37d568500dccab9587c1a6b",
       "size": 7775
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h",
       "sha256": "4dc4d29c8930a5ec06b6f4b13480bed13c238d2674b3afac47e6f71b2ae25b98",
       "size": 38671
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h",
       "sha256": "8aa0a347b502d924077675ad9bb446cf40b3a6dab47cf8a6b5a9f9e21dbfcf20",
       "size": 2753
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_exti.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_exti.h",
       "sha256": "e786fc8c276267ec0650ab0fc5853b2ca63697131947321a4e7e7175554c3b04",
       "size": 15199
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h",
       "sha256": "734543040b2e25b165c9087c36af91fda8efdcfa8834440696384cd48f831e20",
       "size": 14858
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h",
       "sha256": "f34511eec786510d75c096e33324648fc47d5f325666ac4cb724caccfc5bc271",
       "size": 65259
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h",
       "sha256": "cd2d5ab9f93e7ac34846468450fee989d47280d97af99231d6e600e254f6c9cd",
       "size": 2293
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h",
       "sha256": "5829d91f2e060d30f5798dc71e4fef5d7ffa7d99da21e751ee03d527d664307f",
       "size": 14012
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h",
       "sha256": "5963c4ea366cfd6de3a91792a382de6327d86542a6278592cc2b79e594c8ad91",
       "size": 82731
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h",
       "sha256": "86a2a65dfd149cddf4aacdf7fde1a86ffae963f293a506307be4306aaff2c27c",
       "size": 13011
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h",
       "sha256": "2a8a5905165b97971b44b5f0768e55ed30f28659d0bdf40dfc3e0eb9b1a34e1e",
       "size": 14892
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h",
       "sha256": "3f0cac843abd6c0ae3ef9a4edc6353b6f96052f8d297bf8a474f23bdd9a1576b",
       "size": 16224
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h",
       "sha256": "4e7bd94e6e692f43fb87e1969c305cf299bd48b1062c69256508da0bb4d0426c",
       "size": 74904
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h",
       "sha256": "00f9d7965f6943c0bd11558a44c1bcd20e6f18183f0bbe4d53f51fb1cce95691",
       "size": 444884
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h",
       "sha256": "6685f8efc3b0670d8231176871e8d0205a1e197ec413580dd729dec50bc843e6",
       "size": 125125
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h",
       "sha256": "7db25ba17f4806cafe1ab73f420a1fcb179cbe3e9d5ceb673a3fb8eca22189b8",
       "size": 16935
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h",
       "sha256": "5d79bf1566c0767f1985fcd106412d6cd4bdecad978aa8a5b2995320191c8040",
       "size": 46436
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_adc.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_adc.h",
       "sha256": "440a5b3a329cadfac3661b9e176da6a4d7400c1aaa8aa8b4801bca1e6847a356",
       "size": 289110
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_bus.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_bus.h",
       "sha256": "d237f4a55ff8221babef14237cea628055f2e5e227abf308b2df56a4c6aa167a",
       "size": 101909
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_cortex.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_cortex.h",
       "sha256": "27af4fb7b3acb41a677a02c6c807eac3ba5d7cf3857c2e4a74de499742313fd1",
       "size": 24946
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_dma.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_dma.h",
       "sha256": "f086ba919dbf5c98fba89317bcbd239fe1b647167cbaa810ce2dd02302ae8eb3",
       "size": 109906
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_exti.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_exti.h",
       "sha256": "96329e1fc07ea1d7db3a7970af4d97a5172e29cf9be5e7a45b7a011c960a33b9",
       "size": 35019
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h",
       "sha256": "b874a353f6075b18a7b352f8eac77497c32eff162ec0005be4c75346fdff3908",
       "size": 38426
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_pwr.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_pwr.h",
       "sha256": "187dec9842b95cf7f2a448bbb7a2c1b98ac8c8d0ea69d68cbcd5b05c4eaeb6b9",
       "size": 32524
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_rcc.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_rcc.h",
       "sha256": "ece5ba9aa627b04045437232bb332d1777d92f361de9609c5d65290a425a9e41",
       "size": 348202
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_system.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_system.h",
       "sha256": "fef5ea5a5bfb7f2c4059fb2c1262d884f0f25b379a3a982ddefd81c50ed5cd89",
       "size": 72383
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_tim.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_tim.h",
       "sha256": "ecd43402eb66a91d63734ee50f7eed67ebafd2b354a3069df0e6a171b90f41cd",
       "size": 179072
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usart.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usart.h",
       "sha256": "7c20ff842f7840d8d5b177d1283a5cff886e3de9cf0296e188ee196e3259506d",
       "size": 100138
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h",
       "sha256": "07b268e91d77d14b1313dd301e59fe98a9d13eb5173413531632649557eb9869",
       "size": 23668
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_utils.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_utils.h",
       "sha256": "541da4ac68d22e174ca4a038240f8da3024b29cdf33ed0f9c9af82159239facc",
       "size": 10941
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/LICENSE.txt",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/LICENSE.txt",
       "sha256": "bdc7b0f98db4846279336431024c49a01d578a2ea1d19ec68797bbe33e718d2d",
       "size": 383
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c",
       "sha256": "51494455bc1c0e6f8a1529f2c9620db73bf24758af4523b2b71a8ab494fd406c",
       "size": 19804
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c",
       "sha256": "a2231324cf79813bc1166802e040320671aa5449145f3395c0621c7796a5d4e6",
       "size": 78959
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c",
       "sha256": "6776aa318ca5889260d5d8f5dbaf04799d9fb222039b8db279a1266cb944529c",
       "size": 42103
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c",
       "sha256": "7163ce36129ae1a5a68c50a6a791775101a12f9ada86db991ad9e967ba907be0",
       "size": 83709
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c",
       "sha256": "2cc9c6492c0f4f57e48eef8c84c42b227914645e0f3e865d104fe329f47bf8be",
       "size": 19301
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c",
       "sha256": "f3da7dc31942b79a88349c7f7dd38f6b586656b47c6fc78c8283925176368763",
       "size": 40830
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c",
       "sha256": "000253cec2e4c9e0678add30a7b01f854b27f4271cd3124f43023b993eec54ea",
       "size": 10587
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c",
       "sha256": "b06ea7837bac5a06cad4627e6048d5d7bf9d6d8bfb66a2f78bfbf526b2e5620f",
       "size": 15475
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c",
       "sha256": "05de175a6754ebf6caf91651de750ee8cf05fe0549adc5e0573050b0f855d4ea",
       "size": 24788
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c",
       "sha256": "ec7f19883964d7fed5005e24611db97d5ad2dbdc5b63851e2587533e72cb632a",
       "size": 51251
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c",
       "sha256": "2c33420eab6aed3919241162d10b8ae21ec062d2904a4ceb7f9fbdcefabed147",
       "size": 6199
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c",
       "sha256": "72d8f3cb23a396cdbf9183c5cea2a0c00cfa0336def3736652480c4491f38788",
       "size": 19377
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c",
       "sha256": "746787de8825dfef6260885f427a373b3d8b6a6494dfee02dbca6039cc691859",
       "size": 56818
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c",
       "sha256": "89ea9ba1d4d0d40b21a7094935bfb8ce2a9b90df4d742f5d04a51e1d7bbc8d68",
       "size": 22582
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c",
       "sha256": "fc8a26ad3a0f8359817c1b08c68af50b9f7905a69c44e4599225eaa53a66e856",
       "size": 23373
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c",
       "sha256": "08b83e2e595ab1835bbdb50df69418a71c63c3c9d5f7c993f1775fa33c5bfe25",
       "size": 43467
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c",
       "sha256": "6b284323ffd5286e10b90dd7e2d9e8a0d222c43a966d636a1d5ed47b19ccd07b",
       "size": 159466
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c",
       "sha256": "7dc188b13a858b671b79684859ae6a5c6cf7716a9591744818209e6679e4a5cf",
       "size": 251804
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c",
       "sha256": "b3f85b80eccc5b00f5df119711c5dc8b93f7d297490a951aa600a971d28d6f6e",
       "size": 84008
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c",
       "sha256": "9f59720f39849977a09570260edfd63f089c8f723d836e4bbf8b7769d8a91c1d",
       "size": 139424
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c",
       "sha256": "767fe798f30cb2c8739e2b6f91379c318abb2889cee0d81ebf977807dbdbf5d6",
       "size": 43626
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c",
       "sha256": "3f084b2b40a57512fdb753c1ad070fcdcc84490389edd69702b9ec4b859d6119",
       "size": 66979
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS.ioc",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS.ioc",
       "sha256": "b2d8eda0e06bb0e3ea4fc66121384ed30341c9f16d942ca1ce081a5b8134238d",
       "size": 21831
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/AutoRecharge_task.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/AutoRecharge_task.c",
       "sha256": "9e017763a0bbc206f5dde103689bf44287ea8dc0bacfcf178efa5745c224d3a3",
       "size": 2984
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/BlueTooth_task.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/BlueTooth_task.c",
       "sha256": "e88d1e60c9c0763346e2dc8253509f3155c58071bac4a4dee252cb76b17cc37d",
       "size": 16800
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/Inc/AutoRecharge_task.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/Inc/AutoRecharge_task.h",
       "sha256": "9faa3b138aa96a37a384719cea13ab2541815e06cafd6685dc3bacc4cda7a945",
       "size": 482
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/Inc/BlueTooth_task.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/Inc/BlueTooth_task.h",
       "sha256": "144e6a4d2809f87149f265655eae9c5b2f54dcd0c70ff95f8b406c1d97099f18",
       "size": 308
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/Inc/RGBStripControl_task.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/Inc/RGBStripControl_task.h",
       "sha256": "7088260b477f177f15f21f6ed503da9cd9b94706fb2ffa4f81ce11b1d25032e0",
       "size": 118
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/Inc/RobotControl_task.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/Inc/RobotControl_task.h",
       "sha256": "26e480ff6c6e66b3e7593c9a5d4208f3af353e6ecef054468e50420a4c09f700",
       "size": 2657
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/Inc/can_callback.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/Inc/can_callback.h",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size": 0
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/Inc/rc_joystick.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/Inc/rc_joystick.h",
       "sha256": "8c800f35eefe6c5a42367b084496017831795c0b0c495c8e45767ee8f8bb10a7",
       "size": 376
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/Inc/robot_select_init.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/Inc/robot_select_init.h",
       "sha256": "40d141d185dd4f9e79533771a696d44345e2924eb1b378447c6c27f3405cd373",
       "size": 3501
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/Inc/sensor_ranger.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/Inc/sensor_ranger.h",
       "sha256": "a7826e694b93166ffc895d7ef03494d1157727031f1b48807f6fb01eee7d934a",
       "size": 792
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/Inc/show_task.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/Inc/show_task.h",
       "sha256": "1007d34eabad46723c6a5a7d6499249d891923758ba02baf65896f604826c971",
       "size": 112
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/RGBStripControl_task.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/RGBStripControl_task.c",
       "sha256": "3280133349329400842122ce4325d0f11143cea36b585ff495dd802cd3f006d8",
       "size": 3864
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/RobotControl_task.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/RobotControl_task.c",
       "sha256": "d9ee8dcef45cb3f3b9acdb3c4d48ed3a6466e80a667d3134536cf6b51d65448e",
       "size": 32069
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/SerialControl_task.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/SerialControl_task.c",
       "sha256": "0b0d38de010b0179d79baf20853975b0fef815adb0cecfa27a5d46ebdaafb77e",
       "size": 6315
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/appshow_task.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/appshow_task.c",
       "sha256": "9cdb93c64e54810c9f47d9c40afddbbe376dc0ef2a09da76f4d3b81f5a2d1204",
       "size": 3152
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/can_callback.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/can_callback.c",
       "sha256": "ff8abb8ba9d2712742e72b26c1726456abea876a24a216af0c94cb182641f3f5",
       "size": 6174
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/data_task.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/data_task.c",
       "sha256": "efc45a2475b2368cb97596667d61ad64f59d950f175b8fb9683d4059ba7875ac",
       "size": 8500
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/imu_task.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/imu_task.c",
       "sha256": "7245450ce040023acf6772af61f9fd30861354f859d3343d9dd20f40167a3b84",
       "size": 1731
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/rc_joystick.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/rc_joystick.c",
       "sha256": "369dfdea9a6cc25308cda93d3d1b287aa0ed78d4ca0b73b54120dfbda3de16ae",
       "size": 6206
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/reportErr_task.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/reportErr_task.c",
       "sha256": "626b10caf6a60919dcf9aeea527d1037bd6f0bc24ccd2725762607a79a2aa240",
       "size": 16204
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/robot_select_init.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/robot_select_init.c",
       "sha256": "e2704cecaca17091d77210fc8516cf0f3dfd4f9f598edeb9ed87bfb70d522586",
       "size": 2854
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/sensor_ranger.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/sensor_ranger.c",
       "sha256": "eceadc5aa440492ab780e42fc3cb1ada7982738aaa822dfa9d98aabb06c59137",
       "size": 13034
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/show_task.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/show_task.c",
       "sha256": "bdd36fcc97a8fa040e75a2d04af93d41c4adebdb5ac81e25a90c95928535bc2a",
       "size": 12769
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/tim_capture_callback.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/tim_capture_callback.c",
       "sha256": "4db7083ceaa12c002dfef0feb90cf256ca879ee5ef1d91f43ffc893886b9665a",
       "size": 1229
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_APP/uart_callback.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/uart_callback.c",
       "sha256": "961abc93f28cbc7806860f33a2ae17171eeea528f7d16fb21c2b96ae9b71ab06",
       "size": 2063
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_RGBLight.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_RGBLight.h",
       "sha256": "f1378989fc5f9135757a094ba80168b29f7fe025dad8d145bee21f53077a614b",
       "size": 902
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_RTOSdebug.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_RTOSdebug.h",
       "sha256": "cd370c444c4f0d600bbc9debbf624e2b03c092c48b7fce034fdd2d9b4606cca0",
       "size": 830
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_ServoDrive.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_ServoDrive.h",
       "sha256": "1e88b96801944191ecd80d171aa568584c4f2d92f8b67ae71b0b5a728abebc93",
       "size": 2152
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_adc.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_adc.h",
       "sha256": "d428535b8d0c2c7c784b9dc143667390d2d3c8baa11a1493353689776955138f",
       "size": 295
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_buzzer.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_buzzer.h",
       "sha256": "f228dd0a6154d0a16ad038443d0f3a3924b12cbd6ff6f2fc9b0c059b7d4caa29",
       "size": 376
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_can.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_can.h",
       "sha256": "a559451698cc7783d7ca25af5c076bdccf56662944beada66e9d7904d4f502ee",
       "size": 502
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_dwt.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_dwt.h",
       "sha256": "27158e3029088ce208790f6c5673bcb3b8725312b6099db10b54e2a59154c4e5",
       "size": 437
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_eeprom.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_eeprom.h",
       "sha256": "db1560d49239e16f0d31262cea762f0d0d851cdb3288b937650040b5ec75cacf",
       "size": 232
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_flash.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_flash.h",
       "sha256": "2b5bfeb8aebce114b8b5112dd3649616c6a0b8736951661f7cf89758690e178e",
       "size": 240
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_gamepad.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_gamepad.h",
       "sha256": "ac4bf9677a399160815c70333abb0b489f9a7cd4a7b867b1d0d08ec510400dec",
       "size": 2371
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_icm20948.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_icm20948.h",
       "sha256": "ab11e249290f626064a49f4f900d653c86b0dbaeda55938e60d8ee5610d834c9",
       "size": 1078
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_key.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_key.h",
       "sha256": "45ca7eb1dc3fce0ab18d1ea6399e679e767cbb5334cf96fe961e0429a12ee639",
       "size": 335
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_led.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_led.h",
       "sha256": "ae530fffa7fa5ea2dded1ee001f073d4bd4a0de6ed57bc7b9d2c376e2be49985",
       "size": 257
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_oled.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_oled.h",
       "sha256": "a5974fc969bb2839c3b691b53d17023a000e85fea9bc5d74eff43e5840879d33",
       "size": 631
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/bsp_siic.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/bsp_siic.h",
       "sha256": "b72c19c03ee70f4cc9e3d747874103027621ec49e9d09f85e1016267c813b0bb",
       "size": 1309
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/icm20948_reg.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/icm20948_reg.h",
       "sha256": "acf9c6c581bb61216280754a6d87e30f239500675e78854c20fcd6174bfd9750",
       "size": 4094
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/Inc/oledfont.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/Inc/oledfont.h",
       "sha256": "6f18448d9e8df1ae3b80de08cc71f366caf9c5866ec044b1282365edb9d5d3ad",
       "size": 16046
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_RGBLight.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_RGBLight.c",
       "sha256": "958022858fc34bde0dfa66c0147dbc5f645be4e03c20ae1fd68866fa0861c3e9",
       "size": 9996
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_RTOSdebug.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_RTOSdebug.c",
       "sha256": "465cab6980dce4df3b1d5e101ef08e17934ef179ad5ecefb550cfbcbd2fba2de",
       "size": 2187
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_ServoDrive.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_ServoDrive.c",
       "sha256": "5261bae57c150265a586e727149acf84cc085c8b4c027aa7e8984b4e19e17974",
       "size": 35535
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_adc.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_adc.c",
       "sha256": "dec6cba426136e73ad2083271e5c1f7c1c3ee65b45ac2155903df64dc5ca06e4",
       "size": 610
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_buzzer.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_buzzer.c",
       "sha256": "a8763e80e1692b377a12e817ac52cb81ecd61f9ecff61ad085149756266da78e",
       "size": 1319
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_can.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_can.c",
       "sha256": "e53b8be14753565eedb484480e75c51c8ddccc14d2f2b75d8b9bec8abfa370e5",
       "size": 9989
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_dwt.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_dwt.c",
       "sha256": "201a9510afa9a1e90fbc27382daa72fdf85338322c73aba8b88919c52dc65415",
       "size": 1350
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_eeprom.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_eeprom.c",
       "sha256": "dc63158e99fd719ac960ebf37f7355bdcb420869e00c350cbb9dcc2e3ddea509",
       "size": 2369
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_flash.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_flash.c",
       "sha256": "98d0933312f5800ad67a849f336fae52dde5f5bbf2eee86892fa32961498318a",
       "size": 3645
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_gamepad.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_gamepad.c",
       "sha256": "8fd9b6e1f000037dd4d0b60cd0f02df73ad5f031a29cd26a87f594bca95d0fc3",
       "size": 3810
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_icm20948.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_icm20948.c",
       "sha256": "3296de8aefd93a05df51528e0d26feb7816c9176688f57dbcdd01a6a75ad97fa",
       "size": 13299
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_key.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_key.c",
       "sha256": "0496de2afd56b557339f1a251b0b05c2bb4a22899a68efac7f51d74c6a424efb",
       "size": 1876
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_led.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_led.c",
       "sha256": "25d1a4cb3093299a1b3f58e0bb91cc9d39efe6ccd6f0bbf7a7863f0c8e8939dd",
       "size": 493
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_oled.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_oled.c",
       "sha256": "ef32834318e0a98e9cc1124bcad3ab637f63ee59d4ea2759dce8c86a2d948e05",
       "size": 12914
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/LUCSYS_BSP/bsp_siic.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_BSP/bsp_siic.c",
       "sha256": "be0f6db1bd505d1dffb8545d689bc4543aa9a3b0ff6d5d012fd069c78ea04d2d",
       "size": 18617
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/MDK-ARM/DebugConfig/LUCSYS_STM32F407VETx.dbgconf",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/MDK-ARM/DebugConfig/LUCSYS_STM32F407VETx.dbgconf",
       "sha256": "e709c61d7b18f929b4921c7b79f63faa2d8ce944c19b0a8676116cbc8479ddad",
       "size": 2804
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/MDK-ARM/DebugConfig/LUCSYS_STM32F407VETx_1.0.1.dbgconf",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/MDK-ARM/DebugConfig/LUCSYS_STM32F407VETx_1.0.1.dbgconf",
       "sha256": "6cad85eacc0e21c594393904deea7162768d2e6a4f06bf1777cf8fa454d2b44e",
       "size": 2804
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/MDK-ARM/LUCSYS.uvprojx",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/MDK-ARM/LUCSYS.uvprojx",
       "sha256": "5f93c0a2bfafe9c3d2adf3fbdeeffa74ccbdebc03afa99deff45fe1ad46ef162",
       "size": 95618
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/MDK-ARM/LoadAxf.ini",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/MDK-ARM/LoadAxf.ini",
       "sha256": "9afc85a4c2d0331868b74a33c2d4bac9c8389969ba807ccd4f67a887580a2976",
       "size": 19
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/MDK-ARM/RTE/Device/STM32F407VETx/STM32F405_415_407_417_427_437_429_439.dbgconf",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/MDK-ARM/RTE/Device/STM32F407VETx/STM32F405_415_407_417_427_437_429_439.dbgconf",
       "sha256": "e709c61d7b18f929b4921c7b79f63faa2d8ce944c19b0a8676116cbc8479ddad",
       "size": 2804
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/MDK-ARM/RTE/Device/STM32F407VETx/STM32F405_415_407_417_427_437_429_439.dbgconf.base@0.0.0",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/MDK-ARM/RTE/Device/STM32F407VETx/STM32F405_415_407_417_427_437_429_439.dbgconf.base@0.0.0",
       "sha256": "e709c61d7b18f929b4921c7b79f63faa2d8ce944c19b0a8676116cbc8479ddad",
       "size": 2804
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/MDK-ARM/RTE/_LUCSYS/RTE_Components.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/MDK-ARM/RTE/_LUCSYS/RTE_Components.h",
       "sha256": "b16950d03c1c5fc7749634c233a981b4b28b30058c1e5d85a6b4153defb51af4",
       "size": 229
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/MDK-ARM/startup_stm32f407xx.s",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/MDK-ARM/startup_stm32f407xx.s",
       "sha256": "77b28afaa17d3bd31b983055dcffc57ba475945eb499a453876e2762dac1d6ba",
       "size": 28816
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid.h",
       "sha256": "20cc172670f528236b3d8840d1c1cb1cd651db0f7b84df6590a2fc06219f5b12",
       "size": 9587
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_keybd.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_keybd.h",
       "sha256": "f92544798bbd0659dbdc34294b6785c098dc295edb68b5f019634ca24ece1073",
       "size": 13693
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_mouse.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_mouse.h",
       "sha256": "860bb73b3759b51784040af36ef6568c6d90ce0b83278c0a6ff051bc769f21a5",
       "size": 2220
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_parser.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_parser.h",
       "sha256": "2b4e921b364d9b76bcf7d208a49a64e87e074f0d9c91785fde4f0945dd237d2a",
       "size": 2049
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_usage.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_usage.h",
       "sha256": "685599475ae01e34e15f8c4c7645ccd79b4258acfd5b975ff706c5cb58c1fc98",
       "size": 10054
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c",
       "sha256": "a72ed2abef59911151a8f7a75b56060d2baec525771d2be8222b68b552d783c3",
       "size": 26341
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c",
       "sha256": "134f2a5a776a72c24deb070bc12098f75eaca5326ef51dcdac05482781b3de45",
       "size": 15101
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c",
       "sha256": "610aec759ae8786325a83520187ed8360ec6f08f60b6bdd371d697c7cb25103b",
       "size": 6819
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c",
       "sha256": "fd72d915d0f5e5e3244786eadfa504e780d6366b168110abdc2c014913b4b6a1",
       "size": 5125
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h",
       "sha256": "a297688cb07e5da01e99930e75a057951793a6ef4b64cac6172fcaf30e72075a",
       "size": 5840
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ctlreq.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ctlreq.h",
       "sha256": "25f76cd1c29ad24a1610651619d38a4411e84531458f21f44c05233dd462fd83",
       "size": 3350
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_def.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_def.h",
       "sha256": "4562361f0135047875bde1fde0b71a1c6e75449bc092b1ec1ac9dc09f50f5c72",
       "size": 16880
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ioreq.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ioreq.h",
       "sha256": "cadd372860770264af24731da514a89405a219ebe4c8d1fd5dd984edc71719fe",
       "size": 4347
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_pipes.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_pipes.h",
       "sha256": "34b1e41cf10fafcc150b136ff94a0cbc786974196c3efa0d843be080bb17076c",
       "size": 2381
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.c",
       "sha256": "9c3477b065a023cf6bdcdbf3b9d9ea12a0907543ff601a360a564d2657630649",
       "size": 38200
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c",
       "sha256": "cc7221e4867b1781ecfd6c9ce46181c05c7225c527a48af1568e0152f46b02a4",
       "size": 36397
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c",
       "sha256": "98d7787abdc53811948e8c149c673c44e6f353c146c2eeaf8dd02768306a438d",
       "size": 11948
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c",
       "sha256": "0872635762c96fb0771422983633c092c0298faf6f0c72b0950aadd13525568e",
       "size": 3811
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/ST/STM32_USB_Host_Library/LICENSE.txt",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/ST/STM32_USB_Host_Library/LICENSE.txt",
       "sha256": "5db16866e0d240442f8382ee5b76eac16ed02912fd51ef2be55817b7cadd703b",
       "size": 4748
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h",
       "sha256": "9f18b2e616411def39b415994b7fbe8e782a185e045c894ad2645c1ab7e83100",
       "size": 36739
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c",
       "sha256": "0dd9ec29eb5862c4520eede87b05e063a4c80223555140c0187e80f97ae9e8aa",
       "size": 60451
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h",
       "sha256": "f116a1a3f842194aabbbeddf3d0f9f345ab7d35d4de7be0f04af289f9b1fdfc8",
       "size": 35868
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/freertos_mpool.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/freertos_mpool.h",
       "sha256": "eed1c836ed2f0cde7d41a93da7e7e208c539d59162e872351526e1ddbd56b1b3",
       "size": 2458
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/freertos_os2.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/freertos_os2.h",
       "sha256": "3ddb74193daf32483caee33e31a3ef0d40703e909e0e41e896839ccf37edcffc",
       "size": 13122
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/LICENSE",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/LICENSE",
       "sha256": "49678287e48228d68af25ed82841491552b0646e31a8080165758fa72b67105a",
       "size": 1119
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/croutine.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/croutine.c",
       "sha256": "e31cd1c9c280c919a92edc28885e9bebce589d4cfab71cefab832a73683200fb",
       "size": 13177
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c",
       "sha256": "a72063c3977fad098a87a5430e04e9fc5b892d703e01fbe09ea907f67aacf20e",
       "size": 26791
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h",
       "sha256": "b7a81501c3f4ff9537df5c9a5e0231f37638cdc8324965ae10064128fded840f",
       "size": 44047
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/StackMacros.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/StackMacros.h",
       "sha256": "c27d1653d2f7f34292387cab8a8b074426cc1ef73aeaa27663d56ba634f7f8ab",
       "size": 6216
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/atomic.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/atomic.h",
       "sha256": "b74ab6f4aae9a397565adb5f14c9d8e33b9f782a2e35f77535af751413ac68de",
       "size": 12265
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/croutine.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/croutine.h",
       "sha256": "8df4c5eec7eb30262f09b7c47fc2eb0534a27721293b0d260a3398846494f9ac",
       "size": 26538
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h",
       "sha256": "382f8a7a0e00240fb69911dff8d8515248beb9dadfe77c22c4e5544f49cc76eb",
       "size": 7574
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h",
       "sha256": "3b9cbd64db721c4317544700fff4e42ac68d989f71b7d610b31087bb19175839",
       "size": 30435
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/list.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/list.h",
       "sha256": "f9b239f168976f7b167e054fa72616826f55ae4d74d76b87c9e70b2df079363f",
       "size": 18571
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/message_buffer.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/message_buffer.h",
       "sha256": "504a77558f13b66fd1eec5adf4d81e274f0b54c12880424833c24f577be0800a",
       "size": 38204
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/mpu_prototypes.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/mpu_prototypes.h",
       "sha256": "3fafd21399ef619a55b2f8112750d750685c8ae1cb458363d21ee37a105ac6e7",
       "size": 14034
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h",
       "sha256": "c1fc47acdb79efb0fb8a0fb8a169ae4423fdc3a6d820b2f81d49e8e077c1ed48",
       "size": 9405
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/portable.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/portable.h",
       "sha256": "39795c8dded505f24f53646ecd8192251851c74f366d2a5b0aae3fbfa68c191b",
       "size": 8142
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h",
       "sha256": "399814721d9735e91d74ca07be3974edb20639acb46a6792230ff9f61f67b353",
       "size": 5751
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/queue.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/queue.h",
       "sha256": "39d58a203f1b67fdb1099293914a2af9722d223586cfc5ff06e230e047919dea",
       "size": 61762
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h",
       "sha256": "b9b2ff28a0c80fa21443690bb28de64c8b9451cccd57e484de0bcf02fc367575",
       "size": 48291
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/stack_macros.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/stack_macros.h",
       "sha256": "7d1d30b6c9ae34bebb26b14402f78a59a35ae826f460a1ad28534c9590b32151",
       "size": 5965
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/stream_buffer.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/stream_buffer.h",
       "sha256": "0607fcca1927ba782a29a3814481d69db3569e6e53a68ebf2c01f5598a3af2b8",
       "size": 38507
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/task.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/task.h",
       "sha256": "830990f7b17b8e0ce3bdb0a7475d2cdc7d659eafff16b88a855c84c06a7a2a3e",
       "size": 107786
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/timers.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/include/timers.h",
       "sha256": "7fa62f648014533ce5bd8da1775ddd814cbf208f9af7c748a40bb8b50a8e8912",
       "size": 61482
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/list.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/list.c",
       "sha256": "e735517f308fad5dd77d03b6858c16bdbc937bb9d0754735849fc7799ebe2b59",
       "size": 8475
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c",
       "sha256": "c697b88e48e9906a19cabef187e5797a5a45009144f9e473262752c86a5d2c50",
       "size": 16134
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c",
       "sha256": "8ead28dcb0a2d4b8f2a658451ee5a123c86111049cbf155b78d29056aebe96ee",
       "size": 28558
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h",
       "sha256": "dd9a210bd4b6095ea2b763bbaf378e44f0a61ec4515745e165aac0ed329e472f",
       "size": 8369
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/queue.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/queue.c",
       "sha256": "06a153c1ce111213af32dfc8797bd2e5c7819e264dfa338b4049f058dc1edb11",
       "size": 96600
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c",
       "sha256": "4376714fecad0f72dc4c8b45236591a7e0ffe24dd018382f56e8b0dfc2230b28",
       "size": 43728
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/tasks.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/tasks.c",
       "sha256": "8cb1eabe18f130b2b8980e880847f773fb12a4071c763d26c51624223b32a3a4",
       "size": 178647
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/Middlewares/Third_Party/FreeRTOS/Source/timers.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/Middlewares/Third_Party/FreeRTOS/Source/timers.c",
       "sha256": "0d16405e621a2c4b003b5f0324b9713cd4865364133df6f742f482a6b2dbc773",
       "size": 41215
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/README.md",
-      "sha256": "a0c081759071c5e44eb055be1aae714125ca8b3aea371db484e852b6c7155aeb",
-      "size": 3268
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/README.md",
+      "sha256": "de3142126ddfbe9bcb010a716e35979a7bc0e6a20a1465d1855a51eb42bce213",
+      "size": 3252
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/USB_HOST/App/WiredPS2_gamepad.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/USB_HOST/App/WiredPS2_gamepad.c",
       "sha256": "ee8b7ac05fb68dd8a6d2aca926e38ffc82bd0a3b148781d855a13e9d6c517b98",
       "size": 8588
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/USB_HOST/App/WiredPS2_gamepad.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/USB_HOST/App/WiredPS2_gamepad.h",
       "sha256": "d930bb49477348e892cb1ae878e0a9c1839e0394260b219d4961609d0dcc241e",
       "size": 1177
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/USB_HOST/App/usb_host.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/USB_HOST/App/usb_host.c",
       "sha256": "20ea2cddb886fce717c263409cb9091def473430336703ff968cbd5bf83cf3ef",
       "size": 5974
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/USB_HOST/App/usb_host.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/USB_HOST/App/usb_host.h",
       "sha256": "4e37b11977cb7770618494e5e9da91ad43dac4cc137ac484e649beb0f73d122b",
       "size": 2042
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/USB_HOST/App/usbh_hid_GamePad.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/USB_HOST/App/usbh_hid_GamePad.c",
       "sha256": "aeba3dae919ee0a16eeb42123640b9b5ce6a39ac67048ed35870eacacb11630a",
       "size": 20830
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/USB_HOST/App/usbh_hid_GamePad.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/USB_HOST/App/usbh_hid_GamePad.h",
       "sha256": "d8dff0c0f975e62951c09eab163ef323f32c53676e033b25f779591d5269726e",
       "size": 99
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/USB_HOST/App/xbox360_gamepad.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/USB_HOST/App/xbox360_gamepad.c",
       "sha256": "c2d1fd3abf80b78879ca214f9be35fa431fab62ac7153c1737d6f1337f9f3918",
       "size": 4831
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/USB_HOST/App/xbox360_gamepad.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/USB_HOST/App/xbox360_gamepad.h",
       "sha256": "e2f8c23292ea4f18aae75f3e15bb0b8a1141535d638b521b0ba492fc257cf677",
       "size": 1242
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/USB_HOST/Target/usbh_conf.c",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/USB_HOST/Target/usbh_conf.c",
       "sha256": "d948a783abfd56fcc4e353d6088f6f1085b804888f92012dbec11bd60c04ed1b",
       "size": 15393
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/USB_HOST/Target/usbh_conf.h",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/USB_HOST/Target/usbh_conf.h",
       "sha256": "3d4b686425d9745dc697392b4980e2a865463f5e362d8044083c0c7be8850b9c",
       "size": 4410
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/keilkill.bat",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/keilkill.bat",
       "sha256": "38628b884bdfd00be095460b70401ebf11ca8cb30a6cda6ad193c9da5e5ed069",
       "size": 411
     },
     {
-      "path": "firmware/controllers/C63A/s-series-20260127/\u66f4\u65b0\u8bb0\u5f55.txt",
+      "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/\u66f4\u65b0\u8bb0\u5f55.txt",
       "sha256": "1449fff0c140f6bd690c89a1172bf0fd5a6b29352ce8f9107aa69da1256c7901",
       "size": 303
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/.mxproject",
+      "path": "firmware/controllers/C63A/lsr280-20261013/.mxproject",
       "sha256": "9f632974df3b9b834c4ba34c3096b31eea3f0ca24e6b06fb59e9541184b723ad",
       "size": 20164
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Inc/FreeRTOSConfig.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Inc/FreeRTOSConfig.h",
       "sha256": "d74279e05068c53f50fac341c3a4567cea3e068a4f03a444730e34897833aab3",
       "size": 8174
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Inc/adc.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Inc/adc.h",
       "sha256": "66905dff3dfd7ffe143329d4be86c1bbd2398b27937a46f42093bfd10620c454",
       "size": 1345
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Inc/can.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Inc/can.h",
       "sha256": "6969ab2fbb77c30dbb108ac7c5b8aa71216d32edcad49ee46b6a48225941c846",
       "size": 1406
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Inc/dma.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Inc/dma.h",
       "sha256": "4800df9bb60edf45f266a060814fd4199270adcfe90c635f4a3d1d3fa10b4f3a",
       "size": 1393
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Inc/gpio.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Inc/gpio.h",
       "sha256": "92b391aae985f5b7b6fcbfc37daf922842a683a44045b4d55712007e860ec0ef",
       "size": 1313
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Inc/main.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Inc/main.h",
       "sha256": "555d6aec6a7b01b212c7689990400852f39c470486c5ff8dfcdb89a6c59b7c28",
       "size": 4405
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Inc/stm32f4xx_hal_conf.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Inc/stm32f4xx_hal_conf.h",
       "sha256": "fedcf29c91ea96027636fa51348f4aa5b7adbf19ad890abefb3d87561f5496d6",
       "size": 20018
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Inc/stm32f4xx_it.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Inc/stm32f4xx_it.h",
       "sha256": "dbb725a93a31fb601db9cd75b7905a68680cd27b7dc14cd3ed29e182a794a628",
       "size": 2365
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Inc/tim.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Inc/tim.h",
       "sha256": "124c03b92585acdd7a768acfb8e426bdb52fed52005e4b617f32393d35d2575c",
       "size": 1706
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Inc/usart.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Inc/usart.h",
       "sha256": "013242a7e3162b6d7462142e9f0eecc62e29b6a21f914082e1d6dbd36e1f5384",
       "size": 1568
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Src/adc.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Src/adc.c",
       "sha256": "6b2167fb4f2d18fda1350bbf83dfcf652e20e6960c3b488b0431dce3b99df852",
       "size": 4633
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Src/can.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Src/can.c",
       "sha256": "f5b11204b595fe848e6bca439ef6aa9c9338824dd80e3e5f92120ae37a509a31",
       "size": 5890
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Src/dma.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Src/dma.c",
       "sha256": "b342863257dfb74d70e86e56a2a96ed755617bb397cb6370cb44cbf7e7c1700c",
       "size": 2205
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Src/freertos.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Src/freertos.c",
       "sha256": "db8b9536642ea878bbdea5a61308f7b5ffe363081094583a172be744f188326a",
       "size": 12736
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Src/gpio.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Src/gpio.c",
       "sha256": "9b17b5dc19176e8706cfb1f16dc6cb0b8daaf602c8ffd68926a98cd0bd775dd5",
       "size": 5271
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Src/main.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Src/main.c",
       "sha256": "7c26bbc5f5ddd53af61a0980f6cf83ffca55a6a6cb3e2d8399c64d7af80ab6c2",
       "size": 10781
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Src/stm32f4xx_hal_msp.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Src/stm32f4xx_hal_msp.c",
       "sha256": "3372414b1364389a0e6496d5abc5c496baad61e108e32c32dd22afa07fce0b1a",
       "size": 2321
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Src/stm32f4xx_hal_timebase_tim.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Src/stm32f4xx_hal_timebase_tim.c",
       "sha256": "854283a5ddb2dd5fb1447029dfecfbf5e8f9b02d14973d7f126b2f37631ccd1d",
       "size": 4475
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Src/stm32f4xx_it.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Src/stm32f4xx_it.c",
       "sha256": "7484a015ad3bc89ef939e839329b355e28b63b0f1a3a2576b550bb569502935d",
       "size": 10093
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Src/system_stm32f4xx.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Src/system_stm32f4xx.c",
       "sha256": "4cdbb9f76062106db72992a392da854a984db96d78040ef4cf4b53afa5948899",
       "size": 27582
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Src/tim.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Src/tim.c",
       "sha256": "0623034850436f412fad24d7dfd47877fb9d543f42bc9b288fb92a26ffc09408",
       "size": 17580
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Core/Src/usart.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Core/Src/usart.c",
       "sha256": "77bf3eb0018db445e6e96a36fe23e3bee12f91e13ed58ddbb987ea122481e2ee",
       "size": 12964
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h",
       "sha256": "e4e38f39dc15f3d79d3eab5270396b260381898c67b6da9578d96d59b8ed99dc",
       "size": 1208799
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h",
       "sha256": "d3f227f83e5ab4a27baa3ff90aa5b08dc8af961c1a6bbfb8b29c422a806a33c9",
       "size": 12228
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h",
       "sha256": "6ba46a957d0c32196d03304b981db5be8c3969d41953a53a364ca861085277d1",
       "size": 2318
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Device/ST/STM32F4xx/LICENSE.txt",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Device/ST/STM32F4xx/LICENSE.txt",
       "sha256": "d65cad1327eb8dae95d0aeab71fb22505f99a3d7cd1ce2530d7d40c52aece002",
       "size": 377
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/cachel1_armv7.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/cachel1_armv7.h",
       "sha256": "6cdb5b324f2fd1bb5b2f47298ba6e6777e735d7cad3bb8d942cd36e2c6e65328",
       "size": 12498
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/cmsis_armcc.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/cmsis_armcc.h",
       "sha256": "d074534d7106cec83474b3b0a897bd2553e1a8895ecbd54f4f4fb25928066eee",
       "size": 28887
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/cmsis_armclang.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/cmsis_armclang.h",
       "sha256": "11b39b96ddc1125124762b3423a77b90dd40ea5b4582a3513830245046b24311",
       "size": 49920
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/cmsis_armclang_ltm.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/cmsis_armclang_ltm.h",
       "sha256": "8621969ea669a1b230ff2125a760ef66d575c48cb45e9e457f768909abcbda46",
       "size": 57949
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/cmsis_compiler.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/cmsis_compiler.h",
       "sha256": "869640702d811c4c63abb52206715c891a93fd03be954df5ad40d378355af3d6",
       "size": 9764
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/cmsis_gcc.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/cmsis_gcc.h",
       "sha256": "3d4e265d0aa42f888385ccf073666e6ebb5ec9f834760b9da27c474e177f708d",
       "size": 65585
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/cmsis_iccarm.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/cmsis_iccarm.h",
       "sha256": "f28119adbc81fb0e3c957c9aebe8fb423ad93634e76ead3caa2b0818d2e123ae",
       "size": 30071
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/cmsis_version.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/cmsis_version.h",
       "sha256": "8cda7ac3ff6f0eb5e83c4fe613dd195151b24da54167f5c3c007e599a03f1edc",
       "size": 1719
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_armv81mml.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_armv81mml.h",
       "sha256": "255663bc446feb00e341d682f7f78ec6f301a5c1802d856bcdd18d7552393dff",
       "size": 280868
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_armv8mbl.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_armv8mbl.h",
       "sha256": "b5a662723f65a9fe1fbde82b83681daec28aadb78c2dc95e531d6fb6bb396dde",
       "size": 117226
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_armv8mml.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_armv8mml.h",
       "sha256": "17021c385f47945f2376fbb30f2f2e3fc28bd0f3d97eb857d212c192c54ab3fc",
       "size": 186400
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_cm0.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_cm0.h",
       "sha256": "5cc53e723ee0e97455233f8dee892940209e2fff66071d66d74bab56c528b199",
       "size": 42595
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_cm0plus.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_cm0plus.h",
       "sha256": "a19e24c136145b4c72630d0ab7c83a7aef010f3ba165e34c56a05057a2d9fed5",
       "size": 50964
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_cm1.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_cm1.h",
       "sha256": "c243c4afb291068fe7078d2911b2f0001e78a4d5466c26728611b06147d65c2b",
       "size": 43605
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_cm23.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_cm23.h",
       "sha256": "b6fb9bb5faedffe8eec563550e21dc9097c9f64956258b2af51e6d4d88ca4411",
       "size": 123853
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_cm3.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_cm3.h",
       "sha256": "0fb7749ea828cad4fded65bbeefc3fd0cff1effbb7c784f7086526fd69e26719",
       "size": 111472
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_cm33.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_cm33.h",
       "sha256": "d5c5fc559cbbbc1e495af4ac2ea81959bcadb35aa69ecb1c20d183c3ed9cfeae",
       "size": 192801
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_cm35p.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_cm35p.h",
       "sha256": "e52a069ffdacdbf000ffcc6f1766f0dcdfef1bb60f5e8ca0602bcbcfd2b69fa1",
       "size": 192816
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_cm4.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_cm4.h",
       "sha256": "d59a9e3ed4cf43a3c74a2e48f344d41be2b6363ef9394ea2c551052fe553a6af",
       "size": 123104
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_cm55.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_cm55.h",
       "sha256": "bf661f2b792ad123795207bafd405d6b250690c65a28232a92485d6fdbb76d98",
       "size": 322267
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_cm7.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_cm7.h",
       "sha256": "a361f5ff7b053831cdbbc068eae9609cd6681414c9a95c26df582d686a2378b8",
       "size": 141314
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_cm85.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_cm85.h",
       "sha256": "062019526b524285bee161459f65ce7c9bf827c2ceabc4101fd150f6d80b37f5",
       "size": 313000
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_sc000.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_sc000.h",
       "sha256": "4ec2d6ff893658c6bb7b1c56e6256087f3a2ed1e662c226e4ba11cfaad28d05d",
       "size": 47592
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_sc300.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_sc300.h",
       "sha256": "4ca0e6f1fec869e4942c70028ce2f3c9ae00a65a69c35f467840af3fc3d03ae5",
       "size": 110441
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/core_starmc1.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/core_starmc1.h",
       "sha256": "47978dc5bfb51c5edd09178d99c9b9163d500d48181985da4ead5a3c20d9a85b",
       "size": 196647
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/mpu_armv7.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/mpu_armv7.h",
       "sha256": "de1b5eb9ed566527b66dc06f4ecb6a43ab6800f7dac47e87c9cb42984dca41bb",
       "size": 12006
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/mpu_armv8.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/mpu_armv8.h",
       "sha256": "467a5ce9d65d9b37fc32e01001ed184500d56576f303713d27b76e68dd67911c",
       "size": 11722
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/pac_armv81.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/pac_armv81.h",
       "sha256": "f3497af055e95873809e4a79420e2b08915582466cef2eb4235d8e03faa7c3ab",
       "size": 6268
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/pmu_armv8.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/pmu_armv8.h",
       "sha256": "ef9aa2f1c5b03bea488d4b74d33db14acdc6c87e500273d68d75a6d3902a4f62",
       "size": 23123
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/Include/tz_context.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/Include/tz_context.h",
       "sha256": "7fcc21fc190f6fd970390e9caaa6a86d72fd10f9edf4efab36f12aecf1a8baa0",
       "size": 2757
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/CMSIS/LICENSE.txt",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/CMSIS/LICENSE.txt",
       "sha256": "e03ba41d7fab20700769fe4118bab50d800cb74f990353a05d2f5fff1c228363",
       "size": 11558
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h",
       "sha256": "7d48f139a6ff1dde6668fe4b032beb4938c7c15481ccf0850b2ea60d93c6111b",
       "size": 240031
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h",
       "sha256": "78f46c52267d3bb7a68349fbf02ecd9f6e2e375e3feb80ac0829a870bddcd514",
       "size": 12980
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h",
       "sha256": "5a9cd8e4b06ea0bda4a6f0568cf581a214461ef0fa8f15f39fa8599aa0399ff2",
       "size": 46618
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc_ex.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc_ex.h",
       "sha256": "10d9c6114a3c455342ad6e897a26adc29c03ec1c08165b4d640dc165ae4cfb24",
       "size": 26168
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_can.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_can.h",
       "sha256": "441e5e2fcd403120e32d994b0f5aab39eba79cb966701426314e0ff66d3a96a0",
       "size": 44390
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h",
       "sha256": "93d85a6ea4fbdbc7543f0822844c8f74f610fc2f61bcd95265b8e48a19cde09e",
       "size": 17405
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h",
       "sha256": "c6f30eaa09b8a72e7f503c757f312745ec10c317d37d568500dccab9587c1a6b",
       "size": 7775
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h",
       "sha256": "4dc4d29c8930a5ec06b6f4b13480bed13c238d2674b3afac47e6f71b2ae25b98",
       "size": 38671
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h",
       "sha256": "8aa0a347b502d924077675ad9bb446cf40b3a6dab47cf8a6b5a9f9e21dbfcf20",
       "size": 2753
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_exti.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_exti.h",
       "sha256": "e786fc8c276267ec0650ab0fc5853b2ca63697131947321a4e7e7175554c3b04",
       "size": 15199
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h",
       "sha256": "734543040b2e25b165c9087c36af91fda8efdcfa8834440696384cd48f831e20",
       "size": 14858
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h",
       "sha256": "f34511eec786510d75c096e33324648fc47d5f325666ac4cb724caccfc5bc271",
       "size": 65259
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h",
       "sha256": "cd2d5ab9f93e7ac34846468450fee989d47280d97af99231d6e600e254f6c9cd",
       "size": 2293
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h",
       "sha256": "5829d91f2e060d30f5798dc71e4fef5d7ffa7d99da21e751ee03d527d664307f",
       "size": 14012
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h",
       "sha256": "5963c4ea366cfd6de3a91792a382de6327d86542a6278592cc2b79e594c8ad91",
       "size": 82731
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h",
       "sha256": "86a2a65dfd149cddf4aacdf7fde1a86ffae963f293a506307be4306aaff2c27c",
       "size": 13011
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h",
       "sha256": "2a8a5905165b97971b44b5f0768e55ed30f28659d0bdf40dfc3e0eb9b1a34e1e",
       "size": 14892
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h",
       "sha256": "3f0cac843abd6c0ae3ef9a4edc6353b6f96052f8d297bf8a474f23bdd9a1576b",
       "size": 16224
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h",
       "sha256": "4e7bd94e6e692f43fb87e1969c305cf299bd48b1062c69256508da0bb4d0426c",
       "size": 74904
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h",
       "sha256": "00f9d7965f6943c0bd11558a44c1bcd20e6f18183f0bbe4d53f51fb1cce95691",
       "size": 444884
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h",
       "sha256": "6685f8efc3b0670d8231176871e8d0205a1e197ec413580dd729dec50bc843e6",
       "size": 125125
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h",
       "sha256": "7db25ba17f4806cafe1ab73f420a1fcb179cbe3e9d5ceb673a3fb8eca22189b8",
       "size": 16935
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h",
       "sha256": "5d79bf1566c0767f1985fcd106412d6cd4bdecad978aa8a5b2995320191c8040",
       "size": 46436
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_adc.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_adc.h",
       "sha256": "440a5b3a329cadfac3661b9e176da6a4d7400c1aaa8aa8b4801bca1e6847a356",
       "size": 289110
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_bus.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_bus.h",
       "sha256": "d237f4a55ff8221babef14237cea628055f2e5e227abf308b2df56a4c6aa167a",
       "size": 101909
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_cortex.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_cortex.h",
       "sha256": "27af4fb7b3acb41a677a02c6c807eac3ba5d7cf3857c2e4a74de499742313fd1",
       "size": 24946
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_dma.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_dma.h",
       "sha256": "f086ba919dbf5c98fba89317bcbd239fe1b647167cbaa810ce2dd02302ae8eb3",
       "size": 109906
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_exti.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_exti.h",
       "sha256": "96329e1fc07ea1d7db3a7970af4d97a5172e29cf9be5e7a45b7a011c960a33b9",
       "size": 35019
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h",
       "sha256": "b874a353f6075b18a7b352f8eac77497c32eff162ec0005be4c75346fdff3908",
       "size": 38426
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_pwr.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_pwr.h",
       "sha256": "187dec9842b95cf7f2a448bbb7a2c1b98ac8c8d0ea69d68cbcd5b05c4eaeb6b9",
       "size": 32524
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_rcc.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_rcc.h",
       "sha256": "ece5ba9aa627b04045437232bb332d1777d92f361de9609c5d65290a425a9e41",
       "size": 348202
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_system.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_system.h",
       "sha256": "fef5ea5a5bfb7f2c4059fb2c1262d884f0f25b379a3a982ddefd81c50ed5cd89",
       "size": 72383
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_tim.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_tim.h",
       "sha256": "ecd43402eb66a91d63734ee50f7eed67ebafd2b354a3069df0e6a171b90f41cd",
       "size": 179072
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usart.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usart.h",
       "sha256": "7c20ff842f7840d8d5b177d1283a5cff886e3de9cf0296e188ee196e3259506d",
       "size": 100138
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h",
       "sha256": "07b268e91d77d14b1313dd301e59fe98a9d13eb5173413531632649557eb9869",
       "size": 23668
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_utils.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_utils.h",
       "sha256": "541da4ac68d22e174ca4a038240f8da3024b29cdf33ed0f9c9af82159239facc",
       "size": 10941
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/LICENSE.txt",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/LICENSE.txt",
       "sha256": "bdc7b0f98db4846279336431024c49a01d578a2ea1d19ec68797bbe33e718d2d",
       "size": 383
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c",
       "sha256": "51494455bc1c0e6f8a1529f2c9620db73bf24758af4523b2b71a8ab494fd406c",
       "size": 19804
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c",
       "sha256": "a2231324cf79813bc1166802e040320671aa5449145f3395c0621c7796a5d4e6",
       "size": 78959
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c",
       "sha256": "6776aa318ca5889260d5d8f5dbaf04799d9fb222039b8db279a1266cb944529c",
       "size": 42103
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c",
       "sha256": "7163ce36129ae1a5a68c50a6a791775101a12f9ada86db991ad9e967ba907be0",
       "size": 83709
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c",
       "sha256": "2cc9c6492c0f4f57e48eef8c84c42b227914645e0f3e865d104fe329f47bf8be",
       "size": 19301
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c",
       "sha256": "f3da7dc31942b79a88349c7f7dd38f6b586656b47c6fc78c8283925176368763",
       "size": 40830
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c",
       "sha256": "000253cec2e4c9e0678add30a7b01f854b27f4271cd3124f43023b993eec54ea",
       "size": 10587
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c",
       "sha256": "b06ea7837bac5a06cad4627e6048d5d7bf9d6d8bfb66a2f78bfbf526b2e5620f",
       "size": 15475
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c",
       "sha256": "05de175a6754ebf6caf91651de750ee8cf05fe0549adc5e0573050b0f855d4ea",
       "size": 24788
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c",
       "sha256": "ec7f19883964d7fed5005e24611db97d5ad2dbdc5b63851e2587533e72cb632a",
       "size": 51251
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c",
       "sha256": "2c33420eab6aed3919241162d10b8ae21ec062d2904a4ceb7f9fbdcefabed147",
       "size": 6199
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c",
       "sha256": "72d8f3cb23a396cdbf9183c5cea2a0c00cfa0336def3736652480c4491f38788",
       "size": 19377
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c",
       "sha256": "746787de8825dfef6260885f427a373b3d8b6a6494dfee02dbca6039cc691859",
       "size": 56818
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c",
       "sha256": "89ea9ba1d4d0d40b21a7094935bfb8ce2a9b90df4d742f5d04a51e1d7bbc8d68",
       "size": 22582
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c",
       "sha256": "fc8a26ad3a0f8359817c1b08c68af50b9f7905a69c44e4599225eaa53a66e856",
       "size": 23373
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c",
       "sha256": "08b83e2e595ab1835bbdb50df69418a71c63c3c9d5f7c993f1775fa33c5bfe25",
       "size": 43467
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c",
       "sha256": "6b284323ffd5286e10b90dd7e2d9e8a0d222c43a966d636a1d5ed47b19ccd07b",
       "size": 159466
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c",
       "sha256": "7dc188b13a858b671b79684859ae6a5c6cf7716a9591744818209e6679e4a5cf",
       "size": 251804
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c",
       "sha256": "b3f85b80eccc5b00f5df119711c5dc8b93f7d297490a951aa600a971d28d6f6e",
       "size": 84008
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c",
       "sha256": "9f59720f39849977a09570260edfd63f089c8f723d836e4bbf8b7769d8a91c1d",
       "size": 139424
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c",
       "sha256": "767fe798f30cb2c8739e2b6f91379c318abb2889cee0d81ebf977807dbdbf5d6",
       "size": 43626
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.c",
       "sha256": "3f084b2b40a57512fdb753c1ad070fcdcc84490389edd69702b9ec4b859d6119",
       "size": 66979
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS.ioc",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS.ioc",
       "sha256": "b2d8eda0e06bb0e3ea4fc66121384ed30341c9f16d942ca1ce081a5b8134238d",
       "size": 21831
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/AutoRecharge_task.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/AutoRecharge_task.c",
       "sha256": "9e017763a0bbc206f5dde103689bf44287ea8dc0bacfcf178efa5745c224d3a3",
       "size": 2984
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/AutoTest_task.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/AutoTest_task.c",
       "sha256": "03eeaf265b4705266d89da9b49a853da2bd890f65b6b0393b7ee37a69a03839f",
       "size": 12635
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/BlueTooth_task.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/BlueTooth_task.c",
       "sha256": "1af2730a3c07ca3bf23112405cb6fa631f05d093327adfe49e2340dc1131c12b",
       "size": 17723
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/Inc/AutoRecharge_task.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/Inc/AutoRecharge_task.h",
       "sha256": "9faa3b138aa96a37a384719cea13ab2541815e06cafd6685dc3bacc4cda7a945",
       "size": 482
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/Inc/AutoTest_task.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/Inc/AutoTest_task.h",
       "sha256": "c7cc238887627c14169c4ace170bae9ab8b7849d33d56d51a0efa869d525da3c",
       "size": 1984
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/Inc/BlueTooth_task.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/Inc/BlueTooth_task.h",
       "sha256": "144e6a4d2809f87149f265655eae9c5b2f54dcd0c70ff95f8b406c1d97099f18",
       "size": 308
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/Inc/RGBStripControl_task.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/Inc/RGBStripControl_task.h",
       "sha256": "7088260b477f177f15f21f6ed503da9cd9b94706fb2ffa4f81ce11b1d25032e0",
       "size": 118
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/Inc/RobotControl_task.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/Inc/RobotControl_task.h",
       "sha256": "4f7a24e3548075be17753cc8b3b8dc8b1e4a606775c1c6cc28b8af31022dad75",
       "size": 2538
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/Inc/can_callback.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/Inc/can_callback.h",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size": 0
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/Inc/datalog_task.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/Inc/datalog_task.h",
       "sha256": "fbeb1351b7f2db81965585e55e05ab5e1587f2c95d31dec1964d6db35e1ecd49",
       "size": 2320
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/Inc/rc_joystick.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/Inc/rc_joystick.h",
       "sha256": "8c800f35eefe6c5a42367b084496017831795c0b0c495c8e45767ee8f8bb10a7",
       "size": 376
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/Inc/robot_select_init.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/Inc/robot_select_init.h",
       "sha256": "34eb8b88fdc5da05d316280e2edfd2433e932ef39e7c319d1924c6dfa7d66f25",
       "size": 3664
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/Inc/sensor_ranger.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/Inc/sensor_ranger.h",
       "sha256": "a7826e694b93166ffc895d7ef03494d1157727031f1b48807f6fb01eee7d934a",
       "size": 792
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/Inc/show_task.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/Inc/show_task.h",
       "sha256": "1007d34eabad46723c6a5a7d6499249d891923758ba02baf65896f604826c971",
       "size": 112
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/RGBStripControl_task.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/RGBStripControl_task.c",
       "sha256": "9ebae59ac032b9edeb7f1ee7979fe2f97fa0ba34ffee1d33c1066c6eb3ddb52b",
       "size": 3457
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/RobotControl_task_v2.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/RobotControl_task_v2.c",
       "sha256": "b8086848c3dc9b68bbe43d7bc0a81fe296e8d326abb7ae415f12d322c2e27c2f",
       "size": 52667
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/SerialControl_task.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/SerialControl_task.c",
       "sha256": "d769177677a36ac2991869509d14c58202ea862ce35f65f9e1639a1ee424287b",
       "size": 3613
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/appshow_task.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/appshow_task.c",
       "sha256": "13c9f0acabdad39016c971e347bf482f406b32cfcef54324e3b8bb46fff6b9ea",
       "size": 3396
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/can_callback.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/can_callback.c",
       "sha256": "d4501e49273ebdc2ce0fc7c37c80be2af931479a4c535004d6a4c2a7cb3065e4",
       "size": 9173
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/data_task.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/data_task.c",
       "sha256": "572b9df7862359039814bb9c3ae9101f829ab056dc93d863a2c7a4d93158ce40",
       "size": 7909
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/datalog_task.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/datalog_task.c",
       "sha256": "cb9d0dda3b448e5eca4b2cf757b5b8834f46d2cd74a43330d5bde73c0e7344ca",
       "size": 12776
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/imu_task.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/imu_task.c",
       "sha256": "43889ee5db001019dbbf66d6b3abc7a7dab78f7cb35956b24e9e993e37559610",
       "size": 2384
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/rc_joystick.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/rc_joystick.c",
       "sha256": "397d2c5201e41863f6a8d92109ea185fe7d7120cb75778f1fd70dcb327f6eb29",
       "size": 6311
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/reportErr_task.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/reportErr_task.c",
       "sha256": "0a87420f1d4629c40ba580a3b7c74c876eb53471dc3bc04e1096db0fadac7594",
       "size": 15380
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/robot_select_init.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/robot_select_init.c",
       "sha256": "2db82f983042200d59b0687f5dc13e0bdbbbfe6129e998c2405eb408297d651b",
       "size": 3773
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/sensor_ranger.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/sensor_ranger.c",
       "sha256": "f385a07fcfdbf7e001376fd0c6806a3784c353b065057ab5bb4473b236cb3329",
       "size": 12254
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/show_task.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/show_task.c",
       "sha256": "2690bc88fbdc9aa03c1926b206f8dde3cd5890c3013b490f1d6cef6d34bc136c",
       "size": 14656
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/tim_capture_callback.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/tim_capture_callback.c",
       "sha256": "4db7083ceaa12c002dfef0feb90cf256ca879ee5ef1d91f43ffc893886b9665a",
       "size": 1229
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_APP/uart_callback.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/uart_callback.c",
       "sha256": "961abc93f28cbc7806860f33a2ae17171eeea528f7d16fb21c2b96ae9b71ab06",
       "size": 2063
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/4ws_v2.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/4ws_v2.c",
       "sha256": "f4d9c129c554f5dd2f1faea950f97cf5adcae3e34ebdfc8032cd388142586210",
       "size": 12352
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/4ws.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/4ws.h",
       "sha256": "a200ad10c062b1e1691e9339341c14eb0eade8ffd63a572d6b2a63b95f2d7437",
       "size": 2642
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_RGBLight.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_RGBLight.h",
       "sha256": "f1378989fc5f9135757a094ba80168b29f7fe025dad8d145bee21f53077a614b",
       "size": 902
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_RTOSdebug.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_RTOSdebug.h",
       "sha256": "cd370c444c4f0d600bbc9debbf624e2b03c092c48b7fce034fdd2d9b4606cca0",
       "size": 830
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_ServoDrive.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_ServoDrive.h",
       "sha256": "c7b29fe9da49049b60395c382b933db36974417d6ce6b1da0b0f63bc20578a26",
       "size": 3021
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_adc.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_adc.h",
       "sha256": "d428535b8d0c2c7c784b9dc143667390d2d3c8baa11a1493353689776955138f",
       "size": 295
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_buzzer.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_buzzer.h",
       "sha256": "f228dd0a6154d0a16ad038443d0f3a3924b12cbd6ff6f2fc9b0c059b7d4caa29",
       "size": 376
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_can.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_can.h",
       "sha256": "a559451698cc7783d7ca25af5c076bdccf56662944beada66e9d7904d4f502ee",
       "size": 502
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_dwt.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_dwt.h",
       "sha256": "27158e3029088ce208790f6c5673bcb3b8725312b6099db10b54e2a59154c4e5",
       "size": 437
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_eeprom.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_eeprom.h",
       "sha256": "db1560d49239e16f0d31262cea762f0d0d851cdb3288b937650040b5ec75cacf",
       "size": 232
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_flash.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_flash.h",
       "sha256": "2b5bfeb8aebce114b8b5112dd3649616c6a0b8736951661f7cf89758690e178e",
       "size": 240
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_gamepad.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_gamepad.h",
       "sha256": "5312cf31711e19a0dacfe62d57e1368603b8bce63faee934ebdb04dcec899d90",
       "size": 2382
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_icm20948.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_icm20948.h",
       "sha256": "ab11e249290f626064a49f4f900d653c86b0dbaeda55938e60d8ee5610d834c9",
       "size": 1078
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_key.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_key.h",
       "sha256": "45ca7eb1dc3fce0ab18d1ea6399e679e767cbb5334cf96fe961e0429a12ee639",
       "size": 335
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_led.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_led.h",
       "sha256": "ae530fffa7fa5ea2dded1ee001f073d4bd4a0de6ed57bc7b9d2c376e2be49985",
       "size": 257
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_oled.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_oled.h",
       "sha256": "a5974fc969bb2839c3b691b53d17023a000e85fea9bc5d74eff43e5840879d33",
       "size": 631
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/bsp_siic.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_siic.h",
       "sha256": "b72c19c03ee70f4cc9e3d747874103027621ec49e9d09f85e1016267c813b0bb",
       "size": 1309
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/icm20948_reg.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/icm20948_reg.h",
       "sha256": "acf9c6c581bb61216280754a6d87e30f239500675e78854c20fcd6174bfd9750",
       "size": 4094
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/Inc/oledfont.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/oledfont.h",
       "sha256": "6f18448d9e8df1ae3b80de08cc71f366caf9c5866ec044b1282365edb9d5d3ad",
       "size": 16046
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_RGBLight.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_RGBLight.c",
       "sha256": "958022858fc34bde0dfa66c0147dbc5f645be4e03c20ae1fd68866fa0861c3e9",
       "size": 9996
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_RTOSdebug.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_RTOSdebug.c",
       "sha256": "465cab6980dce4df3b1d5e101ef08e17934ef179ad5ecefb550cfbcbd2fba2de",
       "size": 2187
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_ServoDrive.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_ServoDrive.c",
       "sha256": "faaa5c3dc23f16a1660146d922b93095aa62eb23da1dd36b691873c1cb4f2f8c",
       "size": 43431
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_adc.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_adc.c",
       "sha256": "dec6cba426136e73ad2083271e5c1f7c1c3ee65b45ac2155903df64dc5ca06e4",
       "size": 610
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_buzzer.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_buzzer.c",
       "sha256": "a8763e80e1692b377a12e817ac52cb81ecd61f9ecff61ad085149756266da78e",
       "size": 1319
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_can.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_can.c",
       "sha256": "60b1135c28e4898ba23616e779b21c2cbfb2c41b6770c87097d3b50dcfb313c8",
       "size": 7541
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_dwt.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_dwt.c",
       "sha256": "201a9510afa9a1e90fbc27382daa72fdf85338322c73aba8b88919c52dc65415",
       "size": 1350
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_eeprom.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_eeprom.c",
       "sha256": "2a3aae3659df7c81643dfe7652a044693e2a0662efd771fea78c4e3c2f2e436e",
       "size": 1093
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_flash.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_flash.c",
       "sha256": "98d0933312f5800ad67a849f336fae52dde5f5bbf2eee86892fa32961498318a",
       "size": 3645
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_gamepad.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_gamepad.c",
       "sha256": "b37e619fe9d1573dc94c40d5fb26e8a36f8ce48eaf2cdd8fd5bc0129883e0e90",
       "size": 4047
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_icm20948.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_icm20948.c",
       "sha256": "c655994bf961c53bb78afeb2cb8eb6ebd80e539add76bce3a173d3ff9c9bf486",
       "size": 12063
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_key.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_key.c",
       "sha256": "0496de2afd56b557339f1a251b0b05c2bb4a22899a68efac7f51d74c6a424efb",
       "size": 1876
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_led.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_led.c",
       "sha256": "25d1a4cb3093299a1b3f58e0bb91cc9d39efe6ccd6f0bbf7a7863f0c8e8939dd",
       "size": 493
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_oled.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_oled.c",
       "sha256": "ef32834318e0a98e9cc1124bcad3ab637f63ee59d4ea2759dce8c86a2d948e05",
       "size": 12914
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/LUCSYS_BSP/bsp_siic.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_siic.c",
       "sha256": "0e2cb137d2fd110585153b2c152ae854f1b7b57e0a6c45b342f8bd8308e6d4d1",
       "size": 8070
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/MDK-ARM/DebugConfig/LUCSYS_STM32F407VETx.dbgconf",
+      "path": "firmware/controllers/C63A/lsr280-20261013/MDK-ARM/DebugConfig/LUCSYS_STM32F407VETx.dbgconf",
       "sha256": "e709c61d7b18f929b4921c7b79f63faa2d8ce944c19b0a8676116cbc8479ddad",
       "size": 2804
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/MDK-ARM/DebugConfig/LUCSYS_STM32F407VETx_1.0.1.dbgconf",
+      "path": "firmware/controllers/C63A/lsr280-20261013/MDK-ARM/DebugConfig/LUCSYS_STM32F407VETx_1.0.1.dbgconf",
       "sha256": "6cad85eacc0e21c594393904deea7162768d2e6a4f06bf1777cf8fa454d2b44e",
       "size": 2804
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/MDK-ARM/LUCSYS/LUCSYS.sct",
+      "path": "firmware/controllers/C63A/lsr280-20261013/MDK-ARM/LUCSYS/LUCSYS.sct",
       "sha256": "f263f6f3e9e180a800c012dea307393826afdb7f0183064f1454b2dca4343b26",
       "size": 555
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/MDK-ARM/LUCSYS.uvprojx",
+      "path": "firmware/controllers/C63A/lsr280-20261013/MDK-ARM/LUCSYS.uvprojx",
       "sha256": "f6781541f6cb8f63d83b265c534328263e21f7e26c328feff77ac98849cff238",
       "size": 96354
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/MDK-ARM/LoadAxf.ini",
+      "path": "firmware/controllers/C63A/lsr280-20261013/MDK-ARM/LoadAxf.ini",
       "sha256": "9afc85a4c2d0331868b74a33c2d4bac9c8389969ba807ccd4f67a887580a2976",
       "size": 19
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/MDK-ARM/RTE/Device/STM32F407VETx/STM32F405_415_407_417_427_437_429_439.dbgconf",
+      "path": "firmware/controllers/C63A/lsr280-20261013/MDK-ARM/RTE/Device/STM32F407VETx/STM32F405_415_407_417_427_437_429_439.dbgconf",
       "sha256": "e709c61d7b18f929b4921c7b79f63faa2d8ce944c19b0a8676116cbc8479ddad",
       "size": 2804
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/MDK-ARM/RTE/Device/STM32F407VETx/STM32F405_415_407_417_427_437_429_439.dbgconf.base@0.0.0",
+      "path": "firmware/controllers/C63A/lsr280-20261013/MDK-ARM/RTE/Device/STM32F407VETx/STM32F405_415_407_417_427_437_429_439.dbgconf.base@0.0.0",
       "sha256": "e709c61d7b18f929b4921c7b79f63faa2d8ce944c19b0a8676116cbc8479ddad",
       "size": 2804
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/MDK-ARM/RTE/_LUCSYS/RTE_Components.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/MDK-ARM/RTE/_LUCSYS/RTE_Components.h",
       "sha256": "b16950d03c1c5fc7749634c233a981b4b28b30058c1e5d85a6b4153defb51af4",
       "size": 229
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/MDK-ARM/startup_stm32f407xx.s",
+      "path": "firmware/controllers/C63A/lsr280-20261013/MDK-ARM/startup_stm32f407xx.s",
       "sha256": "77b28afaa17d3bd31b983055dcffc57ba475945eb499a453876e2762dac1d6ba",
       "size": 28816
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid.h",
       "sha256": "20cc172670f528236b3d8840d1c1cb1cd651db0f7b84df6590a2fc06219f5b12",
       "size": 9587
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_keybd.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_keybd.h",
       "sha256": "f92544798bbd0659dbdc34294b6785c098dc295edb68b5f019634ca24ece1073",
       "size": 13693
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_mouse.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_mouse.h",
       "sha256": "860bb73b3759b51784040af36ef6568c6d90ce0b83278c0a6ff051bc769f21a5",
       "size": 2220
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_parser.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_parser.h",
       "sha256": "2b4e921b364d9b76bcf7d208a49a64e87e074f0d9c91785fde4f0945dd237d2a",
       "size": 2049
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_usage.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Inc/usbh_hid_usage.h",
       "sha256": "685599475ae01e34e15f8c4c7645ccd79b4258acfd5b975ff706c5cb58c1fc98",
       "size": 10054
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid.c",
       "sha256": "a72ed2abef59911151a8f7a75b56060d2baec525771d2be8222b68b552d783c3",
       "size": 26341
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_keybd.c",
       "sha256": "134f2a5a776a72c24deb070bc12098f75eaca5326ef51dcdac05482781b3de45",
       "size": 15101
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_mouse.c",
       "sha256": "610aec759ae8786325a83520187ed8360ec6f08f60b6bdd371d697c7cb25103b",
       "size": 6819
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Class/HID/Src/usbh_hid_parser.c",
       "sha256": "fd72d915d0f5e5e3244786eadfa504e780d6366b168110abdc2c014913b4b6a1",
       "size": 5125
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h",
       "sha256": "a297688cb07e5da01e99930e75a057951793a6ef4b64cac6172fcaf30e72075a",
       "size": 5840
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ctlreq.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ctlreq.h",
       "sha256": "25f76cd1c29ad24a1610651619d38a4411e84531458f21f44c05233dd462fd83",
       "size": 3350
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_def.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_def.h",
       "sha256": "4562361f0135047875bde1fde0b71a1c6e75449bc092b1ec1ac9dc09f50f5c72",
       "size": 16880
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ioreq.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ioreq.h",
       "sha256": "cadd372860770264af24731da514a89405a219ebe4c8d1fd5dd984edc71719fe",
       "size": 4347
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_pipes.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_pipes.h",
       "sha256": "34b1e41cf10fafcc150b136ff94a0cbc786974196c3efa0d843be080bb17076c",
       "size": 2381
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.c",
       "sha256": "9c3477b065a023cf6bdcdbf3b9d9ea12a0907543ff601a360a564d2657630649",
       "size": 38200
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.c",
       "sha256": "cc7221e4867b1781ecfd6c9ce46181c05c7225c527a48af1568e0152f46b02a4",
       "size": 36397
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.c",
       "sha256": "98d7787abdc53811948e8c149c673c44e6f353c146c2eeaf8dd02768306a438d",
       "size": 11948
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.c",
       "sha256": "0872635762c96fb0771422983633c092c0298faf6f0c72b0950aadd13525568e",
       "size": 3811
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/ST/STM32_USB_Host_Library/LICENSE.txt",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/ST/STM32_USB_Host_Library/LICENSE.txt",
       "sha256": "5db16866e0d240442f8382ee5b76eac16ed02912fd51ef2be55817b7cadd703b",
       "size": 4748
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h",
       "sha256": "9f18b2e616411def39b415994b7fbe8e782a185e045c894ad2645c1ab7e83100",
       "size": 36739
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c",
       "sha256": "0dd9ec29eb5862c4520eede87b05e063a4c80223555140c0187e80f97ae9e8aa",
       "size": 60451
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h",
       "sha256": "f116a1a3f842194aabbbeddf3d0f9f345ab7d35d4de7be0f04af289f9b1fdfc8",
       "size": 35868
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/freertos_mpool.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/freertos_mpool.h",
       "sha256": "eed1c836ed2f0cde7d41a93da7e7e208c539d59162e872351526e1ddbd56b1b3",
       "size": 2458
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/freertos_os2.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/freertos_os2.h",
       "sha256": "3ddb74193daf32483caee33e31a3ef0d40703e909e0e41e896839ccf37edcffc",
       "size": 13122
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/LICENSE",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/LICENSE",
       "sha256": "49678287e48228d68af25ed82841491552b0646e31a8080165758fa72b67105a",
       "size": 1119
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/croutine.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/croutine.c",
       "sha256": "e31cd1c9c280c919a92edc28885e9bebce589d4cfab71cefab832a73683200fb",
       "size": 13177
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c",
       "sha256": "a72063c3977fad098a87a5430e04e9fc5b892d703e01fbe09ea907f67aacf20e",
       "size": 26791
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h",
       "sha256": "b7a81501c3f4ff9537df5c9a5e0231f37638cdc8324965ae10064128fded840f",
       "size": 44047
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/StackMacros.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/StackMacros.h",
       "sha256": "c27d1653d2f7f34292387cab8a8b074426cc1ef73aeaa27663d56ba634f7f8ab",
       "size": 6216
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/atomic.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/atomic.h",
       "sha256": "b74ab6f4aae9a397565adb5f14c9d8e33b9f782a2e35f77535af751413ac68de",
       "size": 12265
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/croutine.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/croutine.h",
       "sha256": "8df4c5eec7eb30262f09b7c47fc2eb0534a27721293b0d260a3398846494f9ac",
       "size": 26538
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h",
       "sha256": "382f8a7a0e00240fb69911dff8d8515248beb9dadfe77c22c4e5544f49cc76eb",
       "size": 7574
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h",
       "sha256": "3b9cbd64db721c4317544700fff4e42ac68d989f71b7d610b31087bb19175839",
       "size": 30435
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/list.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/list.h",
       "sha256": "f9b239f168976f7b167e054fa72616826f55ae4d74d76b87c9e70b2df079363f",
       "size": 18571
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/message_buffer.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/message_buffer.h",
       "sha256": "504a77558f13b66fd1eec5adf4d81e274f0b54c12880424833c24f577be0800a",
       "size": 38204
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/mpu_prototypes.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/mpu_prototypes.h",
       "sha256": "3fafd21399ef619a55b2f8112750d750685c8ae1cb458363d21ee37a105ac6e7",
       "size": 14034
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h",
       "sha256": "c1fc47acdb79efb0fb8a0fb8a169ae4423fdc3a6d820b2f81d49e8e077c1ed48",
       "size": 9405
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/portable.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/portable.h",
       "sha256": "39795c8dded505f24f53646ecd8192251851c74f366d2a5b0aae3fbfa68c191b",
       "size": 8142
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h",
       "sha256": "399814721d9735e91d74ca07be3974edb20639acb46a6792230ff9f61f67b353",
       "size": 5751
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/queue.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/queue.h",
       "sha256": "39d58a203f1b67fdb1099293914a2af9722d223586cfc5ff06e230e047919dea",
       "size": 61762
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h",
       "sha256": "b9b2ff28a0c80fa21443690bb28de64c8b9451cccd57e484de0bcf02fc367575",
       "size": 48291
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/stack_macros.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/stack_macros.h",
       "sha256": "7d1d30b6c9ae34bebb26b14402f78a59a35ae826f460a1ad28534c9590b32151",
       "size": 5965
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/stream_buffer.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/stream_buffer.h",
       "sha256": "0607fcca1927ba782a29a3814481d69db3569e6e53a68ebf2c01f5598a3af2b8",
       "size": 38507
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/task.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/task.h",
       "sha256": "830990f7b17b8e0ce3bdb0a7475d2cdc7d659eafff16b88a855c84c06a7a2a3e",
       "size": 107786
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/timers.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/include/timers.h",
       "sha256": "7fa62f648014533ce5bd8da1775ddd814cbf208f9af7c748a40bb8b50a8e8912",
       "size": 61482
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/list.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/list.c",
       "sha256": "e735517f308fad5dd77d03b6858c16bdbc937bb9d0754735849fc7799ebe2b59",
       "size": 8475
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c",
       "sha256": "c697b88e48e9906a19cabef187e5797a5a45009144f9e473262752c86a5d2c50",
       "size": 16134
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c",
       "sha256": "8ead28dcb0a2d4b8f2a658451ee5a123c86111049cbf155b78d29056aebe96ee",
       "size": 28558
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h",
       "sha256": "dd9a210bd4b6095ea2b763bbaf378e44f0a61ec4515745e165aac0ed329e472f",
       "size": 8369
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/queue.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/queue.c",
       "sha256": "06a153c1ce111213af32dfc8797bd2e5c7819e264dfa338b4049f058dc1edb11",
       "size": 96600
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c",
       "sha256": "4376714fecad0f72dc4c8b45236591a7e0ffe24dd018382f56e8b0dfc2230b28",
       "size": 43728
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/tasks.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/tasks.c",
       "sha256": "8cb1eabe18f130b2b8980e880847f773fb12a4071c763d26c51624223b32a3a4",
       "size": 178647
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/Middlewares/Third_Party/FreeRTOS/Source/timers.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/Middlewares/Third_Party/FreeRTOS/Source/timers.c",
       "sha256": "0d16405e621a2c4b003b5f0324b9713cd4865364133df6f742f482a6b2dbc773",
       "size": 41215
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/README.md",
-      "sha256": "38805fe5e79abf54f255a35a8f6718c81ea3f34471215a83e964e01200da53ee",
-      "size": 3268
+      "path": "firmware/controllers/C63A/lsr280-20261013/README.md",
+      "sha256": "6b0f73cc60e484dccac3f35dd6d4f6c03481906c932b5343b081cdfece76923a",
+      "size": 3177
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/USB_HOST/App/WiredPS2_gamepad.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/USB_HOST/App/WiredPS2_gamepad.c",
       "sha256": "ee8b7ac05fb68dd8a6d2aca926e38ffc82bd0a3b148781d855a13e9d6c517b98",
       "size": 8588
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/USB_HOST/App/WiredPS2_gamepad.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/USB_HOST/App/WiredPS2_gamepad.h",
       "sha256": "d930bb49477348e892cb1ae878e0a9c1839e0394260b219d4961609d0dcc241e",
       "size": 1177
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/USB_HOST/App/beitong_gamepad.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/USB_HOST/App/beitong_gamepad.c",
       "sha256": "c5d2a41475c1cf91c035fa7d02bcf5e52e101757f110c10412cf22b0ebd9f19e",
       "size": 6892
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/USB_HOST/App/beitong_gamepad.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/USB_HOST/App/beitong_gamepad.h",
       "sha256": "8029209518999ef0edd6b037e0d4b62499f08cefa9e2806c1640d3ba57fdb905",
       "size": 1291
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/USB_HOST/App/usb_host.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/USB_HOST/App/usb_host.c",
       "sha256": "a71147c06c1b40dfa0203653f4481289a03f0dfe0e26a7615c646d84b8936bcf",
       "size": 6156
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/USB_HOST/App/usb_host.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/USB_HOST/App/usb_host.h",
       "sha256": "4e37b11977cb7770618494e5e9da91ad43dac4cc137ac484e649beb0f73d122b",
       "size": 2042
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/USB_HOST/App/usbh_hid_GamePad.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/USB_HOST/App/usbh_hid_GamePad.c",
       "sha256": "6d9a0f4e771c5734972faa65fc1a5b1adcb1d0043c441afe0cf9dcbf40ea38d3",
       "size": 28927
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/USB_HOST/App/usbh_hid_GamePad.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/USB_HOST/App/usbh_hid_GamePad.h",
       "sha256": "d8dff0c0f975e62951c09eab163ef323f32c53676e033b25f779591d5269726e",
       "size": 99
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/USB_HOST/App/xbox360_gamepad.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/USB_HOST/App/xbox360_gamepad.c",
       "sha256": "7085023d310a21869bd1073149a3322712c6526c5369c3c09bc898bf0ef93e70",
       "size": 7673
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/USB_HOST/App/xbox360_gamepad.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/USB_HOST/App/xbox360_gamepad.h",
       "sha256": "1dec87d69857308f8f9d5dc26cd7d6b2b11a648ae3b497ef6801478332ae59c9",
       "size": 1405
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/USB_HOST/Target/usbh_conf.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/USB_HOST/Target/usbh_conf.c",
       "sha256": "d948a783abfd56fcc4e353d6088f6f1085b804888f92012dbec11bd60c04ed1b",
       "size": 15393
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/USB_HOST/Target/usbh_conf.h",
+      "path": "firmware/controllers/C63A/lsr280-20261013/USB_HOST/Target/usbh_conf.h",
       "sha256": "3d4b686425d9745dc697392b4980e2a865463f5e362d8044083c0c7be8850b9c",
       "size": 4410
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/keilkill.bat",
+      "path": "firmware/controllers/C63A/lsr280-20261013/keilkill.bat",
       "sha256": "38628b884bdfd00be095460b70401ebf11ca8cb30a6cda6ad193c9da5e5ed069",
       "size": 411
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/tools/4ws_sim/.gitignore",
+      "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/.gitignore",
       "sha256": "756d94568930e7c0b46246e8ae612263baf7728068afcd5d4eb4e5e3710bae12",
       "size": 39
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/tools/4ws_sim/Makefile",
+      "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/Makefile",
       "sha256": "bf75bfc443db86d0fdf1e968a17f45daf33c8b9071571122d6d7697d1856810b",
       "size": 1642
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/tools/4ws_sim/README.md",
-      "sha256": "0652bd4c1b116efe1694e2b4704918ed15478ffb7ae1d505d0fe1ea3294a77d4",
-      "size": 4554
+      "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/README.md",
+      "sha256": "b18858e5e68a2b09c3c4716bde6c42973f0251e392de7133fa996313d3fe4977",
+      "size": 4600
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/tools/4ws_sim/control_regression.ps1",
+      "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/control_regression.ps1",
       "sha256": "a919874a352626812068ad3dc1ded1d709069d9cf779e5377ee397aecb88dfbe",
       "size": 3090
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/tools/4ws_sim/main.c",
+      "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/main.c",
       "sha256": "da95fb1ce9926d928aeb5130c898b726e61d21d71111bf4427b201ab2aa49bd4",
       "size": 17060
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/tools/4ws_sim/oled_gamepad_regression.py",
+      "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/oled_gamepad_regression.py",
       "sha256": "0685fb96646aac577eca9fc2dd3815bd0d774e7f731433dd9d77f81c504d5c43",
       "size": 4157
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/tools/4ws_sim/rc_regression.py",
+      "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/rc_regression.py",
       "sha256": "56c6a31db16fc2dd3dfe1e3b9e110d2ea86d29467fd5b6815a9e63afd34b02d0",
       "size": 4615
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/tools/datalog_README.md",
+      "path": "firmware/controllers/C63A/lsr280-20261013/tools/datalog_README.md",
       "sha256": "5f71e72bfcaeae0593ccbbfc4455ecf979ab2c06aab3d22a2f08446dc11b4da9",
       "size": 8524
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/tools/datalog_compare.py",
+      "path": "firmware/controllers/C63A/lsr280-20261013/tools/datalog_compare.py",
       "sha256": "3f3d43ceddacb54516615e3e1225616a793017c614129f99862e8df8aeae1ac6",
       "size": 9041
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/tools/datalog_plot.py",
+      "path": "firmware/controllers/C63A/lsr280-20261013/tools/datalog_plot.py",
       "sha256": "c423184a825a02c82e9901fed7933411d0fb8d8663f04d7e286a9a838a4ae409",
       "size": 13621
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/tools/datalog_recv.py",
+      "path": "firmware/controllers/C63A/lsr280-20261013/tools/datalog_recv.py",
       "sha256": "4d95d68f2eb83ff2003ac63039bd1113b55716a777019030812756924efec938",
       "size": 18795
     },
     {
-      "path": "firmware/controllers/C63A/t-series-20261013/\u66f4\u65b0\u8bb0\u5f55.txt",
+      "path": "firmware/controllers/C63A/lsr280-20261013/\u66f4\u65b0\u8bb0\u5f55.txt",
       "sha256": "d44cca9ce52d82b4392746871e49d3d1ea24642d048822dd94b88520c0c086bd",
       "size": 27
     }

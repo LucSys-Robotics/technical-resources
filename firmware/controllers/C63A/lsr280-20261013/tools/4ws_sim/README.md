@@ -1,4 +1,4 @@
-# 四轮四转运动学对拍工程
+# LucSys Robotics — LSR100 / LSR180 / LSR200 / LSR300 firmware source reference
 
 在 PC 上验证 `LUCSYS_BSP/4ws_v2.c` 的运动学正确性。**直接编译固件里的真实源文件**，不做拷贝或改写 —— 测的就是车上跑的那份代码。
 

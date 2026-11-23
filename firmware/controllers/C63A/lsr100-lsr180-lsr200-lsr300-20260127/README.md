@@ -1,10 +1,10 @@
-# LucSys Robotics — C63A firmware source reference
+# LucSys Robotics — LSR100 / LSR180 / LSR200 / LSR300 firmware source reference
 
-Snapshot: t-series-20261013. MCU selected in Keil: `STM32F407VETx`. Targets: `LUCSYS`.
+Snapshot: lsr100-lsr180-lsr200-lsr300-20260127. MCU selected in Keil: `STM32F407VETx`. Targets: `LUCSYS`.
 
 ## Applicability and editing locations
 
-C63A reference source; select the S-series and T-series branches separately. A shared controller designation does not establish model or firmware equivalence. The S-series snapshot selects modes in LUCSYS_APP/robot_select_init.c. The T-series snapshot explicitly fixes RobotHardWareParam.CarType to T280; do not flash it as a generic S-series build or infer applicability to LSR200Auto. LucSys model-to-delivered-firmware mapping is not confirmed by this publication.
+This C63A project is associated with LSR100 / LSR180 / LSR200 / LSR300, as confirmed by LucSys. Use the separate project for other LucSys models. Mode selection is implemented in LUCSYS_APP/robot_select_init.c. This model association does not confirm the firmware installed on a particular delivered robot, nor compatibility with every hardware revision or configuration. Do not extend it to LSR200Auto.
 
 Control and initialization: LUCSYS_APP/RobotControl_task*.c and robot_select_init.c. Driver/CAN/encoder processing: LUCSYS_BSP and LUCSYS_APP/can_callback.c (inspect actual project references). Some motor control is delegated to external drivers; do not assume there is a universal on-MCU PID or raw encoder interface. Use the actual driver implementation and parameter structures. STM32 HAL, CMSIS, FreeRTOS and USB host components remain included with notices.
 
