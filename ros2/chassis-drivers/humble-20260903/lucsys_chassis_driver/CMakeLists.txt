@@ -30,7 +30,7 @@ find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(lucsys_robot_msg REQUIRED)                         
+find_package(lucsys_robot_msg REQUIRED)
 find_package(serial REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 # uncomment the following section in order to fill in
@@ -38,8 +38,8 @@ find_package(rosidl_default_generators REQUIRED)
 # find_package(<dependency> REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/Position.msg"
- )
+    "msg/Position.msg"
+)
 
 
 if(BUILD_TESTING)
@@ -51,6 +51,15 @@ if(BUILD_TESTING)
   # uncomment the line when this package is not in a git repo
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
+  # Recognize our actual notice through the tool's supported plugin registry.
+  # Keep the copyright test enabled and scan the same source files.
+
+  find_package(ament_cmake_pytest REQUIRED)
+  ament_add_pytest_test(launch_contracts test/test_launch_contracts.py)
+  ament_add_pytest_test(inverse_sqrt test/test_inverse_sqrt.py)
+  ament_add_pytest_test(notice_policy test/test_notice_policy.py
+    APPEND_ENV PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/test/notice_plugin
+  )
 endif()
 
 include_directories(
@@ -59,10 +68,36 @@ include_directories(
 
 
 add_executable(lucsys_chassis_node src/lucsys_chassis.cpp src/Quaternion_Solution.cpp)
-ament_target_dependencies(lucsys_chassis_node tf2_ros tf2 tf2_geometry_msgs rclcpp std_msgs nav_msgs std_srvs sensor_msgs serial lucsys_robot_msg turtlesim)
+ament_target_dependencies(
+  lucsys_chassis_node
+  tf2_ros
+  tf2
+  tf2_geometry_msgs
+  rclcpp
+  std_msgs
+  nav_msgs
+  std_srvs
+  sensor_msgs
+  serial
+  lucsys_robot_msg
+  turtlesim
+)
 
 add_executable(ImuProcessor src/ImuProcessor.cpp src/Quaternion_Solution.cpp)
-ament_target_dependencies(ImuProcessor tf2_ros tf2 tf2_geometry_msgs rclcpp std_msgs nav_msgs std_srvs sensor_msgs serial lucsys_robot_msg turtlesim)
+ament_target_dependencies(
+  ImuProcessor
+  tf2_ros
+  tf2
+  tf2_geometry_msgs
+  rclcpp
+  std_msgs
+  nav_msgs
+  std_srvs
+  sensor_msgs
+  serial
+  lucsys_robot_msg
+  turtlesim
+)
 
 install(TARGETS
 lucsys_chassis_node ImuProcessor
@@ -73,8 +108,14 @@ DESTINATION lib/${PROJECT_NAME}
 )
 
 install(
-  DIRECTORY launch config 
+  DIRECTORY launch config
   DESTINATION share/${PROJECT_NAME}
-) 
+)
 
 ament_package()
+
+if(BUILD_TESTING)
+  set_tests_properties(copyright PROPERTIES
+    ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/test/notice_plugin:$ENV{PYTHONPATH}"
+  )
+endif()

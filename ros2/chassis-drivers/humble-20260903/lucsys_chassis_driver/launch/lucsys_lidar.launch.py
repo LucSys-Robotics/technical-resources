@@ -1,3 +1,10 @@
+# Copyright 2026 LucSys Robotics - integration and maintenance changes only.
+#
+# LucSys Robotics distributes this source under supplier authorization.
+# LucSys Robotics is responsible for integration and maintenance only.
+# This notice does not grant an additional open-source license.
+# Third-party components retain their respective licenses and notices.
+
 import os
 import yaml
 from pathlib import Path
@@ -7,7 +14,7 @@ from launch.actions import (
     DeclareLaunchArgument, IncludeLaunchDescription,
     GroupAction, OpaqueFunction
 )
-from launch_ros.actions import LifecycleNode,Node
+from launch_ros.actions import LifecycleNode
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
@@ -30,9 +37,9 @@ def include_lidar_launch(context, *args, **kwargs):
     actions = []
     if lidar_type.startswith('ls'):            # LS series
         launch_dir = os.path.join(get_package_share_directory('lslidar_driver'), 'launch')
-                # Detects whether the radar type ends with _double
+        # Detects whether the radar type ends with _double
         if lidar_type.endswith('_double'):
-            print(f'[LucSys LiDAR] 检测到双雷达模式，启动双雷达驱动和融合节点')
+            print('[LucSys LiDAR] Dual-LiDAR mode: starting both drivers and fusion.')
             lidar_launch = GroupAction(
                 actions=[
                     # 1. Start dual radar driver
@@ -57,35 +64,38 @@ def include_lidar_launch(context, *args, **kwargs):
             template_yaml = Path(
                 get_package_share_directory('lslidar_driver'),
                 'config', 'lslidar_cx.yaml'
-                )
-            cx_cfg = yaml.safe_load(template_yaml.read_text())['cx']['lslidar_driver_node']['ros__parameters']
-            if cfg['lscx']['angle_disable_min'] != 0 and cfg['lscx']['angle_disable_max'] != 0 :
+            )
+            cx_cfg = yaml.safe_load(template_yaml.read_text())[
+                'cx']['lslidar_driver_node']['ros__parameters']
+            if cfg['lscx']['angle_disable_min'] != 0 and cfg['lscx']['angle_disable_max'] != 0:
                 cx_cfg['angle_disable_min'] = cfg['lscx']['angle_disable_min']
                 cx_cfg['angle_disable_max'] = cfg['lscx']['angle_disable_max']
-            
+
             lidar_launch = GroupAction(
                 actions=[
                     LifecycleNode(package='lslidar_driver',
-                                    executable='lslidar_driver_node',
-                                    name='lslidar_driver_node',
-                                    namespace='cx', # Matches the namespace in the corresponding YAML file
-                                    parameters=[cx_cfg],
-                                    output='screen'
-                                    ),
+                                  executable='lslidar_driver_node',
+                                  name='lslidar_driver_node',
+                                  # Matches the namespace in the corresponding YAML file
+                                  namespace='cx',
+                                  parameters=[cx_cfg],
+                                  output='screen'
+                                  ),
                     IncludeLaunchDescription(PythonLaunchDescriptionSource(
                         os.path.join(get_package_share_directory('pointcloud_to_laserscan'),
-                            'launch', 'pointcloud_to_laserscan_launch.py')),
-                        )
-                    ]
-                )
+                                     'launch', 'pointcloud_to_laserscan_launch.py')),
+                    )
+                ]
+            )
         else:
             template_yaml = Path(
                 get_package_share_directory('lslidar_driver'),
                 'config', 'lslidar_x10.yaml'
-                )
+            )
             lidar_port = cfg['x10']['lidar_port']
-            x10_cfg = yaml.safe_load(template_yaml.read_text())['x10']['lslidar_driver_node']['ros__parameters']
-            
+            x10_cfg = yaml.safe_load(template_yaml.read_text())[
+                'x10']['lslidar_driver_node']['ros__parameters']
+
             if lidar_type.endswith('net'):
                 x10_cfg['serial_port'] = ''
             elif lidar_type.endswith('uart'):
@@ -100,35 +110,44 @@ def include_lidar_launch(context, *args, **kwargs):
                     x10_cfg['lidar_model'] = 'N10Plus'
                 else:
                     x10_cfg['lidar_model'] = 'N10'
-                    
-            if cfg['x10']['angle_disable_min'] != 0 and cfg['x10']['angle_disable_max'] != 0 :
+
+            if cfg['x10']['angle_disable_min'] != 0 and cfg['x10']['angle_disable_max'] != 0:
                 x10_cfg['angle_disable_min'] = cfg['x10']['angle_disable_min']
                 x10_cfg['angle_disable_max'] = cfg['x10']['angle_disable_max']
-                
+
             lidar_launch = LifecycleNode(package='lslidar_driver',
-                                    executable='lslidar_driver_node',
-                                    name='lslidar_driver_node',
-                                    namespace='x10', # Matches the namespace in the corresponding YAML file
-                                    parameters=[x10_cfg],
-                                    output='screen'
-                                    )
-        
+                                         executable='lslidar_driver_node',
+                                         name='lslidar_driver_node',
+                                         # Matches the namespace in the corresponding YAML file
+                                         namespace='x10',
+                                         parameters=[x10_cfg],
+                                         output='screen'
+                                         )
+
     elif lidar_type == 'ldstl19p':
         lidar_launch = IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(get_package_share_directory('ldlidar'), 'launch','stl19p.launch.py')),)
+            PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('ldlidar'),
+                             'launch', 'stl19p.launch.py')))
     elif lidar_type == 'ldstl06nbj':
         lidar_launch = IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(get_package_share_directory('ldlidar'), 'launch','stl06nbj.launch.py')),)
+            PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('ldlidar'),
+                             'launch', 'stl06nbj.launch.py')))
     elif lidar_type == 'ldstl19n':
         lidar_launch = IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(get_package_share_directory('ldlidar'), 'launch', 'stl19n.launch.py')),)
+            PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('ldlidar'),
+                             'launch', 'stl19n.launch.py')))
     elif lidar_type == 'rplidar_c1':
         lidar_launch = IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(get_package_share_directory('rplidar_ros'), 'launch', 'rplidar_c1_launch.py')),)
+            PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('rplidar_ros'),
+                             'launch', 'rplidar_c1_launch.py')))
     else:
         raise ValueError(f'Unsupported lidar: {lidar_type}')
     # 4. Return to the action list
-    actions.append(lidar_launch)  
+    actions.append(lidar_launch)
     return actions
 
 

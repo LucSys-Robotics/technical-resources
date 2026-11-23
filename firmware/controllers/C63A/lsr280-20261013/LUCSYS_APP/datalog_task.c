@@ -111,11 +111,11 @@ static void DataLog_SendHeader(void)
 	if( !DataLog_TxIdle() ) return;
 
 	n += snprintf(logbuf+n,sizeof(logbuf)-n,
-		"H,fw_build,%s %s,car,T280,wheelspacing_mm,%d,axlespacing_mm,%d,wheeldia_mm,%d\r\n",
+		"H,fw_build,%s %s,car,LSR280,wheelspacing_mm,%d,axlespacing_mm,%d,wheeldia_mm,%d\r\n",
 		__DATE__,__TIME__,
 		(int)sc(RobotHardWareParam.WheelSpacing,1000),
 		(int)sc(RobotHardWareParam.AxleSpacing,1000),
-		(int)sc(T280_Diameter,1000));
+		(int)sc(LSR280_Diameter,1000));
 
 	n += snprintf(logbuf+n,sizeof(logbuf)-n,
 		"H,cols,t_ms,seq,src,en,err,hold,park,scl,mprg,"

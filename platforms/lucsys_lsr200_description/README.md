@@ -1,6 +1,6 @@
 # LucSys Robotics — LSR200
 
-[All LSR200 development resources: ROS 2 driver, model packages and STM32 status](../../models/LSR200/README.md)
+[All LSR200 development resources: ROS 2 driver, model packages and STM32 status](https://github.com/LucSys-Robotics/technical-resources/blob/development-source-20261123/models/LSR200/README.md)
 
 ROS 2 Humble robot description.
 

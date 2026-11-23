@@ -1,6 +1,6 @@
 # LucSys Robotics — LSR200Auto Ackermann Lite
 
-[All LSR200Auto development resources: ROS 2 driver, model packages and STM32 status](../../models/LSR200Auto/README.md)
+[All LSR200Auto development resources: ROS 2 driver, model packages and STM32 status](https://github.com/LucSys-Robotics/technical-resources/blob/development-source-20261123/models/LSR200Auto/README.md)
 
 ROS 2 Humble robot description.
 

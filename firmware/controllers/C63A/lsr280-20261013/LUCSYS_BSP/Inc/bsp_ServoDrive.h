@@ -14,10 +14,10 @@
 
 //Enumeration of motor types
 enum{
-	SingleAxis_5inch = 0,  //5-inch single-shaft motor, compatible with model S100
-	DoubleAxis_5inch ,     //5-inch dual shaft motor, compatible with model S300Mini (S150)
-	SingleAxis_8inch ,     //8-inch single-shaft motor, compatible with models S200, S200 outdoor version (S200_OUTDOOR), and S260
-	DoubleAxis_8inch ,     //8-inch dual-shaft motor, compatible with model S300
+	SingleAxis_5inch = 0,  //5-inch single-shaft motor, compatible with model LSR100
+	DoubleAxis_5inch ,     //5-inch dual shaft motor, compatible with model LSR300Mini (REF1)
+	SingleAxis_8inch ,     //8-inch single-shaft motor, compatible with models LSR200, LSR200 outdoor version (LSR200_OUTDOOR), and REF2
+	DoubleAxis_8inch ,     //8-inch dual-shaft motor, compatible with model LSR300
 	SteeringMotor ,        //Hollow motor for steering
 };
 

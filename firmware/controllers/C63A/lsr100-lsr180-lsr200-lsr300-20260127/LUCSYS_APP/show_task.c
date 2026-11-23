@@ -73,12 +73,12 @@ static void HardWare_Info_show(void)
 {
 	//Model
 	oled->ShowString(0,0,"CarType:");
-	     if( RobotHardWareParam.CarType == S300 ) oled->ShowString(70,0,"S300  ");
-	else if( RobotHardWareParam.CarType == S200 ) oled->ShowString(70,0,"S200  ");
-	else if( RobotHardWareParam.CarType == S200_OUTDOOR ) oled->ShowString(70,0,"ODS200");
-	else if( RobotHardWareParam.CarType == S300Mini ) oled->ShowString(70,0,"MNS300");
-	else if( RobotHardWareParam.CarType == S100 ) oled->ShowString(70,0,"S100  ");
-	else if( RobotHardWareParam.CarType == S260 ) oled->ShowString(70,0,"S260  ");
+	     if( RobotHardWareParam.CarType == LSR300 ) oled->ShowString(70,0,"LSR300  ");
+	else if( RobotHardWareParam.CarType == LSR200 ) oled->ShowString(70,0,"LSR200  ");
+	else if( RobotHardWareParam.CarType == LSR200_OUTDOOR ) oled->ShowString(70,0,"ODS200");
+	else if( RobotHardWareParam.CarType == LSR300Mini ) oled->ShowString(70,0,"MNS300");
+	else if( RobotHardWareParam.CarType == LSR100 ) oled->ShowString(70,0,"LSR100  ");
+	else if( RobotHardWareParam.CarType == REF2 ) oled->ShowString(70,0,"REF2  ");
 	else if( RobotHardWareParam.CarType == SX04 ) oled->ShowString(70,0,"SX04  ");
 	else oled->ShowString(70,0,"UKOW  ");
 	
@@ -151,12 +151,12 @@ static void RobotMainInfoShow(void)
 	
 	      if(RobotControlParam.EmergencyMode) oled->ShowString(0,0,"EMC on");
 	else if( RobotControlParam.ChargeMode ) oled->ShowString(0,0,"RCM   ");
-	else if( cartypeshow == S300 ) oled->ShowString(0,0,"S300  ");
-	else if( cartypeshow == S200 ) oled->ShowString(0,0,"S200  ");
-	else if( cartypeshow == S200_OUTDOOR ) oled->ShowString(0,0,"ODS200");
-	else if( cartypeshow == S300Mini ) oled->ShowString(0,0,"MNS300");
-	else if( cartypeshow == S100 ) oled->ShowString(0,0,"S100  ");
-	else if( cartypeshow == S260 ) oled->ShowString(0,0,"S260  ");
+	else if( cartypeshow == LSR300 ) oled->ShowString(0,0,"LSR300  ");
+	else if( cartypeshow == LSR200 ) oled->ShowString(0,0,"LSR200  ");
+	else if( cartypeshow == LSR200_OUTDOOR ) oled->ShowString(0,0,"ODS200");
+	else if( cartypeshow == LSR300Mini ) oled->ShowString(0,0,"MNS300");
+	else if( cartypeshow == LSR100 ) oled->ShowString(0,0,"LSR100  ");
+	else if( cartypeshow == REF2 ) oled->ShowString(0,0,"REF2  ");
 	else if( cartypeshow == SX04 ) oled->ShowString(0,0,"SX04  ");
 	else oled->ShowString(0,0,"UKOW  ");
 	
@@ -166,7 +166,7 @@ static void RobotMainInfoShow(void)
 	
 	//Lines 2-4 display different information depending on the model
 	//Six-wheeled vehicle
-	if( RobotHardWareParam.CarType == S260 )
+	if( RobotHardWareParam.CarType == REF2 )
 	{
 		//Left and right wheel target values
 		oled->ShowString(0,10,"L");
@@ -191,7 +191,7 @@ static void RobotMainInfoShow(void)
 	}
 	
 	//Four-wheel drive vehicles
-	else if( RobotHardWareParam.CarType == S200 || RobotHardWareParam.CarType == S200_OUTDOOR )
+	else if( RobotHardWareParam.CarType == LSR200 || RobotHardWareParam.CarType == LSR200_OUTDOOR )
 	{
 		oled->ShowString(0,10,"A:");
 		oled->ShowString(0,20,"B:");
@@ -209,8 +209,8 @@ static void RobotMainInfoShow(void)
 	}
 
 	//Differential cars
-	else if( RobotHardWareParam.CarType == S300 || RobotHardWareParam.CarType == S300Mini || 
-		     RobotHardWareParam.CarType == S100 )
+	else if( RobotHardWareParam.CarType == LSR300 || RobotHardWareParam.CarType == LSR300Mini || 
+		     RobotHardWareParam.CarType == LSR100 )
 	{
 		oled->ShowString(0,10,"GYRO_Z");
 		oled->ShowShort(65,10,axis_9ValOri.gyro.z,5,12);
@@ -338,13 +338,13 @@ void show_task(void* param)
 	//Different models have different drivers and corresponding OLED display pages
 	switch(RobotHardWareParam.CarType)
 	{
-		case S260:
+		case REF2:
 			page_max = 9;
 			break;
-		case S200: case S200_OUTDOOR:
+		case LSR200: case LSR200_OUTDOOR:
 			page_max = 8;
 			break;
-		case S300:case S300Mini:case S100:
+		case LSR300:case LSR300Mini:case LSR100:
 			page_max = 7;
 			break;
 	}

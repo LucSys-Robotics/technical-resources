@@ -1,5 +1,7 @@
 # LucSys Robotics — Mobile Robot Technical Resources
 
+[**Download Development Source**](https://github.com/LucSys-Robotics/technical-resources/releases/tag/development-source-20261123) — complete STM32 projects, ROS 2 Humble driver and 26 robot model packages. [Model-specific resources](models/README.md).
+
 **Hardware integration · Chassis control · ROS development**
 
 This technical resource collection helps engineering teams evaluate wheeled mobile robot hardware, communication interfaces and integration requirements before purchasing or deploying a platform.
@@ -158,7 +160,7 @@ These model files are not distributed under an open-source license. Redistributi
 
 ## STM32 firmware source
 
-[Controller-specific complete projects](firmware/README.md): C50C multi-target, C30D 2.0 GMR and C63A projects for LSR100 / LSR180 / LSR200 / LSR300 and for LSR280. Source-dependency checks passed; Keil builds and hardware tests were not run. Match the delivered configuration before flashing.
+[Controller-specific complete projects](firmware/README.md): C50C multi-target, C30D 2.0 GMR and C63A projects for LSR100 / LSR180 / LSR200 / LSR300 and for LSR280. Match the delivered configuration before flashing.
 
 ## ROS 2 chassis-driver source
 
@@ -171,6 +173,5 @@ These model files are not distributed under an open-source license. Redistributi
 - Check the ROS/ROS 2 software version against the package provided for your configuration.
 - Verify motion-axis directions and safety behavior on the delivered controller before sending live motion commands.
 
-**Document scope:** These guides provide engineering reference information, not a substitute for product-specific specifications, service instructions or safety testing. The ROS 2 chassis-driver source is available below; selected complete STM32 source projects are available in the [firmware library](firmware/README.md); deployment images are not included. For product-specific connection drawings and software delivery information, contact LucSys Robotics.
+**Document scope:** These guides provide engineering reference information, not a substitute for product-specific specifications, service instructions or safety testing. The ROS 2 chassis-driver source is available below; selected complete STM32 source projects are available in the [firmware library](firmware/README.md); deployment images are not included. Use the model resource pages above for published connection drawings and source downloads.
 
-[English source documentation edition (2026-11-23)](firmware/ENGLISH_EDITION.md) — English comments and notes; executable code and model applicability unchanged.

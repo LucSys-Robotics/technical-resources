@@ -42,10 +42,10 @@ static void console_use_utf8(void){ }
 #define DEG2RAD(d)  ((d)*0.01745329251994330f)
 
 /* LSR280 actual specifications, consistent with robot_select_init.h */
-#define T280_WHEELSPACING   0.335f
-#define T280_AXLESPACING    0.43f
-#define T280_WHEELTURNR     0.0f
-#define T280_WHEELPERIMETER (0.13f*3.14159265f)
+#define LSR280_WHEELSPACING   0.335f
+#define LSR280_AXLESPACING    0.43f
+#define LSR280_WHEELTURNR     0.0f
+#define LSR280_WHEELPERIMETER (0.13f*3.14159265f)
 
 /* Criteria threshold */
 #define EPS_ROUNDTRIP   1e-3f    /* Allowed round-trip comparison error, m/s and rad/s */
@@ -83,8 +83,8 @@ static void assume_reached(RobotParam_t* car)
 static void car_init(RobotParam_t* car)
 {
     memset(car,0,sizeof(*car));
-    FourWSCar_param_init(car,T280_WHEELSPACING,T280_AXLESPACING,
-                         T280_WHEELTURNR,T280_WHEELPERIMETER);
+    FourWSCar_param_init(car,LSR280_WHEELSPACING,LSR280_AXLESPACING,
+                         LSR280_WHEELTURNR,LSR280_WHEELPERIMETER);
 }
 
 /* ------------------------------------------------------------------ */
@@ -392,7 +392,7 @@ int main(int argc,char** argv)
 
     printf("四轮四转运动学对拍  样本 %ld 组  随机种子 %u\n", n, seed);
     printf("车型参数: 轮距 %.3f  轴距 %.3f  转向半径 %.3f\n\n",
-           T280_WHEELSPACING,T280_AXLESPACING,T280_WHEELTURNR);
+           LSR280_WHEELSPACING,LSR280_AXLESPACING,LSR280_WHEELTURNR);
 
     test_roundtrip(n);
     test_angle_range(n);

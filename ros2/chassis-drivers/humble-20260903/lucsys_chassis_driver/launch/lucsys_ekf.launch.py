@@ -1,4 +1,10 @@
-import os
+# Copyright 2026 LucSys Robotics - integration and maintenance changes only.
+#
+# LucSys Robotics distributes this source under supplier authorization.
+# LucSys Robotics is responsible for integration and maintenance only.
+# This notice does not grant an additional open-source license.
+# Third-party components retain their respective licenses and notices.
+
 from pathlib import Path
 
 from launch import LaunchDescription
@@ -19,9 +25,9 @@ def generate_launch_description():
     carto_slam = LaunchConfiguration('carto_slam')
     robot_nav = LaunchConfiguration('robot_nav')
 
-    carto_slam_dec = DeclareLaunchArgument('carto_slam',default_value='false')
-    robot_nav_dec = DeclareLaunchArgument('robot_nav',default_value='false')
-    
+    carto_slam_dec = DeclareLaunchArgument('carto_slam', default_value='false')
+    robot_nav_dec = DeclareLaunchArgument('robot_nav', default_value='false')
+
     log_args = LogInfo(msg=['[ekf launch] carto_slam=', carto_slam, ', robot_nav=', robot_nav])
 
     def launch_ekf(context, *args, **kwargs):

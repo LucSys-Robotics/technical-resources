@@ -1,24 +1,26 @@
 <?xml version="1.0"?>
-<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>lucsys_chassis_driver</name>
   <version>0.0.0</version>
   <description>ROS2 lucsys_chassis_driver for LucSys chassis</description>
   <maintainer email="info@lucsysrobotics.com">LucSys Robotics distribution maintenance</maintainer>
-  <license>Unspecified</license>
-
+  <license>LicenseRef-LucSys-Supplier-Authorization</license>
   <buildtool_depend>ament_cmake</buildtool_depend>
-
   <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_cmake_pytest</test_depend>
   <test_depend>ament_lint_common</test_depend>
   <build_export_depend>tf2_geometry_msgs</build_export_depend>
-
-
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
   <member_of_group>rosidl_interface_packages</member_of_group>
   <build_depend>tf2_geometry_msgs</build_depend>
-
   <exec_depend>rosidl_default_runtime</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>robot_localization</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
   <depend>ament_index_cpp</depend>
   <depend>turtlesim</depend>
   <depend>geometry_msgs</depend>

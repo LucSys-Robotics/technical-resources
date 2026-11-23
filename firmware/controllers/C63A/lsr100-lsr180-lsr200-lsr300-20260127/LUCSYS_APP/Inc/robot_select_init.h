@@ -6,10 +6,10 @@
 #define PI  3.14159265358979f
 
 enum{
-	SingleAxis_5inch = 0,  //5-inch single-shaft motor, compatible with model S100
-	DoubleAxis_5inch ,     //5-inch dual shaft motor, compatible with model S300Mini (S150)
-	SingleAxis_8inch ,     //8-inch single-shaft motor, compatible with models S200, S200 outdoor version (S200_OUTDOOR), and S260
-	DoubleAxis_8inch ,     //8-inch dual-shaft motor, compatible with model S300
+	SingleAxis_5inch = 0,  //5-inch single-shaft motor, compatible with model LSR100
+	DoubleAxis_5inch ,     //5-inch dual shaft motor, compatible with model LSR300Mini (REF1)
+	SingleAxis_8inch ,     //8-inch single-shaft motor, compatible with models LSR200, LSR200 outdoor version (LSR200_OUTDOOR), and REF2
+	DoubleAxis_8inch ,     //8-inch dual-shaft motor, compatible with model LSR300
 };
 
 typedef struct{
@@ -21,42 +21,42 @@ typedef struct{
 	float WheelPerimeter;//Wheel circumference
 }RobotParmentType_t;
 
-//S300 track and diameter
-#define S300_Wheelspacing 0.398
-#define S300_Diameter 0.20
+//LSR300 track and diameter
+#define LSR300_Wheelspacing 0.398
+#define LSR300_Diameter 0.20
 
-//S150 track and diameter
-#define S150_Wheelspacing 0.26
-#define S150_Diameter 0.13
+//REF1 track and diameter
+#define REF1_Wheelspacing 0.26
+#define REF1_Diameter 0.13
 
-//S100 track and track width
-#define S100_Wheelspacing 0.2272f
-#define S100_Diameter 0.13
+//LSR100 track and track width
+#define LSR100_Wheelspacing 0.2272f
+#define LSR100_Diameter 0.13
 
-//S200 track and diameter
-#define S200_Wheelspacing 0.23 //Half track width
-#define S200_axlespacing  0.15//Half wheelbase
-#define S200_Diameter 0.205
+//LSR200 track and diameter
+#define LSR200_Wheelspacing 0.23 //Half track width
+#define LSR200_axlespacing  0.15//Half wheelbase
+#define LSR200_Diameter 0.205
 
-#define S200_OUTDOOR_Wheelspacing 0.23 //Half track width
-#define S200_OUTDOOR_axlespacing  0.15//Half wheelbase
-#define S200_OUTDOOR_Diameter 0.205
+#define LSR200_OUTDOOR_Wheelspacing 0.23 //Half track width
+#define LSR200_OUTDOOR_axlespacing  0.15//Half wheelbase
+#define LSR200_OUTDOOR_Diameter 0.205
 
-//S260 track and diameter
-#define S260_Wheelspacing 0.29  //Half track width
+//REF2 track and diameter
+#define REF2_Wheelspacing 0.29  //Half track width
 
-//The S260's wheelbase is not a true wheelbase in the strict sense; it needs to be coordinated and adjusted to an appropriate value based on IMU data
-#define S260_axlespacing  0.08  //Half wheelbase
-#define S260_Diameter 0.205
+//The REF2's wheelbase is not a true wheelbase in the strict sense; it needs to be coordinated and adjusted to an appropriate value based on IMU data
+#define REF2_axlespacing  0.08  //Half wheelbase
+#define REF2_Diameter 0.205
 
 //Enumeration of models
 enum CAR_MODE{
-	S300,
-	S200,
-	S200_OUTDOOR, //S200 Outdoor Edition
-	S300Mini,
-	S100,
-	S260,
+	LSR300,
+	LSR200,
+	LSR200_OUTDOOR, //LSR200 Outdoor Edition
+	LSR300Mini,
+	LSR100,
+	REF2,
 	SX04,
 	Number_of_CAR
 };

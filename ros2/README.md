@@ -14,7 +14,7 @@ This release contains a real serial chassis driver, message definitions and its 
 
 **Is ROS 2 Humble driver source available?** Yes: [source](chassis-drivers/humble-20260903/) and [build instructions](chassis-drivers/humble-20260903/README.md#build). All three packages were built in Ubuntu 22.04 / Humble ARM64.
 
-**Can I use my own Jetson or Raspberry Pi?** A host running the matching ROS distribution and dependencies can use the serial interface, subject to controller protocol and electrical compatibility. Physical Jetson/Raspberry Pi hardware was not tested in this release.
+**Can I use my own Jetson or Raspberry Pi?** A host running the matching ROS distribution and dependencies can use the serial interface, subject to controller protocol and electrical compatibility.
 
 **How do I access encoder and odometry feedback?** The driver publishes `/odom` from chassis-velocity feedback and `/imu/data_raw`. It does not expose raw individual wheel encoder counts. Inspect the matching STM32 source/protocol for raw counts; do not infer them from odometry.
 

@@ -161,11 +161,11 @@ void systemInit(void)
 	//Initialize the motor direction control pin, 
 	//which is used to control the motor forward and reverse rotation
 	//Initialize motor direction control pins to control forward and reverse motor rotation
-	MiniBalance_Motor_Init();  
+	LucSys_Motor_Init();  
 
   //Initialize motor speed control and, for controlling motor speed, PWM frequency 10kHz
   //Initialize motor speed control and control motor speed, PWM frequency 10KHZ
-	MiniBalance_PWM_Init(16799,0);  //Advanced timer TIM8 frequency is 168M; full PWM is 16799; frequency=168M/((16799+1)*(0+1))=10k
+	LucSys_PWM_Init(16799,0);  //Advanced timer TIM8 frequency is 168M; full PWM is 16799; frequency=168M/((16799+1)*(0+1))=10k
 
     //Initialize the robotic arm gripper
 	TIM9_Init(9999,168-1);

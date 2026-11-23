@@ -68,7 +68,7 @@ int main(void){
  return 0;
 }
 '''
-with tempfile.TemporaryDirectory(prefix='t280_oled_regression_') as folder:
+with tempfile.TemporaryDirectory(prefix='lsr280_oled_regression_') as folder:
     p=Path(folder);c=p/'oled_test.c';exe=p/'oled_test.exe'
     c.write_text(pre+bsp+extract('RangerSensorShow')+extract('JoyShow')+post,encoding='utf-8')
     env=dict(os.environ);env['PATH']=str(Path(args.compiler).parent)+os.pathsep+env.get('PATH','')

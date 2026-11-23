@@ -1,15 +1,26 @@
 {
-  "publication_date": "2026-11-23",
+  "release_tag": "development-source-20261123",
+  "release_commit": "e29c53cac18f092d1cca36c5ee5101aa954cab2c",
   "files": [
     {
-      "path": "firmware/ENGLISH_EDITION.md",
-      "sha256": "c4bce4f426fc9fb60f9a64b5b7c6c3979052ad42d51da0a275350ce11303952d",
-      "size": 1338
+      "path": "firmware/README.md",
+      "sha256": "0bd464ade2ff3fda6c71575550a672e1db90f18dd324cc63ad8d83a5f8b2e3c6",
+      "size": 3097
     },
     {
-      "path": "firmware/README.md",
-      "sha256": "bcfc478991430597eedc6a4f6f63aee5a7faece13cc9c984800bda91c700d93f",
-      "size": 2749
+      "path": "firmware/build/README.md",
+      "sha256": "acff712c8a431d63a526a2bcf01244e3312134dc3bcb74619c847fe40e861060",
+      "size": 1637
+    },
+    {
+      "path": "firmware/build/build-all.ps1",
+      "sha256": "692061f1be64c88be1ef8681ab2666b238fa3f5938ffe3fd14e5a24a5bdcc605",
+      "size": 1350
+    },
+    {
+      "path": "firmware/build/keil-projects.json",
+      "sha256": "b962b88eedd1baec17a78b60b4bd9a92076114396ab9a9b43c95a168dc57dbe6",
+      "size": 5179
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/AutoRecharge/AutoRecharge.c",
@@ -1108,8 +1119,8 @@
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/README.md",
-      "sha256": "3e09b98eab8609ff2686be5f509ec2a6cd256679d7c54dab749365f9d22506b3",
-      "size": 3622
+      "sha256": "0e5fe2577227b124d36289aeda6a1a79b80b8aa8236b1ec4dbdf2d714c433ae3",
+      "size": 2594
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/SYSTEM/delay/delay.c",
@@ -1308,8 +1319,8 @@
     },
     {
       "path": "firmware/controllers/C50C/20261104/BALANCE/reportErr_task.c",
-      "sha256": "f65dca970c04230ab82a36b07bc59638e1f40e4ef5c3861d532a32f6b73b1b86",
-      "size": 9880
+      "sha256": "7fff1874c8a25230e5fceb7f621a141964941d846202b95353af7e01f63d3025",
+      "size": 9900
     },
     {
       "path": "firmware/controllers/C50C/20261104/BALANCE/robot_select_init.c",
@@ -2348,8 +2359,8 @@
     },
     {
       "path": "firmware/controllers/C50C/20261104/README.md",
-      "sha256": "acd1b5484cabd9e01ebb2650c12939350f821bd3998fd2989fe9c54a4423431d",
-      "size": 4606
+      "sha256": "5ba1f7acc9462bf0d72309bf0972aaf7b2916797252ca73e1803e6bae92ae9f8",
+      "size": 3527
     },
     {
       "path": "firmware/controllers/C50C/20261104/SYSTEM/delay/delay.c",
@@ -3203,8 +3214,8 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/AutoRecharge_task.c",
-      "sha256": "cab1548566a99838fe878fad62e51b88715b3bb82b19275f8c85b4a02b4c3406",
-      "size": 3338
+      "sha256": "648ab327cdb011289d760c5d368705e2c267d41098dd3d15395ce173539f21bc",
+      "size": 3340
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/BlueTooth_task.c",
@@ -3243,8 +3254,8 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/Inc/robot_select_init.h",
-      "sha256": "25b350655917a4bc955698f16cba6d45be23fc6fcf4bcc1a676a2ddd784b904e",
-      "size": 4853
+      "sha256": "186032c890f707c61124c2c1fd6191bc77b175584fc2285180f5d8fb44214375",
+      "size": 4903
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/Inc/sensor_ranger.h",
@@ -3263,8 +3274,8 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/RobotControl_task.c",
-      "sha256": "b7155be50f5378b3f380717c2d9ee64660fdf59333617c0326a93f8343865d5e",
-      "size": 36728
+      "sha256": "2ca674cbf415fbc5cd716fc075029af26e0aad023afc5628773c375f3e8601c0",
+      "size": 36786
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/SerialControl_task.c",
@@ -3273,18 +3284,18 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/appshow_task.c",
-      "sha256": "2065da1585fc388964068d3404da7600052289c4b4cad64e48ee507e69c7c732",
-      "size": 3419
+      "sha256": "8f535c35de3ba6120eddd1fadf7fe2028ed1d88d81f231ac71ef887b62cf50fe",
+      "size": 3429
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/can_callback.c",
-      "sha256": "ab5680ae28add3f0aa2e43dc8dfefb430eb746e524233a104d4893c87ca0bbb6",
-      "size": 6679
+      "sha256": "9a44efdf40c925530c40bce3d7085cb2032c3484895ac8909533e6c9653ff9dd",
+      "size": 6689
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/data_task.c",
-      "sha256": "b80037e706021a7af2e8d90b5d48e874d3920af2fe581296ce8bffb40f658971",
-      "size": 9146
+      "sha256": "f61011755069f487ef834ee8d0204ed9b9a750b6998280cc32def009d4a5c127",
+      "size": 9166
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/imu_task.c",
@@ -3298,23 +3309,23 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/reportErr_task.c",
-      "sha256": "52afaf150800bb2ae49ce508e75e14e4ea44924b71c975a6f03429fc507fb239",
-      "size": 17393
+      "sha256": "d7a43dc846f7e251e91481c5c4f8c4206719fd97d965b360cd34758c0fcbcc1b",
+      "size": 17413
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/robot_select_init.c",
-      "sha256": "5406109902c2f9e3012540d2a665bf9914b7b4dfa8707be8e1bc88a5bd132059",
-      "size": 3303
+      "sha256": "782d5bd3879c9f8a285c6ff00c35776b8d956f1ae6aed85af8690221e06d4e43",
+      "size": 3376
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/sensor_ranger.c",
-      "sha256": "3c785803955f991e28cdc187fc80d6a281645f7bb8f9b3eef793b82001ba277e",
-      "size": 15101
+      "sha256": "f430aef9cd9ab46410ca07207c520f83d47c222c470a21aa2e9635d1e3b424f3",
+      "size": 15113
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/show_task.c",
-      "sha256": "4bc1bf07b81873123085cbfd2e61871afa4ed66a91f15cfc365ce8e75acfd1ca",
-      "size": 13091
+      "sha256": "7f9ab3661f0fc3eba33a6a52c8f650f024f6e661b0a0ff9e127c877e56f0c9b5",
+      "size": 13143
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/LUCSYS_APP/tim_capture_callback.c",
@@ -3793,8 +3804,8 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/README.md",
-      "sha256": "d275d25e17ba603e3844e1be99f2569e444b5413e76111534c97d382b032a1b2",
-      "size": 4250
+      "sha256": "3ca3735719bfdc98c276cbad38840634e1d740ff2e57b3c9f0b942cf884cce17",
+      "size": 3648
     },
     {
       "path": "firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/USB_HOST/App/WiredPS2_gamepad.c",
@@ -4448,8 +4459,8 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/AutoRecharge_task.c",
-      "sha256": "cab1548566a99838fe878fad62e51b88715b3bb82b19275f8c85b4a02b4c3406",
-      "size": 3338
+      "sha256": "648ab327cdb011289d760c5d368705e2c267d41098dd3d15395ce173539f21bc",
+      "size": 3340
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/AutoTest_task.c",
@@ -4503,8 +4514,8 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/Inc/robot_select_init.h",
-      "sha256": "e31608e7de54f5effea9a1c8c8639b856d18547635d4faec53400acf8c94ec65",
-      "size": 4962
+      "sha256": "168aa387a1b6da816989399c88bcd6a94c76c7ec56b4f1546a0a6192fe4ea583",
+      "size": 5010
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/Inc/sensor_ranger.h",
@@ -4523,8 +4534,8 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/RobotControl_task_v2.c",
-      "sha256": "49ca49c16618084e385bc21bc74ba86398a9c7480bba60f4039d603e77ea92b3",
-      "size": 65526
+      "sha256": "c4b7e6b8ad46f7a94f364e6537b41e567df1c1c8f4124af9769add649126d0e8",
+      "size": 65566
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/SerialControl_task.c",
@@ -4533,23 +4544,23 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/appshow_task.c",
-      "sha256": "15280cf99be25bb81747c22be01c2790e0ab3725cba803ebc82dac52cc0ea959",
-      "size": 3672
+      "sha256": "1523b7f7bc051a1488feda9ace85f12393786f35475e06600d42a3e9ae63999f",
+      "size": 3682
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/can_callback.c",
-      "sha256": "7c8254862104ae3f8646aafd930ce863c07cc0c4ea0b2537a4f72e82cdd80ccb",
-      "size": 9711
+      "sha256": "3e8ffc83074d61484ee48c82c53afac5e40d379a06da8045b14248cb3f23643a",
+      "size": 9727
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/data_task.c",
-      "sha256": "b4b123df527cd72079dc1e637987c350cf05402c2d3b3149699faaa230cb1cc4",
-      "size": 8629
+      "sha256": "2b80bdb97d2803e1bf9df96310bd37e077069ba8c45c243696b52921dea02ff2",
+      "size": 8653
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/datalog_task.c",
-      "sha256": "28da1792507d355203f28e33aa2e0c14a2233656867f68c18e2b88380e48e5fc",
-      "size": 14378
+      "sha256": "365e5d0d49c4386fa57d459e44c9853de8e34b3a6571e86f94598e8fadec7f17",
+      "size": 14382
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/imu_task.c",
@@ -4558,28 +4569,28 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/rc_joystick.c",
-      "sha256": "345c1de959d39055bfe511fd5ad813019ddea64c3c2c0fe680070c362ff45eae",
-      "size": 7111
+      "sha256": "36513c6f61e1ab80dcfca28fa52a7ab219c7d775a3bb5332b9c2fde3b318b459",
+      "size": 7115
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/reportErr_task.c",
-      "sha256": "eaa610fcfd3cb9158046b5b772234042586839a978f358fd313097e98ea692a2",
-      "size": 16489
+      "sha256": "1acb6e8ec8f8b09d2c9f547774b820d47afcbb82d3fa967bcc56e2e3ddffbf00",
+      "size": 16509
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/robot_select_init.c",
-      "sha256": "d1093b83438e83aea54b2d9ac1665ecde3030c5492527d9b63e05b89cb9c7ebb",
-      "size": 4243
+      "sha256": "8d0b735842a357ba9219746fab4226dc304d0a7c676354df23f83a59814c1a7a",
+      "size": 4281
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/sensor_ranger.c",
-      "sha256": "f3d2cf6a00923d106a6cae97a45b6b022b443b69476a3bcc4235af7c1aa3f6aa",
-      "size": 14315
+      "sha256": "ddd2f3dd360fea0c1c6c7cddbd9afbca2056a8aeb78074d7a5c7a72de88fda54",
+      "size": 14327
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/show_task.c",
-      "sha256": "c287cf89e0d22fbe6754b2350bb85778ca38772795f9f9b90c0c8c493b23580a",
-      "size": 15046
+      "sha256": "6b2fe87022815cc66859760ef64fd9a74a054e40e6056256104ab199106ed192",
+      "size": 15106
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_APP/tim_capture_callback.c",
@@ -4613,8 +4624,8 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_ServoDrive.h",
-      "sha256": "d3e2f5bba1164d92d124ff68715ae201020c44d05f67ca1f078b8153be7266e1",
-      "size": 3433
+      "sha256": "d735d2e152e6c7f1413f0b93518c72df6ce16f6cbd9765fe2f338df5927d78dc",
+      "size": 3445
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/Inc/bsp_adc.h",
@@ -4698,8 +4709,8 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_ServoDrive.c",
-      "sha256": "91b8525827c56877db78cb1aa534cf6192bc2b2b78f7e08e1f636a78ec316f25",
-      "size": 48299
+      "sha256": "819c8a850fa880218138485df9af0452cca62858f2c8501b86d3402d49caeb2a",
+      "size": 48309
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/LUCSYS_BSP/bsp_adc.c",
@@ -4772,14 +4783,14 @@
       "size": 2804
     },
     {
-      "path": "firmware/controllers/C63A/lsr280-20261013/MDK-ARM/LUCSYS/LUCSYS.sct",
-      "sha256": "f263f6f3e9e180a800c012dea307393826afdb7f0183064f1454b2dca4343b26",
-      "size": 555
-    },
-    {
       "path": "firmware/controllers/C63A/lsr280-20261013/MDK-ARM/LUCSYS.uvprojx",
       "sha256": "9a20b7198b153eb3249472d9a7c2bec249372afd4e66b0791fd791644f633d23",
       "size": 96348
+    },
+    {
+      "path": "firmware/controllers/C63A/lsr280-20261013/MDK-ARM/LUCSYS/LUCSYS.sct",
+      "sha256": "f263f6f3e9e180a800c012dea307393826afdb7f0183064f1454b2dca4343b26",
+      "size": 555
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/MDK-ARM/LoadAxf.ini",
@@ -5073,8 +5084,8 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/README.md",
-      "sha256": "96c3352adfeaa1d9c37abc989ea425db6d0a6409dcdc83fb2e236060166376ca",
-      "size": 3926
+      "sha256": "32d76d6788738d6618bdcbcb9168d7482b3838b946cc36f8bccb6149d15bc3ef",
+      "size": 3248
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/USB_HOST/App/WiredPS2_gamepad.c",
@@ -5153,28 +5164,28 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/README.md",
-      "sha256": "e5cd18fc041dd70fe5f43c8ad74fa4a51aae2679d27c577651e42f8faba9fb7e",
-      "size": 5013
+      "sha256": "fcda5c14f1e9fff08746e117e786eb35465b958500eb8e835b2e23372e8ea8e0",
+      "size": 5146
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/control_regression.ps1",
-      "sha256": "a919874a352626812068ad3dc1ded1d709069d9cf779e5377ee397aecb88dfbe",
-      "size": 3090
+      "sha256": "74eb718760c8334815d5b0dc0673e9df247188732d9c5936ef555093b7ff7197",
+      "size": 3103
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/main.c",
-      "sha256": "80bc73772dc0ee533afc697d3a18da393555d85832ed9beb9792158999380fc0",
-      "size": 18811
+      "sha256": "021458faa0ebd0e2bc5fd70c1bc1ff807c4dd46407eb6ab5fe1e2c01c44a4cf3",
+      "size": 18833
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/oled_gamepad_regression.py",
-      "sha256": "0685fb96646aac577eca9fc2dd3815bd0d774e7f731433dd9d77f81c504d5c43",
-      "size": 4157
+      "sha256": "12df218520c8987839868eed152dcd6173ec8aca0aeee0859aa6b3518af8eb1a",
+      "size": 4159
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/4ws_sim/rc_regression.py",
-      "sha256": "56c6a31db16fc2dd3dfe1e3b9e110d2ea86d29467fd5b6815a9e63afd34b02d0",
-      "size": 4615
+      "sha256": "8594d9e875a592aab2d12a9a04642f2f339ee90539ef6fc1107149bd54578bac",
+      "size": 4627
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/datalog_README.md",
@@ -5183,28 +5194,23 @@
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/datalog_compare.py",
-      "sha256": "ec9edcdc7dcf4b3fd2ab8be244da16cd38ed6aacba3fcdc658a28a92bee7d6ea",
-      "size": 9471
+      "sha256": "156c8f0e80618afd7fa99ec186bad1eaff0d1435d22d7c730611b46d1dafe47b",
+      "size": 9473
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/datalog_plot.py",
-      "sha256": "105f0ddbd0952cdae771911d33086368010330ef8f5d059adb1286502bd0ac37",
-      "size": 13913
+      "sha256": "92e08f502a8a8b5a9fc3419ac909bcc26d131475a9c52bcbeca1f24a89bd3d65",
+      "size": 13915
     },
     {
       "path": "firmware/controllers/C63A/lsr280-20261013/tools/datalog_recv.py",
-      "sha256": "068596b5c4c2290f66897d9170d72b72e9ff5e2bca36930cd4ba8bb134e7000b",
-      "size": 19617
-    },
-    {
-      "path": "firmware/english-validation.json",
-      "sha256": "58422f6bc143766122b00272640222b59684ee7dd48313e7b6cd03f844059cd3",
-      "size": 528
+      "sha256": "e7115b7a238224ad07ae38dcffa7c780a39013691af79f1826efc4f64184c029",
+      "size": 19619
     },
     {
       "path": "firmware/models/LSR550A/README.md",
-      "sha256": "bcc596493ce4263b8fe4a276d33a3aefd13c5d0521fe01a31253f81832c9b39f",
-      "size": 2608
+      "sha256": "f59698b49b6fb0aa6e885cb0cb4908b8f614d8ef9972b4987faca8a9cfa77a57",
+      "size": 3050
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/4wd/AutoRecharge/AutoRecharge.c",
@@ -5278,8 +5284,8 @@
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/4wd/BALANCE/system.c",
-      "sha256": "52ea569693339a1cad4ce671d16203b4a248cec3d765010b5ca0b38d7242549a",
-      "size": 8931
+      "sha256": "fcea6cf1b9dfac6af83e3ce4103e5ee46953c7339eb4ce83d6ae2e8d91ffb758",
+      "size": 8921
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/4wd/BALANCE/system.h",
@@ -5988,13 +5994,13 @@
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/4wd/HARDWARE/motor.c",
-      "sha256": "bac9dbe4b83159ffb610ef81a832197cf7585790eabd181f318fa23ec430a145",
-      "size": 17996
+      "sha256": "e0bd00f96661e2980ad8ac10d3ec1cb09b6a56afeaa5fd431e202864ddb250b2",
+      "size": 17986
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/4wd/HARDWARE/motor.h",
-      "sha256": "86ec24818ca3e7edeb05cdee06f1e215c2081bf36be33b9ce9d6d7d0596bf7e4",
-      "size": 2044
+      "sha256": "176e58345d26930bb0ee22f04f948ec26347681616663db580b823d4766cf701",
+      "size": 2034
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/4wd/HARDWARE/oled.c",
@@ -6168,8 +6174,8 @@
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/README.md",
-      "sha256": "5af81045c8fc17db0e57998593614c444c46e949c63051866b841725de216ed5",
-      "size": 3587
+      "sha256": "8de28f90064e7448bbef074601afb4620bb3c5bba3df6ffc78a6db325c32ce24",
+      "size": 3028
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/differential/AutoRecharge/AutoRecharge.c",
@@ -6243,8 +6249,8 @@
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/differential/BALANCE/system.c",
-      "sha256": "52ea569693339a1cad4ce671d16203b4a248cec3d765010b5ca0b38d7242549a",
-      "size": 8931
+      "sha256": "fcea6cf1b9dfac6af83e3ce4103e5ee46953c7339eb4ce83d6ae2e8d91ffb758",
+      "size": 8921
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/differential/BALANCE/system.h",
@@ -6953,13 +6959,13 @@
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/differential/HARDWARE/motor.c",
-      "sha256": "bac9dbe4b83159ffb610ef81a832197cf7585790eabd181f318fa23ec430a145",
-      "size": 17996
+      "sha256": "e0bd00f96661e2980ad8ac10d3ec1cb09b6a56afeaa5fd431e202864ddb250b2",
+      "size": 17986
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/differential/HARDWARE/motor.h",
-      "sha256": "86ec24818ca3e7edeb05cdee06f1e215c2081bf36be33b9ce9d6d7d0596bf7e4",
-      "size": 2044
+      "sha256": "176e58345d26930bb0ee22f04f948ec26347681616663db580b823d4766cf701",
+      "size": 2034
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/differential/HARDWARE/oled.c",
@@ -7203,8 +7209,8 @@
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/mecanum/BALANCE/system.c",
-      "sha256": "7b6034054a926d55804cb9d2c770e3a9c037bdd171bc824105fadd783306ef38",
-      "size": 8934
+      "sha256": "1ec38c624194954f03c6296e747d253a51af062bb4f73ff6aa46f9ca6305094c",
+      "size": 8924
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/mecanum/BALANCE/system.h",
@@ -7913,13 +7919,13 @@
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/mecanum/HARDWARE/motor.c",
-      "sha256": "bac9dbe4b83159ffb610ef81a832197cf7585790eabd181f318fa23ec430a145",
-      "size": 17996
+      "sha256": "e0bd00f96661e2980ad8ac10d3ec1cb09b6a56afeaa5fd431e202864ddb250b2",
+      "size": 17986
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/mecanum/HARDWARE/motor.h",
-      "sha256": "86ec24818ca3e7edeb05cdee06f1e215c2081bf36be33b9ce9d6d7d0596bf7e4",
-      "size": 2044
+      "sha256": "176e58345d26930bb0ee22f04f948ec26347681616663db580b823d4766cf701",
+      "size": 2034
     },
     {
       "path": "firmware/models/LSR550A/v1-20251204/mecanum/HARDWARE/oled.c",
@@ -8973,8 +8979,8 @@
     },
     {
       "path": "firmware/models/LSR550A/v2-20261012/HARDWARE/Inc/motor.h",
-      "sha256": "e40b376f534d44f585982fce60908643be59acc9880e0cc04b77251f730324a9",
-      "size": 9212
+      "sha256": "1bba63f265c387a0c07f6341da10139a3fe763d297c5031143c8e23e7aacacfe",
+      "size": 9202
     },
     {
       "path": "firmware/models/LSR550A/v2-20261012/HARDWARE/Inc/oled.h",
@@ -9078,8 +9084,8 @@
     },
     {
       "path": "firmware/models/LSR550A/v2-20261012/HARDWARE/motor.c",
-      "sha256": "196d0ee8fa441dbc42a51722d1527b7a486c65b8c86f280d80c0bb7e7ded3ed5",
-      "size": 11833
+      "sha256": "57d7fa6ef70152881d1ef01a863f2dc07f5d3d19346020a0864fd29683f4b08d",
+      "size": 11803
     },
     {
       "path": "firmware/models/LSR550A/v2-20261012/HARDWARE/oled.c",
@@ -9228,8 +9234,8 @@
     },
     {
       "path": "firmware/models/LSR550A/v2-20261012/README.md",
-      "sha256": "db0d8d0f71c2313277ada24dc629b25acb86b68c7b6cf6b6836d91b30ebf0a39",
-      "size": 3815
+      "sha256": "75f8e2b899efa7a1c2c46c84a59f0815a17e482cebab575e4c2bad9483e80ae8",
+      "size": 3208
     },
     {
       "path": "firmware/models/LSR550A/v2-20261012/SYSTEM/delay/delay.c",
@@ -9383,8 +9389,8 @@
     },
     {
       "path": "firmware/models/LSR550A/v2-20261012/USER/system.c",
-      "sha256": "3995eb873c25931689880ab25c31675d28643123176b6703de934e436e1a7c37",
-      "size": 8335
+      "sha256": "c0fa835f0262ee8c8c6b2f9ac57d685d896471a38c552b1785a0c0e302ae000b",
+      "size": 8325
     },
     {
       "path": "firmware/models/LSR550A/v2-20261012/USER/system.h",
@@ -9508,8 +9514,8 @@
     },
     {
       "path": "firmware/models/LSR550A/v2.1-20261012/BALANCE/reportErr_task.c",
-      "sha256": "39cf521757e281726fe5b9570e882d4351cd964a71aabe8171c8228505390bb0",
-      "size": 9816
+      "sha256": "6520d4fde2c83809cce8a98566f6d217918c710b0419d1a0c9d34704ccba366f",
+      "size": 9836
     },
     {
       "path": "firmware/models/LSR550A/v2.1-20261012/BALANCE/robot_select_init.c",
@@ -10303,8 +10309,8 @@
     },
     {
       "path": "firmware/models/LSR550A/v2.1-20261012/HARDWARE/Inc/motor.h",
-      "sha256": "aeb290c7c45db8b281756704b4b596d779d9526485d25e21c096d1d5e172382a",
-      "size": 9178
+      "sha256": "0968d3249d5f48ae3cb788efefd6dee668fa75ab57c3e7f85d2e0c6ec032bd61",
+      "size": 9168
     },
     {
       "path": "firmware/models/LSR550A/v2.1-20261012/HARDWARE/Inc/oled.h",
@@ -10418,8 +10424,8 @@
     },
     {
       "path": "firmware/models/LSR550A/v2.1-20261012/HARDWARE/motor.c",
-      "sha256": "6ee3d651c7ba9b1a8a6eaca2463cbf39f054e3f1c235f25b5b5c3dfbc88ea84d",
-      "size": 9139
+      "sha256": "5da3c626df0bad010e58bbba552101d5f1dc62bbdd2f60a9b4434539cb39a7d9",
+      "size": 9109
     },
     {
       "path": "firmware/models/LSR550A/v2.1-20261012/HARDWARE/oled.c",
@@ -10563,8 +10569,8 @@
     },
     {
       "path": "firmware/models/LSR550A/v2.1-20261012/README.md",
-      "sha256": "433d5659f9ea65eaf011fb54e72d8a073e6e347e0f81b264014f6f00fd67eb9f",
-      "size": 3817
+      "sha256": "eb4cba6f3add0077e009f1e8c723bff344be5412c8c1d49d00aebfd66cbd37c1",
+      "size": 3210
     },
     {
       "path": "firmware/models/LSR550A/v2.1-20261012/SYSTEM/delay/delay.c",
@@ -10718,8 +10724,8 @@
     },
     {
       "path": "firmware/models/LSR550A/v2.1-20261012/USER/system.c",
-      "sha256": "236517f515ccbd32636a68e7663d4552039f9822ad6be87120fa7692122ab956",
-      "size": 8900
+      "sha256": "ffc661bba3cc69e8ae585d4d43fe095c1d05a1fd392b9fa042d1138eb5fdd63b",
+      "size": 8890
     },
     {
       "path": "firmware/models/LSR550A/v2.1-20261012/USER/system.h",

@@ -1,6 +1,6 @@
 # LucSys Robotics — LSV550
 
-[All LSV550 development resources: ROS 2 driver, model packages and STM32 status](../../models/LSV550/README.md)
+[All LSV550 development resources: ROS 2 driver, model packages and STM32 status](https://github.com/LucSys-Robotics/technical-resources/blob/development-source-20261123/models/LSV550/README.md)
 
 ROS 2 Humble robot description.
 
