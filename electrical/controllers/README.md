@@ -1,6 +1,6 @@
 # Controller electrical references
 
-LucSys Robotics publishes these revision-specific circuit references for hardware integration. The circuit sheets retain their original connections, component values, pin labels and drawing revision fields. Commercial marks have been removed. Each PDF includes an English translation key for every Chinese circuit label, with the original physical page number. The circuit design is not represented as LucSys original authorship.
+LucSys Robotics publishes these revision-specific circuit references for hardware integration. The circuit sheets retain their original connections, component values, pin labels and drawing revision fields. Commercial marks have been removed. Chinese annotations have been replaced directly with English on the circuit sheets; no separate translation key is needed. Original circuit page order is preserved. The circuit design is not represented as LucSys original authorship.
 
 | Controller designation in the supplied file | Reference | Circuit sheets |
 | --- | --- | ---: |
