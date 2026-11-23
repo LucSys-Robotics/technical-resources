@@ -13,9 +13,9 @@ Choose the precise model and drive configuration in the platform index. A family
 
 ## Common questions
 
-**Is complete STM32 firmware source available in this release?** No complete STM32 source archive is included in this release. The public files listed above are the available downloads; do not assume that a URDF package contains firmware or hardware drivers.
+**Is complete STM32 firmware source available in this release?** Selected complete controller projects are available in the [firmware library](../../firmware/README.md). See [the corresponding controller branch](../../firmware/controllers/C30D/v2-gmr-20260921/). This is source availability, not confirmation of the firmware installed in every configuration. Native Keil build and hardware validation were not performed.
 
-**Can I modify motor-control parameters?** The diagrams and model packages do not establish which firmware is installed. Parameter changes require the matching source, hardware revision and validation on that configuration; no cross-model values are supplied here.
+**Can I modify motor-control parameters?** The diagrams and model packages do not establish which firmware is installed. Use the matching firmware README to locate PI/PID and encoder configuration. Parameter changes require the exact hardware and validation; no cross-model values are supplied here.
 
 **Are electrical schematics or motor/encoder wiring references available?** Yes, see the exact electrical references above and their revision limits. A controller schematic is not a full as-built robot wiring diagram.
 

@@ -6,7 +6,7 @@ This release contains a real serial chassis driver, message definitions and its 
 
 ## Development FAQ
 
-**Is the full STM32 firmware source code available here?** STM32 firmware is not included in this ROS release. Select the exact controller and delivered firmware before using a firmware project; the ROS driver is not STM32 source.
+**Is the full STM32 firmware source code available here?** Selected complete projects are available in the [STM32 source library](../firmware/README.md). Select the exact controller and delivered firmware before using a firmware project; the ROS driver is not STM32 source.
 
 **Can I modify the motor PID parameters?** PID/PI and encoder calibration belong to the matching controller firmware or motor driver. This ROS package exposes commands and feedback, not universal gains. Do not use another configuration's values.
 
@@ -18,7 +18,7 @@ This release contains a real serial chassis driver, message definitions and its 
 
 **Which controller and firmware versions are supported?** The source snapshot is dated 2026-09-03 and implements the frame formats described in its README. Exact installed controller/firmware compatibility must be matched separately. Shared source availability does not make LSR550, LSR550A, LSR200 and LSR200Auto interchangeable.
 
-**How do I compile and flash firmware?** The Quick Start compiles ROS packages with colcon. It does not flash a controller. A matching STM32 project, its specified toolchain and board-specific programming settings are required; no prebuilt firmware image is supplied here.
+**How do I compile and flash firmware?** The Quick Start compiles ROS packages with colcon. It does not flash a controller. See the [controller-specific build guides](../firmware/README.md). A matching STM32 project, its specified toolchain and board-specific programming settings are required; no prebuilt firmware image is supplied here.
 
 **Where are the electrical diagrams?** Use the [controller revision library](../electrical/controllers/README.md), [LSR550 wiring references](../manuals/LSR550/README.md) and the [shared communication guide](../manuals/LucSys_ROS2_STM32_Communication_Guide.pdf). A controller schematic is not a complete robotic-arm wiring diagram.
 

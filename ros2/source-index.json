@@ -1,12 +1,10 @@
 {
-  "snapshot": "2026-09-03",
   "publication_date": "2026-11-23",
-  "validation": "Humble build and virtual serial test; no hardware validation",
   "files": [
     {
       "path": "ros2/README.md",
-      "sha256": "ed56198f91428b75d69ee6fbd00a0fde25be20f4baba72b4c8af19b5c52f7ed4",
-      "size": 3085
+      "sha256": "2209eef5027502f35dac84903334d4a0d62917007d5e8346e5ea8d708d7d9959",
+      "size": 3195
     },
     {
       "path": "ros2/chassis-drivers/humble-20260903/README.md",
