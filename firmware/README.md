@@ -17,6 +17,6 @@ All four projects select ARM Compiler 5.06 update 7 in Keil. Configured source f
 
 Keil MDK compilation and flashing were **not run** on macOS. The C63A T-branch host test was compiled with Clang and passed seven kinematics groups plus RC-capture and OLED/gamepad regressions. These tests do not compile the complete STM32 firmware and are not vehicle tests. The ROS 2 packages have a separate real Humble build and virtual-serial test.
 
-Third-party ST, ARM and FreeRTOS copyright/license text remains in place. Supplier commercial headers and project names were rebranded with authorization; LucSys distributes and maintains the package without claiming original authorship. No blanket new open-source license is applied.
+Third-party ST, ARM and FreeRTOS copyright/license text remains in place. LucSys Robotics prepares and maintains this distribution. No blanket new open-source license is applied.
 
 [ROS 2 driver / Quick Start](../ros2/README.md) · [Electrical revisions](../electrical/controllers/README.md)

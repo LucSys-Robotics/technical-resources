@@ -2,7 +2,7 @@
 #define __EXIT_H	 
 #include "sys.h"
   /**************************************************************************
-Distribution maintenance: LucSys Robotics (authorized rebranding)
+Distribution maintenance: LucSys Robotics 
 **************************************************************************/
 #define INT PBin(15)   //PB5连接到MPU6050的中断引脚
 void EXTI_Init(void);	//外部中断初始化		 					    

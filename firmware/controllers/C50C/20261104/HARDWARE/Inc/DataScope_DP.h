@@ -1,5 +1,5 @@
   /**************************************************************************
-Distribution maintenance: LucSys Robotics (authorized rebranding)
+Distribution maintenance: LucSys Robotics 
 **************************************************************************/
 
 #ifndef __DATA_PRTOCOL_H

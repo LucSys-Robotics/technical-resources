@@ -22,7 +22,7 @@ colcon build --cmake-args -DBUILD_TESTING=OFF
 source install/setup.bash
 ```
 
-The production build was executed in Ubuntu 22.04 / Humble ARM64. rosdep is a dependency-installation recipe; dependencies were installed explicitly in the validation container. Upstream style-lint suites are not represented as passing. Third-party serial-library headers and notices retain their original terms. Packages carrying an upstream TODO license declaration have not been relicensed by LucSys; public source availability is not a blanket open-source license grant.
+The production build was executed in Ubuntu 22.04 / Humble ARM64. rosdep is a dependency-installation recipe; dependencies were installed explicitly in the validation container. Upstream style-lint suites are not represented as passing. Third-party serial-library headers and notices retain their original terms. LucSys Robotics prepares and maintains the application-source distribution. The application-code license is unspecified; no new open-source license is granted by this maintenance notice. Third-party terms remain applicable.
 
 ## Connect and inspect
 
