@@ -143,7 +143,7 @@ These model files are not distributed under an open-source license. Redistributi
 
 ## STM32 firmware source
 
-[Controller-specific complete projects](firmware/README.md): C50C multi-target, C30D 2.0 GMR and separate C63A S/T branches. Source-dependency checks passed; Keil builds and hardware tests were not run. Match the delivered configuration before flashing.
+[Controller-specific complete projects](firmware/README.md): C50C multi-target, C30D 2.0 GMR and C63A projects for LSR100 / LSR180 / LSR200 / LSR300 and for LSR280. Source-dependency checks passed; Keil builds and hardware tests were not run. Match the delivered configuration before flashing.
 
 ## ROS 2 chassis-driver source
 
