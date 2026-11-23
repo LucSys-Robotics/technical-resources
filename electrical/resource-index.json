@@ -38,12 +38,12 @@
     },
     {
       "public_path": "electrical/LSR550/LSR550_2WD_Electrical_Wiring_Diagram_EN.pdf",
-      "sha256": "39533a6e065221ff92856e051cf724a44b8d4b7dff67f0b69c02dc19cbba89cd",
+      "sha256": "2808e775ac367ad004ef8dd2b8e0ada5aaa41022f0aa0771add3cea33f2e9233",
       "name": "LSR550_2WD"
     },
     {
       "public_path": "electrical/LSR550/LSR550_4WD_Electrical_Wiring_Diagram_EN.pdf",
-      "sha256": "c0b4d9735928a1ff9f40decc5dc3b122238d469650a978009b731b491c833f6d",
+      "sha256": "d6bb42b9a34ec1880cdbaea929256e1cfb779f0d6fdf14088e426a849dfdeeec",
       "name": "LSR550_4WD"
     },
     {
