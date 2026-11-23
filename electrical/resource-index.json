@@ -1,0 +1,55 @@
+{
+  "publication_date": "2026-11-23",
+  "resources": [
+    {
+      "public_path": "electrical/controllers/C30D_V2_2_Schematic_Reference.pdf",
+      "sha256": "f655d2ed68aecf26ef8987d609a55158f45e220c7c38b918bf6b7b12f369634e",
+      "name": "C30D_V2_2"
+    },
+    {
+      "public_path": "electrical/controllers/C30D_V2_3_Schematic_Reference.pdf",
+      "sha256": "dd5e5af257f7ffbb50b219794afb5778fc6440b5d85c713d4b9141ce4c292b68",
+      "name": "C30D_V2_3"
+    },
+    {
+      "public_path": "electrical/controllers/C63A_V2_1_Schematic_Reference.pdf",
+      "sha256": "9c8267a19648ecd533671580f225ff7225fab2a87f26b3da1db268871c7e053d",
+      "name": "C63A_V2_1"
+    },
+    {
+      "public_path": "electrical/controllers/C63A_V2_2_Schematic_Reference.pdf",
+      "sha256": "f32cd02f18ed605e92ac685849712b22a4aad94dbf008cb3d1faba2e04acb69a",
+      "name": "C63A_V2_2"
+    },
+    {
+      "public_path": "electrical/controllers/C50C_V4_0_Schematic_Reference.pdf",
+      "sha256": "a1845ab3e6c6fb4ac597fde1c5fc33b0ffe35176b5ad4b64cf768b348ddbbcc7",
+      "name": "C50C_V4_0"
+    },
+    {
+      "public_path": "electrical/controllers/C50C_V4_1_V4_2_Schematic_Reference.pdf",
+      "sha256": "58c01da6c7d7380ecdde71189fa86efac00c6619bdce6ec3f1969da52795df7d",
+      "name": "C50C_V4_1_V4_2"
+    },
+    {
+      "public_path": "electrical/controllers/C50C_V4_3_Schematic_Reference.pdf",
+      "sha256": "2d87180a40b8b59ceff3b67cb53139e06c1849f184dae1fd8f38f30e294489b7",
+      "name": "C50C_V4_3"
+    },
+    {
+      "public_path": "electrical/LSR550/LSR550_2WD_Electrical_Wiring_Diagram_EN.pdf",
+      "sha256": "39533a6e065221ff92856e051cf724a44b8d4b7dff67f0b69c02dc19cbba89cd",
+      "name": "LSR550_2WD"
+    },
+    {
+      "public_path": "electrical/LSR550/LSR550_4WD_Electrical_Wiring_Diagram_EN.pdf",
+      "sha256": "c0b4d9735928a1ff9f40decc5dc3b122238d469650a978009b731b491c833f6d",
+      "name": "LSR550_4WD"
+    },
+    {
+      "public_path": "cad/controllers/C30D_V2_1.step",
+      "sha256": "1549bba9fdde16fe06cd4d3f7a43cdb99afe1681586afd3736663391b88245ef",
+      "name": "C30D_V2_1"
+    }
+  ]
+}

@@ -25,6 +25,15 @@ Choose the chassis manual for your model, and use the shared communication guide
 | LSR550A | [LSR550A Development Manual](manuals/LSR550A_Development_Manual.pdf) | V1.1 · 2026-11-16 | 30 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LSR550A_Development_Manual.pdf) |
 | LSE550 and LSV550 | [LSE550 / LSV550 — STM32 Chassis Development Manual](manuals/LucSys_LSE550_LSV550_STM32_Chassis_Development_Manual.pdf) | V1.1 · 2025-02-19 | 16 | [PDF](https://raw.githubusercontent.com/LucSys-Robotics/technical-resources/main/manuals/LucSys_LSE550_LSV550_STM32_Chassis_Development_Manual.pdf) |
 
+## Revision-specific electrical and mechanical references
+
+- [LSR550: wiring diagrams, controller references and development downloads](manuals/LSR550/README.md)
+- [LSE550 / LSV550: C30D electrical references and controller CAD](manuals/LSE550-LSV550/README.md)
+- [LSR180 / LSR200 / LSR280 / LSR300: C63A electrical references](manuals/LSR180-LSR200-LSR280-LSR300/README.md)
+- [Controller revision selection and English schematic label keys](electrical/controllers/README.md)
+
+These references require an exact hardware/configuration match. They do not add complete STM32 firmware or ROS hardware-driver archives. Existing Humble model packages and download links remain available below. [Resource SHA256 index](electrical/resource-index.json).
+
 ## Robot Platforms
 
 LucSys Robotics offers a range of mobile robot platforms for research, education, and industrial applications.
