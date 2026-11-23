@@ -4,17 +4,17 @@
 #include "system.h"
 
 /*
- * D50A 驱动器管理模块
+ * D50A drive management module
  *
- * 本模块统一管理 USART2/RS485 上的 D50A 驱动器通信。
- * 其他模块不要直接往串口2发送 D50A 协议帧，避免多个任务同时抢占485总线。
- * 如果需要修改驱动器参数，应调用 D50A_PostXXX() 系列接口把请求投递给 D50A_Task。
- * 如果需要查看驱动器状态，应读取 D50A_State_t 缓存，而不是主动发读命令。
+ * This module centrally manages D50A drive communication on USART2/RS485.
+ * Other modules should not send D50A protocol frames directly to serial port 2 to avoid multiple tasks competing for the 485 bus at the same time.
+ * If drive parameters need to be modified, the D50A_PostXXX() series interface should be called to deliver the request to the D50A_Task.
+ * If you need to check drive status, read the D50A_State_t cache instead of actively sending read commands.
  *
- * 多驱动串联注意事项：
- * 1. 总线上每个驱动器都必须有唯一地址。
- * 2. 广播地址 0xFF 只适合总线上只有一个驱动器时使用。
- * 3. 多个驱动器同时接在485总线上时，不要广播查询地址，否则多个设备会同时回复，造成总线冲突。
+ * Precautions for multi-driver series:
+ * 1. Each driver on the bus must have a unique address.
+ * 2. Broadcast address 0xFF is only suitable when there is only one drive on the bus.
+ * 3. When multiple drives are connected simultaneously to the 485 bus, do not broadcast the address lookup, otherwise multiple devices will reply simultaneously, causing bus conflicts.
  */
 
 #define D50A_TASK_PRIO       2
@@ -26,27 +26,27 @@
 #define D50A_BROADCAST_ADDR  0xFF
 #define D50A_MAX_DEVICES     4
 
-/* 蓝牙地址设置请求值。 */
+/* Bluetooth address setting request value. */
 #define D50A_ADDRESS_SET_NONE       0
 #define D50A_ADDRESS_SET_1_TO_2     1
 #define D50A_ADDRESS_SET_2_TO_1     2
 
-/* 驱动器通信结果码：投递接口返回这些值，状态缓存里也会记录最近一次错误。 */
+/* Driver communication result codes: submission interfaces return these values, and the state cache records the latest error. */
 typedef enum
 {
-	D50A_OK = 0,        // 通信/回显校验成功，不等于驱动无保护报警
-	D50A_ERR_TIMEOUT,   // 回复等待超时
-	D50A_ERR_FRAME,     // 帧格式或地址/功能码/数据校验不符
-	D50A_ERR_FUNC,      // 功能码错误预留结果码
-	D50A_ERR_PARAM,     // 本地参数非法或设备槽位冲突
-	D50A_ERR_EXCEPTION, // 驱动返回协议规定的异常帧
-	D50A_ERR_QUEUE_FULL,// 写队列或设备槽位已满
-	D50A_ERR_NOT_INIT,  // 请求队列尚未创建或指定设备不存在
-	D50A_ERR_TX_TIMEOUT, // 串口发送未能完成
-	D50A_ERR_UART,       // 接收溢出、噪声、帧或校验错误
+	D50A_OK = 0,        // Successful communication/echo verification does not mean the driver has no protection alarm
+	D50A_ERR_TIMEOUT,   // Response wait timeout
+	D50A_ERR_FRAME,     // Frame format or address/function code/data check mismatch
+	D50A_ERR_FUNC,      // Function code error reserved result code
+	D50A_ERR_PARAM,     // Local parameter invalid or device slot conflict
+	D50A_ERR_EXCEPTION, // Driver returned an exception frame defined by the protocol
+	D50A_ERR_QUEUE_FULL,// The write queue or device slot is full
+	D50A_ERR_NOT_INIT,  // The request queue has not been created or the specified device does not exist
+	D50A_ERR_TX_TIMEOUT, // Serial port send failed
+	D50A_ERR_UART,       // Receive overflow, noise, frames, or checksum errors
 }D50A_Result_t;
 
-/* D50A_Task 内部处理的请求类型。 */
+/* D50A_Task Types of requests handled internally. */
 typedef enum
 {
 	D50A_REQ_WRITE_OVERCURRENT = 0,
@@ -58,15 +58,15 @@ typedef enum
 }D50A_RequestType_t;
 
 /*
- * 投递到 D50A_Task 队列中的请求对象。
+ * Submit request objects to the D50A_Task queue.
  *
- * m1_value/m2_value 使用上层更容易理解的实际单位：
- * - 写过流电流时：单位为 mA，例如 8000 表示 8000mA
- * - 写过流时间时：单位为 ms，例如 5000 表示 5000ms
+ * m1_value/m2_value Use practical units that are easier to understand from the upper levels:
+ * - When writing overcurrent threshold: units are mA, for example, 8000 means 8000mA
+ * - When writing over flow time: units are ms, for example, 5000 means 5000ms
  *
- * save_after_write 仅对 B0/B1 参数写入有效：
- * - 0：只写入 RAM，不立刻保存
- * - 1：写入成功后自动追加 B4 保存命令
+ * save_after_write Only valid for writing to parameters B0/B1:
+ * - 0: Write RAM only, do not save immediately
+ * - 1: Automatically append B4 save command after successful write
  */
 typedef struct
 {
@@ -79,215 +79,215 @@ typedef struct
 }D50A_Request_t;
 
 /*
- * 报警位解析结果。
+ * Alarm position analysis results.
  *
- * D50A 协议中报警位的含义比较容易写反：
- * - 位值为 1 表示正常
- * - 位值为 0 表示对应保护触发
+ * The meaning of alarm bits in the D50A protocol is easier to write backwards:
+ * - A bit value of 1 indicates normal
+ * - A bit value of 0 indicates a corresponding protection trigger
  */
 typedef struct
 {
-	uint8_t undervoltage_ok; // bit3：1=正常，0=欠压保护
-	uint8_t overvoltage_ok;  // bit2：1=正常，0=过压保护
-	uint8_t overtemp_ok;     // bit1：1=正常，0=过温保护
-	uint8_t overcurrent_ok;  // bit0：1=正常，0=过流保护
+	uint8_t undervoltage_ok; // bit3: 1 = normal, 0 = undervoltage protection
+	uint8_t overvoltage_ok;  // bit2: 1 = normal, 0 = overvoltage protection
+	uint8_t overtemp_ok;     // bit1: 1 = normal, 0 = over-temperature protection
+	uint8_t overcurrent_ok;  // bit0:1 = normal, 0 = overcurrent protection
 }D50A_AlarmBits_t;
 
 /*
- * 单个 D50A 地址对应的状态缓存。
+ * Status cache corresponding to a single D50A address.
  *
- * D50A_Task 会周期读取驱动器数据并更新该结构体。
- * 蓝牙 APP、OLED 菜单或其他模块需要显示状态时，直接读取该缓存即可。
- * 不建议这些模块绕过 D50A_Task 直接访问 USART2。
+ * D50A_Task periodically reads drive data and updates the structure.
+ * When Bluetooth apps, OLED menus, or other modules need to display status, simply read the cache directly.
+ * It is not recommended to bypass D50A_Task to directly access USART2 through these modules.
  */
 typedef struct
 {
-	uint8_t enable;              // 是否启用该设备槽位，0=不轮询，1=参与轮询
-	uint8_t addr;                // 驱动器地址
-	uint8_t online;              // 最近一次通信是否成功，1=在线，0=离线或超时
-	uint8_t last_error;          // 最近一次通信/校验结果，见 D50A_Result_t，不是驱动报警码
-	uint8_t last_request;        // 最近一次处理的写请求类型
-	uint8_t last_request_error;  // 最近一次写请求的执行结果
+	uint8_t enable;              // Whether to enable the device slot: 0 = do not poll, 1 = participate in polling
+	uint8_t addr;                // Driver address
+	uint8_t online;              // Whether the most recent communication was successful: 1 = online, 0 = offline or timeout
+	uint8_t last_error;          // The most recent communication/verification results, see D50A_Result_t, not the driver alarm code
+	uint8_t last_request;        // The type of last write request processed
+	uint8_t last_request_error;  // The execution result of the most recent write request
 
-	uint8_t alarm;               // 有效 A0 回复的原始报警码；低四位全 1 为正常，默认 0 不能直接当报警
-	D50A_AlarmBits_t alarm_bits; // 报警码按位解析后的结果
-	uint8_t status_valid;        // 有效 A0 缓存标志；收发失败或本次 A0 读取失败时清 0
-	volatile uint8_t protection_fault; // 0=未确认保护，1=已确认保护；仅有效 A0 更新，通信失败不清除
-	uint32_t last_status_tick;   // 最近一次有效 A0 状态回复的 tick
-	float m1_current_a;          // M1 实时电流，单位 A
-	float m2_current_a;          // M2 实时电流，单位 A
-	int16_t m1_current_raw;      // M1 实时电流原始值，协议值=实际电流A*100
-	int16_t m2_current_raw;      // M2 实时电流原始值，协议值=实际电流A*100
+	uint8_t alarm;               // Original alarm code with valid A0 reply; All four lower digits are 1s as normal; default 0 cannot be used as an alarm
+	D50A_AlarmBits_t alarm_bits; // Result of bitwise parsing of the alarm code
+	uint8_t status_valid;        // Valid A0 cache flag; Clear 0 on send/receive failure or this A0 read failure
+	volatile uint8_t protection_fault; // 0=protection not confirmed, 1=protection confirmed; updated only by valid A0, not cleared by communication failure
+	uint32_t last_status_tick;   // tick of the most recent valid A0 status reply
+	float m1_current_a;          // M1 real-time current, unit A
+	float m2_current_a;          // M2 Real-time current, unit A
+	int16_t m1_current_raw;      // M1 real-time current raw value, protocol value = actual current A * 100
+	int16_t m2_current_raw;      // M2 real-time current raw value, protocol value = actual current A * 100
 
-	uint8_t m1_temp;             // M1 温度，单位 摄氏度
-	uint8_t m2_temp;             // M2 温度，单位 摄氏度
+	uint8_t m1_temp;             // M1 temperature, unit Celsius
+	uint8_t m2_temp;             // M2 Temperature, unit Celsius
 
-	uint16_t m1_overcurrent_ma;  // M1 过流电流设置值，单位 mA
-	uint16_t m2_overcurrent_ma;  // M2 过流电流设置值，单位 mA
-	uint16_t m1_overtime_ms;     // M1 过流时间设置值，单位 ms
-	uint16_t m2_overtime_ms;     // M2 过流时间设置值，单位 ms
+	uint16_t m1_overcurrent_ma;  // M1 overcurrent threshold set value, unit mA
+	uint16_t m2_overcurrent_ma;  // M2 overcurrent threshold setting, unit mA
+	uint16_t m1_overtime_ms;     // M1 overcurrent time set value, unit ms
+	uint16_t m2_overtime_ms;     // M2 Overcurrent time setting, unit ms
 
-	uint32_t last_update_tick;   // 最近一次格式完整的成功收发 tick；同步接口记 0，不等于 A0 更新时间
+	uint32_t last_update_tick;   // The most recent fully formatted successful send and receive tick; Synchronization interface is recorded as 0, which does not equal the A0 update time
 
-	uint32_t comm_success_count;    // 累计通信成功次数：收到合法回复帧并完成协议校验后递增
-	uint32_t comm_timeout_count;    // 累计回复超时或字节发送超时次数，不含本地参数/入队失败
-	uint32_t comm_frame_err_count;  // 累计已记录的 ERR_FRAME/ERR_EXCEPTION/ERR_UART 次数
+	uint32_t comm_success_count;    // Cumulative communication successes: Increases after receiving valid reply frames and completing protocol verification
+	uint32_t comm_timeout_count;    // Cumulative reply timeout or byte send timeout count, excluding local parameters or queue failures
+	uint32_t comm_frame_err_count;  // Cumulative number of recorded ERR_FRAME/ERR_EXCEPTION/ERR_UART times
 }D50A_State_t;
 
 
 /*
 ================================================================================
-D50A API 调用示例和注意事项
+D50A API call examples and considerations
 ================================================================================
 
-一、总原则
+1. General principles
 --------------------------------------------------------------------------------
-1. 串口2/485 总线由本模块统一管理，其他模块不要直接发送 D50A 协议帧。
-2. FreeRTOS 启动前如果要写驱动器参数，使用 D50A_SyncXXX() 同步接口。
-3. FreeRTOS 正常运行后，推荐使用 D50A_PostXXX() 异步接口，把请求交给 D50A_Task 处理。
-4. 读取电流、温度、报警、参数设置值时，不需要主动发读命令，直接读取 D50A_State_t 缓存。
-5. 多驱动器串联时，每个驱动器必须有唯一地址，例如 0x01、0x02、0x03。
-6. 广播地址 0xFF 只能在总线上只有一个驱动器时用于查询地址，多驱动器时不要广播查询。
+1. Serial 2/485 bus is managed centrally by this module, other modules should not directly send D50A protocol frames.
+2. If you want to write drive parameters before FreeRTOS starts, use the D50A_SyncXXX() synchronization interface.
+3. After FreeRTOS is running normally, it is recommended to use the D50A_PostXXX() asynchronous interface to hand over requests to D50A_Task.
+4. When reading current, temperature, alarm, and parameter setting values, there is no need to actively send read commands; the D50A_State_t cache is read directly.
+5. When multiple drives are connected in series, each drive must have a unique address, such as 0x01, 0x02, 0x03.
+6. Broadcast address 0xFF can only be used to query addresses when there is only one drive on the bus; do not broadcast queries when there are multiple drives.
 
-二、硬件初始化阶段：同步写初始参数
+Second, hardware initialization stage: synchronously write initial parameters
 --------------------------------------------------------------------------------
-适用场景：
-- FreeRTOS 调度器还没有启动。
-- 需要在 systemInit() 阶段给驱动器写入过流电流、过流时间等初始值。
-- 此时不要使用 D50A_PostXXX()，因为 D50A_Task 还没有运行。
+Applicable scenarios:
+- FreeRTOS scheduler has not yet started.
+- Initial values such as overcurrent threshold and overcurrent time need to be written to the drive during the systemInit() phase.
+- Do not use D50A_PostXXX() at this time, as D50A_Task is not yet running.
 
-前置条件：
-- UART2_Init(115200) 已经完成。
-- D50A_Init() 已经完成。
-- USART2 接收中断已经打开，并且中断函数中会调用 D50A_RxByte()。
+Prerequisites:
+- UART2_Init (115200) has been completed.
+- D50A_Init() completed.
+- USART2 receives interrupts enabled, and the interrupt function calls D50A_RxByte().
 
-示例：给地址 0x01 的驱动器设置默认参数，并立即保存。
+Example: Set default parameters for the drive at address 0x01 and save immediately.
 
     UART2_Init(115200);
-    Robot_Select(); // 先确定D50A启用标志、数量和启动参数。
+    Robot_Select(); // First determine the D50A enable flag, quantity, and startup parameters.
     D50A_Init();
 
-    // 设置 M1/M2 过流电流为 8000mA，并自动保存。
-    // 第4个参数 save=1 表示写成功后自动发送 B4 保存命令。
+    // Set the M1/M2 overcurrent threshold to 8000mA and save automatically.
+    // The fourth parameter save=1 means that after a successful write, the B4 save command is automatically sent.
     D50A_SyncWriteOverCurrent(0x01, 8000, 8000, 1);
 
-    // 设置 M1/M2 过流时间为 5000ms，并自动保存。
+    // Set M1/M2 overcurrent time to 5000ms and save automatically.
     D50A_SyncWriteOverTime(0x01, 5000, 5000, 1);
 
-示例：连续写多个参数，最后统一保存。
+Example: Write multiple parameters consecutively and save them all together.
 
     D50A_SyncWriteOverCurrent(0x01, 8000, 8000, 0);
     D50A_SyncWriteOverTime(0x01, 5000, 5000, 0);
     D50A_SyncSave(0x01);
 
-注意事项：
-- 同步接口会阻塞等待驱动器返回，单条命令默认最长等待 D50A_TIMEOUT_MS。
-- 同步接口适合初始化阶段使用；系统运行后不建议再调用，避免和 D50A_Task 同时访问485总线。
-- 修改参数前，建议确保电机停转。
+Notes:
+- The synchronization interface blocks waiting for drive return; single commands default to a maximum wait of D50A_TIMEOUT_MS.
+- Synchronous interfaces are suitable for initialization phases; It is not recommended to call them again after the system is running to avoid accessing the 485 bus simultaneously with D50A_Task.
+- Before modifying parameters, it is recommended to ensure the motor is stopped.
 
-三、FreeRTOS 运行期：异步写请求
+3. FreeRTOS runtime: Asynchronous write requests
 --------------------------------------------------------------------------------
-适用场景：
-- 蓝牙 APP、OLED 菜单、按键菜单等运行期修改参数。
-- 不希望调用者阻塞等待串口回复。
-- 希望所有写操作都由 D50A_Task 排队处理，避免485总线冲突。
+Applicable scenarios:
+- Runtime modification parameters for Bluetooth apps, OLED menus, button menus, etc.
+- Do not want the caller to block waiting for a serial reply.
+- It is expected that all write operations are queued by D50A_Task to avoid conflicts on the 485 bus.
 
-示例：蓝牙 APP 设置地址 0x02 的过流电流为 8000mA，并保存。
+Example: The Bluetooth app sets the overcurrent threshold at address 0x02 to 8000mA and saves it.
 
     uint8_t ret;
     ret = D50A_PostWriteOverCurrent(0x02, 8000, 8000, 1);
     if(ret != D50A_OK)
     {
-        // 这里只表示请求没有成功放入队列，例如队列满。
-        // 不代表驱动器执行失败。
+        // This only means the request could not be queued, for example because the queue is full.
+        // does not indicate a drive execution failure.
     }
 
-示例：运行期写过流时间。
+Example: runtime writes over flow time.
 
     D50A_PostWriteOverTime(0x02, 5000, 5000, 1);
 
-示例：连续写多个参数，最后统一保存。
+Example: Write multiple parameters consecutively and save them all together.
 
     D50A_PostWriteOverCurrent(0x02, 8000, 8000, 0);
     D50A_PostWriteOverTime(0x02, 5000, 5000, 0);
     D50A_PostSave(0x02);
 
-查看异步写请求是否真正执行成功：
+Check if the asynchronous write request is actually executed successfully:
 
     const D50A_State_t *drv = D50A_GetStateByAddr(0x02);
     if(drv != NULL)
     {
         if(drv->last_request_error == D50A_OK)
         {
-            // 最近一次写请求执行成功。
+            // The most recent write request executed successfully.
         }
         else
         {
-            // 最近一次写请求执行失败，错误码见 D50A_Result_t。
+            // The most recent write request failed to execute; error codes are shown in D50A_Result_t.
         }
     }
 
-注意事项：
-- D50A_PostXXX() 的返回值只表示“投递队列是否成功”。
-- 驱动器实际执行结果要看对应设备状态中的 last_request_error。
-- 投递不会将 last_request_error 改成等待状态，可能暂时读到上一条结果；蓝牙改址另有 Confirmed 标志。
-- D50A_Task 会优先处理写请求，处理写请求的周期会暂停一次自动轮询。
+Notes:
+- The return value of D50A_PostXXX() only indicates whether the delivery queue was successful.
+- The actual execution results of the drive depend on the last_request_error in the corresponding device status.
+- Posting will not change last_request_error to a waiting state, so it may temporarily read the previous result; Bluetooth address change has an additional Confirmed flag.
+- D50A_Task will prioritize write requests, and the write request processing cycle will pause automatic polling once.
 
-四、读取驱动器状态缓存
+4. Read the drive state cache
 --------------------------------------------------------------------------------
-D50A_Task 会周期读取：
-- 报警码和实时电流 A0
-- 温度 A3
-- 过流电流设置值 A1
-- 过流时间设置值 A2
+D50A_Task Periodic reading:
+- Alarm code and real-time current A0
+- Temperature A3
+- overcurrent threshold setting value A1
+- Overcurrent time setting value A2
 
-调用者不需要主动发读命令，直接读取缓存即可。
+The caller does not need to actively send read commands; they can directly read the cache.
 
-示例：读取地址 0x01 的实时电流、温度和报警状态。
+Example: Read real-time current, temperature, and alarm status at address 0x01.
 
     const D50A_State_t *drv = D50A_GetStateByAddr(0x01);
     if(drv != NULL && drv->online && drv->status_valid)
     {
-        float m1_current = drv->m1_current_a;   // M1 实时电流，单位 A
-        float m2_current = drv->m2_current_a;   // M2 实时电流，单位 A
-        uint8_t m1_temp = drv->m1_temp;         // M1 温度，单位 摄氏度
-        uint8_t m2_temp = drv->m2_temp;         // M2 温度，单位 摄氏度
+        float m1_current = drv->m1_current_a; // M1 real-time current, unit A
+        float m2_current = drv->m2_current_a; M2 real-time current, unit: A
+        uint8_t m1_temp = drv->m1_temp; // M1 temperature, unit Celsius
+        uint8_t m2_temp = drv->m2_temp; // M2 temperature, unit Celsius
 
         if(drv->alarm_bits.overcurrent_ok == 0)
         {
-            // 过流保护触发。
+            // Overcurrent protection triggered.
         }
         if(drv->alarm_bits.overtemp_ok == 0)
         {
-            // 过温保护触发。
+            // Overtemperature protection triggered.
         }
     }
 
-报警位注意事项：
-- D50A 协议中，报警位为 1 表示正常。
-- D50A 协议中，报警位为 0 表示对应保护触发。
-- 例如 overcurrent_ok == 0 表示过流保护触发，不是正常。
-- 未收到有效 A0 时，默认 alarm=0 不能解释成四项保护全部触发。
-- online 可被参数读写更新；实时报警应同时检查 status_valid 和 last_status_tick，OLED 当前按 2 秒判过期。
-- last_error/D50A_OK 是通信结果；驱动保护看 alarm/alarm_bits，控制查询看 protection_fault。
+Alarm Position Precautions:
+- In the D50A protocol, alarm bit 1 indicates normal.
+- In the D50A protocol, an alarm bit of 0 indicates a corresponding protection trigger.
+- For example, overcurrent_ok == 0 indicates overcurrent protection triggered, not normal.
+- When no valid A0 is received, the default alarm=0 cannot be interpreted as all four protections being triggered.
+- online can be updated by parameter read/write; Real-time alarms should check both status_valid and last_status_tick; OLED currently expires at 2 seconds.
+- last_error/D50A_OK are communication results; Driver protection is alarm/alarm_bits, control queries are protection_fault.
 
-五、多驱动器串联使用
+Five, multiple drivers used in series
 --------------------------------------------------------------------------------
-适用场景：
-- 一条485总线上挂多个 D50A 驱动器。
-- 每个驱动器使用不同地址。
+Applicable scenarios:
+- Multiple D50A drives mounted on one 485 bus.
+- Each drive uses a different address.
 
-示例：注册 3 个驱动器地址。
+Example: Register 3 drive addresses.
 
     D50A_AddDevice(0x01);
     D50A_AddDevice(0x02);
     D50A_AddDevice(0x03);
 
-示例：按地址读取某个驱动器状态。
+Example: Read the status of a drive by address.
 
     const D50A_State_t *drv2 = D50A_GetStateByAddr(0x02);
 
-示例：遍历所有已登记设备，适合批量显示在线状态。
+Example: Traverse all registered devices, suitable for batch online display.
 
     uint8_t i;
     for(i = 0; i < D50A_GetDeviceCount(); i++)
@@ -295,91 +295,91 @@ D50A_Task 会周期读取：
         const D50A_State_t *drv = D50A_GetStateByIndex(i);
         if(drv != NULL)
         {
-            // drv->addr          驱动器地址
-            // drv->online        在线状态
-            // drv->m1_temp       M1 温度
-            // drv->m1_current_a  M1 电流
+            // drv->addr Driver address
+            // drv->online Online status
+            // drv->m1_temp M1 temperature
+            // drv->m1_current_a M1 current
         }
     }
 
-ByAddr 和 ByIndex 的区别：
-- D50A_GetStateByAddr(addr)：按驱动器地址查状态，业务代码更推荐用这个。
-- D50A_GetStateByIndex(index)：按内部设备表下标查状态，适合遍历所有设备。
+Differences between ByAddr and ByIndex:
+- D50A_GetStateByAddr (addr): Check status by drive address; business code is more recommended for this one.
+- D50A_GetStateByIndex (index): Status is checked by internal device table sublabels, suitable for traversing all devices.
 
-多驱动注意事项：
-- 不要让多个驱动器使用同一个地址。
-- 不要在多驱动总线上使用 D50A_PostReadAddress() 广播查询地址。
-- 如果要改地址，建议总线上只保留目标驱动器，避免误操作或地址冲突。
+Multi-driver precautions:
+- Do not allow multiple drives to share the same address.
+- Do not use D50A_PostReadAddress() broadcast lookup addresses on multi-driver buses.
+- If you want to change the address, it is recommended to keep only the target driver on the bus to avoid misoperation or address conflicts.
 
-六、修改驱动器地址
+6. Modify the drive address
 --------------------------------------------------------------------------------
-示例：把地址 0x01 修改为 0x02。
+Example: Change address 0x01 to 0x02.
 
     D50A_PostWriteAddress(0x01, 0x02);
 
-或在初始化阶段同步修改：
+or synchronize modifications during initialization:
 
     D50A_SyncWriteAddress(0x01, 0x02);
 
-注意事项：
-- B3 修改地址命令会自动保存，不需要再调用 Save。
-- 修改地址前，建议总线上只连接一个目标驱动器。
-- 新地址不能为 0x00，也不能为广播地址 0xFF。
-- 改址成功后，原设备槽位的地址会更新，槽位下标不移动。
-- Post/Sync 改址接口只校验 B3；蓝牙 o/p 专用流程另外执行 A0 回查，成功才置确认标志并蜂鸣。
-- 默认预登记了地址 1、2：同步改址会在发送前检查槽位冲突；蓝牙流程会处理离线目标占位。
+Notes:
+- B3 The address modification command will be saved automatically, so you don't need to call Save again.
+- Before modifying the address, it is recommended to connect only one target drive on the bus.
+- The new address cannot be 0x00 or the broadcast address 0xFF.
+- After the address change is successful, the original device slot's address will be updated, the slot index will not move.
+- Post/Sync readdress interface only verifies B3; Bluetooth O/P dedicated process performs A0 checkback, and only after success is a confirmation flag set and a beep sounds.
+- Default pre-registered addresses 1 and 2: Synchronous readdressing checks slot conflicts before sending; Bluetooth processes handle offline target slots.
 
-七、恢复默认过流参数
+7. Restore default overcurrent parameters
 --------------------------------------------------------------------------------
-运行期异步恢复：
+Asynchronous runtime recovery:
 
     D50A_PostResetParam(0x01);
 
-初始化阶段同步恢复：
+Initialization phase synchronous recovery:
 
     D50A_SyncResetParam(0x01);
 
-注意事项：
-- B2 会恢复默认过流电流和过流时间，并自动保存。
-- 恢复后，D50A_Task 后续轮询会重新读回设置值。
+Notes:
+- B2 will restore the default overcurrent threshold and overcurrent time and save automatically.
+- After recovery, D50A_Task will read back the set values during subsequent polling.
 ================================================================================
 */
 extern TaskHandle_t d50a_TaskHandle;
 
 /*
- * 上电在 UART2_Init() 和 Robot_Select() 之后调用，按车型配置登记地址，不发送配置命令。
- * 固定阈值/时间由任务在 IMU 等待窗口写入；不要把它当作运行期串口恢复接口。
+ * Power up is called after UART2_Init() and Robot_Select(), registering the address according to the vehicle model, without sending configuration commands.
+ * Fixed threshold/time written by tasks waiting in the IMU window; Do not treat it as a runtime serial recovery interface.
  */
 void D50A_Init(void);
 
 /*
- * D50A 管理任务：
- * 1. 原有 IMU 等待窗口内配置固定参数，成功槽位跳过，失败重试，超时退出不阻挡电机自检。
- * 2. 蓝牙改址优先；普通周期按 10Hz 调度，每次处理一条队列请求或轮询一个登记槽位。
- * 3. 10Hz 不是每台驱动每种数据的刷新频率，槽位轮转和写请求都会分摊普通轮询。
+ * D50A Management Tasks:
+ * 1. Configure fixed parameters in the existing IMU wait window; skip successful slots, retry failures and exit on timeout without blocking motor self-test.
+ * 2. Bluetooth readdress priority; Normal cycle scheduling at 10Hz, processing one queue request or one registration slot at a time.
+ * 3. 10Hz is not the refresh rate for each device driving each data type; slot rotation and write requests share the regular polling.
  */
 void D50A_Task(void *pvParameters);
 
-/* USART2 接收中断中调用：把收到的一个字节喂给 D50A 收帧状态机。 */
+/* USART2 receive interrupt call: feeds a received byte to the D50A frame capture state machine. */
 void D50A_RxByte(uint8_t data);
-/* USART2 接收错误时丢弃当前帧，并通知通信任务返回错误。 */
+/* USART2 discards the current frame when it receives an error and notifies the communication task of returning an error. */
 void D50A_RxError(void);
 
 /*
- * UART4 收到 o/p 只置请求：o 表示 1→2，p 表示 2→1，每次新请求先清 Confirmed。
- * D50A_Task 执行 B3 或目标回查；有效 A0 确认成功后置 Confirmed=1，并调用蜂鸣接口。
- * 此确认标志只表示蓝牙专用改址流程结果，不表示驱动一直在线或没有保护报警。
+ * UART4 receives o/p requests: o means 1→2, p means 2→1, and each new request is confirmed first.
+ * D50A_Task Perform B3 or target callback; Valid A0 confirmation succeeds with Confirmed=1 and call the beep interface.
+ * This confirmation flag only indicates the result of the Bluetooth-specific address rerouting process and does not mean the driver is always online or there is no protection alarm.
  */
 extern volatile uint8_t D50A_AddressSetRequest;
 extern volatile uint8_t D50A_AddressSetConfirmed;
 
 /*
- * 异步写请求接口。
+ * Asynchronous write request interface.
  *
- * 返回值只代表“请求是否成功放入队列”，不代表驱动器已经执行成功。
- * 驱动器实际执行结果请查看对应设备状态中的 last_request_error。
- * B0 输入 1000～16000mA，按 10mA 向下取整；B1 输入 10～10000ms，由任务执行时校验。
- * save 非 0 表示 B0/B1 成功后追加 B4；B2/B3 自带保存，不需要额外 B4。
+ * The return value only indicates whether the request was queued successfully, not whether the driver executed it successfully.
+ * Check last_request_error in the corresponding device state for actual driver execution results.
+ * B0 input 1000~16000mA, round down at 10mA; B1 input 10~10000ms, verified during task execution.
+ * save is not 0 means B4 is added after B0/B1 succeeds; B2/B3 come with built-in save, no additional B4 is needed.
  */
 uint8_t D50A_PostWriteOverCurrent(uint8_t addr,uint16_t m1_ma,uint16_t m2_ma,uint8_t save);
 uint8_t D50A_PostWriteOverTime(uint8_t addr,uint16_t m1_ms,uint16_t m2_ms,uint8_t save);
@@ -389,11 +389,11 @@ uint8_t D50A_PostSave(uint8_t addr);
 uint8_t D50A_PostReadAddress(void);
 
 /*
- * 硬件初始化阶段使用的同步写接口。
+ * Synchronous write interface used during hardware initialization.
  *
- * 这些接口不依赖 D50A_Task，也不走 FreeRTOS 队列，适合在调度器启动前设置驱动器参数。
- * 使用前必须先完成 UART2_Init() 和 D50A_Init()，并保证 USART2 接收中断能调用 D50A_RxByte()。
- * 运行期仍建议优先使用 D50A_PostXXX()，避免和 D50A_Task 同时访问485总线。
+ * These interfaces do not depend on D50A_Task or use the FreeRTOS queue; suitable for setting driver parameters before the scheduler starts.
+ * Before use, UART2_Init() and D50A_Init() must be completed, and it must be ensured that USART2 can call D50A_RxByte() during reception interrupts.
+ * Prefer D50A_PostXXX() at runtime to avoid accessing the 485 bus concurrently with D50A_Task.
  */
 uint8_t D50A_SyncWriteOverCurrent(uint8_t addr,uint16_t m1_ma,uint16_t m2_ma,uint8_t save);
 uint8_t D50A_SyncWriteOverTime(uint8_t addr,uint16_t m1_ms,uint16_t m2_ms,uint8_t save);
@@ -402,23 +402,23 @@ uint8_t D50A_SyncWriteAddress(uint8_t old_addr,uint8_t new_addr);
 uint8_t D50A_SyncSave(uint8_t addr);
 
 /*
- * 多驱动器设备表管理：Count 是登记槽位数，包含停用/离线槽位，不是在线数量。
- * Add 同地址只重新启用，Remove 只停用、不压缩或清报警；ByAddr/ByIndex 对停用槽返回 NULL。
+ * Multi-drive device table management: Count registers the number of slots, including disabled/offline slots, not the online count.
+ * Add: only re-enable for the same address, Remove: only disable, do not compress or clear alarms; ByAddr/ByIndex returns NULL for disabled slots.
  */
 uint8_t D50A_AddDevice(uint8_t addr);
 uint8_t D50A_RemoveDevice(uint8_t addr);
 uint8_t D50A_GetDeviceCount(void);
 /*
- * 保护汇总查询，不发送串口命令，可在电机失能判断中直接调用。
- * 按Robot_Select配置检查地址1或地址1和2；未启用自动管理的车型直接返回1。
- * 返回 1=所检查驱动没有已确认的保护报警，0=所检查驱动存在保护报警。
- * 过流、过压、欠压、过温均参与判断，仅有效 A0 正常回复能清除对应驱动报警。
- * 未收到过 A0 的设备不阻止运行，返回 1 不保证驱动在线；离线/停用不清除已确认的报警。
- * 本接口只查询，电机停机由控制任务结合返回值处理；启用和数量不依赖登记/在线槽位数。
+ * Query protection summary without sending serial commands; can be called directly when deciding whether to disable motors.
+ * Check address 1 or addresses 1 and 2 according to Robot_Select configuration; Models without automatic management enabled return 1 directly.
+ * Return 1 if the checked drivers have no confirmed protection alarms; 0 if a checked driver has a protection alarm.
+ * Check overcurrent, overvoltage, undervoltage and overtemperature; only a valid normal A0 reply clears the corresponding driver alarm.
+ * Devices that have not received A0 do not prevent operation; returning 1 does not guarantee the driver is online; Offline/deactivation does not clear confirmed alarms.
+ * This interface only queries; motor shutdown is handled by the control task combined with the return value; Activation and quantity do not depend on the number of registered/online slots.
  */
 uint8_t D50A_IsProtectionNormal(void);
-const D50A_State_t* D50A_GetStateByAddr(uint8_t addr);    // 按驱动器地址查询状态，适合业务代码使用
-const D50A_State_t* D50A_GetStateByIndex(uint8_t index);  // 按设备表下标查询状态，适合遍历所有已登记设备
+const D50A_State_t* D50A_GetStateByAddr(uint8_t addr);    // Query status by driver address, suitable for business code use
+const D50A_State_t* D50A_GetStateByIndex(uint8_t index);  // Query status by device table index, suitable for iterating through all registered devices
 
 
 #endif

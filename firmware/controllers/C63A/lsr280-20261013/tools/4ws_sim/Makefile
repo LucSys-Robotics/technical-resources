@@ -1,22 +1,22 @@
-# 四轮四转运动学对拍工程
+# Four-wheel steering kinematics differential-test harness
 #
-# 直接编译固件里的真实源文件,不做拷贝 —— 保证测的就是车上跑的那份代码.
+# Directly compile the real source files in the firmware without copying — ensuring the code tested is the one running on the car.
 #
-#   make          编译
-#   make run      编译并跑默认 20 万组
-#   make quick    跑 1 万组(改代码后快速自检)
-#   make full     跑 200 万组(提交前完整对拍)
+#   make compile
+#   make run: compile and run the default 200,000 cases
+#   make quick: run 10,000 cases (quick self-test after code changes)
+#   make full: run 2,000,000 cases (full differential comparison before committing)
 #   make clean
 #
-# 换编译器: make CC=clang   (命令行赋值优先级最高)
+# Switch compiler: make CC=clang (command line assignment has the highest priority)
 
-# 注意用 = 而不是 ?= : GNU Make 内置了 CC=cc, ?= 会认为它已定义而不覆盖,
-# 在 MinGW 上就会去找不存在的 cc.exe.
+# Note to use = instead of ?=: GNU Make has CC=cc built-in, so ?= will be considered defined and not overridden,
+# on MinGW, it will look for non-existent cc.exe.
 CC      = gcc
 BSP     := ../../LUCSYS_BSP
 
-# Windows 下产物带 .exe, 运行时不能加 ./ 前缀, 删除也没有 rm 可用.
-# (Windows 上 make 的可执行文件通常叫 mingw32-make, 不是 make)
+# Windows products have .exe, cannot add the ./ prefix at runtime, and removing it also does not have rm available.
+# (The executable file for make on Windows is usually called mingw32-make, not make)
 ifeq ($(OS),Windows_NT)
   EXE   := .exe
   RUN   :=
@@ -28,10 +28,10 @@ else
 endif
 TARGET  := 4ws_sim$(EXE)
 
-# 源文件是 GBK 编码(与固件工程一致).
-# 不加 -finput-charset:MinGW 8.1 缺 iconv 支持,加了会报 "failure to convert GBK to UTF-8".
-# gcc 默认按 UTF-8 读,GBK 中文注释里的非法字节序列它会直接放行,不影响编译.
-# (已扫描确认工程内不存在"GBK字符尾字节为0x5C且位于//行尾"的续行陷阱)
+# The source files are GBK encoded (consistent with firmware engineering).
+# Do not add -finput-charset: MinGW 8.1 lacks iconv support and would report "failure to convert GBK to UTF-8".
+# gcc reads by default as UTF-8, and illegal byte sequences in GBK Chinese comments are directly released without affecting compilation.
+# (Scan confirmed that there is no continuation trap in the project where the GBK character end byte is 0x5C and is at the end of // line)
 CFLAGS  := -std=c99 -O2 -Wall -Wextra -I$(BSP)/Inc
 LDFLAGS := -lm
 

@@ -36,13 +36,13 @@
 #include <std_msgs/msg/float32_multi_array.hpp>
 #include "lucsys_chassis_driver/Quaternion_Solution.h"
 #include "lucsys_robot_msg/msg/data.hpp" 
-//回充相关新增
+//New additions related to recharge
 #include <std_msgs/msg/int8.hpp>
 #include <std_msgs/msg/bool.hpp>
 #include <std_msgs/msg/u_int8.hpp>
 #include <turtlesim/srv/spawn.hpp>
 
-//超声波数据
+//Ultrasound data
 #include <sensor_msgs/msg/range.hpp>
 
 using namespace std;
@@ -56,39 +56,39 @@ using namespace std;
 #define CYAN    "\033[36m"
 
 //Macro definition
-//宏定义
-#define SEND_DATA_CHECK   1          //Send data check flag bits //发送数据校验标志位
-#define READ_DATA_CHECK   0          //Receive data to check flag bits //接收数据校验标志位
-#define FRAME_HEADER      0X7B       //Frame head //帧头
-#define FRAME_TAIL        0X7D       //Frame tail //帧尾
-#define RECEIVE_DATA_SIZE 24         //The length of the data sent by the lower computer //下位机发送过来的数据的长度
-#define SEND_DATA_SIZE    11         //The length of data sent by ROS to the lower machine //ROS向下位机发送的数据的长度
-#define PI 				  3.1415926f //PI //圆周率
-// 超声波测量距离相关变量
+//Macro definition
+#define SEND_DATA_CHECK   1          //Send data check flag bits //Send data check flag bits
+#define READ_DATA_CHECK   0          //Receive data to check flag bits // Receive data to check flag bits
+#define FRAME_HEADER      0X7B       //Frame head // Frame head
+#define FRAME_TAIL        0X7D       //Frame tail // Frame tail
+#define RECEIVE_DATA_SIZE 24         //The length of the data sent by the lower computer // Length of data sent by the lower computer
+#define SEND_DATA_SIZE    11         //The length of data sent by ROS to the lower machine // Length of data sent from ROS to the lower computer
+#define PI 				  3.1415926f //PI // Pi
+// Ultrasonic measurement of distance-related variables
 #define Distance_DATA_size 19
-#define Distance_HEADER    0XFA //Frame_header //帧头
-#define Distance_TAIL      0XFC //Frame_tail   //帧尾
+#define Distance_HEADER    0XFA //Frame_header // Frame header
+#define Distance_TAIL      0XFC //Frame_tail // End of frame
 
-//自动回充相关
-#define AutoCharge_HEADER      0X7C //Frame_header //自动回充数据帧头
-#define AutoCharge_TAIL        0X7F //Frame_tail   //自动回充数据帧尾
-#define AutoCharge_DATA_SIZE    8   //下位机发送过来的自动回充数据的长度
+//Automatic recharge related to recharge
+#define AutoCharge_HEADER      0X7C //Frame_header // Automatically recharge the data frame head
+#define AutoCharge_TAIL        0X7F //Frame_tail // Automatically recharge the end of the data frame
+#define AutoCharge_DATA_SIZE    8   //The length of the automatic recharge data sent from the lower computer
 
 //Relative to the range set by the IMU gyroscope, the range is ±500°, corresponding data range is ±32768
 //The gyroscope raw data is converted in radian (rad) units, 1/65.5/57.30=0.00026644
-//与IMU陀螺仪设置的量程有关，量程±500°，对应数据范围±32768
-//陀螺仪原始数据转换位弧度(rad)单位，1/65.5/57.30=0.00026644
+//Related to the range set by the IMU gyroscope, range ± 500°, corresponding data range ± 32768
+//Convert raw gyroscope data to radians (rad): 1/65.5/57.30=0.00026644
 #define GYROSCOPE_RATIO   0.00026644f
 //Relates to the range set by the IMU accelerometer, range is ±2g, corresponding data range is ±32768
 //Accelerometer original data conversion bit m/s^2 units, 32768/2g=32768/19.6=1671.84	
-//与IMU加速度计设置的量程有关，量程±2g，对应数据范围±32768
-//加速度计原始数据转换位m/s^2单位，32768/2g=32768/19.6=1671.84
+//Related to the range set by the IMU accelerometer, which ± 2g, corresponding to a data range ±32768
+//The original accelerometer data conversion bit m/s^2 unit, 32768/2g = 32768/19.6=1671.84
 #define ACCEl_RATIO 	  1671.84f  	
 
-//extern sensor_msgs::msg::Imu Mpu6050;  //External variables, IMU topic data //外部变量，IMU话题数据
+//extern sensor_msgs::msg::Imu Mpu6050; // External variables, IMU topic data
 
 //Covariance matrix for speedometer topic data for robt_pose_ekf feature pack
-//协方差矩阵，用于里程计话题数据，用于robt_pose_ekf功能包
+//Covariance matrix, used for odometer topic data, used for robt_pose_ekf function packages
 const double odom_pose_covariance[36]   = {1e-3,    0,    0,   0,   0,    0, 
 										      0, 1e-3,    0,   0,   0,    0,
 										      0,    0,  1e6,   0,   0,    0,
@@ -118,7 +118,7 @@ const double odom_twist_covariance2[36] = {1e-9,    0,    0,   0,   0,    0,
 										      0,    0,    0,   0,   0, 1e-9} ;
 
 //Data structure for speed and position
-//速度、位置数据结构体
+//Velocity/position data structure
 typedef struct 
 {
 	float X;
@@ -127,7 +127,7 @@ typedef struct
 }Vel_Pos_Data;
 
 //IMU data structure
-//IMU数据结构体
+//IMU data structure
 typedef struct 
 {
 	short accele_x_data; 
@@ -140,7 +140,7 @@ typedef struct
 }IMU_DATA;
 
 //The structure of the ROS to send data to the down machine
-//ROS向下位机发送数据的结构体
+//Structure for ROS to send data to the lower computer
 typedef struct   
 {
 	    uint8_t tx[SEND_DATA_SIZE];
@@ -149,15 +149,15 @@ typedef struct
 		float Z_speed;         
 		unsigned char Frame_Tail; 
 }SEND_DATA;
-//下位机发送的自动回充相关数据结构体
+//Data structures related to automatic recharge sent by the subcomputer
 typedef struct      
 {
-	    uint8_t rx[AutoCharge_DATA_SIZE];  //8字节
-		unsigned char Frame_Header;     //帧头
-		unsigned char Frame_Tail;		//帧尾
+	    uint8_t rx[AutoCharge_DATA_SIZE];  //8 bytes
+		unsigned char Frame_Header;     //Frame header
+		unsigned char Frame_Tail;		//Frame end
 }RECEIVE_AutoCharge_DATA;
-//下位机发送的超声波相关数据结构体
-//下位机向ROS发送的超声波数据结构体
+//Ultrasound-related data structures sent by the subordinate computer
+//Ultrasonic data structures sent by the subcomputer to ROS
 typedef struct      
 {
 	    uint8_t rx[Distance_DATA_size];
@@ -178,7 +178,7 @@ typedef struct
 }Supersonic_data;
 
 //The structure in which the lower computer sends data to the ROS
-//下位机向ROS发送数据的结构体
+//Structure that sends data from the subcomputer to ROS
 typedef struct      
 {
 	    uint8_t rx[RECEIVE_DATA_SIZE];
@@ -192,31 +192,31 @@ typedef struct
 }RECEIVE_DATA;
 
 //The robot chassis class uses constructors to initialize data, publish topics, etc
-//机器人底盘类，使用构造函数初始化数据和发布话题等
+//Robot chassis class, using constructors to initialize data and publish topics, etc
 class turn_on_robot : public rclcpp::Node
 {
 	public:
-		turn_on_robot();  //Constructor //构造函数
-		~turn_on_robot(); //Destructor //析构函数
-		void Control();   //Loop control code //循环控制代码
-		serial::Serial Stm32_Serial; //Declare a serial object //声明串口对象 
+		turn_on_robot();  //Constructor // Constructor
+		~turn_on_robot(); //Destructor // Destructor
+		void Control();   //Loop control code
+		serial::Serial Stm32_Serial; //Declare a serial object // Declare a serial port object
 	private:
-		//ros::NodeHandle n;           //Create a ROS node handle //创建ROS节点句柄
-		rclcpp::Time _Now, _Last_Time;  //Time dependent, used for integration to find displacement (mileage) //时间相关，用于积分求位移(里程)
-		float Sampling_Time;         //Sampling time, used for integration to find displacement (mileage) //采样时间，用于积分求位移(里程)
+		//ros::NodeHandle n; Create a ROS node handle // Create a ROS node handle
+		rclcpp::Time _Now, _Last_Time;  //Time dependent, used for integration to find displacement (mileage) // Time-dependent, used for integration to find displacement (mileage)
+		float Sampling_Time;         //Sampling time, used for integration to find displacement (mileage) // Sampling time, used for integration to find displacement (mileage)
 		rclcpp::Subscription<std_msgs::msg::Float32MultiArray>::SharedPtr arm_cmd_Sub;
 
-		rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr Cmd_Vel_Sub;//Initialize the topic subscriber //初始化话题订阅者
+		rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr Cmd_Vel_Sub;//Initialize the topic subscriber
    
 		rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr AvoidFlag_Sub;
 
-        //Initialize the topic publisher //初始化话题发布者
+        //Initialize the topic publisher
         rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher;       
         rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr voltage_publisher;        
         rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_publisher;
         rclcpp::Publisher<lucsys_robot_msg::msg::Supersonic>::SharedPtr distance_publisher;         
 
-		//超声波发布者
+		//Ultrasound publisher
 		rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr range_a_publisher_;
 		rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr range_b_publisher_;
 		rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr range_c_publisher_;
@@ -224,76 +224,76 @@ class turn_on_robot : public rclcpp::Node
 		rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr range_e_publisher_;
 		rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr range_f_publisher_;
 
-		//回充相关发布者
+		//Recharge relevant publishers
 		rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr Charging_publisher;
 		rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr Charging_current_publisher;
 		rclcpp::Publisher<std_msgs::msg::UInt8>::SharedPtr RED_publisher;
 		rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr ChargingMode_publisher;
 		
-		//回充相关订阅者
+		//Recharge relevant subscribers
 		rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr Red_Vel_Sub;
 		rclcpp::Subscription<std_msgs::msg::Int8>::SharedPtr Recharge_Flag_Sub;
-		//回充相关服务
+		//Recharge-related services
 		rclcpp::Service<turtlesim::srv::Spawn>::SharedPtr SetCharge_Service;
-		//底盘安全等级设置
+		//Chassis safety level settings
 		rclcpp::Subscription<std_msgs::msg::Int8>::SharedPtr Security_Sub;
-		//灯带设置
+		//Light strip settings
 		rclcpp::Subscription<std_msgs::msg::UInt8MultiArray>::SharedPtr SetRgb_Sub;
 		//The speed topic subscribes to the callback function
-		//速度话题订阅回调函数
+		//Velocity-topic subscription callback
         void Cmd_Vel_Callback(const geometry_msgs::msg::Twist::SharedPtr twist_aux);
         void arm_cmd_Callback(const std_msgs::msg::Float32MultiArray arm_joint);
-		//回充相关回调函数
+		//Recharge-related callback functions
 		void Recharge_Flag_Callback(const std_msgs::msg::Int8::SharedPtr Recharge_Flag); 
-		//底盘安全等级回调函数
+		//Chassis safety level callback function
 		void Security_Callback(const std_msgs::msg::Int8 &Security_Flag);
     	void Set_LightRgb_Callback(const std_msgs::msg::UInt8MultiArray::SharedPtr msg);
-		//回充相关发布函数
+		//Recharge related publishing functions
 		void Publish_Charging();       
 		void Publish_ChargingCurrent();
 		void Publish_RED();
 
-		void Publish_Odom();      //Pub the speedometer topic //发布里程计话题
-		void Publish_ImuSensor(); //Pub the IMU sensor topic //发布IMU传感器话题
-		void Publish_Voltage();   //Pub the power supply voltage topic //发布电源电压话题
-		void Publish_distance();//发布超声波距离
-        //从串口(ttyUSB)读取运动底盘速度、IMU、电源电压数据
+		void Publish_Odom();      //Pub the speedometer topic //Publish speedometer topic
+		void Publish_ImuSensor(); //Pub the IMU sensor topic //Publish the IMU sensor topic
+		void Publish_Voltage();   //Pub the power supply voltage topic //Publish power supply voltage topic
+		void Publish_distance();//Publish ultrasonic distance
+        //Read the sports chassis speed, IMU, and power supply voltage data from the serial port (ttyUSB).
         //Read motion chassis speed, IMU, power supply voltage data from serial port (ttyUSB)
         bool  Get_Sensor_Data();   
-        short IMU_Trans(uint8_t Data_High,uint8_t Data_Low);  //IMU data conversion read //IMU数据转化读取
-		float Odom_Trans(uint8_t Data_High,uint8_t Data_Low); //Odometer data is converted to read //里程计数据转化读取
+        short IMU_Trans(uint8_t Data_High,uint8_t Data_Low);  //IMU data conversion read // IMU data converted read
+		float Odom_Trans(uint8_t Data_High,uint8_t Data_Low); //Odometer data converted for reading
 
 		string car_mode;
-        string usart_port_name, robot_frame_id, gyro_frame_id, odom_frame_id; //Define the related variables //定义相关变量
+        string usart_port_name, robot_frame_id, gyro_frame_id, odom_frame_id; //Define the related variables // Define the related variables
 		string cmd_vel;
 		bool ranger_avoid_flag;
-        int serial_baud_rate;      //Serial communication baud rate //串口通信波特率
-        RECEIVE_DATA Receive_Data; //The serial port receives the data structure //串口接收数据结构体
-        SEND_DATA Send_Data;       //The serial port sends the data structure //串口发送数据结构体
-        DISTANCE_DATA Distance_Data; //超声波数据
-        RECEIVE_AutoCharge_DATA Receive_AutoCharge_Data;  //串口接收自动回充数据结构体
-        Supersonic_data distance;  //超声波距离对象
-        Vel_Pos_Data Robot_Pos;    //The position of the robot //机器人的位置
-        Vel_Pos_Data Robot_Vel;    //The speed of the robot //机器人的速度
-        IMU_DATA  onboard_imu_raw_data; //Onboard IMU raw data //板载IMU原始数据
+        int serial_baud_rate;      //Serial communication baud rate //Serial communication baud rate
+        RECEIVE_DATA Receive_Data; //The data structure received by the serial port // Data structure received by the serial port
+        SEND_DATA Send_Data;       //The data structure sent by the serial port // Data structure sent by the serial port
+        DISTANCE_DATA Distance_Data; //Ultrasound data
+        RECEIVE_AutoCharge_DATA Receive_AutoCharge_Data;  //Serial port receives automatic recharge data structures
+        Supersonic_data distance;  //Ultrasonic distance objects
+        Vel_Pos_Data Robot_Pos;    //The position of the robot // Robot's position
+        Vel_Pos_Data Robot_Vel;    //The robot's speed // Robot's speed
+        IMU_DATA  onboard_imu_raw_data; //Onboard IMU raw data
 		
 		int8_t AutoRecharge=0;
-        float Power_voltage;       //Power supply voltage //电源电压
-        bool Charging=0;           //Whether the robot is charging the flag bit //机器人是否在充电的标志位
-        float Charging_Current=0;  //Charging_Current //充电电流
-        uint8_t Red=0;                //Whether the robot finds the marker bit of infrared signal (charging pile)  //机器人是否寻找到红外信号(充电桩)的标志位 
-        float odom_x_scale,odom_y_scale,odom_z_scale_positive,odom_z_scale_negative; //Odometer correction parameters //里程计修正参数
+        float Power_voltage;       //Power supply voltage // Power supply voltage
+        bool Charging=0;           //Whether the robot is charging the flag bit // Is the robot charging the flag bit?
+        float Charging_Current=0;  //Charging_Current // Charging current
+        uint8_t Red=0;                //Whether the robot finds the marker bit of infrared signal (charging pile) // Whether the robot detects the marker bit of the infrared signal (charging pile)
+        float odom_x_scale,odom_y_scale,odom_z_scale_positive,odom_z_scale_negative; //Odometer correction parameters
 		bool check_AutoCharge_data;
 		bool charge_set_state;
 		double last_A, last_B, last_C, last_grap;
 		
-		// 超声波相关标志位
+		// Ultrasound-related landmarks
 		bool distance_flag;
 		
-		// 底盘安全等级设置位
+		// Chassis safety level setting bit
 		bool SecurityPLY;
 		
-		// 超声波传感器数据
+		// Ultrasonic sensor data
 		float distanceA;
 		float distanceB;
 		float distanceC;

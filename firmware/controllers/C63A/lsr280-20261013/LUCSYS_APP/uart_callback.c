@@ -3,11 +3,11 @@
 #include "task.h"
 #include "queue.h"
 
-//串口控制互斥锁
+//Serial port controls the mutex lock
 static uint8_t serial_control_lock = 0;
 static uint32_t serial_control_tick = 0;
 
-//串口接收完成回调函数
+//Serial port receives completion callback functions
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	extern uint8_t BlueToothBuffer;
@@ -17,25 +17,25 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	
-	//蓝牙使用的串口
+	//Serial port used by Bluetooth
 	if( huart == &huart2 )
 	{
-		/* APP写入指令 */
+		/* APP writes instructions */
 		extern QueueHandle_t g_xQueueBlueTooth;
 		
-		//中断写队列必须做非空判断,以防开机瞬间被写入导致异常
+		//The interrupt write queue must perform a non-null check to prevent exceptions caused by writes at startup
 		if( g_xQueueBlueTooth!=NULL )
 			xQueueSendFromISR(g_xQueueBlueTooth,&BlueToothBuffer,&xHigherPriorityTaskWoken);
 		
 		HAL_UART_Receive_IT(&huart2,&BlueToothBuffer,1);
 	}
 	
-	//ROS使用的串口
+	//Serial port used by ROS
 	else if( huart == &huart4 )
 	{
 		extern QueueHandle_t g_xQueueROSserial;
 		
-		//数值1为最高优先级互斥锁
+		//The value 1 is the highest priority mutex lock
 		serial_control_lock = 1;
 		
 		if( g_xQueueROSserial!=NULL )
@@ -47,13 +47,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		HAL_UART_Receive_IT(&huart4,&rosbuffer,1);
 	}
 	
-	//串口1接收缓冲区
+	//Serial port 1 receives buffer
 	else if( huart == &huart1 )
 	{
 		extern QueueHandle_t g_xQueueROSserial;
 		
-		//带优先级的互斥锁判断,避免多个串口同时写1个队列
-		// 2为人为规定的优先级,数值越低优先级越高
+		//Priority mutex lock detection prevents multiple serial ports from writing to a single queue simultaneously
+		// 2 is an artificially defined priority; the lower the value, the higher the priority
 		if( 2 <= serial_control_lock )
 		{
 			serial_control_lock=2;
@@ -72,13 +72,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		HAL_UART_Receive_IT(&huart1,&usart1_buffer,1);
 	}
 	
-	//485接收缓冲区
+	//485 receive buffer
 	else if( huart == &huart3 )
 	{
 		//HAL_UART_Transmit(&huart3,&rs485_buffer,1,200);
 		HAL_UART_Receive_IT(&huart3,&rs485_buffer,1);
 	}
 	
-	//根据具体情况发起调度
+	//Initiate scheduling based on specific circumstances
 	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }

@@ -29,11 +29,11 @@ typedef struct {
 typedef struct {
 	sIIC_IOType_t iic_io;
 	void (*init)(void);
-	//参数：设备地址，要写入的数据，要写入的数据长度，超时时间
+	//Parameters: device address, data to write, data length to write, timeout
     IIC_Status_t (*write)(sIIC_IOType_t* io,uint16_t DevAddress, uint8_t *pData, uint16_t Size, uint32_t Timeout);
     IIC_Status_t (*read)(sIIC_IOType_t* io,uint16_t DevAddress, uint8_t *pData, uint16_t Size, uint32_t Timeout);
 	
-	//参数：设备地址，要访问的寄存器地址，要写入的数据，要写入的数据长度，超时时间
+	//Parameters: device address, register address to access, data to write, length of data to write, timeout
     IIC_Status_t (*write_reg)(sIIC_IOType_t* io,uint16_t DevAddress, uint16_t MemAddress, uint8_t *pData, uint16_t Size, uint32_t Timeout);
 	IIC_Status_t (*read_reg)(sIIC_IOType_t* io,uint16_t DevAddress, uint16_t MemAddress,  uint8_t *pData, uint16_t Size, uint32_t Timeout);
 	

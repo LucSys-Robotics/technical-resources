@@ -3,8 +3,8 @@
 #include "sys.h"
 #include "system.h"
 
-#define LED_TASK_PRIO		3     //Task priority //任务优先级
-#define LED_STK_SIZE 		128   //Task stack size //任务堆栈大小
+#define LED_TASK_PRIO		3     //Task priority //Task Priority
+#define LED_STK_SIZE 		128   //Task stack size //Task Stack Size
 
 
 /*--------Buzzer control pin--------*/
@@ -16,10 +16,10 @@
 /*--------LED control pin--------*/
 #define LED_PORT GPIOA
 #define LED_PIN GPIO_Pin_12
-//旧板C30DLED控制口
+//Control port C30DLED old board
 #define V1_0_LED PAout(12) 
 /*----------------------------------*/
-//新板C30DLED控制口
+//New board C30DLED control port
 #define V1_1_LED PEout(8) 
 
 

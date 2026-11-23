@@ -4,50 +4,50 @@
 Function: Key initialization
 Input   : none
 Output  : none
-函数功能：按键初始化
-入口参数：无
-返回  值：无 
+Function: Initialize by key
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void KEY_Init(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);//使能GPIOB时钟
-  GPIO_InitStructure.GPIO_Pin = KEY_PIN; //KEY对应引脚
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//普通输入模式
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);//Enable the GPIOB clock
+  GPIO_InitStructure.GPIO_Pin = KEY_PIN; //Key corresponding pin
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//Normal input mode
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100M
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
-  GPIO_Init(GPIOC, &GPIO_InitStructure);//初始化GPIOB14	
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//Pull up
+  GPIO_Init(GPIOC, &GPIO_InitStructure);//Initialize GPIOB14
 } 
 /**************************************************************************
 Function: Buttons to scan
 Input   : none
 Output  : none
-函数功能：按键扫描
-入口参数：无
-返回  值：按键状态 0：无动作 1：单击 
+Function: Scans with key press
+Entry parameters: None
+Return value: button state: 0-no action; 1-single click
 **************************************************************************/
 u8 click(void)
 {
 	//Press the release sign
-	//按键按松开标志
+	//Button release mark
 	static u8 flag_key=1;
 	
 	if(flag_key&&KEY==0)
 	{
-	 flag_key=0; //The key is pressed //按键按下
+	 flag_key=0; //The key is pressed // Key pressed
 	 return 1;	
 	}
 	else if(1==KEY)			
 		flag_key=1;
-	return 0; //No key is pressed //无按键按下
+	return 0; //No key is pressed // No key pressed
 }
 /**************************************************************************
 Function: Delay function
 Input   : none
 Output  : none
-函数功能：延迟函数
-入口参数：无
-返 回 值：无
+Function: Delay function
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void Delay_ms(void)
 {
@@ -61,9 +61,9 @@ void Delay_ms(void)
 Function: Buttons to scan
 Input   : Double click wait time
 Output  : Button status: 0- no action, 1- click, 2- double click
-函数功能：按键扫描
-入口参数：双击等待时间
-返回  值：按键状态: 0-无动作, 1-单击, 2-双击 
+Function: Scans with key press
+Entry parameter: double-click the wait time
+Return value: button state: 0-no action, 1-single click, 2-double click
 **************************************************************************/
 u8 click_N_Double (u8 time)
 {
@@ -85,7 +85,7 @@ u8 click_N_Double (u8 time)
 				{
 					double_key=0;
 					count_single=0;
-					return 2; //Double click //双击
+					return 2; //Double click // Double click
 				}
 		}
 		if(1==KEY)			flag_key=0,count_key=0;
@@ -97,7 +97,7 @@ u8 click_N_Double (u8 time)
 			{
 			double_key=0;
 			count_single=0;	
-			return 1; //Click //单击
+			return 1; //Click // Click
 			}
 			if(Forever_count>time)
 			{
@@ -111,9 +111,9 @@ u8 click_N_Double (u8 time)
 Function: Button scan.Because static variables are used, a function with a different name needs to be defined when the keystroke scan function is used multiple times
 Input   : none
 Output  : Button status: 0- no action, 1- click, 2- double click
-函数功能：按键扫描。因为使用到了静态变量，当多处需要使用按键扫描函数时，需要再定义一个不同名函数
-入口参数：无
-返 回 值：按键状态: 0-无动作, 1-单击, 2-双击 
+Function: key scan. Because static variables are used, when multiple key scan functions are needed, you need to define a function with a different name
+Entry parameters: None
+Return value: button state: 0-no action, 1-single click, 2-double click
 **************************************************************************/
 u8 click_N_Double_MPU6050 (u8 time)
 {
@@ -134,7 +134,7 @@ u8 click_N_Double_MPU6050 (u8 time)
 				{
 					double_key=0;
 					count_single=0;
-					return 2; //Double click //双击
+					return 2; //Double click // Double click
 				}
 		}
 		if(1==KEY)			flag_key=0,count_key=0;
@@ -146,7 +146,7 @@ u8 click_N_Double_MPU6050 (u8 time)
 			{
 			double_key=0;
 			count_single=0;	
-			return 1; //Click //单击
+			return 1; //Click // Click
 			}
 			if(Forever_count>time)
 			{
@@ -160,9 +160,9 @@ u8 click_N_Double_MPU6050 (u8 time)
 Function: Long according to the test
 Input   : none
 Output  : Key state 0: no action 1: long press 3s
-函数功能：长按检测
-入口参数：无
-返回  值：按键状态 0：无动作 1：长按3s
+Function: Long press to detect
+Entry parameters: None
+Return value: button state: 0-no action; 1-long press for 3s
 **************************************************************************/
 u8 Long_Press(void)
 {
@@ -171,48 +171,48 @@ u8 Long_Press(void)
 	if(Long_Press==0&&KEY==0)  Long_Press_count++; 
 	else                       Long_Press_count=0;
 
-	if(Long_Press_count>15)	//3 seconds //3秒	
+	if(Long_Press_count>15)	//3 seconds // 3 seconds
 	{
 		Long_Press=1;	
 		Long_Press_count=0;
 		return 1;
 	}				
-	 if(Long_Press==1) //Long press position 1 //长按标志位置1
+	 if(Long_Press==1) //Set long-press flag to 1
 	{
 			Long_Press=0;
 	}
 	return 0;
 }
 
-//按键扫描函数
-//入口参数：执行该函数的任务频率,延迟滤波的时间
-//返回值：long_click、double_click、single_click、key_stateless
-//典型值：①当函数只扫描按键，KEY_Scan(3000,200)
-//       ②当函数里其他操作比较多，KEY_Scan(200,0)
+//Button scan function
+//Entry parameters: the task frequency for executing the function, delay filtering time
+//Return value: long_click, double_click, single_click, key_stateless
+//Typical value: ① When the function only scans keys, KEY_Scan(3000,200)
+//       (2) When there are many other operations in the function, KEY_Scan(200,0)
 u8 KEY_Scan(u16 Frequency,u16 filter_times)
 {
-    static u16 time_core;//走时核心
-    static u16 long_press_time;//长按识别
-    static u8 press_flag=0;//按键按下标记
-    static u8 check_once=0;//是否已经识别1次标记
+    static u16 time_core;//Walking Core
+    static u16 long_press_time;//Long-press recognition
+    static u8 press_flag=0;//Button press mark
+    static u8 check_once=0;//Whether one marker has been identified
     static u16 delay_mini_1;
     static u16 delay_mini_2;
 	
-    float Count_time = (((float)(1.0f/(float)Frequency))*1000.0f);//算出计1需要多少个毫秒
+    float Count_time = (((float)(1.0f/(float)Frequency))*1000.0f);//Calculate how many milliseconds are needed to calculate 1
 
-    if(check_once)//完成了识别，则清空所有变量
+    if(check_once)//Once recognition is complete, clear all variables
     {
-        press_flag=0;//完成了1次识别，标记清零
-        time_core=0;//完成了1次识别，时间清零
-        long_press_time=0;//完成了1次识别，时间清零
+        press_flag=0;//Completed one recognition, marking zero
+        time_core=0;//Completed one recognition, time reset to zero
+        long_press_time=0;//Completed one recognition, time reset to zero
         delay_mini_1=0;
         delay_mini_2=0;
     }
-    if(check_once&&KEY==1) check_once=0; //完成扫描后按键被弹起，则开启下一次扫描
+    if(check_once&&KEY==1) check_once=0; //After the scan is complete, the button is popped up, and the next scan begins
 
-    if(KEY==0&&check_once==0)//按键扫描
+    if(KEY==0&&check_once==0)//Button scanning
     {
-        press_flag=1;//标记被按下1次
+        press_flag=1;//The marker is pressed once
 		
         if(++delay_mini_1>filter_times)
         {
@@ -221,13 +221,13 @@ u8 KEY_Scan(u16 Frequency,u16 filter_times)
         }
     }
 
-    if(long_press_time>(u16)(600.0f/Count_time))// 长按1秒
+    if(long_press_time>(u16)(600.0f/Count_time))// Long press for 1 second
     {	
-        check_once=1;//标记已被识别
-        return long_click; //长按
+        check_once=1;//tag has been identified
+        return long_click; //Long press
     }
 
-    //按键被按下1次又弹起后，开启内核走时
+    //After the button is pressed once and released, start the kernel timer
     if(press_flag&&KEY==1)
     {
         if(++delay_mini_2>filter_times)
@@ -237,18 +237,18 @@ u8 KEY_Scan(u16 Frequency,u16 filter_times)
         }
     }		
 	
-    if(press_flag&&(time_core>(u16)(50.0f/Count_time)&&time_core<(u16)(500.0f/Count_time)))//50~700ms内被再次按下
+    if(press_flag&&(time_core>(u16)(50.0f/Count_time)&&time_core<(u16)(500.0f/Count_time)))//Pressed again within 50~700ms
     {
-        if(KEY==0) //如果再次按下
+        if(KEY==0) //If pressed again
         {
-            check_once=1;//标记已被识别
-            return double_click; //标记为双击
+            check_once=1;//tag has been identified
+            return double_click; //Mark as double-click Multiple errors exist in the
         }
     }
     else if(press_flag&&time_core>(u16)(500.0f/Count_time))
     {
-        check_once=1;//标记已被识别
-        return single_click; //800ms后还没被按下，则是单击
+        check_once=1;//tag has been identified
+        return single_click; //If not pressed after 800ms, click it
     }
 
     return key_stateless;

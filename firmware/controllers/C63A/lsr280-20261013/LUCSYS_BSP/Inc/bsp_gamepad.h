@@ -3,21 +3,21 @@
 
 #include <stdint.h>
 
-//游戏手柄按键通用事件
+//Gamepad button general events
 typedef enum{
-    GamePadKeyEvent_NONE,         //无按键事件
-    GamePadKeyEvent_SINGLECLICK,  //单击事件
-    GamePadKeyEvent_DOUBLECLICK,  //双击事件
-    GamePadKeyEvent_LONGCLICK     //长按事件
+    GamePadKeyEvent_NONE,         //No key press events
+    GamePadKeyEvent_SINGLECLICK,  //Click the event
+    GamePadKeyEvent_DOUBLECLICK,  //Double-click event
+    GamePadKeyEvent_LONGCLICK     //Long-press event
 }GamePadKeyEventType_t;
 
-//游戏手柄通用按键状态
+//Gamepad universal key status
 typedef enum{
-	GamePadKeyState_Release = 0,  //松开
-	GamePadKeyState_Press = 1     //按下
+	GamePadKeyState_Release = 0,  //Release
+	GamePadKeyState_Press = 1     //Press
 }GamePadKeyStateType_t;
 
-//通用手柄按键检测状态机
+//Generic gamepad button-detection state machine
 typedef enum{
     WaitToPress = 0,
     WaitToRelease ,
@@ -26,7 +26,7 @@ typedef enum{
     LONG_CLICK  ,
 }GamePad_StateMachineType_t;
 
-//通用手柄单个按键属性
+//Generic gamepad individual-button attributes
 typedef struct 
 {
     uint8_t keystate;
@@ -35,39 +35,39 @@ typedef struct
     GamePad_StateMachineType_t statemachine;
 }GamePad_CheckEventType_t;
 
-//游戏手柄按键通用检测时间,单位ms
-#define GamePad_LONGPRESS_TIEM 1000 //长按检测时间
-#define GamePad_CLICK_TIME     400  //单双击检测时间
-#define GamePad_KEYFILTER_TIME 50   //按键滤波时间
+//Universal detection time for game controller buttons, unit: milliseconds
+#define GamePad_LONGPRESS_TIEM 1000 //Long-press detection time
+#define GamePad_CLICK_TIME     400  //Single or double tap to check the time
+#define GamePad_KEYFILTER_TIME 50   //Button debounce time
 
-//通用游戏手柄对象
+//Generic gamepad object
 typedef struct{
-	uint8_t LX;  //4个方向摇杆值,取值0~255
+	uint8_t LX;  //Four directional joystick values, set to 0~255
 	uint8_t LY;
 	uint8_t RX;
 	uint8_t RY;
-	uint8_t LT;  //左右两个油门扳机
+	uint8_t LT;  //Two accelerator triggers on the left and right sides
 	uint8_t RT;
-	void (*SetVibration)(uint8_t m1,uint8_t m2);//震动接口
+	void (*SetVibration)(uint8_t m1,uint8_t m2);//Vibration interface
 	GamePadKeyStateType_t (*getKeyState)(uint8_t keybit);
 	uint8_t StartFlag;
 	uint8_t Vib_EN;
 }GamePadType_t;
 
 
-//游戏手柄品牌
+//Game controller brand
 typedef enum{
-	UnKnown_Dev,          //未知设备
-	PS2_Classic,           //经典PS2手柄
-	PS2_USB_Wired,         //有线ps2手柄
-	PS2_USB_WiredV2,       //第二代有线ps2
-	PS2_USB_Wiredless,    //无线ps2手柄
-	Xbox360,    //xbox360标识符
+	UnKnown_Dev,          //Unknown device
+	PS2_Classic,           //Classic PS2 controller
+	PS2_USB_Wired,         //Wired PS2 controller
+	PS2_USB_WiredV2,       //Second-generation wired PS2
+	PS2_USB_Wiredless,    //Wireless PS2 controller
+	Xbox360,    //Xbox 360 identifier
 	SwitchPro,
 	BeiTong,
 }GamePadBrandType_t;
 
-//手柄调试结构体
+//Handle debugging structure
 enum{
 	EnumNULL = 0,
 	EnumWait ,
@@ -79,21 +79,21 @@ typedef struct{
 	GamePadBrandType_t type;
 }GamePadDebugValType_t;
 
-//对游戏手柄提供按键检测的接口函数
+//Interface functions that provide key detection for gamepads
 GamePadKeyEventType_t GamePadKey_CheckEvent(uint16_t keysource,GamePad_CheckEventType_t* key,uint8_t bit);
 
-//对外提供游戏手柄品牌参数
+//Provides external specifications for game controller brands
 extern GamePadBrandType_t gamepad_brand;
 
-//手柄设备插入与拔出回调函数
+//Handle device insertion and pullback callback functions
 void USB_GamePad_InsertCallback(void);
 void USB_GamePad_PullOutCallback(void);
 
-//通用游戏手柄接口
+//Generic gamepad interface
 extern GamePadType_t* GamePadInterface;
 extern GamePadType_t GamePadDefalut;
 
-//通用手柄调试接口
+//Generic gamepad debug interface
 extern GamePadDebugValType_t GamePadDebug;
 
 #endif /* __BSP_GAMEPAD_H */

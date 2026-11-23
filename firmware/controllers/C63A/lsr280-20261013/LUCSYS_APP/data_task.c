@@ -17,13 +17,13 @@
 #include "AutoRecharge_task.h"
 #include "datalog_task.h"
 
-//校验函数
+//Check function
 extern uint8_t Calculate_BCC(const uint8_t* checkdata,uint16_t datalen);
 	
-//指定与ROS通信的串口
+//Specify the serial port for communication with ROS
 static UART_HandleTypeDef *serial = &huart4;
 
-//定义各个数据包的帧头帧尾以及数据包长度
+//Define the frame head, frame, tail, and packet length of each packet
 #define BaseFRAME_HEAD 0x7B
 #define BaseFRAME_TAIL 0x7D
 #define BaseFRAME_LEN   24
@@ -38,25 +38,25 @@ static UART_HandleTypeDef *serial = &huart4;
 
 void RobotDataTransmitTask(void* param)
 {
-	//获取时基,用于辅助任务能按固定频率运行
+	//Obtain the timebase, which can run at a fixed frequency for auxiliary tasks
 	TickType_t preTime = xTaskGetTickCount();
 	
-	//本任务的控制频率,单位为Hz
+	//The control frequency for this task, in Hz
 	const uint16_t TaskFreq = 20;
 
-	//定义需要发送的数据
+	//Define the data to be sent
 	uint8_t basebuffer[BaseFRAME_LEN];
 	uint8_t rangerbuffer[RangerFRAME_LEN];
 	uint8_t autorechargerbuffer[ChargeFRAME_LEN];
 	
-	//自动回充CAN帧数据包
+	//Automatically recharge CAN frame packets
 	uint8_t chargerDevCANFrame[8] = { 0 };
 	
 	pCANInterface_t candev = &UserCAN1Dev;
 	
 	while(1)
 	{
-		//小车基础24字节数据包
+		//Basic 24-byte data packet for the chassis
 		basebuffer[0] = BaseFRAME_HEAD;
 		basebuffer[BaseFRAME_LEN-1] = BaseFRAME_TAIL;
 		basebuffer[1] = RobotControlParam.en_flag;
@@ -90,7 +90,7 @@ void RobotDataTransmitTask(void* param)
 		basebuffer[21] = (short)(RobotControlParam.Vol*1000);
 		basebuffer[22] = Calculate_BCC(basebuffer,22);
 		
-		//超声波数据包
+		//Ultrasonic data packets
 		rangerbuffer[0] = RangerFRAME_HEAD;
 		rangerbuffer[RangerFRAME_LEN-1] = RangerFRAME_TAIL;
 		rangerbuffer[1] = (short)(RangerHAL_A.dis*1000)>>8;
@@ -111,7 +111,7 @@ void RobotDataTransmitTask(void* param)
 		rangerbuffer[16] = 0;
 		rangerbuffer[17] = Calculate_BCC(rangerbuffer,17);
 		
-		//自动回充数据包
+		//Automatic recharge of data packets
 		autorechargerbuffer[0] = ChargeFRAME_HEAD;
 		autorechargerbuffer[ChargeFRAME_LEN-1] = ChargeFRAME_TAIL;
 		autorechargerbuffer[1] = (short)ChargeDev.ChargingCur>>8;
@@ -121,7 +121,7 @@ void RobotDataTransmitTask(void* param)
 		autorechargerbuffer[5] = RobotControlParam.ChargeMode;
 		autorechargerbuffer[6] = Calculate_BCC(autorechargerbuffer,6);
 		
-		//根据车型的不同发送对应的数据
+		//Send corresponding data depending on the vehicle model
 		if( RobotHardWareParam.CarType == S300 || RobotHardWareParam.CarType == S300Mini ||
  			RobotHardWareParam.CarType == S200_OUTDOOR || RobotHardWareParam.CarType == S260 ||
 		    RobotHardWareParam.CarType == T280 )
@@ -129,24 +129,24 @@ void RobotDataTransmitTask(void* param)
 			uint8_t tmp[BaseFRAME_LEN+RangerFRAME_LEN+ChargeFRAME_LEN]={0};
 			uint8_t *ptr = tmp;
 			
-			//基础24字节数据包
+			//Basic 24-byte packet
 			memcpy(ptr,basebuffer,BaseFRAME_LEN);
 			ptr+=BaseFRAME_LEN;
 			
-			//超声波数据包
+			//Ultrasonic data packets
 			memcpy(ptr,rangerbuffer,RangerFRAME_LEN);
 			ptr+=RangerFRAME_LEN;
 			
-			//自动回充数据包
+			//Automatic recharge of data packets
 			memcpy(ptr,autorechargerbuffer,ChargeFRAME_LEN);
 			
-			//启动DMA发送
-			//串口4被数据观察任务独占,两者不能同时用:DATALOG_ENABLE=1 时本帧不发
+			//Start DMA sending
+			//Serial port 4 is exclusive to the data observation task and cannot be used simultaneously: when DATALOG_ENABLE=1, the frame will not be transmitted
 			#if !DATALOG_ENABLE
 			HAL_UART_Transmit_DMA(serial,tmp,sizeof(tmp)/sizeof(tmp[0]));
 			#endif
 			
-			//串口1发送
+			//Serial port 1 sends
 			if( RobotControlParam.DebugLevel == 0 )
 				HAL_UART_Transmit_DMA(&huart1,tmp,sizeof(tmp)/sizeof(tmp[0]));
 		}
@@ -155,31 +155,31 @@ void RobotDataTransmitTask(void* param)
 			uint8_t tmp[BaseFRAME_LEN+ChargeFRAME_LEN]={0};
 			uint8_t *ptr = tmp;
 			
-			//基础24字节数据包
+			//Basic 24-byte packet
 			memcpy(ptr,basebuffer,BaseFRAME_LEN);
 			ptr+=BaseFRAME_LEN;
 			
-			//自动回充数据包
+			//Automatic recharge of data packets
 			memcpy(ptr,autorechargerbuffer,ChargeFRAME_LEN);
 			
-			//ROS串口发送
-			//串口4被数据观察任务独占,两者不能同时用:DATALOG_ENABLE=1 时本帧不发
+			//ROS serial send
+			//Serial port 4 is exclusive to the data observation task and cannot be used simultaneously: when DATALOG_ENABLE=1, the frame will not be transmitted
 			#if !DATALOG_ENABLE
 			HAL_UART_Transmit_DMA(serial,tmp,sizeof(tmp)/sizeof(tmp[0]));
 			#endif
 			
-			//串口1发送
+			//Serial port 1 sends
 			if( RobotControlParam.DebugLevel == 0 )
 				HAL_UART_Transmit_DMA(&huart1,tmp,sizeof(tmp)/sizeof(tmp[0]));
 		}
 		
-		//CAN数据发送.通过帧id 0x101-0x103 发送基础24字节数据
+		//CAN data sending. Sending basic 24-byte data via frame id 0x101-0x103
 		for(uint8_t i=0;i<3;i++)
 		{
 			candev->sendStd(0x100+(i+1),basebuffer+i*8,8);
 		}
 		
-		//自动回充数据包发送.通过帧id 0x105 反馈标志位以及设置对接速度
+		//Automatic recharge packet sending. Feedback flags via frame ID 0x105 and setting docking speed
 		chargerDevCANFrame[0] = RobotControlParam.ChargeMode;
 		chargerDevCANFrame[1] = (short)(ChargeDev.dockerX*1000)>>8;
 		chargerDevCANFrame[2] = (short)(ChargeDev.dockerX*1000);
@@ -190,8 +190,8 @@ void RobotDataTransmitTask(void* param)
 		chargerDevCANFrame[7] = 0;
 		candev->sendStd(0x105,chargerDevCANFrame,8);
 		
-		//自动回充控制特征发送(TODO:移除此部分内容并优化)
-		//用途:用于充电装备识别小车运动特征,在对接充电过程中进行一定的减速
+		//Automatic recharge control feature sending (TODO: remove and optimize this section)
+		//Purpose: Used to recognize the movement characteristics of the chassis in charging equipment and to slow down during docking and charging
 		uint8_t chargerControlSend[8]={0};
 		switch(RobotHardWareParam.CarType)
 		{
@@ -213,7 +213,7 @@ void RobotDataTransmitTask(void* param)
 				else if( RobotControlParam.MotorD.feedbackSpeed<0 ) chargerControlSend[1]=2;
 				else chargerControlSend[1]=0;
 				break;
-			//带后置超声波的车型,无需充电装备识别轮子运动情况.自主减速
+			//Models with rear ultrasonic sensors do not require charging equipment to detect wheel movement. Automatic deceleration
 			case S260:case S200_OUTDOOR:
 				chargerControlSend[0]=0;
 				chargerControlSend[1]=0;
@@ -222,7 +222,7 @@ void RobotDataTransmitTask(void* param)
 		candev->sendStd(0x185,chargerControlSend,8);
 		
 		
-		/* 延迟指定频率 */
+		/* Delay the specified frequency */
 		vTaskDelayUntil(&preTime,pdMS_TO_TICKS( (1.0f/(float)TaskFreq)*1000) );
 	}
 	

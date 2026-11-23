@@ -2,9 +2,9 @@
 #define __SYSTEM_H
 
 // Refer to all header files you need
-//引用所有需要用到的头文件
+//Reference all header files that need to be used
 #include "FreeRTOSConfig.h"
-//FreeRTOS相关头文件 
+//FreeRTOS related header files
 //FreeRTOS related header files
 #include "FreeRTOS.h"
 #include "stm32f4xx.h"
@@ -13,7 +13,7 @@
 #include "timers.h"
 #include "semphr.h"
 //The associated header file for the peripheral 
-//外设的相关头文件
+//Related header files of the peripheral
 #include "sys.h"
 #include "delay.h"
 #include "usart.h"
@@ -38,26 +38,26 @@
 #include "StepperMotor.h"
 
 //Is it an Ackermann car, or a differential car
-//是阿克曼结构小车，还是差速小车
+//Is it an Ackermann-structured chassis or a differential chassis?
 #define Omni 0
 #define Mec  0
 #define Diff 1
 
 //Motor speed control related parameters of the structure
-//电机速度控制相关参数结构体
+//Parameter structures related to motor speed control
 typedef struct  
 {
-	float Encoder;     //Read the real time speed of the motor by encoder //编码器数值，读取电机实时速度
-	float Encoder_Rpm;   //Encoder value, motor real-time speed, unit: rpm //编码器数值，电机实时速度，单位：rpm
-	float Control_Rpm;   //Control the target speed of the brushless motor //控制无刷电机的目标转速
-	float Motor_Pwm;   //Motor PWM value, control the real-time speed of the motor //电机PWM数值，控制电机实时速度
-	float Target;      //Control the target speed of the motor //电机目标速度值，控制电机目标速度
-	float Velocity_KP; //Speed control PID parameters //速度控制PID参数
-	float	Velocity_KI; //Speed control PID parameters //速度控制PID参数
+	float Encoder;     //Read the real-time speed of the motor by encoder //Encoder value, read motor real-time speed
+	float Encoder_Rpm;   //Encoder value, motor real-time speed, unit: rpm
+	float Control_Rpm;   //Control the target speed of the brushless motor // Control the target speed of the brushless motor
+	float Motor_Pwm;   //Motor PWM value, control the real-time speed of the motor // Motor PWM value, control the motor's real-time speed
+	float Target;      //Control the target speed of the motor // Motor target speed value, control motor target speed
+	float Velocity_KP; //Speed control PID parameters // Speed control PID parameters
+	float	Velocity_KI; //Speed control PID parameters // Speed control PID parameters
 }Motor_parameter;
 
 //Smoothed the speed of the three axes
-//平滑处理后的三轴速度
+//Smoothed three-axis speed
 typedef struct  
 {
 	float VX;
@@ -67,7 +67,7 @@ typedef struct
 
 /****** external variable definition. When system.h is referenced in other C files, 
         other C files can also use the variable defined by system.c           ******/
-/****** 外部变量定义，当其它c文件引用system.h时，也可以使用system.c定义的变量 ******/
+/****** External variable definitions: When other C files reference system.h, variables defined by system.c can also be used******/
 extern u8 Flag_Stop, Last_Flag_Stop;
 
 extern int Divisor_Mode;   
@@ -101,12 +101,12 @@ void Find_Charging_HardWare(void);
 
 void systemInit(void);
 
-/***Macros define***/ /***宏定义***/
+/***Macros define***/ /***Macro Definition***/
 //After starting the car (1000/100Hz =10) for seconds, it is allowed to control the car to move
-//开机(1000/100hz=10)秒后才允许控制小车进行运动
+//The car is only allowed to be controlled after turning on (1000/100Hz=10) seconds after startup
 #define CONTROL_DELAY		750
 //The number of robot types to determine the value of Divisor_Mode. There are currently 6 car types
-//机器人型号数量，决定Divisor_Mode的值，目前有6种小车类型
+//Number of robot models, which determines the value of the Divisor_Mode; currently, there are 6 types of cars
 #define CAR_NUMBER    7      
 #define RATE_1_HZ		  1
 #define RATE_5_HZ		  5
@@ -119,10 +119,10 @@ void systemInit(void);
 #define RATE_250_HZ 	250
 #define RATE_500_HZ 	500
 #define RATE_1000_HZ 	1000
-/***Macros define***/ /***宏定义***/
+/***Macros define***/ /***Macro Definition***/
 
 //C library function related header file
-//C库函数的相关头文件
+//Header files related to C library functions
 #include <stdio.h> 
 #include <stdint.h>
 #include <stdlib.h>

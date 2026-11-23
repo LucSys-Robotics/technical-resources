@@ -1,13 +1,13 @@
 /**
  * @file    reportErr_task.c
- * @brief   小车自检调试文件
+ * @brief Vehicle self-inspection and commissioning documents
  * @note LucSys Robotics distribution maintenance; original authorship not claimed
  * @date    2025-08-08
  * @version 1.0.0
  *
  * @details
- * - 本文件是小车调试相关内容，由任务 ReportErrTask 管理.当用户在串口或者蓝牙端输入 "LOG1~3"设置调试等级后，
- * 调试任务才会被触发，小车将自主上报报错信息，底盘的状态等内容.
+ * - This file is related to chassis debugging and is managed by the task ReportErrTask. When the user sets the debug level by entering "LOG1~3" on the serial port or Bluetooth end,
+ * The debugging task will be triggered, and the vehicle will autonomously report error information, chassis status, and other details.
  * @note
  * 
  * 
@@ -30,17 +30,17 @@
 #include "RobotControl_task.h"
 #include "AutoRecharge_task.h"
 
-//调试任务句柄
+//Debug task handles
 extern TaskHandle_t g_reportErrTaskHandle;
 
 
-// 通用错误信息映射表
+// Generic error-message mapping table
 typedef struct {
-    uint32_t errCode;         // 错误码
-    const char* errMessage;  // 错误信息
+    uint32_t errCode;         // Error code
+    const char* errMessage;  // Error information
 } ErrorMap;
 
-//小车的错误码以及对应的报错信息
+//Error codes of the chassis and corresponding error messages
 static const ErrorMap errorMap[] = {
     {errCode_LowPower,        "因小车电压过低，小车已失能\r\n"},
     {errCode_StopKeyEn,       "因急停开关被按下，小车已失能\r\n"},
@@ -54,23 +54,23 @@ static const ErrorMap errorMap[] = {
 };
 
 
-//伺服驱动器内部定义报错码
+//Error codes are defined internally on the servo drive
 enum{
-	DriverOverVol =          (1<<0), //驱动过压
-	DriverUnderVol =         (1<<1), //驱动欠压
-	ServoMotorOverCur =      (1<<2), //电机过流
-	ServoMotorOverLoad =     (1<<3), //电机过载
-	ServoMotorCurOverD =     (1<<4), //电流超差
-	ServoMotorEncoderOverD = (1<<5), //编码器超差
-	ServoMotorSpeedErr =     (1<<6), //速度超差
-	ServoMotorVolErr =       (1<<7), //参考电压出错
-	DrvierEEPROMErr =        (1<<8), //驱动器EEPROM读写错误
-	ServoMotorHALLErr =      (1<<9), //霍尔错误
-	ServoMotorOverTemp =     (1<<10), //电机超温
-	ServoMotorEncoderErr =   (1<<11)  //编码器错误
+	DriverOverVol =          (1<<0), //Driver overvoltage
+	DriverUnderVol =         (1<<1), //Driver undervoltage
+	ServoMotorOverCur =      (1<<2), //Motor overcurrent
+	ServoMotorOverLoad =     (1<<3), //Motor overload
+	ServoMotorCurOverD =     (1<<4), //Current deviation exceeds tolerance
+	ServoMotorEncoderOverD = (1<<5), //Encoder deviation
+	ServoMotorSpeedErr =     (1<<6), //Speed deviation exceeds tolerance
+	ServoMotorVolErr =       (1<<7), //Reference voltage error
+	DrvierEEPROMErr =        (1<<8), //Driver EEPROM read/write error
+	ServoMotorHALLErr =      (1<<9), //Hall sensor error
+	ServoMotorOverTemp =     (1<<10), //Motor overheating
+	ServoMotorEncoderErr =   (1<<11)  //Encoder error
 };
 
-//驱动器的错误码以及对应的报错信息
+//Driver error codes and corresponding messages
 static const ErrorMap ServoErrMap[] = {
     {DriverOverVol,          "驱动器过压\r\n"},
     {DriverUnderVol,         "驱动器欠压\r\n"},
@@ -87,7 +87,7 @@ static const ErrorMap ServoErrMap[] = {
 };
 
 
-//对外数据汇报的接口，用于调试
+//Interface for external data reporting, used for debugging
 static void report_interface(char* buffer,uint16_t size)
 {
 	for(uint32_t k=0;k<size;k+=2)
@@ -101,37 +101,37 @@ static void report_interface(char* buffer,uint16_t size)
 //	vTaskDelay( pdMS_TO_TICKS(10) );
 }
 
-//用于临时保存输出的数据
+//Used to temporarily store output data
 static char err_info[512] = { 0 };
 
 void ReportErrTask(void* param)
 {
 	
-	//调试等级
-	// 1:仅汇报小车失能的原因(APP或串口1,发送"LOG1"设置调试等级1)
-	// 2:显示小车以及自动回充相关信息(APP或串口1,发送"LOG2"设置调试等级2)
-	// 3:显示小车、自动回充、以及所有伺服驱动器的状态信息(APP或串口1,发送"LOG3"设置调试等级3)
-	// 因使用中文汇报,需要保证字符串和中文过渡时,始终保持偶数个数,以免APP或串口助手解析中文字符错误
+	//Debug level
+	// 1: Report only chassis disable reasons (send "LOG1" through the app or serial port 1 to set debug level 1)
+	// 2: Display information related to the car and automatic recharge (APP or serial port 1, send "LOG2" to set debug level 2)
+	// 3: Displays cart, automatic recharge, and status information of all servo drives (APP or serial port 1, send "LOG3" to set debug level 3)
+	// Since Chinese reporting is used, it is necessary to ensure that the string and Chinese transitions always maintain an even number to avoid errors in Chinese character parsing by the app or serial assistant
 	
 	while(1)
 	{
-		//阻塞等待任务通知
+		//Block waiting for task notification
 		ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 		
 		while( RobotControlParam.DebugLevel!=0 )
 		{
 			extern uint8_t Received_IP[4];       
 			extern uint8_t IP_Frame_Valid;   
-			//若小车有主动失能的情况,则优先进行原因提示
+			//If the vehicle is actively disabled, the cause will be given priority
 			const char* head = "{#\r\n";
 			const char* end = "}$";
-			// IP上报逻辑移植
-			if(IP_Frame_Valid)  // IP请求已关闭且IP帧有效
+			// IP reporting logic porting
+			if(IP_Frame_Valid)  // IP request is closed and IP frames are valid
 			{
-				// 第一步：发送统一的head（{#\r\n）
+				// Step 1: send the common header ({#\r\n)
 				HAL_UART_Transmit(&huart2,(uint8_t*)head,3,500);
 				vTaskDelay(2);
-				// 第二步：发送IP内容（仅保留核心信息，不带head/end）
+				// Step 2: Send IP content (retain only core information, no head/end)
 				sprintf(err_info,"IP:%d.%d.%d.%d\r\n", 
 						(uint8_t)Received_IP[0], 
 						(uint8_t)Received_IP[1], 
@@ -139,13 +139,13 @@ void ReportErrTask(void* param)
 						(uint8_t)Received_IP[3]);
 				report_interface(err_info, strlen(err_info));
 				vTaskDelay(2);
-				// 第三步：发送统一的end（}$）
+				// Step 3: Send a unified end(}$)
 				HAL_UART_Transmit(&huart2,(uint8_t*)end,2,500);
 				vTaskDelay(500);
 			}
-			else  // IP未知
+			else  // IP unknown
 			{
-				// 同样对齐格式：head + 内容 + end
+				// Align the format as well: head + content + end
 				HAL_UART_Transmit(&huart2,(uint8_t*)head,3,500);
 				vTaskDelay(2);
 				sprintf(err_info,"IP:unknow..\r\n");
@@ -179,14 +179,14 @@ void ReportErrTask(void* param)
 				if( RobotControlParam.DebugLevel==0 ) break;
 			}
 			else if( RobotControlParam.ErrNum==0 && RobotControlParam.DebugLevel == 1 )
-			{	//仅在调试等级为1时提示状态正常的情况
+			{	//Only when debug level 1 is indicated as normal
 				sprintf(err_info,"%s","{#\r\n小车使能状态正常}$");
 				report_interface(err_info,strlen(err_info));
 				vTaskDelay(3000);
 				if( RobotControlParam.DebugLevel==0 ) break;
 			}
 
-			//小车的详细自检参数汇报
+			//Detailed self-inspection parameter report for the chassis
 			if( RobotControlParam.DebugLevel > 1 )
 			{
 				HAL_UART_Transmit(&huart2,(uint8_t*)head,3,500);
@@ -194,7 +194,7 @@ void ReportErrTask(void* param)
 				sprintf(err_info,"小车状态\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//车型信息
+				//Model information
 				sprintf(err_info,"    当前车型：");
 				report_interface(err_info,strlen(err_info));
 				switch( RobotHardWareParam.CarType )
@@ -208,7 +208,7 @@ void ReportErrTask(void* param)
 				}
 				report_interface(err_info,strlen(err_info));
 				
-				//硬件版本信息
+				//Hardware version information
 				sprintf(err_info,"    C63A版本：");
 				report_interface(err_info,strlen(err_info));
 				if( get_HardWareVersion() == HW_1_0 )
@@ -217,16 +217,16 @@ void ReportErrTask(void* param)
 					sprintf(err_info,"V1.1\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//电压信息
+				//Voltage information
 				sprintf(err_info,"    当前电压：%.2f V",RobotControlParam.Vol);
 				size_t len = strlen(err_info);
 				if (len % 2 != 0) {
-					strcat(err_info, " \r\n"); // 如果长度为奇数，追加一个空格
+					strcat(err_info, " \r\n"); // If the length is odd, add a space
 				}
 				else strcat(err_info, "\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//急停开关信息
+				//Emergency stop switch information
 				sprintf(err_info,"    急停开关：");
 				report_interface(err_info,strlen(err_info));
 				if( RobotControlParam.Enkeystate == 0 )
@@ -235,7 +235,7 @@ void ReportErrTask(void* param)
 					sprintf(err_info,"弹起\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//使能状态信息
+				//Enable status information
 				sprintf(err_info,"    使能状态：");
 				report_interface(err_info,strlen(err_info));
 				if( RobotControlParam.en_flag == 1 )
@@ -244,12 +244,12 @@ void ReportErrTask(void* param)
 					sprintf(err_info,"失能，错误码：%d",RobotControlParam.ErrNum);
 				len = strlen(err_info);
 				if (len % 2 != 0) {
-					strcat(err_info, " \r\n"); // 如果长度为奇数，追加一个空格
+					strcat(err_info, " \r\n"); // If the length is odd, add a space
 				}
 				else strcat(err_info, "\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//驻车模式信息
+				//Parking mode information
 				sprintf(err_info,"    驻车模式：");
 				report_interface(err_info,strlen(err_info));
 				if( RobotControlParam.ParkingMode == 0 )
@@ -258,7 +258,7 @@ void ReportErrTask(void* param)
 					sprintf(err_info,"启用\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//IMU直线补偿
+				//IMU linear compensation
 				sprintf(err_info,"    IMU 直线补偿：");
 				report_interface(err_info,strlen(err_info));
 				if( RobotControlParam.ImuAssistedFlag == 0 )
@@ -267,7 +267,7 @@ void ReportErrTask(void* param)
 					sprintf(err_info,"启用\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//超声波避障信息
+				//Ultrasonic obstacle avoidance information
 				sprintf(err_info,"    超声波避障模式：");
 				report_interface(err_info,strlen(err_info));
 				if( RobotControlParam.RangerAvoidEN == 0 )
@@ -276,7 +276,7 @@ void ReportErrTask(void* param)
 					sprintf(err_info,"启用\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//自动回充模式
+				//Automatic recharge mode
 				sprintf(err_info,"    自动回充模式：");
 				report_interface(err_info,strlen(err_info));
 				if( RobotControlParam.ChargeMode == 0 )
@@ -285,7 +285,7 @@ void ReportErrTask(void* param)
 					sprintf(err_info,"启用\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//紧急模式
+				//Emergency mode
 				sprintf(err_info,"    紧急模式：");
 				report_interface(err_info,strlen(err_info));
 				if( RobotControlParam.EmergencyMode == 0 )
@@ -294,7 +294,7 @@ void ReportErrTask(void* param)
 					sprintf(err_info,"启用\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//控制状态
+				//Control status
 				sprintf(err_info,"    控制方式：");
 				report_interface(err_info,strlen(err_info));
 				switch( RobotControl_CMDsource )
@@ -327,7 +327,7 @@ void ReportErrTask(void* param)
 				}
 				else
 				{
-					//在线状态
+					//Online status
 					sprintf(err_info,"    在线状态：");
 					report_interface(err_info,strlen(err_info));
 					if( ChargeDev.online == 1 )
@@ -336,7 +336,7 @@ void ReportErrTask(void* param)
 						sprintf(err_info,"离线\r\n");
 					report_interface(err_info,strlen(err_info));
 					
-					//充电状态
+					//Charging status
 					sprintf(err_info,"    充电状态：");
 					report_interface(err_info,strlen(err_info));
 					if( ChargeDev.ChargingFlag==1 )
@@ -345,30 +345,30 @@ void ReportErrTask(void* param)
 						sprintf(err_info,"未充电\r\n");
 					report_interface(err_info,strlen(err_info));
 					
-					//电流值
+					//Current value
 					sprintf(err_info,"    测量电流值：%.2fA",(float)ChargeDev.ChargingCur/1000.0f);
 					len = strlen(err_info);
 					if (len % 2 != 0) {
-						strcat(err_info, " \r\n"); // 如果长度为奇数，追加一个空格
+						strcat(err_info, " \r\n"); // If the length is odd, add a space
 					}
 					else strcat(err_info, "\r\n");
 					report_interface(err_info,strlen(err_info));
 					
-					//电压值
+					//Voltage value
 					sprintf(err_info,"    测量电压值：%.2fV",ChargeDev.ChargingVol);
 					len = strlen(err_info);
 					if (len % 2 != 0) {
-						strcat(err_info, " \r\n"); // 如果长度为奇数，追加一个空格
+						strcat(err_info, " \r\n"); // If the length is odd, add a space
 					}
 					else strcat(err_info, "\r\n");
 					report_interface(err_info,strlen(err_info));
 					
-					//红外信号状态
+					//Infrared signal status
 					sprintf(err_info,"    红外信号状态：%d 个信号，%d %d %d %d ",ChargeDev.RedNum,
 						ChargeDev.L_A,ChargeDev.L_B,ChargeDev.R_B,ChargeDev.R_A);
 					len = strlen(err_info);
 					if (len % 2 != 0) {
-						strcat(err_info, " \r\n"); // 如果长度为奇数，追加一个空格
+						strcat(err_info, " \r\n"); // If the length is odd, add a space
 					}
 					else strcat(err_info, "\r\n");
 					report_interface(err_info,strlen(err_info));
@@ -380,7 +380,7 @@ void ReportErrTask(void* param)
 				if( RobotControlParam.DebugLevel==0 ) break;
 			}
 			
-			//最高调试等级,提示轮毂电机的所有状态
+			//Highest debugging level, indicating all status of the hub motor
 			if( RobotControlParam.DebugLevel > 2 )
 			{
 				for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
@@ -390,7 +390,7 @@ void ReportErrTask(void* param)
 					sprintf(err_info,"%2d号驱动器状态：\r\n",g_ServoDriveList[i]->NodeID);
 					report_interface(err_info,strlen(err_info));
 					
-					//离线时简化报错内容
+					//Simplified error content when offline
 					if( g_ServoDriveList[i]->onlineFlag==0 )
 					{
 						sprintf(err_info,"    驱动已离线\r\n");
@@ -407,7 +407,7 @@ void ReportErrTask(void* param)
 						sprintf(err_info,"    CAN 通信质量：%.2f%%",g_ServoDriveList[i]->comm_qua);
 						size_t len = strlen(err_info);
 						if (len % 2 != 0) {
-							strcat(err_info, " \r\n"); // 如果长度为奇数，追加一个空格
+							strcat(err_info, " \r\n"); // If the length is odd, add a space
 						}
 						else strcat(err_info, "\r\n");
 						report_interface(err_info,strlen(err_info));
@@ -436,7 +436,7 @@ void ReportErrTask(void* param)
 							sprintf(err_info,"无报错\r\n");
 						report_interface(err_info,strlen(err_info));
 						
-						//报错时显示报错内容
+						//Display error content when an error occurs
 						if( g_ServoDriveList[i]->errFlag==1 )
 						{
 							if( g_ServoDriveList[i]->LeftMotorErr!=0 )

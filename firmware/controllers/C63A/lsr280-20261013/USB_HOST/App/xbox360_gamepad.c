@@ -2,11 +2,11 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-//内部函数声明
+//Internal function declaration
 static void Xbox360_GamePad_SetVibration(uint8_t m1,uint8_t m2);
 static GamePadKeyStateType_t Xbox360_GetKeyState(uint8_t bit);
 
-//Xbox360游戏手柄
+//Xbox 360 game controller
 GamePadType_t Xbox360Gamepad = {
 	.LX = 127,
 	.LY = 127,
@@ -21,7 +21,7 @@ GamePadType_t Xbox360Gamepad = {
 };
 
 
-//按键回调函数
+//Button callback function
 __weak void Xbox360GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 {
 //	printf("keyid:%d\tevent:%d\r\n",keyid,event);
@@ -30,19 +30,19 @@ __weak void Xbox360GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t
 //		Xbox360Gamepad.SetVibration(255,0);
 }
 
-//按键值
+//Button value
 static uint16_t Xbox360_GamePad_KeyOriginalVal = 0;
 
-//震动数值
+//Vibration value
 volatile static uint8_t VibrationVal[2] = {0,0};
 
-//震动时间
+//Vibration duration
 volatile static uint32_t VibrationTimes = 0;
 
-//启动震动标志位
+//Start the vibration marker
 volatile static uint8_t vibrationFlag = 0;
 
-//非阻塞震动状态
+//Nonblocking vibration state
 #define XBOX360_VIBRATION_CMD_NONE   0U
 #define XBOX360_VIBRATION_CMD_START  1U
 #define XBOX360_VIBRATION_CMD_STOP   2U
@@ -50,7 +50,7 @@ volatile static uint8_t vibrationFlag = 0;
 #define XBOX360_VIBRATION_MAX_RETRY  3U
 #define XBOX360_VIBRATION_UPDATE_MS  50U
 
-//异步USB OUT必须使用静态缓冲区
+//Asynchronous USB OUT must use static buffers
 static uint8_t VibrationOutBuffer[8] = {0x00,0x08,0x00,0x00,0x00,0x00,0x00,0x00};
 
 static uint8_t VibrationOutBusy = 0;
@@ -61,7 +61,7 @@ static uint8_t VibrationLastVal[2] = {0,0};
 static uint32_t VibrationRetryTime = 0;
 static uint32_t VibrationLastSubmitTime = 0;
 
-//获取手柄键值状态函数
+//Get the handle key-value status function
 static GamePadKeyStateType_t Xbox360_GetKeyState(uint8_t bit)
 {
 	if( (Xbox360_GamePad_KeyOriginalVal>>bit)&0x01 )
@@ -70,8 +70,8 @@ static GamePadKeyStateType_t Xbox360_GetKeyState(uint8_t bit)
 		return GamePadKeyState_Release;
 }
 
-//设置手柄震动接口
-//这里只更新目标值，不允许在调用者任务中直接发送USB或等待
+//Set the handle vibration interface
+//Only update target values here; do not transmit USB data or wait directly in the caller's task
 static void Xbox360_GamePad_SetVibration(uint8_t m1,uint8_t m2)
 {
 	if( Xbox360Gamepad.Vib_EN == 0 ) return;
@@ -87,7 +87,7 @@ static void Xbox360_GamePad_SetVibration(uint8_t m1,uint8_t m2)
 }
 
 
-//摇杆值映射
+//Joystick value mapping
 static uint8_t map_joystick(uint8_t joystick) {
     if (joystick == 0) {
         return 127;
@@ -98,13 +98,13 @@ static uint8_t map_joystick(uint8_t joystick) {
     }
 }
 
-//16个手柄按键
+//16 controller buttons
 #define Xbox360_KEY_NUM 16 
 
-//定义按键检测事件的各个按键值
+//Defines the individual key values for key detection events
 static GamePad_CheckEventType_t Xbox360_GamePadKeyCheckEvent[Xbox360_KEY_NUM] = { 0 };
 
-//手柄重新接入时复位非阻塞震动状态
+//When the handle is reconnected, it resets to a non-blocking vibration state
 void Xbox360_GamePad_VibrationReset(void)
 {
 	VibrationVal[0] = 0;
@@ -131,7 +131,7 @@ void Xbox360_GamePad_VibrationReset(void)
 	VibrationOutBuffer[7] = 0x00;
 }
 
-//非阻塞震动后台处理
+//Nonblocking background vibration processing
 void Xbox360_GamePad_VibrationProcess(USBH_HandleTypeDef *phost)
 {
 	HID_HandleTypeDef *HID_Handle;
@@ -142,7 +142,7 @@ void Xbox360_GamePad_VibrationProcess(USBH_HandleTypeDef *phost)
 	HID_Handle = (HID_HandleTypeDef *) phost->pActiveClass->pData;
 	if( HID_Handle->OutPipe == 0U ) return;
 
-	//单次震动持续200ms，外部再次请求会更新时间
+	//Each vibration lasts 200ms; external re-requests will update the time
 	if( vibrationFlag != 0 &&
 		(xTaskGetTickCount() - VibrationTimes) > 200U )
 	{
@@ -151,7 +151,7 @@ void Xbox360_GamePad_VibrationProcess(USBH_HandleTypeDef *phost)
 		VibrationVal[1] = 0;
 	}
 
-	//上一笔OUT已经提交时必须等待完成，不能覆盖同一个Pipe
+	//When the previous OUT has already been submitted, it must wait for completion and cannot overwrite the same Pipe
 	if( VibrationOutBusy != 0 )
 	{
 		urb_state = USBH_LL_GetURBState(phost, HID_Handle->OutPipe);
@@ -199,7 +199,7 @@ void Xbox360_GamePad_VibrationProcess(USBH_HandleTypeDef *phost)
 		}
 	}
 
-	//失败后的命令保留，间隔4ms后重试
+	//Command retention after failure is retained and retried after a 4ms interval
 	if( VibrationOutCommand != XBOX360_VIBRATION_CMD_NONE )
 	{
 		if( (phost->Timer - VibrationRetryTime) < XBOX360_VIBRATION_RETRY_MS )
@@ -212,7 +212,7 @@ void Xbox360_GamePad_VibrationProcess(USBH_HandleTypeDef *phost)
 			 VibrationLastVal[0] != VibrationVal[0] ||
 			 VibrationLastVal[1] != VibrationVal[1]) )
 		{
-			//电机运行期间，力度最快每50ms更新一次
+			//During motor operation, the speed is updated as fast as every 50ms
 			if( VibrationMotorRunning != 0 &&
 				(phost->Timer - VibrationLastSubmitTime) < XBOX360_VIBRATION_UPDATE_MS )
 				return;
@@ -245,14 +245,14 @@ void Xbox360_GamePad_VibrationProcess(USBH_HandleTypeDef *phost)
 	VibrationLastSubmitTime = phost->Timer;
 }
 
-//Xbox360游戏手柄数据解码
+//Data decoding for Xbox 360 game controllers
 void Xbox360_gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,uint8_t datalen)
 {
 	(void)phost;
 	
 //	if( datalen!=Xbox360_GamePad_DataLen ) return;
 	
-	//模拟量行程
+	//Analog Travel
 	Xbox360Gamepad.LX = map_joystick(buffer[7]);
 	Xbox360Gamepad.LY = map_joystick(buffer[9]);
 	Xbox360Gamepad.RX = map_joystick(buffer[11]);
@@ -260,7 +260,7 @@ void Xbox360_gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,uint8_t da
 	Xbox360Gamepad.LT = buffer[4];
 	Xbox360Gamepad.RT = buffer[5];
 
-	/* 摇杆值范围
+	/* Joystick value range
 	      Y
 	     254
 	      ^
@@ -271,7 +271,7 @@ void Xbox360_gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,uint8_t da
 	      0
 	*/
 	
-	//15个按键值
+	//15 key values
 	Xbox360_GamePad_KeyOriginalVal = (uint16_t)buffer[3]<<8 | buffer[2];
 	
 	if( gamepad_brand == PS2_USB_Wiredless )
@@ -280,7 +280,7 @@ void Xbox360_gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,uint8_t da
 		else Xbox360_GamePad_KeyOriginalVal |= (1<<Xbox360_PaddingBit);
 	}
 		
-	//按键回调函数触发
+	//Button callback function triggered
 	for (uint8_t key = Xbox360KEY_UP; key <= Xbox360KEY_Y; key++) 
 	{
 		//if (key == Xbox360_PaddingBit) continue;
@@ -289,10 +289,10 @@ void Xbox360_gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,uint8_t da
 		
 		if (event == GamePadKeyEvent_NONE) continue;
 		
-		//触发回调函数
+		//Trigger callback function
 		Xbox360GamePad_KeyEvent_Callback(key,event);
 	}
 	
-	//震动由USB Host后台调用Xbox360_GamePad_VibrationProcess处理
+	//USB Host calls Xbox360_GamePad_VibrationProcess in the background to process vibration
 }
 

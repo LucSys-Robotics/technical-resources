@@ -1,0 +1,5 @@
+HISTORICAL SOURCE CHANGELOG
+Translated from the supplied version history. Entries describe changes in the source branch, not verified behavior or fitted equipment on every delivered robot.
+
+2026.10.13
+Initial LSR280 chassis release.

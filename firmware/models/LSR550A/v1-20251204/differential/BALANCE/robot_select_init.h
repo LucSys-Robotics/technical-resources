@@ -4,25 +4,25 @@
 #include "system.h"
 
 //Parameter structure of robot
-//机器人参数结构体
+//Robot parameter structure
 typedef struct  
 {
-  float WheelSpacing;      //Wheelspacing, Mec_Car is half wheelspacing //轮距 麦轮车为半轮距
-  float AxleSpacing;       //Axlespacing, Mec_Car is half axlespacing //轴距 麦轮车为半轴距	
-  int   GearRatio;         //Motor_gear_ratio //电机减速比
-  int   EncoderAccuracy;   //Number_of_encoder_lines //编码器精度(编码器线数)
-  float WheelDiameter;     //Diameter of driving wheel //主动轮直径	
-  float OmniTurnRadiaus;   //Rotation radius of omnidirectional trolley //全向轮小车旋转半径
+  float WheelSpacing;      //Wheelspacing, Mec_Car is half wheelspacing // Wheel spacing, for mecanum car it's half wheel spacing
+  float AxleSpacing;       //Axlespacing, Mec_Car is half axlespacing // Wheelbase Wheat wheel carts have half axles
+  int   GearRatio;         //Motor_gear_ratio // Motor reduction ratio
+  int   EncoderAccuracy;   //Number_of_encoder_lines // Encoder accuracy (number of encoder lines)
+  float WheelDiameter;     //Diameter of driving wheel // Diameter of the driving wheel
+  float OmniTurnRadiaus;   //Rotation radius of omnidirectional chassis // Rotation radius of omnidirectional chassis
 }Robot_Parament_InitTypeDef;
 
 
-//Wheel_axlespacing //轴距
+//Wheel_axlespacing // Axle distance
 #define   SENIOR_AKM_axlespacing           0.320f 
 #define   TOP_AKM_DL_axlespacing           0.549f 
 #define   LONG_AKM_axlespacing             0.480f 
 #define   TOP_AKM_BS_axlespacing           0.503f 
 
-//Wheel_spacing //轮距
+//Wheel_spacing // Wheel spacing
 #define   SENIOR_AKM_wheelspacing          0.323f  
 #define   TOP_AKM_DL_wheelspacing          0.593f 
 #define   LONG_AKM_wheelspacing            0.413f 
@@ -37,28 +37,28 @@ typedef struct
 #define   FOUR_WHEEL_DIFF_Tyre_Diameter 0.215
 #define   TOP_AKM_BS_WHEEL_Diameter     0.180
 
-//half wheelspacing //半轮距
+//half wheelspacing // half wheelspace
 #define SENIOR_MEC_BS_wheelspacing 0.176 
 #define SENIOR_MEC_DL_wheelspacing 0.247 
 #define TOP_MEC_BS_wheelspacing    0.311
 #define TOP_MEC_DL_wheelspacing    0.295
 #define FLAGSHIP_MEC_DL_wheelspacing  0.285
 #define FLAGSHIP_MEC_BS_wheelspacing  0.292
-#define TOP_MEC_DL_wheelspacing_Customized    0.446 //Custom size //定制尺寸
-#define Senior_MEC_DL_wheelspacing_Customized 0.3   //Custom size //定制尺寸
+#define TOP_MEC_DL_wheelspacing_Customized    0.446 //Custom size // Custom size
+#define Senior_MEC_DL_wheelspacing_Customized 0.3   //Custom size // Custom size
 
-//half axlespacing //半轴距
+//half axlespacing // Half wheelbase
 #define SENIOR_MEC_BS_axlespacing 0.156
 #define SENIOR_MEC_DL_axlespacing 0.214 
 #define TOP_MEC_BS_axlespacing    0.308
 #define TOP_MEC_DL_axlespacing    0.201
 #define FLAGSHIP_MEC_DL_axlespacing 0.178
 #define FLAGSHIP_MEC_BS_axlespacing 0.178
-#define TOP_MEC_DL_axlespacing_Customized     0.401 //Custom size //定制尺寸
-#define Senior_MEC_DL_axlespacing_Customized  0.24  //Custom size //定制尺寸
+#define TOP_MEC_DL_axlespacing_Customized     0.401 //Custom size // Custom size
+#define Senior_MEC_DL_axlespacing_Customized  0.24  //Custom size // Custom size
 
 //Motor_gear_ratio
-//电机减速比
+//Motor reduction ratio
 #define   MD36N_5_18  5.18f
 #define   MD36N_27    27
 #define   MD36N_51    51
@@ -67,12 +67,12 @@ typedef struct
 #define   MD60N_47    47
 
 //Number_of_encoder_lines
-//编码器精度
+//Encoder accuracy
 #define		Photoelectric_500 500
 #define	  Hall_13 					13
 
 //Mecanum wheel tire diameter series
-//麦轮轮胎直径
+//Mecanum tire diameter
 #define		Mecanum_60  0.060f
 #define		Mecanum_75  0.075f
 #define		Mecanum_100 0.100f
@@ -80,7 +80,7 @@ typedef struct
 #define		Mecanum_152 0.152f
  
 //Omni wheel tire diameter series
-//轮径全向轮直径系列
+//Omni-wheel diameter series
 #define	  FullDirecion_75  0.075
 #define	  FullDirecion_127 0.127
 #define	  FullDirecion_152 0.152
@@ -88,19 +88,19 @@ typedef struct
 #define	  FullDirecion_217 0.217
 
 //Rotation radius of omnidirectional trolley
-//全向轮小车旋转半径
+//Radius of rotation of the omnidirectional wheel cart
 #define   Omni_Turn_Radiaus_164 0.164
-#define   Omni_Turn_Radiaus_180 0.160 //修正为160
-#define   Omni_Turn_Radiaus_290 0.280 //修正为280
+#define   Omni_Turn_Radiaus_180 0.160 //Revised to 160
+#define   Omni_Turn_Radiaus_290 0.280 //Revised to 280
 
 //The encoder octave depends on the encoder initialization Settings
-//编码器倍频数，取决于编码器初始化设置
+//The number of encoder multipliers, depending on the encoder initialization settings
 #define   EncoderMultiples 4
 //Encoder data reading frequency
-//编码器数据读取频率
+//Encoder data read frequency
 #define CONTROL_FREQUENCY 100
 
-//#define PI 3.1415f  //PI //圆周率
+//#define PI 3.1415f //PI //Pi
 
 void Robot_Select(void);
 #if Mec

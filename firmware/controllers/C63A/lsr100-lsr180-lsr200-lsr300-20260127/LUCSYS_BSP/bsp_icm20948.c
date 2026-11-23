@@ -1,109 +1,109 @@
 #include "bsp_icm20948.h"
 
-//ICM20948¼Ä´æÆ÷
+//ICM20948 Registers
 #include "icm20948_reg.h"
 
-//imuÐèÒªiicÖ§³Ö°ü
+//imu requires iic support package
 #include "bsp_siic.h"
 
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
 
-//ÓÃÓÚ´æ·ÅIMUÊý¾Ý
+//Used to store IMU data
 IMU_DATA_t axis_9Val = { 0 };      
 IMU_DATA_t axis_9ValOri = { 0 };  
 ATTITUDE_DATA_t AttitudeVal = { 0 };
 
 static uint8_t ICM20948_Init(void)
 {
-	pIICInterface_t iicdev = &UserIMU_sIICDev;//³õÊ¼»¯iicÉè±¸
+	pIICInterface_t iicdev = &UserIMU_sIICDev;//Initialize the IIC device
 	
-	IIC_Status_t check_state = IIC_OK;//¼ì²é³õÊ¼»¯²½ÖèÊÇ·ñ³ö´í
+	IIC_Status_t check_state = IIC_OK;//Check if the initialization step is error
 	
 	uint8_t writebuf = 0;
 	
-	//Ñ¡Ôñbank0
+	//Select bank0
 	writebuf = REG_VAL_SELECT_BANK_0;
 	check_state += iicdev -> write_reg(&iicdev->iic_io,ICM20948_DEV<<1,REG_BANK_SEL,&writebuf,1,500);
 	
-	//·ÃÎÊicm20948 WHO AM I¼Ä´æÆ÷,¼ì²éÉè±¸ÊÇ·ñÕýÈ·
+	//Access the icm20948 WHO AM I register and check if the device is correct
 	check_state += iicdev -> read_reg(&iicdev->iic_io,ICM20948_DEV<<1,WHO_AM_I,&writebuf,1,500);
-	if( 0xEA != writebuf ) return 1;//Êý¾Ý´íÎó
+	if( 0xEA != writebuf ) return 1;//Data error
 	
-	//²Ù×÷PWR1¸´Î»icm20948
+	//Operate PWR1 to reset ICM20948
 	writebuf = (1<<7);
 	check_state += iicdev -> write_reg(&iicdev->iic_io,ICM20948_DEV<<1,PWR_MGMT_1,&writebuf,1,500);
-	iicdev -> delay_ms(100); //ÑÓ³ÙµÈ´ý¸´Î»Íê±Ï
+	iicdev -> delay_ms(100); //Delay waiting for the reset to complete
 	
-	//ÅäÖÃuser_ctrl
-	// ²»¿ªÆôdmp: 0<<7
-	// ²»¿ªÆôfifo: 0<<6
-	// ²»¿ªÆôicm20948ÄÚ²¿µÄiic¶ÁÈ¡Êý¾Ý 0<<5
-	// ²»¸´Î»´Ó»úiic£º0 << 4
-	// ²»¸´Î»dmp    : 0<<3
-	// ²»¸´Î»sramÄ£¿é£º0 << 2
-	// ²»¸´Î»iicÖ÷»úÃþ£º0 << 1
+	//Configure user_ctrl
+	// DMP not enabled: 0<<7
+	// FIFO not enabled: 0<<6
+	// Do not enable the internal IIC reading of ICM20948 0<<5
+	// Non-reset slave IIC: 0 << 4
+	// No reset DMP: 0<<3
+	// Do not reset SRAM modules: 0 << 2
+	// No reset of the IIC host: 0 << 1
 	writebuf = 0x00;
 	check_state += iicdev -> write_reg(&iicdev->iic_io,ICM20948_DEV<<1,USER_CTRL,&writebuf,1,500);
 	
-	//¹Ø±ÕµÍ¹¦ºÄÄ£Ê½,Ê¹ÄÜÎÂ¶È´«¸ÐÆ÷,ÉèÖÃ×Ô¶¯Ñ¡Ôñ×î¼ÑÊ±ÖÓÔ´
+	//Turn off low power mode, enable temperature sensor, and set automatic selection of the optimal clock source
 	writebuf = 0x01;
 	check_state += iicdev -> write_reg(&iicdev->iic_io,ICM20948_DEV<<1,PWR_MGMT_1,&writebuf,1,100);
 	
-	//Ñ¡Ôñbank2
+	//Select bank2
 	writebuf = REG_VAL_SELECT_BANK_2;
 	check_state += iicdev -> write_reg(&iicdev->iic_io,ICM20948_DEV<<1,REG_BANK_SEL,&writebuf,1,100);
 	
-	//ÉèÖÃÆµÂÊGYROÊý¾ÝÊä³öµÄÆµÂÊ£¨ODR:output data rate = 1.1KHz / 1 + ÅäÖÃÖµ £©
-	writebuf = 0x07; //ÉèÖÃGYROµÄ²ÉÑùÆµÂÊÎª1.1KHz£¨ÐèÒªFCHOICE=1(ÆôÓÃÂË²¨¹¦ÄÜ),DLPF_CFG=1~7(ÅäÖÃÂË²¨µÄÐÅÏ¢)£©
+	//Set frequency The frequency of GYRO data output (ODR: output data rate = 1.1KHz / 1 + configuration value)
+	writebuf = 0x07; //Set GYRO's sampling frequency to 1.1KHz (requires FCHOICE=1 to enable filtering, DLPF_CFG=1~7 to configure filtering information)
 	check_state += iicdev -> write_reg(&iicdev->iic_io,ICM20948_DEV<<1,GYRO_SMPLRT_DIV,&writebuf,1,100);
 	
-	//ÅäÖÃ GYRO_CONFIG_1£¬ÅäÖÃDLPCFG£¬ÅäÖÃÁ¿³Ì£¬ÅäÖÃDLFP
-	//FS_SEL[2:1]ÍÓÂÝÒÇÁ¿³ÌÅäÖÃ£º£¨3<<1£ºÕý¸º2000dps 2<<1:Õý¸º1000dps 1<<1:Õý¸º500dps 0<<1:Õý¸º250dps£©
-	//FCHOICE[0]ÂË²¨Ê¹ÄÜ £º 1 --> ¿ªÆôÂË²¨
-	//DLPFCFG[5:3]ÂË²¨Çé¿öÅäÖÃ£º6 £¨3DB BW:11.6Hz NBW:17.8Hz£©3DB BW:ÆµÂÊÔ½¸ß£¬ÍÓÂÝÒÇÏìÓ¦ËÙ¶ÈÔ½¿ì£¬µ«Ôëµã¿ÉÄÜÔö¼Ó NBW:ÆµÂÊÔ½µÍ£¬Êý¾ÝÔ½ÎÈ¶¨
+	//Configure GYRO_CONFIG_1, DLPCFG, range and DLFP
+	//FS_SEL[2:1] Gyroscope range setting: (3<<1: ¡À2000dps 2<<1: ¡À1000dps 1<<1: ¡À500dps 0<<1: ¡À250dps)
+	//FCHOICE[0] filter enable: 1 --> enable filtering
+	//DLPFCFG [5:3] Filtering configuration: 6 (3DB BW: 11.6Hz NBW: 17.8Hz) 3DB BW: higher frequency, faster gyroscope response, but noise may increase. NBW: lower frequency, more stable data
 	writebuf = (1<<1) | (1<<0) | (6<<3);
 	check_state += iicdev -> write_reg(&iicdev->iic_io,ICM20948_DEV<<1,GYRO_CONFIG_1,&writebuf,1,100);
 	
-	//ÉèÖÃÆµÂÊACCEL_SMPLRT_DIV_2(Êä³öÆµÂÊÅäÖÃ£º1.125kHz/(1+ÅäÖÃÖµ))
+	//Set frequency ACCEL_SMPLRT_DIV_2 (output frequency configuration: 1.125kHz / (1 + configuration value))
 	writebuf = 0x07;
 	check_state += iicdev -> write_reg(&iicdev->iic_io,ICM20948_DEV<<1,ACCEL_SMPLRT_DIV_2,&writebuf,1,100);
 	
-	//ACCEL_DLPFCFG[5:3]ÂË²¨ÅäÖÃ£º
-	//FS_SEL[2:1]¼ÓËÙ¶ÈÁ¿³Ì£º£¨3<<1:Õý¸º16g 2<<1:Õý¸º8g 1<<1:Õý¸º4g 0<<1:Õý¸º2g£©
-	//FCHOICE[0] ÂË²¨Ê¹ÄÜÎ»:
+	//ACCEL_DLPFCFG [5:3] Filter Configuration:
+	//FS_SEL[2:1] Accelerometer range: (3<<1: ¡À16g 2<<1: ¡À8g 1<<1: ¡À4g 0<<1: ¡À2g)
+	//FCHOICE[0] filter enable bit:
 	writebuf = (0<<1) | (1<<0) | (6<<3);
 	check_state += iicdev -> write_reg(&iicdev->iic_io,ICM20948_DEV<<1,ACCEL_CONFIG,&writebuf,1,100);
 	
-	//Ñ¡Ôñ»Øbank0
+	//Switch back to bank0
 	writebuf = REG_VAL_SELECT_BANK_0;
 	check_state += iicdev -> write_reg(&iicdev->iic_io,ICM20948_DEV<<1,REG_BANK_SEL,&writebuf,1,100);
 	
-	//ÅäÖÃ´ÅÁ¦¼Æ
+	//Configure magnetometer
 	
-	//Æô¶¯icm20948µÄbypass ÅÔÂ·Ä£Ê½£¬ÔÊÐíÖ±½ÓÍ¨¹ýIIC×ÜÏß·ÃÎÊ´ÅÁ¦¼Æ¶ø²»ÐèÒª¾­¹ýicm20948
+	//Initiates the ICM20948's bypass mode, allowing direct access to the magnetometer via the IIC bus without passing through the ICM20948
 	writebuf = (1<<1);
 	check_state += iicdev -> write_reg(&iicdev->iic_io,ICM20948_DEV<<1,INT_PIN_CFG,&writebuf,1,100);
 	
-	//·ÃÎÊ´ÅÁ¦¼Æ£¬È·ÈÏÉè±¸ÊÇ·ñÕýÈ·
+	//Access the magnetometer to confirm the device is correct
 	check_state += iicdev -> read_reg(&iicdev->iic_io,AK09916_DEV<<1,WIA,&writebuf,1,100);
-	if( 0x09 != writebuf ) return 1;//Êý¾Ý´íÎó·µ»Ø
+	if( 0x09 != writebuf ) return 1;//Data error returned
 	
-	/* ÅäÖÃ´ÅÁ¦¼ÆÊä³öÆµÂÊ
+	/* Configure magnetometer output frequency
 	doc:
-	0:¹Ø±ÕÊä³ö
-	1<<0:µ¥´Î²âÁ¿Ä£Ê½,²âÁ¿ºó×Ô¶¯»Øµ½¹Ø±ÕÊä³öÄ£Ê½
-	1<<1:Á¬Ðø²âÁ¿Ä£Ê½1£¬ÆµÂÊ10Hz
-	1<<2:Á¬Ðø²âÁ¿Ä£Ê½2£¬ÆµÂÊ20Hz
-	(1<<2)|(1<<1):Á¬Ðø²âÁ¿Ä£Ê½3£¬ÆµÂÊ50Hz
-	1<<3:Á¬Ðø²âÁ¿Ä£Ê½4£¬ÆµÂÊ100Hz
+	0: Turn off output
+	1<<0: Single measurement mode, automatically returns to closed output mode after measurement
+	1<<1: Continuous measurement mode 1, frequency 10Hz
+	1<<2: Continuous measurement mode 2, frequency 20Hz
+	(1<<2)| (1<<1): Continuous measurement mode 3, frequency 50Hz
+	1<<3: Continuous measurement mode 4, frequency 100Hz
 	*/
-	writebuf = (1<<3);//ÅäÖÃ´ÅÁ¦¼ÆÎª100hzÊä³ö
+	writebuf = (1<<3);//Configure magnetometer for 100Hz output
 	check_state += iicdev -> write_reg(&iicdev->iic_io,AK09916_DEV<<1,CNTL2,&writebuf,1,100);
-	//´ÅÁ¦¼ÆÁ¿³ÌËµÃ÷£º ¡À4900 uT , ·Ö±æÂÊ16Î»
+	//Magnetometer Range Description: ¡À4900 uT, 16-bit resolution
 	
-	//³õÊ¼»¯¹ý³ÌÖÐÓÐ´íÎó
+	//Error during initialization
 	if( 0 != check_state ) return 1;
 	
 	return 0;
@@ -111,74 +111,74 @@ static uint8_t ICM20948_Init(void)
 
 static uint8_t ICM20948_DeInit(void)
 {
-	pIICInterface_t iicdev = &UserIMU_sIICDev;//³õÊ¼»¯iicÉè±¸
+	pIICInterface_t iicdev = &UserIMU_sIICDev;//Initialize the IIC device
 	
-	IIC_Status_t check_state = IIC_OK;//¼ì²é³õÊ¼»¯²½ÖèÊÇ·ñ³ö´í
+	IIC_Status_t check_state = IIC_OK;//Check if the initialization step is error
 	
 	uint8_t writebuf = 0;
 	
-	//Ñ¡Ôñbank0
+	//Select bank0
 	writebuf = REG_VAL_SELECT_BANK_0;
 	check_state += iicdev -> write_reg(&iicdev->iic_io,ICM20948_DEV<<1,REG_BANK_SEL,&writebuf,1,500);
 	
-	//·ÃÎÊicm20948 WHO AM I¼Ä´æÆ÷,¼ì²éÉè±¸ÊÇ·ñÕýÈ·
+	//Access the icm20948 WHO AM I register and check if the device is correct
 	check_state += iicdev -> read_reg(&iicdev->iic_io,ICM20948_DEV<<1,WHO_AM_I,&writebuf,1,500);
-	if( 0xEA != writebuf ) return 1;//Êý¾Ý´íÎó
+	if( 0xEA != writebuf ) return 1;//Data error
 	
-	//ÉèÖÃicm20948½øÈëË¯ÃßÄ£Ê½
+	//Set the icm20948 to sleep mode
 	writebuf = (1<<6);
 	check_state += iicdev -> write_reg(&iicdev->iic_io,ICM20948_DEV<<1,PWR_MGMT_1,&writebuf,1,500);
 	
-	//¹ý³ÌÖÐÓÐ´íÎó
+	//An error occurred during the process
 	if( 0 != check_state ) return 1;
 	
 	return 0;
 }
 
 
-static IMU_DATA_t ZeroPoint = { 0 };//Áãµã
+static IMU_DATA_t ZeroPoint = { 0 };//Zero point
 static ATTITUDE_DATA_t ZeroAttitude = { 0 };
 
-//¸¨Öú±êÁãÊ¹ÓÃµÄÄÚ²¿Êý¾Ý
+//Internal data for auxiliary zero calibration
 static IMU_DATA_t priv_imu = { 0 };
 static ATTITUDE_DATA_t priv_attit = { 0 };
 
 static void ImuUpdate(IMU_DATA_t *data,IMU_DATA_t *ori)
 {
-	pIICInterface_t iicdev = &UserIMU_sIICDev;//Ö¸¶¨iicÉè±¸
+	pIICInterface_t iicdev = &UserIMU_sIICDev;//Specify the IIC device
 	
-	//»ñµÃ6ÖáµÄÊý¾ÝÔ­Ê¼Öµ
+	//Obtain the raw values of the 6-axis data
 	uint8_t tmpbuf[12];
 	iicdev -> read_reg(&iicdev->iic_io,ICM20948_DEV<<1,ACCEL_XOUT_H,tmpbuf,12,100);
 	
-	//»ñµÃ¼ÓËÙ¶È3ÖáÔ­Ê¼Öµ
+	//Obtain the original value of acceleration along the 3 axes
 	data->accel.x = (short)(tmpbuf[0]<<8 | tmpbuf[1]);
 	data->accel.y = (short)(tmpbuf[2]<<8 | tmpbuf[3]);
 	data->accel.z = (short)(tmpbuf[4]<<8 | tmpbuf[5]);
 	
-	//»ñµÃ½ÇËÙ¶È3ÖáÔ­Ê¼Öµ
+	//Obtain the original angular velocity value on 3 axes
 	data->gyro.x = (short)(tmpbuf[6]<<8 | tmpbuf[7]);
 	data->gyro.y = (short)(tmpbuf[8]<<8 | tmpbuf[9]);
 	data->gyro.z = (short)(tmpbuf[10]<<8 | tmpbuf[11]);
 	
-	//»ñµÃ3Öá´ÅÁ¦¼ÆÊý¾Ý
-	uint8_t magnbuf[8]; //byte[6]×÷·Ï,µØÖ·0x17ÎÞÊý¾Ý¡£byte[7]Îª¼Ä´æÆ÷ST2,µØÖ·0x18. ÎªÁË¼Ó¿ìÐ§ÂÊÊ¹ÓÃÁ¬Ðø·½Ê½¶ÁÈ¡
-	iicdev->read_reg(&iicdev->iic_io,AK09916_DEV<<1,HXL,magnbuf,8,100);//¶ÁÈ¡´ÅÁ¦¼ÆÊý¾Ý
+	//Obtain 3-axis magnetometer data
+	uint8_t magnbuf[8]; //byte[6] is invalid, address 0x17 no data. byte[7] is register ST2, address 0x18. To improve efficiency, continuous reading is used
+	iicdev->read_reg(&iicdev->iic_io,AK09916_DEV<<1,HXL,magnbuf,8,100);//Read magnetometer data
 	
 	uint8_t mangbit = (magnbuf[7]>>3)&0x01;
 	if( 0 == mangbit ) 
 	{
-		//»ñµÃ´ÅÁ¦¼Æ3ÖáÔ­Ê¼Öµ
+		//Obtain the original values of the magnetometer on the 3-axis axis
 		data->magn.x = (short)(magnbuf[1]<<8 | magnbuf[0]);
 		data->magn.y = (short)(magnbuf[3]<<8 | magnbuf[2]);
 		data->magn.z = (short)(magnbuf[5]<<8 | magnbuf[4]);
 	}
 	else
 	{
-		//Êý¾Ý²»¿É¿¿,²»´¦Àí,±£ÁôÉÏÒ»´ÎµÄÊý¾Ý
+		//Data is unreliable, not processed, and the previous data is retained
 	}
 	
-	//Áãµã±ê¶¨
+	//Zero calibration
 	data->gyro.x -= ZeroPoint.gyro.x; 
 	data->gyro.y -= ZeroPoint.gyro.y;
 	data->gyro.z -= ZeroPoint.gyro.z;
@@ -191,29 +191,29 @@ static void ImuUpdate(IMU_DATA_t *data,IMU_DATA_t *ori)
 //	data->magn.y -= ZeroPoint.magn.y;
 //	data->magn.z -= ZeroPoint.magn.z;
 	
-	//¸´ÖÆÒ»·ÝÔ­Ê¼Êý¾Ý
+	//Copy a copy of the original data
 	memcpy(ori,data,sizeof(IMU_DATA_t));
 	
-	//Ë½ÓÐÊý¾Ý¿½±´
+	//Private data copy
 	memcpy(&priv_imu,data,sizeof(IMU_DATA_t));
 	
-	//½«µ¥Î»×ª»»Îª m/s^2¡£ Á¿³Ì Õý¸º2g£¬·Ö±æÂÊ 2^16
+	//Convert units to m/s^2. Range: plus or minus 2g, resolution 2^16
 	data->accel.x *= 0.00059814453125f;
 	data->accel.y *= 0.00059814453125f;
 	data->accel.z *= 0.00059814453125f;
 	
-	//½«µ¥Î»×ª»»Îª rad/s¡£ Á¿³Ì Õý¸º500dps£¬·Ö±æÂÊ 2^16
-	data->gyro.x *= 0.0152587890625f;//µ¥Î»dps
+	//Convert units to rad/s. Range: ¡À500 dps, resolution 2^16
+	data->gyro.x *= 0.0152587890625f;//Unit dps
 	data->gyro.y *= 0.0152587890625f;
 	data->gyro.z *= 0.0152587890625f;
 	
-	data->gyro.x *= 0.01745329252f;//µ¥Î»rad/s
+	data->gyro.x *= 0.01745329252f;//unit: rad/s
 	data->gyro.y *= 0.01745329252f;
 	data->gyro.z *= 0.01745329252f;
 	
 	if( mangbit==0 )
 	{
-		//½«µ¥Î»×ª»»ÎªuT¡£Á¿³ÌÕý¸º4900uT£¬·Ö±æÂÊ 2^16
+		//Convert units to uT. Range: ¡À4900 uT, resolution 2^16
 		data->magn.x *= 0.1495361328125f;
 		data->magn.y *= 0.1495361328125f;
 		data->magn.z *= 0.1495361328125f;
@@ -222,10 +222,10 @@ static void ImuUpdate(IMU_DATA_t *data,IMU_DATA_t *ori)
 
 }
 
-//±ê¶¨ÁãµãµÄ·½·¨
+//Methods for calibrating zeros
 static void setZeroPoint_axis(void) 
 {
-	//ÏÈÏû³ýµ±Ç°µÄÁãµãÊý¾Ý
+	//Clear the current zero data first
 	priv_imu.gyro.x += ZeroPoint.gyro.x;
 	priv_imu.gyro.y += ZeroPoint.gyro.y;
 	priv_imu.gyro.z += ZeroPoint.gyro.z;
@@ -233,7 +233,7 @@ static void setZeroPoint_axis(void)
 	priv_imu.accel.x += ZeroPoint.accel.x;
 	priv_imu.accel.y += ZeroPoint.accel.y;
 	priv_imu.accel.z += ZeroPoint.accel.z;
-	priv_imu.accel.z -= 16384; //16384Îª¡À2gÁ¿³ÌÏÂµÄ9.8 m/s^2
+	priv_imu.accel.z -= 16384; //16384 corresponds to 9.8 m/s^2 at ¡À2g scale
 	
 	memcpy(&ZeroPoint,&priv_imu,sizeof(IMU_DATA_t));
 }
@@ -246,10 +246,10 @@ static void setZeroPoint_attitude(void)
 	memcpy(&ZeroAttitude,&priv_attit,sizeof(ATTITUDE_DATA_t));
 }
 
-static const float Kp = 0.8;   // ±ÈÀýÏµÊý
-static const float Ki = 0.0001; // »ý·ÖÏµÊý
+static const float Kp = 0.8;   // Proportionality coefficient
+static const float Ki = 0.0001; // Integral coefficients
 
-//¿ìËÙ¼ÆËã 1/sqrt(x)
+//Quick calculation 1/sqrt(x)
 static float Q_rsqrt(float number)
 {
 	long i;
@@ -261,31 +261,31 @@ static float Q_rsqrt(float number)
 	i  = * ( long * ) &y;                      
 	i  = 0x5f3759df - ( i >> 1 );               
 	y  = * ( float * ) &i;
-	y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration £¨µÚÒ»´ÎÅ£¶Ùµü´ú£©
+	y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
 	return y;
 } 
 
-static void attitudeUpdate(IMU_DATA_t imudata, ATTITUDE_DATA_t *attitude) // ÏÔÊ¾»¥²¹ÂË²¨£¨ÍÓÂÝÒÇ + ¼ÓËÙ¶È¼Æ£©
+static void attitudeUpdate(IMU_DATA_t imudata, ATTITUDE_DATA_t *attitude) // Display complementary filtering (gyroscope + accelerometer)
 {
-    static float eInt[3] = {0}; // ³õÊ¼»¯ÀÛ¼ÆÎó²î
-    static float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f; // ³õÊ¼»¯ËÄÔªÊý
+    static float eInt[3] = {0}; // Initialize cumulative error
+    static float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f; // Initialize quaternions
     float norm;
     float vx, vy, vz;
-    float ex, ey, ez; // Îó²î±äÁ¿
+    float ex, ey, ez; // Error variable
 	float q0_t,q1_t,q2_t,q3_t;
 	
-	float halftime = 0.01f * 0.5f; // 10msµÄ²ÉÑùÖÜÆÚ
+	float halftime = 0.01f * 0.5f; // 10ms sampling cycle
 	
 	
-	// ¸¨Öú±äÁ¿£¨¼ò»¯±äÁ¿Ãû£©
-	float gx = imudata.gyro.x;  // ÈÆXÖáÐý×ªµÄ½ÇËÙ¶È(rad/s)
-	float gy = imudata.gyro.y;  // ÈÆYÖáÐý×ªµÄ½ÇËÙ¶È(rad/s)
-	float gz = imudata.gyro.z;  // ÈÆZÖáÐý×ªµÄ½ÇËÙ¶È(rad/s)
-	float ax = imudata.accel.x; // ÑØXÖáÒÆ¶¯µÄ¼ÓËÙ¶È(m¡¤s^-2)
-	float ay = imudata.accel.y; // ÑØYÖáÒÆ¶¯µÄ¼ÓËÙ¶È(m¡¤s^-2)
-	float az = imudata.accel.z; // ÑØZÖáÒÆ¶¯µÄ¼ÓËÙ¶È(m¡¤s^-2)
+	// Helper variables (shorter variable names)
+	float gx = imudata.gyro.x;  // Angular velocity (rad/s) rotating around the X-axis
+	float gy = imudata.gyro.y;  // Angular velocity (rad/s) of rotation around the Y-axis
+	float gz = imudata.gyro.z;  // Angular velocity around the Z-axis (rad/s)
+	float ax = imudata.accel.x; // Acceleration along the X-axis (m¡¤s^-2)
+	float ay = imudata.accel.y; // Acceleration along the Y-axis (m¡¤s^-2)
+	float az = imudata.accel.z; // Acceleration along the Z-axis (m¡¤s^-2)
 
-    // ¸¨Öú±äÁ¿£¨±ÜÃâÈß³¤µÄ¼ÆËã±í´ïÊ½£©
+    // Helper variables (avoid long calculation expressions)
     float q0q0 = q0 * q0;
     float q0q1 = q0 * q1;
     float q0q2 = q0 * q2;
@@ -297,33 +297,33 @@ static void attitudeUpdate(IMU_DATA_t imudata, ATTITUDE_DATA_t *attitude) // ÏÔÊ
     float q2q3 = q2 * q3;
     float q3q3 = q3 * q3;
 	
-    // ÌáÈ¡µÈÐ§Ðý×ª¾ØÕóÖÐµÄÖØÁ¦·ÖÁ¿ 
+    // Extract the gravity component from the equivalent rotation matrix
     vx = 2 * (q1q3 - q0q2);
     vy = 2 * (q0q1 + q2q3);
 	vz = 1-2*(q1q1+q2q2);
 	
-	//¼ÓËÙ¶È¼Æ¹éÒ»»¯
+	//Accelerometer normalization
 	norm = Q_rsqrt(ax * ax + ay * ay + az * az);
     ax *= norm;
     ay *= norm;
     az *= norm;
 
-    // ¼ÆËãÎó²î
+    // Calculation error
     ex = ay * vz - az * vy;
     ey = az * vx - ax * vz;
     ez = ax * vy - ay * vx;
 
-    // ÀÛ¼ÆÎó²î
+    // Cumulative error
     eInt[0] += ex;
     eInt[1] += ey;
     eInt[2] += ez;
 
-    // PI¿ØÖÆ
+    // PI control
     gx += Kp * ex + Ki * eInt[0];
     gy += Kp * ey + Ki * eInt[1];
     gz += Kp * ez + Ki * eInt[2];
 
-    // ¸üÐÂËÄÔªÊý
+    // Update quaternions
     q0_t =  (-q1 * gx - q2 * gy - q3 * gz) * halftime;
     q1_t =  ( q0 * gx + q2 * gz - q3 * gy) * halftime;
     q2_t =  ( q0 * gy - q1 * gz + q3 * gx) * halftime;
@@ -334,24 +334,24 @@ static void attitudeUpdate(IMU_DATA_t imudata, ATTITUDE_DATA_t *attitude) // ÏÔÊ
 	q2+=q2_t;
 	q3+=q3_t;
 	
-    // ¹éÒ»»¯£¨ËÄÔªÊý£©
+    // Normalization (quaternions)
     norm = Q_rsqrt(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
     q0 *= norm;
     q1 *= norm;
     q2 *= norm;
     q3 *= norm;
 
-	// ËÄÔªÊý×ª»»³ÉÅ·À­½Ç
+	// Convert quaternions to Euler angles
 	attitude -> roll  = atan2f(2 * q2 * q3 + 2 * q0 * q1, -2 * q1 * q1 - 2 * q2 * q2 + 1) * 57.296f;
 	attitude -> pitch = asin(-2 * q1 * q3 + 2 * q0 * q2) * 57.296f;
 	attitude -> yaw   = atan2(2 *(q1 * q2 + q0 * q3), q0 * q0 + q1 * q1 - q2 * q2 - q3 * q3) * 57.296f;
 
-	// ÁãµãÆ¯ÒÆ½ÃÕý
+	// Zero-drift correction
 	attitude -> roll  -= ZeroAttitude.roll ;
 	attitude -> pitch -= ZeroAttitude.pitch ;
 	attitude -> yaw   -= ZeroAttitude.yaw;
 	
-	//½Ç¶È¹éÒ»»¯
+	//Normalize angles
 	if( attitude->yaw > 180.0f )   attitude -> yaw -= 360.0f;
 	if( attitude->yaw < -180.0f )  attitude -> yaw += 360.0f;
 	
@@ -360,7 +360,7 @@ static void attitudeUpdate(IMU_DATA_t imudata, ATTITUDE_DATA_t *attitude) // ÏÔÊ
 }
 
 
-//Çý¶¯¹ÒÔØ
+//Attach driver
 IMUInterface_t UserICM20948 = {
 	.Init = ICM20948_Init,
 	.DeInit = ICM20948_DeInit,
@@ -371,51 +371,51 @@ IMUInterface_t UserICM20948 = {
 };
 
 
-#if 0 //1ÖÖÍ¨ÐÅ·½Ê½,½ö¹©²Î¿¼
-//¼ì²é´ÅÁ¦¼ÆµÄÉè±¸µØÖ·ÊÇ·ñÕýÈ·(·ÇbypassÄ£Ê½£¬½ö×÷ÎªÒ»ÖÖ·½Ê½²Î¿¼)
+#if 0 //One communication method, for reference only
+//Check whether the magnetometer's device address is correct (non-bypass mode, only for reference)
 uint8_t Check_AK09916_WHO_AM_I(void)
 {
-	pIICInterface_t iicdev = &UserII2Dev;//iicÉè±¸
+	pIICInterface_t iicdev = &UserII2Dev;//iic device
 	
 	uint8_t write_buf = 0;
 	
-	//Ñ¡Ôñbank3
+	//Select bank3
 	write_buf = REG_VAL_SELECT_BANK_3;
 	iicdev -> write_reg( ICM20948_DEV<<1,REG_BANK_SEL,&write_buf,1,100);
 	
-	//Ð´ÈëÒªÊ¹ÓÃicm20948È¥·ÃÎÊµÄÉè±¸µØÖ·
+	//Write the address of the device to be accessed using ICM20948
 	write_buf = AK09916_DEV | (1<<7);
 	iicdev -> write_reg( ICM20948_DEV<<1,I2C_SLV0_ADDR,&write_buf,1,100);
 	
-	//Ð´ÈëÒªÊ¹ÓÃicm20948È¥·ÃÎÊµÄ¼Ä´æÆ÷µØÖ·
+	//Write the address of the register to be accessed using icm20948
 	write_buf = WIA;
 	iicdev -> write_reg( ICM20948_DEV<<1,I2C_SLV0_REG,&write_buf,1,100);
 	
-	//Ê¹ÄÜ´Ó»ú·ÃÎÊ¹¦ÄÜ£¬²¢Ö¸¶¨¶ÁÈ¡¶àÉÙ×Ö½Ú
-	write_buf = (1<<7)|(1<<0);//Ê¹ÄÜ¶ÁÈ¡£¬¶ÁÈ¡2×Ö½Ú
+	//Enable slave access and specify how many bytes to read
+	write_buf = (1<<7)|(1<<0);//Enable read, read 2 bytes
 	iicdev -> write_reg( ICM20948_DEV<<1,I2C_SLV0_CTRL,&write_buf,1,100);
 	
-	//Ñ¡Ôñbank0
+	//Select bank0
 	write_buf = REG_VAL_SELECT_BANK_0; 
 	iicdev -> write_reg( ICM20948_DEV<<1,REG_BANK_SEL,&write_buf,1,100);
 	
-	//Ê¹ÄÜIIC MST
-	iicdev -> read_reg( ICM20948_DEV<<1,USER_CTRL,&write_buf,1,100 );//¶ÁÈ¡µ±Ç°Öµ
-	write_buf |= (1<<5);                                               //Ê¹ÄÜIIC MST,ÇÒ²»ÐÞ¸Ä¼Ä´æÆ÷µÄÆäËûÖµ
-	iicdev -> write_reg( ICM20948_DEV<<1,USER_CTRL,&write_buf,1,100);//Ð´Èë¼Ä´æÆ÷
+	//Enable IIC MST
+	iicdev -> read_reg( ICM20948_DEV<<1,USER_CTRL,&write_buf,1,100 );//Read the current value
+	write_buf |= (1<<5);                                               //Enable IIC MST without modifying other values in the registers
+	iicdev -> write_reg( ICM20948_DEV<<1,USER_CTRL,&write_buf,1,100);//Write register
 	
-	//µÈ´ý¶ÁÈ¡Êý¾Ý,²»ÑÓ³ÙÎÞ·¨µÃµ½Êý¾Ý(ÇëÊ¹ÓÃÊÊÓÃµÄÑÓ³Ù·½Ê½)
+	//Waiting to read data; no delay means data cannot be obtained (please use the applicable delay method)
 	//vTaskDelay(2);
 	
-	//Ê§ÄÜI2C MST
-	iicdev -> read_reg( ICM20948_DEV<<1,USER_CTRL,&write_buf,1,100 );//¶ÁÈ¡µ±Ç°Öµ
-	write_buf &= ~(1<<5);                                              //Ê§ÄÜIIC MST,ÇÒ²»ÐÞ¸Ä¼Ä´æÆ÷µÄÆäËûÖµ
-	iicdev -> write_reg( ICM20948_DEV<<1,USER_CTRL,&write_buf,1,100);//Ð´Èë¼Ä´æÆ÷
+	//Disable I2C MST
+	iicdev -> read_reg( ICM20948_DEV<<1,USER_CTRL,&write_buf,1,100 );//Read the current value
+	write_buf &= ~(1<<5);                                              //Disable IIC MST without changing other values in the register
+	iicdev -> write_reg( ICM20948_DEV<<1,USER_CTRL,&write_buf,1,100);//Write register
 	
-	//¶ÁÈ¡2×Ö½Ú(ICM20948½«SLV0·ÃÎÊµ½µÄÖµ·ÅÔÚEXT_SLV_SENS_DATA_00¼Ä´æÆ÷)
+	//Read 2 bytes (ICM20948 place the value accessed by SLV0 in EXT_SLV_SENS_DATA_00 register)
 	iicdev -> read_reg( ICM20948_DEV<<1,EXT_SLV_SENS_DATA_00,&write_buf,1,100 );
 	
-	//0x09ÎªAK09916 WHO AM I¼Ä´æÆ÷Öµ
+	//0x09 is the value of the AK09916 WHO AM I register
 	if( write_buf == 0x09 )
 		write_buf = 1;
 	else

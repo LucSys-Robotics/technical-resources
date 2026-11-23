@@ -5,11 +5,11 @@ int BrushlessEnable=1;
 Function: 
 Input   : none
 Output  : none
-函数功能：轮毂速度模式初始化：30ms
-入口参数：无
-返回  值：无
+Function: Hub speed mode initialization: 30ms
+Entry parameters: None
+Return value: none
 **************************************************************************/
-int acc_time=30; //经测试，加减速时间最低3ms，再低电机会停止响应
+int acc_time=30; //Tests show acceleration and deceleration times as low as 3ms; if lower, the motor will stop responding
 void hub_CAN_velocity_init(void)
 {
 	//CAN_setBaudrate(1000);
@@ -222,9 +222,9 @@ void CAN_SetMaxRpm_left_Right(int Left, int Right)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置左电机转矩斜率,默认500mA/s
-入口参数：mAs：转矩斜率，单位mA/s
-返回  值：无
+Function: Set the torque slope of the left motor, default 500mA/s
+Inlet parameters: mAs: torque slope, unit: mA/s
+Return value: none
 **************************************************************************/
 void CAN_Left_Torque_mAs(int mAs)
 {
@@ -241,9 +241,9 @@ void CAN_Left_Torque_mAs(int mAs)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置右电机转矩斜率,默认500mA/s
-入口参数：mAs：转矩斜率，单位mA/s
-返回  值：无
+Function: Set the right motor torque slope, default 500mA/s
+Inlet parameters: mAs: torque slope, unit: mA/s
+Return value: none
 **************************************************************************/
 void CAN_Right_Torque_mAs(int mAs)
 {
@@ -261,19 +261,19 @@ void CAN_Right_Torque_mAs(int mAs)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置轮毂速度
-入口参数：±20480
-返回  值：无
+Function: Set hub speed
+Entry parameters: ±20480
+Return value: none
 **************************************************************************/
 void hub_CAN_Rpm(int R_L, int rpm)
 {
   u8 set_rpm[8]= {0x23, 0xFF, 0x60, 0x01, 0x64, 0x00, 0x00, 0x00};
 	
-	//设置左电机还是右电机
-	if     (R_L==0) set_rpm[3]=0x01; //左电机
-	else if(R_L==1) set_rpm[3]=0x02; //右电机
+	//Set the left motor or the right motor
+	if     (R_L==0) set_rpm[3]=0x01; //Left motor
+	else if(R_L==1) set_rpm[3]=0x02; //Right motor
 	
-	//设置转速与方向
+	//Set the speed and direction
 	if(rpm>=0)
 	{
 		set_rpm[4]=rpm;
@@ -292,7 +292,7 @@ void hub_CAN_Rpm(int R_L, int rpm)
 //{
 //  u8 set_rpm[8]= {0x23, 0xFF, 0x60, 0x03, 0x64, 0x00, 0x64, 0x00};
 //	
-//	//设置转速与方向
+//	//Set the speed and direction
 //	if(rpm>=0)
 //	{
 //		set_rpm[4]=rpm;
@@ -314,7 +314,7 @@ void hub_CAN_Syn_Rpm(int left_rpm, int right_rpm)
 {
   u8 set_rpm[8]= {0x23, 0xFF, 0x60, 0x03, 0x64, 0x00, 0x64, 0x00};
 	
-	//设置转速与方向
+	//Set the speed and direction
 	if(left_rpm>=0)
 	{
 		set_rpm[4]=left_rpm;
@@ -341,9 +341,9 @@ void hub_CAN_Syn_Rpm(int left_rpm, int right_rpm)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置轮毂位置
-入口参数：无
-返回  值：无
+Function: Set the hub position
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void hub_CAN_Rel_Position(int R_L, long int position)
 {
@@ -351,9 +351,9 @@ void hub_CAN_Rel_Position(int R_L, long int position)
   u8 set_start1[8]=   {0x2b, 0x40, 0x60, 0x00, 0x4f, 0x00, 0x00, 0x00};
   u8 set_start2[8]=   {0x2b, 0x40, 0x60, 0x00, 0x5f, 0x00, 0x00, 0x00};
 	
-	//设置左电机还是右电机
-	if     (R_L==0) set_position[3]=0x01; //左电机
-	else if(R_L==1) set_position[3]=0x02; //右电机
+	//Set the left motor or the right motor
+	if     (R_L==0) set_position[3]=0x01; //Left motor
+	else if(R_L==1) set_position[3]=0x02; //Right motor
 	
 	if(position>=0)
 	{
@@ -381,9 +381,9 @@ void hub_CAN_Abs_Position(int R_L, long int position)
   u8 set_start1[8]=   {0x2b, 0x40, 0x60, 0x00, 0x0f, 0x00, 0x00, 0x00};
   u8 set_start2[8]=   {0x2b, 0x40, 0x60, 0x00, 0x1f, 0x00, 0x00, 0x00};
 	
-	//设置左电机还是右电机
-	if     (R_L==0) set_position[3]=0x01; //左电机
-	else if(R_L==1) set_position[3]=0x02; //右电机
+	//Set the left motor or the right motor
+	if     (R_L==0) set_position[3]=0x01; //Left motor
+	else if(R_L==1) set_position[3]=0x02; //Right motor
 	
 	if(position>=0)
 	{
@@ -409,19 +409,19 @@ void hub_CAN_Abs_Position(int R_L, long int position)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置轮毂转矩
-入口参数：±2000ma
-返回  值：无
+Function: Set hub torque
+Input parameters: ±2000mA
+Return value: none
 **************************************************************************/
 void hub_CAN_Torque(int R_L, int torque)
 {
   u8 set_torque[8]= {0x2b, 0x71, 0x60, 0x01, 0xe8, 0x03, 0x00, 0x00};
 	
-	//设置左电机还是右电机
-	if     (R_L==0) set_torque[3]=0x01; //左电机
-	else if(R_L==1) set_torque[3]=0x02; //右电机
+	//Set the left motor or the right motor
+	if     (R_L==0) set_torque[3]=0x01; //Left motor
+	else if(R_L==1) set_torque[3]=0x02; //Right motor
 	
-	//设置转速与方向
+	//Set the speed and direction
 	if(torque>=0)
 	{
 		set_torque[7] = torque>>24;
@@ -443,9 +443,9 @@ void hub_CAN_Torque(int R_L, int torque)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置轮毂同步转矩
-入口参数：±2000ma
-返回  值：无
+Function: Set hub synchronous torque
+Input parameters: ±2000mA
+Return value: none
 **************************************************************************/
 void hub_CAN_Syn_Torque(int torque)
 {
@@ -473,27 +473,27 @@ void hub_CAN_Syn_Torque(int torque)
 Function: 
 Input   : none
 Output  : none
-函数功能：开启读取实时编码器
-入口参数：±2000ma
-返回  值：无
+Function: enable reading the real-time encoder
+Input parameters: ±2000mA
+Return value: none
 **************************************************************************/
 void hub_CAN_Encoder_init(void)
 {
 	u8 Clean_TPD00 [8]= {0x2f, 0x00, 0x1a, 0x00, 0x00, 0x00, 0x00, 0x00};
 	
-	u8 Mapping_01_V  [8]= {0x23, 0x00, 0x1a, 0x01, 0x20, 0x01, 0x6C, 0x60}; //位置：64 60, 转矩：71 60, 温度：32 20
-	u8 Mapping_02_V  [8]= {0x23, 0x00, 0x1a, 0x02, 0x20, 0x02, 0x6C, 0x60}; //位置：64 60, 转矩：71 60, 温度：32 20
+	u8 Mapping_01_V  [8]= {0x23, 0x00, 0x1a, 0x01, 0x20, 0x01, 0x6C, 0x60}; //Position: 64 60, torque: 71 60, temperature: 32 20
+	u8 Mapping_02_V  [8]= {0x23, 0x00, 0x1a, 0x02, 0x20, 0x02, 0x6C, 0x60}; //Position: 64 60, torque: 71 60, temperature: 32 20
 	
-//	u8 Mapping_01_P  [8]= {0x23, 0x00, 0x1a, 0x01, 0x20, 0x01, 0x64, 0x60}; //位置：64 60, 转矩：71 60, 温度：32 20
+//	u8 Mapping_01_P [8]= {0x23, 0x00, 0x1a, 0x01, 0x20, 0x01, 0x64, 0x60}; //position: 64 60, torque: 71 60, temperature: 32 20
 //	u8 Mapping_02_P  [8]= {0x23, 0x00, 0x1a, 0x02, 0x20, 0x02, 0x64, 0x60};
 //	
-//	u8 Mapping_01_T  [8]= {0x23, 0x00, 0x1a, 0x01, 0x20, 0x01, 0x71, 0x60}; //位置：64 60, 转矩：71 60, 温度：32 20
+//	u8 Mapping_01_T [8]= {0x23, 0x00, 0x1a, 0x01, 0x20, 0x01, 0x71, 0x60}; //position: 64 60, torque: 71 60, temperature: 32 20
 //	u8 Mapping_02_T  [8]= {0x23, 0x00, 0x1a, 0x02, 0x20, 0x02, 0x71, 0x60};
 	
 	u8 Set_ID_181  [8]= {0x23, 0x00, 0x18, 0x01, 0x81, 0x01, 0x00, 0x00};
 	u8 Set_event   [8]= {0x2f, 0x00, 0x18, 0x02, 0xfe, 0x00, 0x00, 0x00};
-	//u8 Set_hibTime [8]= {0x2b, 0x00, 0x18, 0x03, 0xf4, 0x01, 0x00, 0x00}; //间隔时间：50ms=(0x01*256+0xf4)/10
-	u8 Set_hibTime [8]= {0x2b, 0x00, 0x18, 0x03, 0xc8, 0x00, 0x00, 0x00}; //间隔时间：20ms=(0x01*256+0xc8)/10
+	//u8 Set_hibTime [8]= {0x2b, 0x00, 0x18, 0x03, 0xf4, 0x01, 0x00, 0x00}; // Interval time: 50ms = (0x01*256 + 0xf4)/10
+	u8 Set_hibTime [8]= {0x2b, 0x00, 0x18, 0x03, 0xc8, 0x00, 0x00, 0x00}; //Interval: 20ms=(0x01*256+0xc8)/10
 	u8 StartMapping[8]= {0x2f, 0x00, 0x1a, 0x00, 0x02, 0x00, 0x00, 0x00};
 	u8 SaveEEPROM  [8]= {0x2B, 0x09, 0x20, 0x00, 0x02, 0x00, 0x00, 0x00};
 	u8 Enter       [8]= {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};

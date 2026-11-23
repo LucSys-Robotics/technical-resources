@@ -11,65 +11,65 @@
 
 void ImuTask(void* param)
 {
-	//获取时基,用于辅助任务能指定固定频率运行
+	//Obtain the time base, used to assist tasks that specify a fixed frequency to run
 	TickType_t preTime = xTaskGetTickCount();
 	
-	//控制任务的频率,单位HZ
+	//Frequency of control tasks, unit HZ
 	const uint16_t TaskFreq = 100;
 	
 	pIMUInterface_t imu = &UserICM20948;
 	
-	//陀螺仪初始化
+	//Initialize gyroscope
 	while(imu->Init())
 	{
 		vTaskDelay(1000);
 	}
 	
-	//开机计时
+	//Startup timer
 	uint32_t SystemStartCnt = 0;
 	
-	//开机前10秒失能小车,等待imu标零
+	//Disable the chassis for the first 10 seconds after startup while waiting for IMU zero calibration
 	RobotControlParam.softwareEnflag = 1;
 	
 	while(1)
 	{
-		imu->Update_9axisVal(&axis_9Val,&axis_9ValOri);//陀螺仪数据更新,获取的数据均为原始数据.软件iic耗时1.0 ms
-		imu->UpdateAttitude(axis_9Val,&AttitudeVal);//更新姿态角
+		imu->Update_9axisVal(&axis_9Val,&axis_9ValOri);//Update gyroscope data; all readings are raw. Software IIC takes 1.0 ms
+		imu->UpdateAttitude(axis_9Val,&AttitudeVal);//Updated attitude angles
 		
-		//前30秒计时
+		//Timed for the first 30 seconds
 		if( SystemStartCnt < TaskFreq*30 ) SystemStartCnt++;
 		
-		//10秒后执行imu标零,使能小车
+		//After 10 seconds, the IMU zeros to enable the car
 		if( SystemStartCnt == TaskFreq*10 )
 		{
-			//小车相对静止的情况下执行标零
+			//Zeroing is performed when the car is relatively stationary
 			if( fabs(axis_9Val.gyro.x)<0.05f && fabs(axis_9Val.gyro.y)<0.05f && fabs(axis_9Val.gyro.z)<0.05f )
 			{
 				RobotControlParam.LedTickState++;
 				imu->UpdateZeroPoint_axis();
 			}			
 			
-			//小车姿态角较为水平的正常情况下执行标零
+			//Zero marking is performed under normal conditions when the vehicle's attitude angle is relatively level
 			if( fabs(AttitudeVal.pitch) < 5.0f && fabs(AttitudeVal.roll) < 5.0f )
 			{
 				RobotControlParam.LedTickState++;
 				imu->UpdateZeroPoint_attitude();
 			}
 
-			//检查标零是否全部成功
+			//Check whether all zeros are successful
 			if( RobotControlParam.LedTickState!=2 )
 			{
 				RobotControlParam.LedTickState=0;
-				SystemStartCnt=TaskFreq*8;//不满足条件,重新等待
+				SystemStartCnt=TaskFreq*8;//Conditions not met, wait again
 			}
 			else
 			{
-				//标零成功,使能小车
+				//Marking zero success enables the chassis
 				RobotControlParam.softwareEnflag=0;
 			}				
 		}
 		
-		/* 延迟指定频率 */
+		/* Delay the specified frequency */
 		vTaskDelayUntil(&preTime,pdMS_TO_TICKS( (1.0f/(float)TaskFreq)*1000) );
 	}
 }

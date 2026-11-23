@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-T280 数据观察 - 两组数据对比
-适配 Python 3.8.10
+LSR280 Data Observation - Comparison of two sets of data
+Compatible with Python 3.8.10
 
-用法:
+Usage:
     python3 datalog_compare.py 04 05
     python3 datalog_compare.py 04 05 --logdir ./logs
 
-把"改动前"和"改动后"两组数据放在一起, 逐项算出改善倍数.
-判据内置在脚本里(哪些指标该降、哪些不能变差), 直接给出结论.
+Put the "before" and "after" sets of data together and calculate the improvement multiplier item by item.
+Criterions are built into scripts (which indicators should be lowered and which should not be worsened), and conclusions are directly given.
 
-依赖:
+Dependency:
     pip3 install pandas
 """
 
@@ -47,13 +47,13 @@ def load(group, logdir):
 
 
 def metrics(df, ev):
-    """提取用于对比的指标"""
+    """Extract metrics for comparison"""
     m = {}
     n = len(df)
     m["_n"] = n
     m["时长_分钟"] = (df["t_s"].iloc[-1] - df["t_s"].iloc[0]) / 60.0
 
-    # ---- 转向目标跳变: 本次改动的直接目标 ----
+    # ---- Steering Target Jump: Direct Target of This Change ----
     jump_deg = None
     for w in WHEELS:
         d = df["st_tgt_" + w].diff().abs() / COUNTS_PER_DEG
@@ -63,7 +63,7 @@ def metrics(df, ev):
     m["目标跳变>20度_次数"] = int((jump_deg > 20).sum())
     m["目标跳变_峰值度"] = float(jump_deg.max())
 
-    # ---- 转向误差 ----
+    # ---- Steering Error ----
     err = None
     for w in WHEELS:
         e = df["st_err_%s_deg" % w].abs()
@@ -72,30 +72,30 @@ def metrics(df, ev):
     m["转向误差_均值度"] = float(err.mean())
     m["转向误差>90度_占比%"] = 100.0 * (err > 90).sum() / n
 
-    # ---- CAN 下发负载 ----
+    # ---- CAN Load Delivery ----
     if "send_rate" in df.columns:
         m["下发速率_均值_次每秒"] = float(df["send_rate"].mean())
         m["下发速率_峰值_次每秒"] = float(df["send_rate"].max())
-    # comm_qua 只看均值与低分位占比. 最小值是离群点, 不能用来判断总线好坏:
-    # 它是比值(100-失败/总SDO), 分母随下发量变化, 且计数器每10秒硬清零,
-    # 窗口末尾必然最难看. 实测正常状态均值 98%+, 低于70%的样本万分之一量级.
+    # comm_qua Only look at the ratio between the mean and the lower percentile. The minimum value is the outlier and cannot be used to judge the quality of the bus:
+    # It is a ratio (100 - failure / total SDO), with the denominator changing according to the amount issued, and the counter is hard-reset every 10 seconds.
+    # The end of the window is always the ugliest. The measured normal state mean is 98%+, below the order of one in ten thousand for 70% of samples.
     m["comm_qua_均值%"] = float(df["comm_qua"].mean())
     m["comm_qua_低于95占比%"] = 100.0 * (df["comm_qua"] < 95).sum() / n
     m["comm_qua_最低%_仅参考"] = float(df["comm_qua"].min())
     m["固件丢帧_fw_drop"] = int(df["fw_drop"].max())
 
-    # ---- 指令抖动 (上游, 本次改动不负责, 用于确认输入可比) ----
+    # ---- Instruction jitter (upstream, this change is not responsible for this change, used to confirm input comparability) ----
     m["cmd_vz打满±0.30_占比%"] = 100.0 * (df["cmd_vz"].abs() >= 0.299).sum() / n
     sign = df["cmd_vz"].apply(lambda v: 1 if v > 0.1 else (-1 if v < -0.1 else 0))
     m["cmd_vz正负翻转_次数"] = int((sign.diff().abs() == 2).sum())
 
-    # ---- 转向平滑器效果 (新增列, 老数据没有) ----
+    # ---- Steering Smoother Effect (New Column, Old Data Not Available) ----
     if "st_vz" in df.columns:
         m["st_vz打满±0.30_占比%"] = 100.0 * (df["st_vz"].abs() >= 0.299).sum() / n
         s2 = df["st_vz"].apply(lambda v: 1 if v > 0.1 else (-1 if v < -0.1 else 0))
         m["st_vz正负翻转_次数"] = int((s2.diff().abs() == 2).sum())
 
-    # ---- 不能变差的项 ----
+    # ---- Items that cannot deteriorate ----
     m["scl_0与1之间跳变_次数"] = int((df["scl"].diff().abs() > 0.5).sum())
     m["最高速度_m每s"] = float(df["spd_mps"].max())
     m["温度峰值_C"] = float(max(df["tmp_" + w].max() for w in WHEELS))
@@ -103,7 +103,7 @@ def metrics(df, ev):
     m["驱动掉线_行数"] = int((df["online_bm"] != 15).sum())
     m["驱动报错_行数"] = int((df["err_bm"] != 0).sum())
 
-    # ---- 事件 ----
+    # ---- Events ----
     m["HOLD事件_次数"] = 0
     m["ERR事件_次数"] = 0
     if ev is not None and "type" in ev.columns:
@@ -113,7 +113,7 @@ def metrics(df, ev):
     return m
 
 
-# (指标名, 方向)  方向: down=越小越好  up=越大越好  same=不应明显变化  info=仅参考
+# (Indicator name, direction) Direction: down=smaller the better, up=larger better, same=should not change significantly, info=reference only
 JUDGE = [
     ("目标跳变>50度_次数",      "down"),
     ("目标跳变>20度_次数",      "down"),
@@ -180,7 +180,7 @@ def main():
         if v2 is None:
             continue
 
-        # 变化描述
+        # Description of changes
         if v1 == 0 and v2 == 0:
             change, tag = "0 -> 0", ""
         elif v1 == 0:
@@ -235,7 +235,7 @@ def main():
         print("\n结论: 没有观察到改善, 检查两组数据的工况是否可比 "
               "(看 cmd_vz 打满占比是否接近).")
 
-    # 工况可比性提醒
+    # Alerts for comparability of operating conditions
     a = m1.get("cmd_vz打满±0.30_占比%", 0)
     b = m2.get("cmd_vz打满±0.30_占比%", 0)
     if a > 0 and abs(b - a) / a > 0.5:

@@ -21,22 +21,22 @@ extern QueueHandle_t g_xQueueHeartBeatMsg;
 
 static void WheelSpeedCalculation(uint8_t NodeId,float Lrpm,float Rrpm);
 
-// CAN FIFO0中断，关联CAN1
+// CAN FIFO0 interrupts, associated with CAN1
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-	uint8_t recvbuffer[8]={0};			    //接收缓存数组
-	HAL_StatusTypeDef HAL_RetVal;		    //判断状态的枚举
-	CAN_RxHeaderTypeDef RxMsg;              //接收结构体
-	HAL_RetVal=HAL_CAN_GetRxMessage(hcan,CAN_RX_FIFO0,&RxMsg,recvbuffer);//接收邮箱中的数据
+	uint8_t recvbuffer[8]={0};			    //Receive cache array
+	HAL_StatusTypeDef HAL_RetVal;		    //Enumeration of state judgments
+	CAN_RxHeaderTypeDef RxMsg;              //Receive structure
+	HAL_RetVal=HAL_CAN_GetRxMessage(hcan,CAN_RX_FIFO0,&RxMsg,recvbuffer);//Receive data from the mailbox
 	
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	
-	//CAN终端接收成功
+	//CAN terminal received successfully
 	if (HAL_OK==HAL_RetVal)
 	{
 		if( RxMsg.IDE == CAN_ID_STD )
 		{
-			//支持0x181位置使用CAN控制
+			//Supports 0x181 location control using CAN
 			if( RxMsg.StdId==0x181 )
 			{
 				RobotControlCMDType_t cmd = {
@@ -48,18 +48,18 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 				cmd.Vy = (float)((short)(recvbuffer[2]<<8|recvbuffer[3]))/1000.0f;
 				cmd.Vz = (float)((short)(recvbuffer[4]<<8|recvbuffer[5]))/1000.0f;
 				
-				//空闲判断
+				//Idle judgment
 				uint8_t writeflag=1;
 				static uint8_t idleCount = 0;
 				if( cmd.Vx==0&&cmd.Vy==0&&cmd.Vz==0 ) idleCount++;
 				else idleCount=0;
 				if( idleCount>10 ) writeflag=0,idleCount=10;
 				
-				//非空闲写入队列
+				//Write to queue when not idle
 				if( writeflag ) WriteRobotControlQueue(&cmd,&xHigherPriorityTaskWoken);	
 			}
 			
-			//自动回充的数据写入队列
+			//Automatically recharge data write queue
 			else if( RxMsg.StdId==0x182 )
 			{
 				CANmsgType_t data={0};
@@ -71,7 +71,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 
 		}
 		
-		//扩展帧ID数据接收
+		//Extend frame ID data reception
 		else if(RxMsg.IDE == CAN_ID_EXT)
 		{
 //			printf("CAN1 ExtId:%X\r\n",RxMsg.ExtId);
@@ -81,29 +81,29 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 		}
 	}
 	
-	//根据具体情况发起调度
+	//Initiate scheduling based on specific circumstances
 	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 
 
-// CAN FIFO1中断，关联CAN2
+// CAN FIFO1 interrupts, associated with CAN2
 void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-	uint8_t recvbuffer[8]={0};			    //接收缓存数组
-	HAL_StatusTypeDef HAL_RetVal;		    //判断状态的枚举
-	CAN_RxHeaderTypeDef RxMsg;              //接收结构体
-	HAL_RetVal=HAL_CAN_GetRxMessage(hcan,CAN_RX_FIFO1,&RxMsg,recvbuffer);//接收邮箱中的数据
+	uint8_t recvbuffer[8]={0};			    //Receive cache array
+	HAL_StatusTypeDef HAL_RetVal;		    //Enumeration of state judgments
+	CAN_RxHeaderTypeDef RxMsg;              //Receive structure
+	HAL_RetVal=HAL_CAN_GetRxMessage(hcan,CAN_RX_FIFO1,&RxMsg,recvbuffer);//Receive data from the mailbox
 	
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	
-	//CAN终端接收成功
+	//CAN terminal received successfully
 	if (HAL_OK==HAL_RetVal)
 	{
-		//标准帧格式
+		//Standard frame format
 		if( RxMsg.IDE == CAN_ID_STD )
 		{
-			//CANopen-TSDO客户端应答内容,写入队列
+			//CANopen-TSDO client response content and write it to the queue
 			if( RxMsg.StdId >= 0x581 && RxMsg.StdId<=0x5FF )
 			{
 				CANmsgType_t data={0};
@@ -114,32 +114,32 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 					xQueueOverwriteFromISR(g_xQueueCANopenCallback,&data,&xHigherPriorityTaskWoken);
 			}
 			
-			//CANopen心跳报文
+			//CANopen heartbeat packet
 			else if( RxMsg.StdId >= 0x701 && RxMsg.StdId<=0x77F )
 			{	
 				ServoDriver_OnLineCheck(RxMsg.StdId&0x7F);
 			}
 			
-			else if( RxMsg.StdId == 0x190 ) //1号驱动器的转速反馈计算
+			else if( RxMsg.StdId == 0x190 ) //Speed feedback calculation for drive 1
 			{
-				int tmpL = (int)recvbuffer[3]<<24|recvbuffer[2]<<16|recvbuffer[1]<<8|recvbuffer[0];   //单位0.1rpm
-				int tmpR = -((int)recvbuffer[7]<<24|recvbuffer[6]<<16|recvbuffer[5]<<8|recvbuffer[4]);//单位0.1rpm
+				int tmpL = (int)recvbuffer[3]<<24|recvbuffer[2]<<16|recvbuffer[1]<<8|recvbuffer[0];   //Unit: 0.1 rpm
+				int tmpR = -((int)recvbuffer[7]<<24|recvbuffer[6]<<16|recvbuffer[5]<<8|recvbuffer[4]);//Unit: 0.1 rpm
 				WheelSpeedCalculation(1,(float)tmpL*0.1f,(float)tmpR*0.1f);
 			}
-			else if( RxMsg.StdId == 0x191 ) //2号驱动器的转速反馈计算
+			else if( RxMsg.StdId == 0x191 ) //Speed feedback calculation for drive No. 2
 			{
 				int tmpL = (int)recvbuffer[3]<<24|recvbuffer[2]<<16|recvbuffer[1]<<8|recvbuffer[0];
 				int tmpR = -((int)recvbuffer[7]<<24|recvbuffer[6]<<16|recvbuffer[5]<<8|recvbuffer[4]);
 				WheelSpeedCalculation(2,(float)tmpL*0.1f,(float)tmpR*0.1f);
 			}
-			else if( RxMsg.StdId == 0x192 ) //3号驱动器的转速反馈计算
+			else if( RxMsg.StdId == 0x192 ) //Speed feedback calculation for drive 3
 			{
 				int tmpL = (int)recvbuffer[3]<<24|recvbuffer[2]<<16|recvbuffer[1]<<8|recvbuffer[0];
 				int tmpR = -((int)recvbuffer[7]<<24|recvbuffer[6]<<16|recvbuffer[5]<<8|recvbuffer[4]);
 				WheelSpeedCalculation(3,(float)tmpL*0.1f,(float)tmpR*0.1f);
 			}
 			
-			//其他报文
+			//Other messages
 			else 
 			{
 //				printf("CAN2 StdId:%X\r\n",RxMsg.StdId);
@@ -152,24 +152,24 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 
 	}
 	
-	//根据具体情况发起调度
+	//Initiate scheduling based on specific circumstances
 	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 		
-//不同车型的轮速反馈计算
+//Wheel speed feedback calculation for different vehicle models
 static void WheelSpeedCalculation(uint8_t NodeId,float Lrpm,float Rrpm)
 {
-	//计算纠偏系数
+	//Calculate the correction factor
 	float LeftWheelDiff = wheelCoefficient(RobotControlParam.LineDiffParam,1);
 	float RightWheelDiff = wheelCoefficient(RobotControlParam.LineDiffParam,0);
 	
-	//将rpm转换为车轮的线速度
+	//Converts rpm to the linear speed of the wheel
 	float Lvel = rpm_to_linearVel(Lrpm,RobotHardWareParam.WheelPerimeter)/LeftWheelDiff;
 	float Rvel = rpm_to_linearVel(Rrpm,RobotHardWareParam.WheelPerimeter)/RightWheelDiff;
 	
 	switch(RobotHardWareParam.CarType)
 	{
-		//单驱动车型
+		//Single-drive models
 		case S300:
 			if( NodeId==1 )
 			{
@@ -177,7 +177,7 @@ static void WheelSpeedCalculation(uint8_t NodeId,float Lrpm,float Rrpm)
 				RobotControlParam.MotorB.feedback = Rvel;
 			}
 			break;
-		//单驱动车型
+		//Single-drive models
 		case S300Mini:case S100:
 			if( NodeId==1 )
 			{
@@ -185,7 +185,7 @@ static void WheelSpeedCalculation(uint8_t NodeId,float Lrpm,float Rrpm)
 				RobotControlParam.MotorB.feedback = -Rvel;
 			}
 			break;
-		//双驱动
+		//Dual drive
 		case S200:case S200_OUTDOOR:
 			if( NodeId==1 )
 			{
@@ -198,7 +198,7 @@ static void WheelSpeedCalculation(uint8_t NodeId,float Lrpm,float Rrpm)
 				RobotControlParam.MotorC.feedback = Rvel;
 			}
 			break;
-		//3驱动
+		//3 drivers
 		case S260:
 			if( NodeId==1 )
 			{

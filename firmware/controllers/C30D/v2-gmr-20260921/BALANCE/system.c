@@ -1,7 +1,7 @@
 /* LucSys Robotics distribution maintenance.
  * Third-party license terms remain applicable.
- * 版本：V5.0
- * 修改时间：2022-05-05
+ * Version: V5.0
+ * Modification date: 2022-05-05
  * Version: V5.0
  * Update：2022-05-05
  */
@@ -9,248 +9,248 @@
 #include "system.h"
 
 //Robot software fails to flag bits
-//机器人软件失能标志位
+//Robot software-disable flag
 u8 Flag_Stop=0;
 
 //The ADC value is variable in segments, depending on the number of car models. Currently there are 6 car models
-//ADC值分段变量，取决于小车型号数量，目前有6种小车型号
+//ADC value segmented variable, depending on the number of car models; currently there are 6 car models
 int Divisor_Mode;
 
 // Robot type variable
-//机器人型号变量
+//Robot model variable
 //0=Mec_Car，1=Omni_Car，2=Akm_Car，3=Diff_Car，4=FourWheel_Car，5=Tank_Car
 u8 Car_Mode=0;
 
 //Servo control PWM value, Ackerman car special
-//舵机控制PWM值，阿克曼小车专用
+//Servo control PWM value, exclusively for Ackermann trolleys
 int Servo;
 
 //Default speed of remote control car, unit: mm/s
-//遥控小车的默认速度，单位：mm/s
+//Default remote-control chassis speed, unit: mm/s
 float RC_Velocity=500;
 
 //Vehicle three-axis target moving speed, unit: m/s
-//小车三轴目标运动速度，单位：m/s
+//Three-axis target motion speed of the cart, unit: m/s
 float Move_X, Move_Y, Move_Z;
 
 //PID parameters of Speed control
-//速度控制PID参数
+//Speed-control PID parameters
 float Velocity_KP=300,Velocity_KI=300;
 
 //Smooth control of intermediate variables, dedicated to omni-directional moving cars
-//平滑控制中间变量，全向移动小车专用
+//Smooth control of intermediate variables, dedicated to omnidirectional moving carts
 Smooth_Control smooth_control;
 
 //The parameter structure of the motor
-//电机的参数结构体
+//Parameter structure of the motor
 Motor_parameter MOTOR_A,MOTOR_B,MOTOR_C,MOTOR_D;
 
-/************ 小车型号相关变量 **************************/
+/************ Car Model Related Variables **************************/
 /************ Variables related to car model ************/
 //Encoder accuracy
-//编码器精度
+//Encoder accuracy
 float Encoder_precision;
 //Wheel circumference, unit: m
-//轮子周长，单位：m
+//Wheel circumference, unit: m
 float Wheel_perimeter;
 //Drive wheel base, unit: m
-//主动轮轮距，单位：m
+//Active wheel track width, unit: m
 float Wheel_spacing;
 //The wheelbase of the front and rear axles of the trolley, unit: m
-//小车前后轴的轴距，单位：m
+//Wheelbase of the front and rear axles of the chassis, unit: m
 float Axle_spacing;
 //All-directional wheel turning radius, unit: m
-//全向轮转弯半径，单位：m
+//Turning radius of the omnidirectional wheel, unit: m
 float Omni_turn_radiaus;
-/************ 小车型号相关变量 **************************/
+/************ Car Model Related Variables **************************/
 /************ Variables related to car model ************/
 
 //PS2 controller, Bluetooth APP, aircraft model controller, CAN communication, serial port 1, serial port 5 communication control flag bit.
 //These 6 flag bits are all 0 by default, representing the serial port 3 control mode
-//PS2手柄、蓝牙APP、航模手柄、CAN通信、串口1、串口5通信控制标志位。这6个标志位默认都为0，代表串口3控制模式
+//PS2 controller, Bluetooth app, RC transmitter, CAN communication, serial port 1, serial port 5 communication control flags. These six flag bits default to 0, representing serial port 3 control mode
 u8 PS2_ON_Flag=0, APP_ON_Flag=0, Remote_ON_Flag=0, CAN_ON_Flag=0, Usart1_ON_Flag, Usart5_ON_Flag;
 
 //Bluetooth remote control associated flag bits
-//蓝牙遥控相关的标志位
+//Bluetooth remote control-related signs
 u8 Flag_Left, Flag_Right, Flag_Direction=0, Turn_Flag;
 
 //Sends the parameter's flag bit to the Bluetooth APP
-//向蓝牙APP发送参数的标志位
+//Flags for sending parameters to the Bluetooth app
 u8 PID_Send;
 
 //The PS2 gamepad controls related variables
-//PS2手柄控制相关变量
+//PS2 controller controls related variables
 float PS2_LX,PS2_LY,PS2_RX,PS2_RY,PS2_KEY;
 
 //Self-check the relevant flag variables
-//自检相关标志变量
+//Self-check related flag variables
 int Check=0;
 
 //Check the result code
-//自检结果代码
+//Self-test result code
 long int ErrorCode=0;
 
-u8 Get_Charging_HardWare=0;//是否存在自动回充装备
-u8 charger_check=0;//实时检测充电装备在线状态
+u8 Get_Charging_HardWare=0;//Whether there is an auto-recharge equipment
+u8 charger_check=0;//Real-time monitoring of the online status of charging equipment
 
-//系统相关变量
+//System-related variables
 SYS_VAL_t SysVal;
 
-//电位器记录数值
+//Potentiometer records values
 int POT_val;
 
-//电机满转值
+//Motor full rotation value
 int Full_rotation = 16799;
 
 void systemInit(void)
 {
 	//Interrupt priority group setti  ng
-	//中断优先级分组设置
+	//Interrupt priority grouping settings
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
 	//Delay function initialization
-	//延时函数初始化
+	//Delay function initialization
     delay_init(168);
 	//IIC initialization for IMU
-    //IIC初始化，用于IMU
+    //IIC Initialization, used for IMU
     I2C_GPIOInit();
-	//系统相关软件参数初始化
+	//Initialize system-related software parameters
 	SYS_VAL_t_Init(&SysVal);
 	
     //Serial port 1 initialization, communication baud rate 115200,
     //can be used to communicate with ROS terminal
-    //串口1初始化，通信波特率115200，可用于与ROS端通信
+    //Serial port 1 initialized, communication baud rate 115200, usable for communication with ROS terminals
     uart1_init(115200);
 
     //Serial port 2 initialization, communication baud rate 9600,
     //used to communicate with Bluetooth APP terminal
-    //串口2初始化，通信波特率9600，用于与蓝牙APP端通信
+    //Serial port 2 initialized, communication baud rate 9600, used for communication with Bluetooth app terminals
     uart2_init(9600);
 
     //Serial port 3 is initialized and the baud rate is 115200.
     //Serial port 3 is the default port used to communicate with ROS terminal
-    //串口3初始化，通信波特率115200，串口3为默认用于与ROS端通信的串口
+    //Serial port 3 initialized, communication baud rate 115200, serial port 3 is the default serial port used for communication with the ROS side
     uart3_init(115200);
 //	uart3_init(230400);
 	
     //Serial port 5 initialization, communication baud rate 115200,
     //can be used to communicate with ROS terminal
-    //串口5初始化，通信波特率115200，可用于与ROS端通信
+    //Serial port 5 initialized, communication baud rate 115200, usable for communication with ROS terminal
     uart5_init(115200);
 	
-	//如果IMU为MPU6050,则是旧版C30D
+	//If the IMU is MPU6050, it is an older version of the C30D
 	if( MPU6050_DEFAULT_ADDRESS == MPU6050_getDeviceID() )
 	{
 		SysVal.HardWare_Ver = V1_0;
 		//Initialize the hardware interface to the PS2 controller
-		//初始化与PS2手柄连接的硬件接口
+		//Initialize the hardware interface connected to the PS2 controller
 		PS2_Init();
 		//PS2 gamepad configuration is initialized and configured in analog mode
-		//PS2手柄配置初始化,配置为模拟量模式	
+		//PS2 controller configuration initialized to analog mode
 		PS2_SetInit();		 
 		//Initialize the hardware interface connected to the LED lamp
-		//初始化与LED灯连接的硬件接口
+		//Initialize the hardware interface connected to the LED lights
 		V1_0_LED_Init(); 
 		//MPU6050 is initialized to read the vehicle's three-axis attitude,
 		//three-axis angular velocity and three-axis acceleration information
-		//MPU6050初始化，用于读取小车三轴角速度、三轴加速度信息
+		//MPU6050 initialization, used to read the cart's three-axis angular velocity and three-axis acceleration information
 		MPU6050_initialize();
 	}
-	//如果IMU型号为ICM20948,则是新版C30D
-	else if( REG_VAL_WIA == ICM20948_getDeviceID() )//读取ICM20948 id
+	//If the IMU model is ICM20948, it is the new C30D
+	else if( REG_VAL_WIA == ICM20948_getDeviceID() )//Read ICM20948 ID
 	{
 		SysVal.HardWare_Ver = V1_1;
 		
-		//USBHOS初始化
+		//USBHOS initialization
 		MX_USB_HOST_Init();
 		
 		//Initialize the hardware interface connected to the LED lamp
-		//初始化与LED灯连接的硬件接口
+		//Initialize the hardware interface connected to the LED lights
 		V1_1_LED_Init();
 		//MPU6050 is initialized to read the vehicle's three-axis attitude,
 		//three-axis angular velocity and three-axis acceleration information
-		//ICM20948初始化，用于读取小车三轴角速度、三轴加速度信息
+		//ICM20948 Initialization, used to read the car's three-axis angular velocity and three-axis acceleration information
 		invMSInit();
 	}
-	else //无法识别的陀螺仪,复位系统
+	else //Unrecognized gyroscope, reset system
 	{
 		NVIC_SystemReset();
 	}         
 
     //Initialize the hardware interface connected to the buzzer
-    //初始化与蜂鸣器连接的硬件接口
+    //Initialize the hardware interface connected to the buzzer
     Buzzer_Init();
 
     //Initialize the hardware interface connected to the enable switch
-    //初始化与使能开关连接的硬件接口
+    //Initialize the hardware interface connected to the enable switch
     Enable_Pin();
 
     //Initialize the hardware interface connected to the OLED display
-    //初始化与OLED显示屏连接的硬件接口
+    //Initialize the hardware interface connected to the OLED display
     OLED_Init();
 
     //Initialize the hardware interface connected to the user's key
-    //初始化与用户按键连接的硬件接口
+    //Initialize the hardware interface connected to the user key
     KEY_Init();
 		if(KEY==0)			Check=1;
 		else if(KEY==1)	Check=0;
 
     //ADC pin initialization, used to read the battery voltage and potentiometer gear,
     //potentiometer gear determines the car after the boot of the car model
-    //ADC引脚初始化，用于读取电池电压与电位器档位，电位器档位决定小车开机后的小车适配型号
+    //ADC pin initialization is used to read battery voltage and potentiometer gear. The potentiometer gear determines the model of the car after startup
     Adc_Init();
     Adc_POWER_Init();
 
 
 	//Initialize the CAN communication interface
-	//CAN通信接口初始化
-	//波特率计算方式：42M/[(参数1+参数2+参数3)*参数4]
-	//示例：42M/[(1+7+6)*3] = 1M （只跟前4个参数有关）
+	//Initialize the CAN communication interface
+	//Baud rate calculation method: 42M/[(parameter 1 + parameter 2 + parameter 3) * parameter 4]
+	//Example: 42M / [(1+7+6)*3] = 1M (only related to the first 4 parameters)
     CAN1_Mode_Init(1,7,6,3,0);
 
     //According to the tap position of the potentiometer, determine which type of car needs to be matched,
     //and then initialize the corresponding parameters
-    //根据电位器的档位判断需要适配的是哪一种型号的小车，然后进行对应的参数初始化
+    //Based on the potentiometer gear, determine which model of car needs to be adapted, then initialize the corresponding parameters
     Robot_Select();
 
     //Encoder A is initialized to read the real time speed of motor C
-    //编码器A初始化，用于读取电机C的实时速度
+    //Encoder A initializes to read the real-time speed of motor C
     Encoder_Init_TIM2();
     //Encoder B is initialized to read the real time speed of motor D
-    //编码器B初始化，用于读取电机D的实时速度
+    //Encoder B initializes to read the real-time speed of motor D
     Encoder_Init_TIM3();
     //Encoder C is initialized to read the real time speed of motor B
-    //编码器C初始化，用于读取电机B的实时速度
+    //Encoder C initializes to read the real-time speed of motor B
     Encoder_Init_TIM4();
     //Encoder D is initialized to read the real time speed of motor A
-    //编码器D初始化，用于读取电机A的实时速度
+    //Encoder D initializes to read the real-time speed of motor A
     Encoder_Init_TIM5();
 
-    //定时器12用作舵机的PWM接口
-    TIM12_SERVO_Init(9999,84-1);  //APB1的时钟频率为84M , 频率=84M/((9999+1)*(83+1))=100Hz
+    //Timer 12 serves as the PWM interface for the servo
+    TIM12_SERVO_Init(9999,84-1);  //APB1 clock frequency is 84M, frequency = 84M / ((9999+1)*(83+1))) = 100Hz
 
-    //普通小车默认定时器8用作航模接口
-    // TIM8_SERVO_Init(9999,168-1);//APB2的时钟频率为168M , 频率=168M/((9999+1)*(167+1))=100Hz
+    //Standard small cars default timer 8 as the model aircraft interface
+    // TIM8_SERVO_Init(9999,168-1); The APB2 clock frequency is 168M, frequency = 168M / ((9999+1)*(167+1))) = 100Hz
     //Initialize the model remote control interface
-    //初始化航模遥控接口
-    TIM8_Cap_Init(9999,168-1);  //高级定时器TIM8的时钟频率为168M
+    //Initialize the RC transmitter interface
+    TIM8_Cap_Init(9999,168-1);  //Advanced timer TIM8 clock frequency is 168M
 
     //Initialize motor speed control and, for controlling motor speed, PWM frequency 10kHz
-    //初始化电机速度控制以及，用于控制电机速度，PWM频率10KHZ
-    //APB2时钟频率为168M，满PWM为16799，频率=168M/((16799+1)*(0+1))=10k
+    //Initialize motor speed control and control motor speed, PWM frequency 10KHZ
+    //APB2 clock frequency is 168M, full PWM is 16799, frequency = 168M / ((16799+1)*(0+1)) = 10k
     TIM1_PWM_Init(16799,0);
     TIM9_PWM_Init(16799,0);
     TIM10_PWM_Init(16799,0);
     TIM11_PWM_Init(16799,0);
 
-    //采集1次电池电压作为电压平滑滤波的初始化参考值
+    //Sample battery voltage once as the initial reference for voltage smoothing
     base_vol = Get_battery_volt();
 
-    //访问是否存在自动回充装备
+    //Check if auto-recharge equipment exists
     delay_ms(100);
     Find_Charging_HardWare();
 	
-	//读取Flash数据
+	//Read Flash data
 	FlashParam_Read();
 }
 

@@ -67,7 +67,7 @@ static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id);
   */
 void MX_USB_HOST_Init(void)
 {
-	//手柄默认接口
+	//Default interface for handles
 	GamePadInterface = &GamePadDefalut;
 	
 	extern USBH_ClassTypeDef  GamePad_HID_Class;
@@ -76,11 +76,11 @@ void MX_USB_HOST_Init(void)
 	{
 		Error_Handler();
 	}
-	if (USBH_RegisterClass(&hUsbHostFS, &GamePad_HID_Class) != USBH_OK) //注册ps2 hid类
+	if (USBH_RegisterClass(&hUsbHostFS, &GamePad_HID_Class) != USBH_OK) //Register the PS2 HID class
 	{
 		Error_Handler();
 	}
-	if (USBH_RegisterClass(&hUsbHostFS, &GamePad_NonStdHID_Class) != USBH_OK) //注册无线手柄ps2 hid类
+	if (USBH_RegisterClass(&hUsbHostFS, &GamePad_NonStdHID_Class) != USBH_OK) //Register the wireless controller PS2 HID class
 	{
 		Error_Handler();
 	}
@@ -126,15 +126,15 @@ extern USBH_StatusTypeDef USBH_HID_PS2_Decode(USBH_HandleTypeDef *phost);
 extern uint8_t g_usbhost_connect; 
 
 
-//usb数据读取后,最终进入此回调函数.数据解码在此函数进行(任务环境)
+//After reading usb data, it finally enters this callback function. Data decoding happens here (task environment)
 void USBH_HID_EventCallback(USBH_HandleTypeDef *phost)
 {
-	//游戏手柄数据解码
+	//Game controller data decoding
 	USBH_HID_PS2_Decode(phost);
 
 	g_usbhost_connect=0;
 	
-	//游戏手柄模式启动
+	//Game controller mode starts
 	if( GamePadInterface->StartFlag == 1 && Get_Control_Mode(_PS2_Control)==0 && SysVal.Time_count>=CONTROL_DELAY && GamePadInterface->LY > 150 )
 		Set_Control_Mode(_PS2_Control);
 	

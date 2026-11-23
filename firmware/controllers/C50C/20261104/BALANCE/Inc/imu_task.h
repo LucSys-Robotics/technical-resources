@@ -13,9 +13,9 @@ typedef struct{
 	short z;
 }IMU_BASE_t;
 
-//imu三轴数据,包含偏差值和原始值
+//imu three-axis data, including offset and raw values
 typedef struct{
-	IMU_BASE_t Deviation_accel;//偏差值,用于纠正误差.该值采集后不会发生改变
+	IMU_BASE_t Deviation_accel;//Deviation value, used to correct errors. This value does not change after acquisition
 	IMU_BASE_t Deviation_gyro;
 	IMU_BASE_t Original_accel;
 	IMU_BASE_t Original_gyro;
@@ -25,7 +25,7 @@ typedef struct{
 
 extern IMU_DATA_t imu;
 
-//对外接口
+//External interface
 void MPU6050_task(void *pvParameters);
 void ICM20948_task(void *pvParameters);
 

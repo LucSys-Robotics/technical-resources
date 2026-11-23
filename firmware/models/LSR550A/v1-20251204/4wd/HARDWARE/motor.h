@@ -64,7 +64,7 @@
 /*------------------------------------*/
 #define EN     PEin(4)  
 #define Servo_PWM  TIM9->CCR1
-#define SERVO_INIT 1500  //Servo zero point //¶æ»úÁãµã
+#define SERVO_INIT 1500  //Servo zero point // servo zero point
 
 void Enable_Pin(void);
 void MiniBalance_PWM_Init(u16 arr,u16 psc);

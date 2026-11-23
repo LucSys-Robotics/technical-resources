@@ -1,19 +1,19 @@
 /**
  * @file    datalog_task.c
- * @brief   临时数据观察任务:通过串口4以CSV文本上报整车运行数据
+ * @brief Temporary data observation task: Reporting vehicle operation data via serial port 4 via CSV text
  * @date    2026-08-03
  *
  * @details
- * 输出四种行,首字段区分,上位机按首字段分流保存:
- *   H  会话头  开机发一次,含固件编译时间、车型、机械参数、列名与缩放说明
- *   D  数据行  10Hz  周期数据
- *   E  事件行  状态跳变时立即发送(50Hz检测),不受10Hz采样错过
- *   S  统计行  每10秒,累计里程/运行时间/峰值
+ * Output four row types identified by the first field; host routes and saves rows by that field:
+ *   H session header sent once at startup, including firmware compile time, model, mechanical parameters, column names, and scaling instructions
+ *   D data line 10Hz period data
+ *   E event line Send immediately upon status transition (50Hz detection), preventing 10Hz sampling misses
+ *   S statistics row: Accumulated mileage/running time/peak every 10 seconds
  *
  * @note
- * - 全部定点整数上报,不使用浮点printf
- * - DMA未发完则丢弃本帧并计数(drop字段),绝不阻塞
- * - 任务优先级须低于控制任务
+ * - All fixed-point integers are reported, without using floating-point printf
+ * - If DMA is not fully sent, the frame is discarded and counted (drop field), never blocking
+ * - Task priority must be lower than control tasks
  */
 #include "datalog_task.h"
 
@@ -38,24 +38,24 @@
 #include "RobotControl_task.h"
 #include "AutoTest_task.h"
 
-//控制任务快照,由RobotControl_task每周期填充
+//Controls task snapshots, populated by RobotControl_task each cycle
 volatile RobotLogSnap_t g_RobotLogSnap = { 0 };
 
 #if DATALOG_ENABLE
 
-//发送缓冲区,DMA直接引用,重建前必须确认上一帧已发完
+//Send buffer, DMA direct reference; before rebuilding, confirm that the previous frame has been fully sent
 static char logbuf[640];
 
-//累计统计量
-static float    s_distAccum = 0.0f;   //累计里程(m)
-static uint32_t s_holdCnt   = 0;      //重定向泄压闸触发次数
-static uint32_t s_errCnt    = 0;      //报错码由0变为非0的次数
-static float    s_curPeak   = 0.0f;   //四轮电流绝对值峰值(A)
-static float    s_tmpPeak   = 0.0f;   //四轮温度峰值(degC)
-static uint32_t s_dropCnt   = 0;      //因DMA忙丢弃的帧数
-static uint8_t  s_pendingStat = 0;    //统计行待发标志:与数据行冲突时挂起,下个空闲周期补发
+//Cumulative statistics
+static float    s_distAccum = 0.0f;   //Cumulative mileage (m)
+static uint32_t s_holdCnt   = 0;      //Redirection deceleration hold gate trigger count
+static uint32_t s_errCnt    = 0;      //Number of times the error code changes from 0 to non-zero
+static float    s_curPeak   = 0.0f;   //Peak absolute value of four-wheel current (A)
+static float    s_tmpPeak   = 0.0f;   //Four-Round Temperature Peak (degC)
+static uint32_t s_dropCnt   = 0;      //Number of frames dropped due to DMA busyness
+static uint8_t  s_pendingStat = 0;    //Stats pending flag: Suspended when conflicting with data rows, reissued in the next idle cycle
 
-//事件检测用的上一拍状态
+//Previous state used for event detection
 static uint32_t s_lastErrNum   = 0;
 static uint8_t  s_lastEnFlag   = 0xFF;
 static uint8_t  s_lastHold     = 0xFF;
@@ -63,20 +63,20 @@ static uint8_t  s_lastParking  = 0xFF;
 static uint8_t  s_lastOnlineBm = 0xFF;
 static uint8_t  s_lastSource   = 0xFF;
 
-//浮点转定点,四舍五入
+//Floating-point to fixed point, rounded
 static int32_t sc(float v,int32_t k)
 {
 	float t = v * (float)k;
 	return (int32_t)( t>=0.0f ? (t+0.5f) : (t-0.5f) );
 }
 
-//串口4是否空闲
+//Is serial port 4 free?
 static uint8_t DataLog_TxIdle(void)
 {
 	return ( huart4.gState == HAL_UART_STATE_READY ) ? 1 : 0;
 }
 
-//提交DMA发送
+//Submit DMA send
 static void DataLog_Commit(int n)
 {
 	if( n <= 0 ) return;
@@ -84,7 +84,7 @@ static void DataLog_Commit(int n)
 	HAL_UART_Transmit_DMA(&huart4,(uint8_t*)logbuf,(uint16_t)n);
 }
 
-//采集四路驱动器在线/报错位图与最低通信质量
+//Acquire online/error bitmaps and minimum communication quality for four drivers
 static void DataLog_GetDriverState(uint8_t* onlineBm,uint8_t* errBm,int32_t* commQuaMin)
 {
 	uint8_t on = 0, er = 0;
@@ -103,7 +103,7 @@ static void DataLog_GetDriverState(uint8_t* onlineBm,uint8_t* errBm,int32_t* com
 	*commQuaMin = (int32_t)qmin;
 }
 
-//会话头:开机发一次,使CSV文件自描述
+//Session header: Send once on startup to make the CSV file self-describe
 static void DataLog_SendHeader(void)
 {
 	int n = 0;
@@ -134,7 +134,7 @@ static void DataLog_SendHeader(void)
 	DataLog_Commit(n);
 }
 
-//数据行:10Hz
+//Data row: 10Hz
 static void DataLog_SendData(uint32_t seq)
 {
 	RobotLogSnap_t snap;
@@ -144,12 +144,12 @@ static void DataLog_SendData(uint32_t seq)
 
 	if( !DataLog_TxIdle() ){ s_dropCnt++; return; }
 
-	//先整体拷贝快照,避免逐字段读取期间被控制任务改写
+	//Copy the entire snapshot first to avoid overwriting by controlled tasks during field-by-field reading
 	snap = *(RobotLogSnap_t*)&g_RobotLogSnap;
 
 	DataLog_GetDriverState(&onbm,&erbm,&cq);
 
-	//时基与状态
+	//Time base and state
 	n += snprintf(logbuf+n,sizeof(logbuf)-n,"D,%lu,%lu,%u,%u,%lu,%u,%u,%d,%d",
 		(unsigned long)snap.tick,
 		(unsigned long)seq,
@@ -161,7 +161,7 @@ static void DataLog_SendData(uint32_t seq)
 		(int)sc(snap.steerScale,DATALOG_SCALE_SCL),
 		(int)snap.maxProgress);
 
-	//指令链:原始指令 -> 驱动平滑后 -> 转向平滑后 -> 运动学正解实际值
+	//Instruction chain: Original instruction -> after driving smoothing -> after steering smoothing -> Kinematics correct actual value
 	n += snprintf(logbuf+n,sizeof(logbuf)-n,",%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d",
 		(int)sc(snap.cmdVx,DATALOG_SCALE_VEL),
 		(int)sc(snap.cmdVy,DATALOG_SCALE_VEL),
@@ -176,29 +176,29 @@ static void DataLog_SendData(uint32_t seq)
 		(int)sc(RobotControlParam.feedbackVy,DATALOG_SCALE_VEL),
 		(int)sc(RobotControlParam.feedbackVz,DATALOG_SCALE_OMG));
 
-	//转向目标位置(counts)
+	//Target steering position (counts)
 	n += snprintf(logbuf+n,sizeof(logbuf)-n,",%d,%d,%d,%d",
 		(int)snap.steerTgt[0],(int)snap.steerTgt[1],
 		(int)snap.steerTgt[2],(int)snap.steerTgt[3]);
 
-	//转向实际位置(counts)
+	//Turn to actual positions (counts)
 	n += snprintf(logbuf+n,sizeof(logbuf)-n,",%d,%d,%d,%d",
 		(int)RobotControlParam.MotorA.ori_pos,(int)RobotControlParam.MotorB.ori_pos,
 		(int)RobotControlParam.MotorC.ori_pos,(int)RobotControlParam.MotorD.ori_pos);
 
-	//轮毂目标转速(0.1rpm)
+	//Target hub rotational speed (0.1rpm)
 	n += snprintf(logbuf+n,sizeof(logbuf)-n,",%d,%d,%d,%d",
 		(int)sc(snap.rpmTgt[0],DATALOG_SCALE_RPM),(int)sc(snap.rpmTgt[1],DATALOG_SCALE_RPM),
 		(int)sc(snap.rpmTgt[2],DATALOG_SCALE_RPM),(int)sc(snap.rpmTgt[3],DATALOG_SCALE_RPM));
 
-	//轮毂实际线速度(mm/s)
+	//Actual hub linear speed (mm/s)
 	n += snprintf(logbuf+n,sizeof(logbuf)-n,",%d,%d,%d,%d",
 		(int)sc(RobotControlParam.MotorA.feedbackSpeed,DATALOG_SCALE_VEL),
 		(int)sc(RobotControlParam.MotorB.feedbackSpeed,DATALOG_SCALE_VEL),
 		(int)sc(RobotControlParam.MotorC.feedbackSpeed,DATALOG_SCALE_VEL),
 		(int)sc(RobotControlParam.MotorD.feedbackSpeed,DATALOG_SCALE_VEL));
 
-	//轮毂电流(0.1A)与温度(0.1degC),底层TPDO1周期200ms,实际更新率5Hz
+	//Hub current (0.1A) and temperature (0.1degC); underlying TPDO1 period 200ms, actual update rate 5Hz
 	n += snprintf(logbuf+n,sizeof(logbuf)-n,",%d,%d,%d,%d,%d,%d,%d,%d",
 		(int)sc(RobotControlParam.MotorA.feedbackCurrent,DATALOG_SCALE_CUR),
 		(int)sc(RobotControlParam.MotorB.feedbackCurrent,DATALOG_SCALE_CUR),
@@ -209,7 +209,7 @@ static void DataLog_SendData(uint32_t seq)
 		(int)sc(RobotControlParam.MotorC.feedbackTemperature,DATALOG_SCALE_TMP),
 		(int)sc(RobotControlParam.MotorD.feedbackTemperature,DATALOG_SCALE_TMP));
 
-	//整车:电压 姿态 Z轴角速度 驱动器状态
+	//Vehicle: voltage, attitude, Z-axis angular velocity, drive status
 	n += snprintf(logbuf+n,sizeof(logbuf)-n,",%d,%d,%d,%d,%d,%u,%u,%d,%lu,%lu",
 		(int)sc(RobotControlParam.Vol,DATALOG_SCALE_VOL),
 		(int)sc(AttitudeVal.pitch,DATALOG_SCALE_ANG),
@@ -220,8 +220,8 @@ static void DataLog_SendData(uint32_t seq)
 		(unsigned long)s_dropCnt,
 		(unsigned long)snap.steerSendCnt);
 
-	//AutoTest航向控制内部量.vzmin/vzmax/flip 是过去100ms窗口内按50Hz累积的,
-	//不是采样瞬时值 —— 平移段Vz的振荡只能从包络和翻转次数上看出来
+	//AutoTest heading control internal variables vzmin/vzmax/flip are accumulated at 50Hz over the past 100ms window.
+	//Not a sampling instantaneous value — the oscillation of the translation segment Vz can only be seen from the envelope and flip count
 	n += snprintf(logbuf+n,sizeof(logbuf)-n,",%d,%d,%d,%d,%d,%u,%u,%u\r\n",
 		(int)sc(g_AutoTestDbg.yaw0,DATALOG_SCALE_ANG),
 		(int)sc(g_AutoTestDbg.yawErr,DATALOG_SCALE_ANG),
@@ -234,12 +234,12 @@ static void DataLog_SendData(uint32_t seq)
 
 	DataLog_Commit(n);
 
-	//本窗口已读走,重开下一个
+	//This window is read, reopen the next one
 	AutoTest_DbgWindowReset();
 }
 
-//事件行:状态跳变立即发送
-//返回1=已提交发送,0=串口忙(调用方须保留旧快照,下个周期重试,否则事件会被永久丢失)
+//Event line: state changes sent immediately
+//Return 1-transmission submitted; 0-serial port busy (caller must retain the old snapshot and retry next cycle, or the event is permanently lost)
 static uint8_t DataLog_SendEvent(const char* type,int32_t oldv,int32_t newv)
 {
 	int n = 0;
@@ -253,7 +253,7 @@ static uint8_t DataLog_SendEvent(const char* type,int32_t oldv,int32_t newv)
 	return 1;
 }
 
-//统计行:每10秒
+//Statistics row: every 10 seconds
 static void DataLog_SendStat(void)
 {
 	int n = 0;
@@ -274,7 +274,7 @@ static void DataLog_SendStat(void)
 	DataLog_Commit(n);
 }
 
-//50Hz事件检测:优先于数据行发送,保证短暂跳变不被10Hz采样错过
+//50Hz event detection: Sent before data lines to ensure brief transitions are not missed by 10Hz sampling
 static void DataLog_CheckEvent(void)
 {
 	uint8_t onbm=0,erbm=0;
@@ -332,7 +332,7 @@ static void DataLog_CheckEvent(void)
 	}
 }
 
-//累计量更新,按任务周期积分
+//Cumulative volume updates, with points based on task cycles
 static void DataLog_UpdateStat(void)
 {
 	const float dt = (float)DATALOG_TICK_MS/1000.0f;
@@ -372,7 +372,7 @@ void DataLog_task(void* param)
 	uint32_t   divStat = 0;
 	uint32_t   seq = 0;
 
-	//等待驱动器初始化与控制任务回零完成后再开始采集
+	//Wait until the drive initialization and control tasks are reset to zero before starting data collection
 	vTaskDelay(pdMS_TO_TICKS(3000));
 
 	DataLog_SendHeader();
@@ -382,13 +382,13 @@ void DataLog_task(void* param)
 
 	while(1)
 	{
-		//累计统计每周期更新
+		//Cumulative statistics updated every cycle
 		DataLog_UpdateStat();
 
-		//事件优先:状态跳变立即上报
+		//Event priority: state changes reported immediately
 		DataLog_CheckEvent();
 
-		//数据行10Hz
+		//Data row 10Hz
 		divData++;
 		if( divData >= DATALOG_DATA_DIV )
 		{
@@ -397,8 +397,8 @@ void DataLog_task(void* param)
 			DataLog_SendData(seq);
 		}
 
-		//统计行每10秒.STAT_DIV是DATA_DIV的整数倍,必然与数据行同拍触发,
-		//故先挂起再择空闲周期补发,否则统计行会被DMA忙判定永久丢弃
+		//Statistics rows every 10 seconds. STAT_DIV are integer multiples of DATA_DIV and must be triggered simultaneously with data rows,
+		//Therefore, the data line will be suspended first and then reissued during an idle period; otherwise, the statistics line will be permanently discarded by DMA busily
 		divStat++;
 		if( divStat >= DATALOG_STAT_DIV )
 		{

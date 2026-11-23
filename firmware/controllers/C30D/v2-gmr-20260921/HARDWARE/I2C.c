@@ -3,22 +3,22 @@
 Function: IIC pin initialization
 Input   : none
 Output  : none
-函数功能：IIC引脚初始化
-入口参数：无
-返回  值：无
+Function: IIC pin initialization
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void I2C_GPIOInit(void)
 {
 	
 	GPIO_InitTypeDef  GPIO_InitStructure;
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);//使能GPIOB时钟
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);//Enable the GPIOB clock
 
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10|GPIO_Pin_11;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//普通输出模式
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//Normal output mode
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//Push-pull output
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
-  GPIO_Init(GPIOB, &GPIO_InitStructure);//初始化
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//Pull up
+  GPIO_Init(GPIOB, &GPIO_InitStructure);//Initialize
 
 	IIC_SCL=1;
 	IIC_SDA=1;
@@ -29,13 +29,13 @@ void I2C_GPIOInit(void)
 Function: Simulate IIC start signal
 Input   : none
 Output  : none
-函数功能：模拟IIC起始信号
-入口参数：无
-返回  值：无
+Function: simulates IIC start signal
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void I2C_Start(void)
 {
-	SDA_OUT();     //sda线输出
+	SDA_OUT();     //SDA line output
 	IIC_SDA=1;
 	if(!READ_SDA)return ;	
 	IIC_SCL=1;
@@ -43,7 +43,7 @@ void I2C_Start(void)
  	IIC_SDA=0;//START:when CLK is high,DATA change form high to low 
 	if(READ_SDA)return ;
 	delay_us(1);
-	IIC_SCL=0;//钳住I2C总线，准备发送或接收数据 
+	IIC_SCL=0;//Hold the I2C bus to prepare to send or receive data
 	return ;
 }
 
@@ -51,18 +51,18 @@ void I2C_Start(void)
 Function: Analog IIC end signal
 Input   : none
 Output  : none
-函数功能：模拟IIC结束信号
-入口参数：无
-返回  值：无
+Function: simulates IIC end signals
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void I2C_Stop(void)
 {
-	SDA_OUT();//sda线输出
+	SDA_OUT();//SDA line output
 	IIC_SCL=0;
 	IIC_SDA=0;//STOP:when CLK is high DATA change form low to high
  	delay_us(1);
 	IIC_SCL=1; 
-	IIC_SDA=1;//发送I2C总线结束信号
+	IIC_SDA=1;//Send the I2C bus end signal
 	delay_us(1);	
 }
 
@@ -71,7 +71,7 @@ void I2C_Stop(void)
 bool I2C_WaiteForAck(void)
 {
 	u8 ucErrTime=0;
-	SDA_IN();      //SDA设置为输入  
+	SDA_IN();      //SDA is set as input
 	IIC_SDA=1;
 	delay_us(1);	   
 	IIC_SCL=1;
@@ -86,7 +86,7 @@ bool I2C_WaiteForAck(void)
 		}
 	  delay_us(1);
 	}
-	IIC_SCL=0;//时钟输出0 	   
+	IIC_SCL=0;//Clock output 0
 	return 1;
 }
 
@@ -94,9 +94,9 @@ bool I2C_WaiteForAck(void)
 Function: IIC response
 Input   : none
 Output  : none
-函数功能：IIC应答
-入口参数：无
-返回  值：无
+Function: IIC response
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void I2C_Ack(void)
 {
@@ -113,9 +113,9 @@ void I2C_Ack(void)
 Function: IIC don't reply
 Input   : none
 Output  : none
-函数功能：IIC不应答
-入口参数：无
-返回  值：无
+Function: IIC does not respond
+Entry parameters: None
+Return value: none
 **************************************************************************/ 
 void I2C_NAck(void)
 {
@@ -164,15 +164,15 @@ bool I2C_WriteBits(uint8_t DevAddr, uint8_t RegAddr, uint8_t BitStart, uint8_t L
 Function: IIC sends a bit
 Input   : none
 Output  : none
-函数功能：IIC发送一个位
-入口参数：无
-返回  值：无
+Function: IIC sends one bit
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void I2C_WriteByte(uint8_t Data)
 {
     u8 t;   
 	SDA_OUT(); 	    
-    IIC_SCL=0;//拉低时钟开始数据传输
+    IIC_SCL=0;//Pull down the clock to start data transfer
     for(t=0;t<8;t++)
     {              
         IIC_SDA=(Data&0x80)>>7;
@@ -229,9 +229,9 @@ bool I2C_WriteBuff(uint8_t DevAddr, uint8_t RegAddr, uint8_t Num, uint8_t *pBuff
 Function: IIC reads a bit
 Input   : none
 Output  : none
-函数功能：IIC读取一个位
-入口参数：无
-返回  值：无
+Function: IIC reads one bit
+Entry parameters: None
+Return value: none
 **************************************************************************/
 uint8_t I2C_ReadByte(uint8_t Ack)
 {
@@ -322,29 +322,29 @@ bool I2C_ReadBuff(uint8_t DevAddr, uint8_t RegAddr, uint8_t Num, uint8_t *pBuff)
 //Input   : dev：Target device IIC address；reg:Register address；
 //					length：Number of bytes；*data:The pointer where the read data will be stored
 //Output  : count：Number of bytes read out-1
-//函数功能：IIC连续读数据
-//入口参数：dev：目标设备IIC地址；reg:寄存器地址；length：字节数；
-//					*data:读出的数据将要存放的指针
-//返回  值：count：读出来的字节数量-1
+//Function: IIC continuous data reading
+//Entry parameters: dev: target device IIC address; reg: register address; length: number of bytes;
+//					*data: The pointer to which the read data will be stored
+//Return value: count: number of bytes read minus 1
 //**************************************************************************/ 
 //u8 IICreadBytes(u8 dev, u8 reg, u8 length, u8 *data){
 //    u8 count = 0;
 //	
 //	IIC_Start();
-//	IIC_Send_Byte(dev);	   //发送写命令
+//	IIC_Send_Byte(dev); // Send write command
 //	IIC_Wait_Ack();
-//	IIC_Send_Byte(reg);   //发送地址
+//	IIC_Send_Byte(reg); // Send address
 //  IIC_Wait_Ack();	  
 //	IIC_Start();
-//	IIC_Send_Byte(dev+1);  //进入接收模式	
+//	IIC_Send_Byte(dev+1); // Enter receive mode
 //	IIC_Wait_Ack();
 //	
 //    for(count=0;count<length;count++){
 //		 
-//		 if(count!=length-1)   data[count]=IIC_Read_Byte(1);  //带ACK的读数据
-//		 else                  data[count]=IIC_Read_Byte(0);  //最后一个字节NACK
+//		 if(count != length - 1) data[count] = IIC_Read_Byte(1); // Read data with ACK
+//		 else data[count] = IIC_Read_Byte(0); // last byte NACK
 //	}
-//    IIC_Stop();//产生一个停止条件
+//    IIC_Stop(); // Generate a stop condition
 //    return count;
 //}
 

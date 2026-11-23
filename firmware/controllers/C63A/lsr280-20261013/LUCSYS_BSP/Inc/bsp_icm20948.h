@@ -3,16 +3,16 @@
 
 #include <stdint.h>
 
-typedef struct{ //中间私有变量
+typedef struct{ //Intermediate private variables
 	float x;
 	float y;
 	float z;
 }PrivateBuf_t;
 	
 typedef struct{
-	PrivateBuf_t gyro; //3轴角速度
-	PrivateBuf_t accel;//3轴加速度
-	PrivateBuf_t magn;//3轴磁力计
+	PrivateBuf_t gyro; //3-axis angular velocity
+	PrivateBuf_t accel;//3-axis acceleration
+	PrivateBuf_t magn;//3-axis magnetometer
 }IMU_DATA_t;
 
 typedef struct{
@@ -22,21 +22,21 @@ typedef struct{
 }ATTITUDE_DATA_t;
 
 
-//IMU操作接口
+//IMU operation interface
 typedef struct {
-    uint8_t (*Init)(void);   //返回值：1错误 0无异常
-    uint8_t (*DeInit)(void); //返回值：1错误 0无异常
+    uint8_t (*Init)(void);   //Return value: 1-error; 0-no error
+    uint8_t (*DeInit)(void); //Return value: 1-error; 0-no error
 	
-	void (*UpdateZeroPoint_axis)(void);               //更新9轴数据零点
-	void (*UpdateZeroPoint_attitude)(void);          //更新姿态零点
-    void (*Update_9axisVal)(IMU_DATA_t* imudata,IMU_DATA_t* ori);                         //更新9轴数据
-	void (*UpdateAttitude)(IMU_DATA_t imudata,ATTITUDE_DATA_t *attitude); //更新姿态角
+	void (*UpdateZeroPoint_axis)(void);               //Update the zeros of the 9-axis data
+	void (*UpdateZeroPoint_attitude)(void);          //Updated posture zero point
+    void (*Update_9axisVal)(IMU_DATA_t* imudata,IMU_DATA_t* ori);                         //Update 9-axis data
+	void (*UpdateAttitude)(IMU_DATA_t imudata,ATTITUDE_DATA_t *attitude); //Updated attitude angles
 	
 }IMUInterface_t,*pIMUInterface_t;
 
 extern IMUInterface_t UserICM20948;
 
-//用于存放IMU数据
+//Used to store IMU data
 extern IMU_DATA_t axis_9Val;      
 extern IMU_DATA_t axis_9ValOri;  
 extern ATTITUDE_DATA_t AttitudeVal;

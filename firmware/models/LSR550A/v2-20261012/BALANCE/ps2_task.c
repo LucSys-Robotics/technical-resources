@@ -4,9 +4,9 @@
 Function: Ps2 handle task
 Input   : none
 Output  : none
-函数功能：PS2手柄任务
-入口参数：无
-返回  值：无
+Functions: PS2 controller tasks
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void pstwo_task(void *pvParameters)
 {
@@ -16,18 +16,18 @@ void pstwo_task(void *pvParameters)
     {
         vTaskDelayUntil(&lastWakeTime, F2T(PS2_TASK_RATE));
 		
-		if( SysVal.HardWare_Ver == V1_0 ) // V1.0硬件版本 使用常规ps2手柄
+		if( SysVal.HardWare_Ver == V1_0 ) // V1.0 hardware version uses a standard PS2 controller
 		{
 			//Read the ps2 data
-			//读取PS2的数据
+			//Read data from the PS2
 			PS2_Read();		
 		}
-		else if( SysVal.HardWare_Ver == V1_1 ) //V1.1硬件版本 使用usb手柄
+		else if( SysVal.HardWare_Ver == V1_1 ) //V1.1 hardware version uses a USB controller
 		{
-			//V1.1硬件使用USB手柄,读取任务不在此函数
+			//V1.1 hardware uses USB handles; read tasks are not included in this function
 		}
 		
-			//游戏手柄模式启动
+			//Game controller mode starts
 			if( GamePadInterface->StartFlag == 1 && Get_Control_Mode(_PS2_Control)==0 && SysVal.Time_count>=CONTROL_DELAY && GamePadInterface->LY > 150 )
 			{	
 				Set_Control_Mode(_PS2_Control);

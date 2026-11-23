@@ -2,48 +2,48 @@
 #include "sys.h"
 
 DMA_InitTypeDef DMA_InitStructure;
-u16 DMA1_MEM_LEN2;//保存DMA每次数据传送的长度
+u16 DMA1_MEM_LEN2;//Saves the length of each DMA data transfer
 
 /**************************************************************************
-函数功能：串口2DMA初始化
-入口参数：DMA通道，数据的目标地址，数据的起始地址，发送的数据数量
-返回  值：无
+Function: Serial Port 2 DMA initialization
+Entry parameters: DMA channel, target address of data, starting address of data, amount of data sent
+Return value: none
 **************************************************************************/
 void MYDMA_Init2(DMA_Channel_TypeDef* DMA_CHx,u32 cpar,u32 cmar,u16 cndtr)
 {
- 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);	//使能DMA传输
+ 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);	//Enable DMA transfer
 	
-  DMA_DeInit(DMA_CHx);	//将DMA的通道1寄存器重设为缺省值
-	DMA1_MEM_LEN2=cndtr;		//数据传输量 
-	DMA_InitStructure.DMA_PeripheralBaseAddr = cpar;  //DMA外设ADC基地址
-	DMA_InitStructure.DMA_MemoryBaseAddr = cmar;  //DMA内存基地址
-	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;  //数据传输方向，从内存读取发送到外设
-	DMA_InitStructure.DMA_BufferSize = cndtr;  //DMA通道的DMA缓存的大小
-	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;  //外设地址寄存器不变
-	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;  //内存地址寄存器递增
-	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;  //数据宽度为8位
-	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte; //数据宽度为8位
-	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;  //工作在正常缓存模式
-	DMA_InitStructure.DMA_Priority = DMA_Priority_High; //DMA通道 x拥有高优先级 
-	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;  //DMA通道x没有设置为内存到内存传输
-	DMA_Init(DMA_CHx, &DMA_InitStructure);  //根据DMA_InitStruct中指定的参数初始化DMA的通道USART1_Tx_DMA_Channel所标识的寄存器 	
+  DMA_DeInit(DMA_CHx);	//Reset the DMA's channel 1 register to its default value
+	DMA1_MEM_LEN2=cndtr;		//Data transfer volume
+	DMA_InitStructure.DMA_PeripheralBaseAddr = cpar;  //DMA peripheral ADC base address
+	DMA_InitStructure.DMA_MemoryBaseAddr = cmar;  //DMA memory base address
+	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;  //Data transfer direction: read from memory to send to peripherals
+	DMA_InitStructure.DMA_BufferSize = cndtr;  //The size of the DMA cache for the DMA channel
+	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;  //The peripheral address register remains unchanged
+	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;  //Memory address register increment
+	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;  //Data width is 8 bits
+	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte; //Data width is 8 bits
+	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;  //Operates in normal caching mode
+	DMA_InitStructure.DMA_Priority = DMA_Priority_High; //DMA channel x has high priority
+	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;  //DMA channel x is not set for memory-to-memory transfer
+	DMA_Init(DMA_CHx, &DMA_InitStructure);  //Initialize the DMA channel USART1_Tx_DMA_Channel identified registers according to the parameters specified in the DMA_InitStruct
 } 
 /**************************************************************************
-函数功能：开启一次DMA传输
-入口参数：DMA通道，数据的目标地址，数据的起始地址，发送的数据数量
-返回  值：无
+Function: Enable a single DMA transfer
+Entry parameters: DMA channel, target address of data, starting address of data, amount of data sent
+Return value: none
 **************************************************************************/
 void MYDMA_Enable2(DMA_Channel_TypeDef*DMA_CHx)
 { 
-	DMA_Cmd(DMA_CHx, DISABLE );  //关闭USART1 TX DMA1 所指示的通道      
- 	DMA_SetCurrDataCounter(DMA1_Channel7,DMA1_MEM_LEN2);//DMA通道的DMA缓存的大小
- 	DMA_Cmd(DMA_CHx, ENABLE);  //使能USART1 TX DMA1 所指示的通道 
+	DMA_Cmd(DMA_CHx, DISABLE );  //Close the channel indicated by USART1 TX DMA1
+ 	DMA_SetCurrDataCounter(DMA1_Channel7,DMA1_MEM_LEN2);//The size of the DMA cache for the DMA channel
+ 	DMA_Cmd(DMA_CHx, ENABLE);  //Enable the channel indicated by USART1 TX DMA1
 }	  
 
 ///**************************************************************************
-//函数功能：DMA方式的printf
-//入口参数：要打印的内容
-//返回  值：无
+//Function: printf in DMA mode
+//Entry parameters: What to print
+//Return value: none
 //**************************************************************************/
 void DMA_printf(const char *format,...)
 {
@@ -63,14 +63,14 @@ u32 USART_SendBuffer(const char* buffer, u32 length)
 		return 0;
 	}
  
-	DMA_Cmd(DMA1_Channel7, DISABLE); //失能DMA通道
+	DMA_Cmd(DMA1_Channel7, DISABLE); //Disable DMA channel
 	DMA_SetCurrDataCounter(DMA1_Channel7, length);
-	DMA_Cmd(DMA1_Channel7, ENABLE); //使能DMA通道
+	DMA_Cmd(DMA1_Channel7, ENABLE); //Enable DMA channels
 	while(1)
 	{
-		if(DMA_GetITStatus(DMA1_IT_TC7)!=RESET)	//判断通道7（uart2_tx）传输完成
+		if(DMA_GetITStatus(DMA1_IT_TC7)!=RESET)	//Confirm that channel 7 (uart2_tx) transmission is complete
 		{
-			DMA_ClearFlag(DMA1_IT_TC7);//清除通道7传输完成标志
+			DMA_ClearFlag(DMA1_IT_TC7);//Clear the channel 7 transfer completion flag
 			break;
 		}
 	}

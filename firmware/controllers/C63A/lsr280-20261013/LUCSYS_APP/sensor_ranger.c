@@ -1,17 +1,17 @@
 /**
  * @file    sensor_ranger.c
- * @brief   超声波传感器数据获取逻辑文件.
+ * @brief Logic files for obtaining ultrasonic sensor data.
  * @note LucSys Robotics distribution maintenance; original authorship not claimed
  * @date    2025-07-10
  * @version 1.0.0
  *
  * @details
- * - 本文件主要是超声波传感器数据获取的内容,需要依赖定时器的输入捕获功能。超声波数据获取流程：
-     由任务ultrasonic_task触发超声波工作,并最终在定时器的捕获中断里计算距离。
- * - 此文件用户主要关注GetRangerGroup函数,此函数可以给超声波分组,同一组的超声波将会同时被
- *   触发测距,需要注意相邻太近的超声波不可分配到同一组,否则将会出现两个超声波信号互相干扰
- * - 需要修改超声波触发顺序或者分组,请按GetRangerGroup里面的格式定义分组即可。如需要屏蔽某个
- *   个超声波，直接将其移除分组即可
+ * - This document mainly covers ultrasonic sensor data acquisition and relies on the timer's input capture function. Ultrasonic data acquisition process:
+     Ultrasonic operation is triggered by the task ultrasonic_task, and the distance is calculated during the timer's capture interrupt.
+ * - Users of this file mainly focus on the GetRangerGroup function, which can group ultrasounds, and ultrasounds in the same group will be grouped simultaneously
+ *   When triggering distance measurement, be careful not to assign ultrasound signals that are too close to each other in the same group, otherwise the two ultrasonic signals may interfere with each other
+ * - If you need to modify the ultrasonic trigger order or grouping, please define the group according to the format in GetRangerGroup. If you need to block a specific one
+ *   ultrasounds, simply remove and group them
  * @note
  * 
  * 
@@ -21,10 +21,10 @@
 
 #include "robot_select_init.h"
 
-//超声波传感器事件组
+//Ultrasonic sensor event group
 EventGroupHandle_t g_xEventRangerSensor = NULL;
 
-//设置调试等级
+//Set the debug level
 #define SENSOR_DEBUG_LEVEL 0
 
 #if (SENSOR_DEBUG_LEVEL > 0U)
@@ -37,12 +37,12 @@ EventGroupHandle_t g_xEventRangerSensor = NULL;
 #endif
 
 
-//超声波完成采集回调函数_运行环境为中断环境
+//Ultrasonic completion callback function for acquisition _ Operating environment is interrupted
 BaseType_t RangerSensor_CaptureCallBack(uint8_t index)
 {
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-	//设置采集成功的标志位
+	//Set the flag for successful acquisition
 	xEventGroupSetBitsFromISR(g_xEventRangerSensor,1<<index,&xHigherPriorityTaskWoken);
 	
 	return xHigherPriorityTaskWoken;
@@ -54,18 +54,18 @@ enum {
 	WaitDown,
 };
 
-//接口绑定
+//Interface binding
 RangerHALObj RangerHAL_A = {
-	.index = 1,      //索引值,A对1,B-2,C-3....
-	.sm = WaitUp, //内置状态机
-	.dis = 5.1f,  //距离值
-	.upvalue = 0,    //内部采集变量
-	.downvalue = 0,  //内部采集变量
-	.CaptureCompleted = RangerSensor_CaptureCallBack,//采集完成回调函数
-	.timeoutflag = 1,//采集超时标志位
-	.timeoutCount = 0,//采集超时次数
+	.index = 1,      //Index values: A to 1, B-2, C-3....
+	.sm = WaitUp, //Built-in state machine
+	.dis = 5.1f,  //Distance value
+	.upvalue = 0,    //Internal collected variables
+	.downvalue = 0,  //Internal collected variables
+	.CaptureCompleted = RangerSensor_CaptureCallBack,//Acquisition-complete callback
+	.timeoutflag = 1,//Acquisition timeout flag
+	.timeoutCount = 0,//Acquisition timeout count
 	
-	//绑定硬件接口
+	//Bind hardware interfaces
 	.tim = &htim3,
 	.ch = TIM_CHANNEL_4,
 	.TrigPort = TriA_GPIO_Port,
@@ -147,17 +147,17 @@ RangerHALObj RangerHAL_F = {
 	.TrigPin = TriF_Pin,
 };
 
-//支持的超声波个数列表,此内容用于中断使用
+//List of supported ultrasound counts, used for interrupting use
 #define RANGER_NUM 6
 static RangerHALObj* rangerlist[] = { 
 	&RangerHAL_A,&RangerHAL_B,&RangerHAL_C,
 	&RangerHAL_D,&RangerHAL_E,&RangerHAL_F 
 };
 
-//计数器的计数频率,与定时器配置相关
+//Counting frequency of the counter, related to timer configuration
 #define TIM_COUNT_FREQ 1000000.0f
 
-//传感器复位,采集数据超时时使用
+//Sensor reset and used when data collection times out
 static void RangerReset(RangerHALObj* ranger)
 {
 	ranger->sm = WaitUp;
@@ -170,7 +170,7 @@ static void RangerReset(RangerHALObj* ranger)
 	HAL_GPIO_WritePin(ranger->TrigPort,ranger->TrigPin,GPIO_PIN_SET);
 }
 
-//根据活跃的定时器通道返回对应的通道值,中断使用
+//Returns the corresponding channel value based on the active timer channel, interrupting usage
 static uint32_t get_tim_activate_ch(HAL_TIM_ActiveChannel active_ch)
 {
 	switch (active_ch) {
@@ -182,27 +182,27 @@ static uint32_t get_tim_activate_ch(HAL_TIM_ActiveChannel active_ch)
 	}
 }
 
-//超声波触发,用于驱动超声波传感器工作
+//Ultrasonic trigger, used to drive the ultrasonic sensor to operate
 static void RangerTrigger(RangerHALObj* ranger)
 {
-	//低电平触发超声波工作
+	//Low-level triggered ultrasound operation
 	HAL_GPIO_WritePin(ranger->TrigPort,ranger->TrigPin,GPIO_PIN_RESET);
 	delay_us(15);
 	HAL_GPIO_WritePin(ranger->TrigPort,ranger->TrigPin,GPIO_PIN_SET);
 	
-	//设置超时标志位,若改标志位没有被置0代表数据超时
+	//Set a timeout flag; if the flag is not set to 0, it means the data timed out
 	ranger->timeoutflag = 1;
 	
-	//清空历史事件组标志位
+	//Clear the historical event group flags
 	xEventGroupClearBits(g_xEventRangerSensor,1<<ranger->index);
 	
-	//检查元素访问是否正确
+	//Check whether element access is correct
 //	SENSOR_UsrLog("sensor %c trigger!",0x40+ranger->index);
 }
 
 /*
- * 中断内部状态机,中断使用.
- * 超声波工作方式：trig 下降沿触发工作, 测距信号由低变高,然后由高变低,统计高电平时间测出距离
+ * Interrupt internal state machine and interrupt usage.
+ * Ultrasonic operating mode: trig descending edge triggers operation, ranging signals from low to high, then from high to low, and the high-level time is calculated to measure distance
 */
 static void RangerHandle_Result(RangerHALObj* ranger,BaseType_t* wokenTask)
 {
@@ -210,25 +210,25 @@ static void RangerHandle_Result(RangerHALObj* ranger,BaseType_t* wokenTask)
 	{
 		case WaitUp:
 		{
-			//读出计数值
+			//Read out the count value
 			ranger->upvalue = HAL_TIM_ReadCapturedValue(ranger->tim,ranger->ch);
 			
-			//设置下降沿捕获
+			//Set down edge capture
 			TIM_RESET_CAPTUREPOLARITY(ranger->tim,ranger->ch);
 			TIM_SET_CAPTUREPOLARITY(ranger->tim,ranger->ch,TIM_ICPOLARITY_FALLING);
 			
-			//状态机切换
+			//State machine switching
 			ranger->sm = WaitDown;
 			break;
 		}
 		
 		case WaitDown:
 		{
-			//读取计数值
+			//Read count values
 			ranger->downvalue = HAL_TIM_ReadCapturedValue(ranger->tim,ranger->ch);
 			
-			//计算距离
-			if( ranger->upvalue > ranger->downvalue )//溢出计算
+			//Calculate distance
+			if( ranger->upvalue > ranger->downvalue )//Spillover calculation
 				ranger->dis = ranger->downvalue+0xFFFF - ranger->upvalue;
 			else
 				ranger->dis = ranger->downvalue - ranger->upvalue;
@@ -236,17 +236,17 @@ static void RangerHandle_Result(RangerHALObj* ranger,BaseType_t* wokenTask)
 			// S = V*t/2
 			ranger->dis = (ranger->dis/TIM_COUNT_FREQ)/2.0f * 340.0f;
 			
-			//设置上升沿捕获
+			//Set rising edge capture
 			TIM_RESET_CAPTUREPOLARITY(ranger->tim,ranger->ch);
 			TIM_SET_CAPTUREPOLARITY(ranger->tim,ranger->ch,TIM_ICPOLARITY_RISING);
 			
-			//触发完成采集回调函数
+			//Trigger the collection callback function to complete
 			*wokenTask = ranger->CaptureCompleted(ranger->index);
 			
-			//成功采集数据,清除超时标志位
+			//Successfully collected data and cleared timeout flags
 			ranger->timeoutflag = 0;
 			
-			//状态机切换
+			//State machine switching
 			ranger->sm = WaitUp;
 			
 			break;
@@ -254,13 +254,13 @@ static void RangerHandle_Result(RangerHALObj* ranger,BaseType_t* wokenTask)
 	}		
 }
 
-//超声波捕获回调函数处理
+//Ultrasonic capture callback function processing
 void Ranger_IC_CaptureCallback(TIM_HandleTypeDef *htim,BaseType_t* woken)
 {
-	//根据硬件接口匹配对应的超声波
+	//Match the corresponding ultrasonic waves according to the hardware interface
 	for(uint8_t i=0;i<RANGER_NUM;i++)
 	{
-		//通过匹配对应的定时器+定时器通道,完成不同的超声波数据采集
+		//Acquire data from different ultrasonic sensors by matching timer and timer channel
 		if( rangerlist[i]->tim == htim && rangerlist[i]->ch == get_tim_activate_ch(htim->Channel) )
 		{
 			RangerHandle_Result(rangerlist[i],woken);
@@ -268,33 +268,33 @@ void Ranger_IC_CaptureCallback(TIM_HandleTypeDef *htim,BaseType_t* woken)
 	}
 }
 
-// 组信息结构体
+// Group of information structures
 typedef struct {
-    RangerHALObj** list; // 指向组的指针
-    uint8_t size;        // 组的元素个数
+    RangerHALObj** list; // Pointer to the group
+    uint8_t size;        // Number of elements in the group
 } RangerGroup_t;
 
-//////////// 用户配置区,可修改超声波的分组情况,以及定义超声波的组分配情况,配置后无需修改其他代码 ////////////
-////定义使用哪些超声波作为组1
+//////////// User configuration area, where you can modify ultrasonic grouping and define group assignments; no additional code modifications are needed after configuration////////////
+////Define which ultrasounds are used as Group 1
 //RangerHALObj* RangerGroup1_List[] = { &RangerHAL_E,&RangerHAL_F }; 
 
-////定义使用哪些超声波作为组2
+////Define which ultrasounds are used as Group 2
 //RangerHALObj* RangerGroup2_List[] = { &RangerHAL_A,&RangerHAL_B }; 
 
-////定义使用哪些超声波作为组X
+////Define which ultrasounds to use as Group X
 
-////将上述定义的组别，一一添加到下列超声波集合
+////Add the groups defined above one by one to the following ultrasound sets
 //static RangerGroup_t GroupManager_List[] = {
 //	{ RangerGroup1_List,sizeof(RangerGroup1_List)/sizeof(RangerGroup1_List[0]) } , 
 //	{ RangerGroup2_List,sizeof(RangerGroup2_List)/sizeof(RangerGroup2_List[0]) } , 
 //};
-//////////// 用户配置区,可修改超声波的分组情况,以及定义超声波的组分配情况,配置后无需修改其他代码 ////////////
+//////////// User configuration area, where you can modify ultrasonic grouping and define group assignments; no additional code modifications are needed after configuration////////////
 
 
-//根据不同的车型对超声波进行分组
+//Grouping ultrasound according to different vehicle models
 void GetRangerGroup(RangerGroup_t** group,uint8_t* groupNum)
 {
-	//S260六轮车、S200户外自动驾驶机器人,均适用本超声波分组
+	//S260 six-wheeler and S200 outdoor autonomous driving robot are both suitable for this ultrasonic grouping
 	static RangerHALObj* RangerGroup1_List_S260[] = { &RangerHAL_A,&RangerHAL_D,&RangerHAL_F };
 	static RangerHALObj* RangerGroup2_List_S260[] = { &RangerHAL_B,&RangerHAL_E}; 
 	static RangerHALObj* RangerGroup3_List_S260[] = { &RangerHAL_C}; 
@@ -304,7 +304,7 @@ void GetRangerGroup(RangerGroup_t** group,uint8_t* groupNum)
 		{ RangerGroup3_List_S260,sizeof(RangerGroup3_List_S260)/sizeof(RangerGroup3_List_S260[0]) } , 
 	};
 	
-	//S300超声波分组
+	//S300 ultrasonic grouping
 	static RangerHALObj* RangerGroup1_List_S300[] = { &RangerHAL_A,&RangerHAL_C,&RangerHAL_E };
 	static RangerHALObj* RangerGroup2_List_S300[] = { &RangerHAL_B,&RangerHAL_D,&RangerHAL_F}; 
 	static RangerGroup_t GroupManager_List_S300[] = {
@@ -312,7 +312,7 @@ void GetRangerGroup(RangerGroup_t** group,uint8_t* groupNum)
 		{ RangerGroup2_List_S300,sizeof(RangerGroup2_List_S300)/sizeof(RangerGroup2_List_S300[0]) } , 
 	};
 	
-	//S300 Mini超声波分组
+	//S300 Mini ultrasonic grouping
 	static RangerHALObj* RangerGroup1_List_S150[] = { &RangerHAL_A,&RangerHAL_C,&RangerHAL_E };
 	static RangerHALObj* RangerGroup2_List_S150[] = { &RangerHAL_B,&RangerHAL_D}; 
 	static RangerGroup_t GroupManager_List_S150[] = {
@@ -320,7 +320,7 @@ void GetRangerGroup(RangerGroup_t** group,uint8_t* groupNum)
 		{ RangerGroup2_List_S150,sizeof(RangerGroup2_List_S150)/sizeof(RangerGroup2_List_S150[0]) } , 
 	};
 	
-	//根据车型不同选择不同的分组
+	//Select different groups according to the vehicle model
 	if( RobotHardWareParam.CarType == S200_OUTDOOR || RobotHardWareParam.CarType == S260 )
 	{
 		*group = GroupManager_List_S260;
@@ -337,23 +337,23 @@ void GetRangerGroup(RangerGroup_t** group,uint8_t* groupNum)
 		*groupNum = sizeof(GroupManager_List_S150)/sizeof(GroupManager_List_S150[0]);
 	}
 	
-	//对于无超声波的车型不会执行分组,此时会删除超声波任务以及关闭对应的中断节省系统资源
+	//For models without ultrasonic technology, grouping will not be performed; in this case, ultrasonic tasks will be deleted and the corresponding interrupts will be disabled to save system resources
 
 }
 
-//超声波测距任务
+//Ultrasonic ranging mission
 void ultrasonic_task(void* param)
 {
 	static uint8_t MAX_Group=0;
 	static RangerGroup_t* GroupManager_List = NULL;
 	
-	//获取超声波的分组和组别数量
+	//Obtain the number of ultrasound groups and groups
 	GetRangerGroup(&GroupManager_List,&MAX_Group);
 	
-    // 检查分组是否有效,无效的分组将不执行此任务
+    // Check if the group is valid; invalid groups will not perform this task
     if (GroupManager_List == NULL || MAX_Group == 0)
 	{
-		//没有分到组别的车型,删除超声波任务、关闭超声波中断,节省系统资源
+		//For models not assigned to a group, ultrasonic tasks are deleted and ultrasonic interrupts are disabled to save system resources
 		HAL_TIM_IC_Stop_IT(RangerHAL_A.tim,RangerHAL_A.ch);
 		HAL_TIM_IC_Stop_IT(RangerHAL_B.tim,RangerHAL_B.ch);
 		HAL_TIM_IC_Stop_IT(RangerHAL_C.tim,RangerHAL_C.ch);
@@ -363,11 +363,11 @@ void ultrasonic_task(void* param)
 		vTaskDelete(NULL);
     }
 	
-	//事件组实例
+	//Event group instance
 	g_xEventRangerSensor = xEventGroupCreate();
 	EventBits_t waitbits = 0 , resultbits = 0;
 	
-	//开启超声波相关定时器捕获功能
+	//Enable the ultrasonic-related timer capture function
 	HAL_TIM_IC_Start_IT(&htim3,TIM_CHANNEL_1);
 	HAL_TIM_IC_Start_IT(&htim3,TIM_CHANNEL_2);
 	HAL_TIM_IC_Start_IT(&htim3,TIM_CHANNEL_3);
@@ -380,25 +380,25 @@ void ultrasonic_task(void* param)
 	{
 		for(i=0;i<MAX_Group;i++)
 		{
-			//同一个组内的超声波同时触发
+			//Ultrasound within the same group triggers simultaneously
 			for(k=0;k<GroupManager_List[i].size;k++)
 			{
-				waitbits |= (1<<GroupManager_List[i].list[k]->index);//计算需要等待的事件
-				RangerTrigger(GroupManager_List[i].list[k]);//触发超声波工作
+				waitbits |= (1<<GroupManager_List[i].list[k]->index);//Calculate events that require waiting
+				RangerTrigger(GroupManager_List[i].list[k]);//Trigger ultrasonic operation
 			}
 
-			//等待超声波处理结果,超时时间为30ms
+			//Wait for the ultrasonic processing results; the timeout is 30ms
 			resultbits = xEventGroupWaitBits(g_xEventRangerSensor,waitbits,pdTRUE,pdTRUE,pdMS_TO_TICKS(30));
 			
-			//检查是否有超声波超时,并执行超时处理
+			//Check for ultrasonic timeouts and perform timeout handling
 			if( (resultbits&waitbits) != waitbits )
 			{
 				for(k=0;k<GroupManager_List[i].size;k++)
 				{
-					//处理超时的超声波
+					//Handle timeout ultrasound
 					if( GroupManager_List[i].list[k]->timeoutflag == 1 ) 
 					{
-						GroupManager_List[i].list[k]->timeoutCount++;//统计超时次数
+						GroupManager_List[i].list[k]->timeoutCount++;//Count timeout counts
 						RangerReset(GroupManager_List[i].list[k]);
 						SENSOR_UsrLog("sensor %c timeout...",0x40+GroupManager_List[i].list[k]->index);
 					}
@@ -406,7 +406,7 @@ void ultrasonic_task(void* param)
 			}
 			
 			waitbits = 0;
-			//下一组触发...
+			//Next set triggers...
 		}
 	}
 }

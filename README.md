@@ -172,3 +172,5 @@ These model files are not distributed under an open-source license. Redistributi
 - Verify motion-axis directions and safety behavior on the delivered controller before sending live motion commands.
 
 **Document scope:** These guides provide engineering reference information, not a substitute for product-specific specifications, service instructions or safety testing. The ROS 2 chassis-driver source is available below; selected complete STM32 source projects are available in the [firmware library](firmware/README.md); deployment images are not included. For product-specific connection drawings and software delivery information, contact LucSys Robotics.
+
+[English source documentation edition (2026-11-23)](firmware/ENGLISH_EDITION.md) — English comments and notes; executable code and model applicability unchanged.

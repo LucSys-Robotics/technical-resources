@@ -3,7 +3,7 @@
 #include "sys.h"
 
 /*--------PS2 config--------*/
-//PS2手柄引脚
+//PS2 controller pins
 #define ENABLE_PS2_DI_PIN_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE)
 #define ENABLE_PS2_DO_PIN_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE)
 #define ENABLE_PS2_CS_PIN_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE)
@@ -19,19 +19,19 @@
 #define PS2_CS_PIN  GPIO_Pin_2
 #define PS2_CLK_PIN GPIO_Pin_3
 
-#define DI   PEin(0)     //Input pin //输入引脚
+#define DI   PEin(0)     //Input pin
 
-#define DO_H PEout(1)=1   //Command height //命令位高
-#define DO_L PEout(1)=0   //Command low //命令位低
+#define DO_H PEout(1)=1   //Command height // Command high
+#define DO_L PEout(1)=0   //Command low // Command low
 
-#define CS_H PEout(2)=1  //Cs pull up //CS拉高
-#define CS_L PEout(2)=0  //Cs drawdown //CS拉低
+#define CS_H PEout(2)=1  //Cs pull up // CS pull up
+#define CS_L PEout(2)=0  //Cs drawdown // CS pulls down
 
-#define CLK_H PEout(3)=1 //Clock lift //时钟拉高
-#define CLK_L PEout(3)=0 //Clock down //时钟拉低
+#define CLK_H PEout(3)=1 //Clock lift // Clock lift
+#define CLK_L PEout(3)=0 //Clock down // Clock pull down
 /*----------------------------------*/
 
-//对外接口
+//External interface
 void PS2_Init(void);
 void PS2_Read(void);
 void PS2_Key_Param_Init(void);

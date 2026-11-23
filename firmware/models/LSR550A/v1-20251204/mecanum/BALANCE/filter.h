@@ -2,7 +2,7 @@
 #define __FILTER_H
 #include "system.h"
   /**************************************************************************
-×÷Õß£ºLucSys Robotics
+By LucSys Robotics
 **************************************************************************/
 extern float angle, angle_dot; 	
 void Kalman_Filter(float Accel,float Gyro);		

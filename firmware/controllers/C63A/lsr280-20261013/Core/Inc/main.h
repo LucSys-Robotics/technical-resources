@@ -44,7 +44,7 @@ extern "C" {
 uint8_t get_HardWareVersion(void);
 GPIO_PinState get_EnKeyState(void);
 enum{
-	HW_UnKnown = 0, //Ӳ���汾
+	HW_UnKnown = 0, //Ӳ Fen
 	HW_1_0 , 
 	HW_1_1
 };
@@ -133,7 +133,7 @@ void Error_Handler(void);
 #define ENKey_GPIO_Port GPIOE
 
 /* USER CODE BEGIN Private defines */
-//全局调试使用
+//Use for global debugging
 typedef struct{
 	uint8_t powerlost;
 	uint8_t chargingfull;

@@ -1,20 +1,20 @@
 #include "bsp_dwt.h"
 
-//FreeRTOS下SysTick将被RTOS接管和配置,这里使用DWT定时器满足延迟函数
-//DWT计数器频率为系统时钟频率,计数器共32位,顺序计数.
+//Under FreeRTOS, SysTick will be taken over and configured by RTOS, where a DWT timer is used to satisfy the delay function
+//The DWT counter frequency is the system clock frequency, with a total of 32 bits, sequential counting.
 void DWT_Init(void)
 {
-	//1.使用DWT前必须使能DGB的系统跟踪（《Cortex-M3权威指南》）
+	//1. DGB system tracing must be enabled before using DWT (Cortex-M3 Authoritative Guide).
 	DEM_CR |= 1<<24;
 
-	//2.计数器清0
+	//2. Counter clears to 0
 	DWT_CYCCNT = (uint32_t)0u;
 
-	//3.开启计时
+	//3. Enable timing
 	DWT_CTRL |= 1<<0;
 }
 
-//返回32位计数器CYCCNT的值,计数频率为系统时钟频率
+//Return the 32-bit CYCCNT counter value; counting frequency equals the system clock frequency
 static uint32_t DWT_GetTick(void)
 {
 	return (uint32_t)DWT_CYCCNT;
@@ -22,27 +22,27 @@ static uint32_t DWT_GetTick(void)
 
 void delay_us(uint32_t us)
 {
-	//超出能满足的最大延迟 25565281
+	//Exceeding the maximum delay 25565281 that can be satisfied
 	if( us > DWT_CNT_MAX/(SystemCoreClock/1000000) ) us = DWT_CNT_MAX/(SystemCoreClock/1000000);
 	
-	us = us*(SystemCoreClock/1000000); //单位转换
+	us = us*(SystemCoreClock/1000000); //Unit conversion
 	
-	//用于保存已走过的时间
+	//Used to save elapsed time
 	uint32_t runningtime = 0;
 	
-	//获得当前时刻的计数值
+	//Get the count value for the current moment
 	uint32_t InserTick = DWT_GetTick();
 	
-	//用于刷新实时时间
+	//Used to refresh real-time
 	uint32_t tick = 0;
 	
 	uint8_t countflag = 0;
-	//等待延迟
+	//Wait for delay
 	while(1)
 	{
-		tick = DWT_GetTick();//刷新当前时刻计数值
+		tick = DWT_GetTick();//Refresh the current moment count value
 		
-		if( tick < InserTick ) countflag = 1;//出现溢出轮询,则切换走时的计算方式
+		if( tick < InserTick ) countflag = 1;//If overflow polling occurs, switch to the timing calculation method
 		
 		if( countflag ) runningtime = tick + DWT_CNT_MAX - InserTick;
 		else runningtime = tick - InserTick;
@@ -53,7 +53,7 @@ void delay_us(uint32_t us)
 
 void delay_ms(uint32_t ms)
 {
-	//超出能满足的最大延迟
+	//Exceeding the maximum delay that can be met
 	if( ms > DWT_CNT_MAX/(SystemCoreClock/1000) ) ms = DWT_CNT_MAX/(SystemCoreClock/1000);
 	delay_us(ms*1000);
 }

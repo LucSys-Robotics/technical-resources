@@ -19,20 +19,20 @@
 #include "robot_select_init.h"
 #include "RobotControl_task.h"
 
-static char page1_paramshow[100];   //APP首页数据
-static char page2_paramshow[512];  //APP波形页面数据
-static char page3_paramshow[512];  //APP参数页面数据
+static char page1_paramshow[100];   //APP homepage data
+static char page2_paramshow[512];  //APP waveform page data
+static char page3_paramshow[512];  //APP parameter page data
 
 static int voltage_to_percentage(float voltage) {
-    const float V_MIN = 20.3f;  // 最小电压 (0%)
-    const float V_MAX = 23.45f; // 最大电压 (100%)
+    const float V_MIN = 20.3f;  // Minimum voltage (0%)
+    const float V_MAX = 23.45f; // Maximum voltage (100%)
     
-    // 确保电压在有效范围内
+    // Ensure the voltage is within the effective range
     if (voltage < V_MIN) return 0;
     if (voltage > V_MAX) return 100;
     
-    // 线性插值计算百分比并取整
-    int percentage = (int)(((voltage - V_MIN) / (V_MAX - V_MIN)) * 100.0f + 0.5f); // 四舍五入
+    // Linear interpolation calculates percentages and rounds
+    int percentage = (int)(((voltage - V_MIN) / (V_MAX - V_MIN)) * 100.0f + 0.5f); // Rounded up
 	
 	if( percentage > 100 ) percentage = 100;
 	if( percentage <= 0 ) percentage = 0;
@@ -42,13 +42,13 @@ static int voltage_to_percentage(float voltage) {
 
 void APPshow_task(void* param)
 {
-	//获取时基,用于辅助任务能按固定频率运行
+	//Obtain the timebase, which can run at a fixed frequency for auxiliary tasks
 	TickType_t preTime = xTaskGetTickCount();
 	
-	//本任务的控制频率,单位为Hz
+	//The control frequency for this task, in Hz
 	const uint16_t TaskFreq = 20;
 	
-	//实现APP数据分时显示
+	//Implement time-sharing display of app data
 	uint8_t appshowNum = 0;
 	char* NeedShowBuf = NULL;
 	
@@ -72,24 +72,24 @@ void APPshow_task(void* param)
 				break;
 		}
 		
-		//电池电压百分比
+		//Battery voltage percentage
 		VolPercen = voltage_to_percentage(RobotControlParam.Vol);
 		
-		//APP显示数据
-		appshowNum++; //分时显示
+		//APP displays data
+		appshowNum++; //Time-sharing display
 		if( 1 == appshowNum )
 		{
-			sprintf(page1_paramshow,"{A%d:%d:%d:%d}$",showLeftWheel,showRightWheel,VolPercen,(int)AttitudeVal.yaw); //左码盘,右码盘,电量百分比,角度
+			sprintf(page1_paramshow,"{A%d:%d:%d:%d}$",showLeftWheel,showRightWheel,VolPercen,(int)AttitudeVal.yaw); //Left dial, right dial, battery percentage, angle
 			NeedShowBuf = page1_paramshow;
 		}
 		else if( 2 == appshowNum )
 		{
 			appshowNum = 0;
-			sprintf(page2_paramshow,"{B%d:%d:%d}$",(int)AttitudeVal.pitch,(int)AttitudeVal.roll,(int)AttitudeVal.yaw); //波形显示
+			sprintf(page2_paramshow,"{B%d:%d:%d}$",(int)AttitudeVal.pitch,(int)AttitudeVal.roll,(int)AttitudeVal.yaw); //Waveform display
 			NeedShowBuf = page2_paramshow;
 		}
 		
-		//APP获取数据请求
+		//APP retrieves data requests
 		if( lucsysApp.reportparam == 1 )
 		{
 			lucsysApp.reportparam = 0;
@@ -102,23 +102,23 @@ void APPshow_task(void* param)
 			NeedShowBuf = page3_paramshow;
 		}
 		
-		//常规数据发送
+		//Regular data sending
 		if( RobotControlParam.DebugLevel == 0 )
 		{
-			//调试 TODO:del
+			//Debug TODO:del
 //			sprintf(page2_paramshow,"{B%.3f:%.3f:%.3f:%.3f:%.3f:%.3f}$",tVx,tVy,
 //			tVz,
 //			rVx,
 //			rVy,
 //			rVz
-//			); //波形显示
+//			); Waveform display
 //			NeedShowBuf = page2_paramshow;
-			//调试END
+			//Debug END
 			
 			HAL_UART_Transmit_DMA(&huart2,(uint8_t*)NeedShowBuf,strlen(NeedShowBuf));
 		}
 		
-		/* 延迟指定频率 */
+		/* Delay the specified frequency */
 		vTaskDelayUntil(&preTime,pdMS_TO_TICKS( (1.0f/(float)TaskFreq)*1000) );
 	}
 	

@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "keil_projects": 9,
+  "keil_targets": 21,
+  "keil_file_references": 1542,
+  "manifest_files": 2193,
+  "local_links": 145,
+  "python_files": 14,
+  "yaml_files": 8,
+  "batch_make_files": 11,
+  "comment_lines": 27666,
+  "unique_translations": 6497,
+  "txt_files": 10,
+  "markdown_guides": 2,
+  "host_kinematics_tests": 7,
+  "host_random_cases_each_T1_T2_T3": 2000000,
+  "model_associations": "UNCHANGED",
+  "original_archives": "UNCHANGED",
+  "native_keil_build": "NOT_RUN",
+  "hardware_tests": "NOT_RUN"
+}

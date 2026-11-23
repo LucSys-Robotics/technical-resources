@@ -7,42 +7,42 @@
 #include "usbh_hid_GamePad.h"
 #include "bsp_gamepad.h"
 
-//手柄产品ID以及序列号
+//Handle product ID and serial number
 #define FLYDIGI_Manufacturer "Flydigi"
 #define FLYDIGI_SerialNum "5E904C0C"
 
-//手柄产品PID、VID
+//Handle products PID and VID
 #define FLYDIGI_GamePad_VID 0x045E
 #define FLYDIGI_GamePad_PID 0x028E
 
-//手柄的数据长度信息
+//Data length information for the handle
 #define FLYDIGI_GamePad_DataLen 64
 
-//15个按键组合
+//15 key combinations
 enum{
-	FlydigiKEY_UP = 0, //转轴十字-上
-	FlydigiKEY_DOWN,   //转轴十字-下
-	FlydigiKEY_LEFT,   //转轴十字-左
-	FlydigiKEY_RIGHT,  //转轴十字-右
-	FlydigiKEY_Menu,   // 菜单/star按键
-	FlydigiKEY_SELECT, // 窗口/select按键
-	FlydigiKEY_LJoy,   //左摇杆按键
-	FlydigiKEY_RJoy,   //右摇杆按键
-	FlydigiKEY_LB ,    //左上按键LB
-	FlydigiKEY_RB ,    //右上按键RB
-	FlydigiKEY_HOME ,  //logo按键Home
-	Flydigi_PaddingBit,//填充位,为了对齐按键功能使用,实际该位无意义
-	FlydigiKEY_A ,     //按键A
-	FlydigiKEY_B ,     //按键B
-	FlydigiKEY_X ,     //按键X
-	FlydigiKEY_Y ,     //按键Y
-	//扳机按键预留
+	FlydigiKEY_UP = 0, //D-pad axis: up
+	FlydigiKEY_DOWN,   //D-pad axis: down
+	FlydigiKEY_LEFT,   //D-pad axis: left
+	FlydigiKEY_RIGHT,  //D-pad axis: right
+	FlydigiKEY_Menu,   // Menu/star button
+	FlydigiKEY_SELECT, // Window/select key
+	FlydigiKEY_LJoy,   //Left analog stick button
+	FlydigiKEY_RJoy,   //Right analog stick button
+	FlydigiKEY_LB ,    //Upper left button LB
+	FlydigiKEY_RB ,    //Press the RB button at the top right
+	FlydigiKEY_HOME ,  //logo button Home
+	Flydigi_PaddingBit,//Fill bits, used to align key functions; in practice, this bit is meaningless
+	FlydigiKEY_A ,     //Button A
+	FlydigiKEY_B ,     //Button B
+	FlydigiKEY_X ,     //Button X
+	FlydigiKEY_Y ,     //Button Y
+	//Reserve trigger buttons
 };
 
-//手柄解码函数
+//Handle decoder function
 void Flydigi_gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,uint8_t datalen);
 
-//对外提供手柄对象
+//Provide handle objects externally
 extern GamePadType_t flydigiGamepad;
 
 #endif /* __FLYDIGI_GAMEPAD_H */

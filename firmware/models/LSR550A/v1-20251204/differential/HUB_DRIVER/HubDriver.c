@@ -1,6 +1,6 @@
 #include "HubDriver.h"
   /**************************************************************************
-作者：LucSys Robotics
+By LucSys Robotics
 **************************************************************************/
 float left_rpm, right_rpm;
 float Left_encoder_rpm, Right_encoder_rpm;
@@ -8,9 +8,9 @@ float Left_encoder_rpm, Right_encoder_rpm;
 Function: 
 Input   : none
 Output  : none
-函数功能：无刷电机驱动初始化
-入口参数：无
-返回  值：无
+Function: Initialization of brushless motor drives
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void HUB_init(void)
 {	
@@ -29,9 +29,9 @@ void HUB_init(void)
 Function: 
 Input   : none
 Output  : none
-函数功能：使能电机
-入口参数：无
-返回  值：无
+Function: Enable the motor
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void Enable(void)
 {
@@ -48,9 +48,9 @@ void Enable(void)
 Function: 
 Input   : none
 Output  : none
-函数功能：无刷电机停止
-入口参数：无
-返回  值：无
+Function: Brushless motor stops
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void Set_stop(void)
 {	
@@ -67,9 +67,9 @@ void Set_stop(void)
 Function: 
 Input   : none
 Output  : none
-函数功能：CRC校验
-入口参数：无
-返回  值：无
+Function: CRC verification
+Entry parameters: None
+Return value: none
 **************************************************************************/
 unsigned short ModbusCRC16_Check(u8 array[], int BitNumber)
 {
@@ -77,9 +77,9 @@ unsigned short ModbusCRC16_Check(u8 array[], int BitNumber)
 //    unsigned short ret1 = 0;
 	int n=0, i=0;
 
-	for(n = 0; n < (BitNumber-2); n++){/*此处的6 -- 要校验的位数为6个*/
+	for(n = 0; n < (BitNumber-2); n++){/*6 here -- 6 bits to be verified*/
 			tmp = array[n] ^ tmp;
-			for(i = 0;i < 8;i++){  /*此处的8 -- 指每一个char类型又8bit，每bit都要处理*/
+			for(i = 0;i < 8;i++){  /*Here, 8 -- means each char type has 8 bits, and each bit must be processed*/
 					if(tmp & 0x01){
 							tmp = tmp >> 1;
 							tmp = tmp ^ 0xa001;
@@ -89,9 +89,9 @@ unsigned short ModbusCRC16_Check(u8 array[], int BitNumber)
 					}   
 			}   
 	}   
-//    /*CRC校验后的值*/
+//    /*CRC validated value*/
 //    printf("%X\n",tmp);
-//    /*将CRC校验的高低位对换位置*/
+//    /*Swap the high and low positions of CRC verification*/
 //    ret1 = tmp >> 8;
 //    ret1 = ret1 | (tmp << 8); 
 //    printf("ret: %X\n",ret1);
@@ -102,9 +102,9 @@ unsigned short ModbusCRC16_Check(u8 array[], int BitNumber)
 Function: 
 Input   : none
 Output  : none
-函数功能：轮毂速度模式初始化：30ms
-入口参数：无
-返回  值：无
+Function: Hub speed mode initialization: 30ms
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void hub_485_velocity_init(void)
 {
@@ -119,13 +119,13 @@ void hub_485_velocity_init(void)
 Function: 
 Input   : none
 Output  : none
-函数功能：轮毂异步位置模式初始化
-入口参数：无
-返回  值：无
+Function: Initialize asynchronous hub position mode
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void hub_485_position_init(void)
 {
-	Asyn_ctrl_set(Asynchronization); //设置异步
+	Asyn_ctrl_set(Asynchronization); //Set asynchronous
 	Relate_position_mode_set(Absolute);
 	Left_acc_time(500);
 	Right_acc_time(500);
@@ -138,9 +138,9 @@ void hub_485_position_init(void)
 Function: 
 Input   : none
 Output  : none
-函数功能：轮毂转矩模式初始化
-入口参数：无
-返回  值：无
+Function: Initialize hub torque mode
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void hub_485_torque_init(void)
 {
@@ -153,9 +153,9 @@ void hub_485_torque_init(void)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置速度模式
-入口参数：无
-返回  值：无
+Function: Set speed mode
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void V_mode_set(void)
 {
@@ -172,9 +172,9 @@ void V_mode_set(void)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置转矩模式
-入口参数：无
-返回  值：无
+Function: Set torque mode
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void T_mode_set(void)
 {
@@ -191,9 +191,9 @@ void T_mode_set(void)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置相对/绝对位置模式
-入口参数：无
-返回  值：无
+Function: Set relative/absolute position modes
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void Relate_position_mode_set(int relate)
 {
@@ -209,7 +209,7 @@ void Relate_position_mode_set(int relate)
 	else
 		p_relate_mode_set[5]=2;
 	
-	//CRC校验
+	//CRC verification
 	ArraySize=sizeof(p_relate_mode_set);	
 	check=ModbusCRC16_Check(p_relate_mode_set, ArraySize);
 	p_relate_mode_set[6]=check;
@@ -227,9 +227,9 @@ void Relate_position_mode_set(int relate)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置左电机S型加速时间,默认500ms
-入口参数：time：加速时间，单位ms
-返回  值：无
+Function: Set the left motor S-type acceleration time, default 500ms
+Entry parameters: time: acceleration time, unit: ms
+Return value: none
 **************************************************************************/
 void Left_acc_time(int time)
 {
@@ -243,7 +243,7 @@ void Left_acc_time(int time)
 		left_acc_time[4]=time>>8,
 	  left_acc_time[5]=time;
 	
-	//CRC校验
+	//CRC verification
 	ArraySize=sizeof(left_acc_time);	
 	check=ModbusCRC16_Check(left_acc_time, ArraySize);
 	left_acc_time[6]=check;
@@ -259,9 +259,9 @@ void Left_acc_time(int time)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置右电机S型加速时间,默认500ms
-入口参数：time：加速时间，单位ms
-返回  值：无
+Function: Set the right motor S-type acceleration time, default 500ms
+Entry parameters: time: acceleration time, unit: ms
+Return value: none
 **************************************************************************/
 void Right_acc_time(int time)
 {
@@ -275,7 +275,7 @@ void Right_acc_time(int time)
 		right_acc_time[4]=time>>8,
 	  right_acc_time[5]=time;
 	
-	//CRC校验
+	//CRC verification
 	ArraySize=sizeof(right_acc_time);	
 	check=ModbusCRC16_Check(right_acc_time, ArraySize);
 	right_acc_time[6]=check;
@@ -291,9 +291,9 @@ void Right_acc_time(int time)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置左电机S型减速时间,默认500ms
-入口参数：time：减速时间，单位ms
-返回  值：无
+Function: Set the left motor S-type reduction time, default 500ms
+Entry parameters: time: deceleration time, unit: ms
+Return value: none
 **************************************************************************/
 void Left_dec_time(int time)
 {
@@ -307,7 +307,7 @@ void Left_dec_time(int time)
 		left_dec_time[4]=time>>8,
 	  left_dec_time[5]=time;
 	
-	//CRC校验
+	//CRC verification
 	ArraySize=sizeof(left_dec_time);	
 	check=ModbusCRC16_Check(left_dec_time, ArraySize);
 	left_dec_time[6]=check;
@@ -323,9 +323,9 @@ void Left_dec_time(int time)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置右电机S型减速时间,默认500ms
-入口参数：time：减速时间，单位ms
-返回  值：无
+Function: Set the S-type reduction time for the right motor, default 500ms
+Entry parameters: time: deceleration time, unit: ms
+Return value: none
 **************************************************************************/
 void Right_dec_time(int time)
 {
@@ -339,7 +339,7 @@ void Right_dec_time(int time)
 		right_dec_time[4]=time>>8,
 	  right_dec_time[5]=time;
 	
-	//CRC校验
+	//CRC verification
 	ArraySize=sizeof(right_dec_time);	
 	check=ModbusCRC16_Check(right_dec_time, ArraySize);
 	right_dec_time[6]=check;
@@ -356,9 +356,9 @@ void Right_dec_time(int time)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置位置模式异步/同步控制
-入口参数：无
-返回  值：无
+Function: Set position mode asynchronous/synchronous control
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void Asyn_ctrl_set(int asyn)
 {
@@ -374,7 +374,7 @@ void Asyn_ctrl_set(int asyn)
 	else
 		asyn_ctrl_set[5]=1;
 	
-	//CRC校验
+	//CRC verification
 	ArraySize=sizeof(asyn_ctrl_set);	
 	check=ModbusCRC16_Check(asyn_ctrl_set, ArraySize);
 	asyn_ctrl_set[6]=check;
@@ -391,9 +391,9 @@ void Asyn_ctrl_set(int asyn)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置左右电机最大转速，默认50rpm
-入口参数：time：加速时间，单位ms
-返回  值：无
+Function: Set the maximum speed of the left and right motors, default 50 rpm
+Entry parameters: time: acceleration time, unit: ms
+Return value: none
 **************************************************************************/
 void SetMaxRpm_left_Right(int Left, int Right)
 {
@@ -411,7 +411,7 @@ void SetMaxRpm_left_Right(int Left, int Right)
 	  set_right_max[4]=Right>>8,
 	  set_right_max[5]=Right;
 	
-	//CRC校验
+	//CRC verification
 	ArraySize=sizeof(set_left_max);	
 	check=ModbusCRC16_Check(set_left_max, ArraySize);
 	set_left_max[6]=check;
@@ -437,9 +437,9 @@ void SetMaxRpm_left_Right(int Left, int Right)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置左电机转矩斜率,默认500mA/s
-入口参数：mAs：转矩斜率，单位mA/s
-返回  值：无
+Function: Set the torque slope of the left motor, default 500mA/s
+Inlet parameters: mAs: torque slope, unit: mA/s
+Return value: none
 **************************************************************************/
 void Left_Torque_mAs(int mAs)
 {
@@ -453,7 +453,7 @@ void Left_Torque_mAs(int mAs)
 		left_torque[4]=mAs>>8,
 	  left_torque[5]=mAs;
 	
-		//CRC校验
+		//CRC verification
 	ArraySize=sizeof(left_torque);	
 	check=ModbusCRC16_Check(left_torque, ArraySize);
 	left_torque[6]=check;
@@ -469,9 +469,9 @@ void Left_Torque_mAs(int mAs)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置右电机转矩斜率,默认500mA/s
-入口参数：mAs：转矩斜率，单位mA/s
-返回  值：无
+Function: Set the right motor torque slope, default 500mA/s
+Inlet parameters: mAs: torque slope, unit: mA/s
+Return value: none
 **************************************************************************/
 void Right_Torque_mAs(int mAs)
 {
@@ -485,7 +485,7 @@ void Right_Torque_mAs(int mAs)
 		right_torque[4]=mAs>>8,
 	  right_torque[5]=mAs;
 	
-	//CRC校验
+	//CRC verification
 	ArraySize=sizeof(right_torque);	
 	check=ModbusCRC16_Check(right_torque, ArraySize);
 	right_torque[6]=check;
@@ -501,9 +501,9 @@ void Right_Torque_mAs(int mAs)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置轮毂速度
-入口参数：±20480
-返回  值：无
+Function: Set hub speed
+Entry parameters: ±20480
+Return value: none
 **************************************************************************/
 void hub_485_Rpm(int R_L, int rpm)
 {
@@ -515,11 +515,11 @@ void hub_485_Rpm(int R_L, int rpm)
 	
 	delay_ms(30);
 	
-	//设置左电机还是右电机
-	if     (R_L==0) set_rpm[3]=0x88; //左电机
-	else if(R_L==1) set_rpm[3]=0x89; //右电机
+	//Set the left motor or the right motor
+	if     (R_L==0) set_rpm[3]=0x88; //Left motor
+	else if(R_L==1) set_rpm[3]=0x89; //Right motor
 	
-	//设置转速与方向
+	//Set the speed and direction
 	if(rpm>=0)
 	{
 		set_rpm[4]=rpm>>8;
@@ -531,13 +531,13 @@ void hub_485_Rpm(int R_L, int rpm)
 		set_rpm[5]=(0xffff+rpm+1);
 	}
 	
-	//CRC校验
+	//CRC verification
 	ArraySize=sizeof(set_rpm);	
 	check=ModbusCRC16_Check(set_rpm, ArraySize);
 	set_rpm[6]=check;
 	set_rpm[7]=check>>8;
 
-	//485发送数据
+	//485 sends data
 	for(i=0; i<8; i++)
 	{
 		usart3_send(set_rpm[i]);
@@ -547,9 +547,9 @@ void hub_485_Rpm(int R_L, int rpm)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置轮毂同步速度
-入口参数：±20480
-返回  值：无
+Function: Set hub synchronization speed
+Entry parameters: ±20480
+Return value: none
 **************************************************************************/
 void hub_485_Syn_Rpm(int rpm)
 {
@@ -562,7 +562,7 @@ void hub_485_Syn_Rpm(int rpm)
 	delay_ms(30);
 	
 	
-	//设置转速与方向
+	//Set the speed and direction
 	if(rpm>=0)
 	{
 		set_rpm[7] =rpm>>8;
@@ -578,13 +578,13 @@ void hub_485_Syn_Rpm(int rpm)
 		set_rpm[10]=(0xffff+rpm+1);
 	}
 	
-	//CRC校验
+	//CRC verification
 	ArraySize=sizeof(set_rpm);	
 	check=ModbusCRC16_Check(set_rpm, ArraySize);
 	set_rpm[11]=check;
 	set_rpm[12]=check>>8;
 
-	//485发送数据
+	//485 sends data
 	for(i=0; i<13; i++)
 	{
 		usart3_send(set_rpm[i]);
@@ -594,9 +594,9 @@ void hub_485_Syn_Rpm(int rpm)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置轮毂位置
-入口参数：无
-返回  值：无
+Function: Set the hub position
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void hub_485_Position(int R_L, long int position)
 {
@@ -609,9 +609,9 @@ void hub_485_Position(int R_L, long int position)
 
 	delay_ms(30);
 	
-	//设置左电机还是右电机
-	if     (R_L==0) set_position[3]=0x8a; //左电机
-	else if(R_L==1) set_position[3]=0x8c; //右电机
+	//Set the left motor or the right motor
+	if     (R_L==0) set_position[3]=0x8a; //Left motor
+	else if(R_L==1) set_position[3]=0x8c; //Right motor
 	
 	if(position>=0)
 	{
@@ -628,19 +628,19 @@ void hub_485_Position(int R_L, long int position)
 		set_position[10]=(0xffffffff+position+1);
 	}
 	
-  //CRC校验
+  //CRC verification
 	ArraySize=sizeof(set_position);	
 	check=ModbusCRC16_Check(set_position, ArraySize);
 	set_position[11]=check;
 	set_position[12]=check>>8;
 	
-	//控制位置
+	//Control position
 	for(i=0; i<13; i++)
 	{
 		usart3_send(set_position[i]);
 	}	
 	delay_ms(5);
-	//启动左电机/右电机
+	//Start the left motor/right motor
 	if(R_L==0)	
 	{
 		for(i=0; i<8; i++)
@@ -660,9 +660,9 @@ void hub_485_Position(int R_L, long int position)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置轮毂同步位置
-入口参数：无
-返回  值：无
+Function: Set hub synchronization position
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void hub_485_Syn_Position(long int position)
 {
@@ -697,13 +697,13 @@ void hub_485_Syn_Position(long int position)
 		set_position[14] = (0xffffffff+position+1);
 	}
 	
-  //CRC校验
+  //CRC verification
 	ArraySize=sizeof(set_position);	
 	check=ModbusCRC16_Check(set_position, ArraySize);
 	set_position[15]=check;
 	set_position[16]=check>>8;
 	
-	//控制位置
+	//Control position
 	for(i=0; i<17; i++)
 	{
 		usart3_send(set_position[i]);
@@ -719,9 +719,9 @@ void hub_485_Syn_Position(long int position)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置轮毂转矩
-入口参数：±2000ma
-返回  值：无
+Function: Set hub torque
+Input parameters: ±2000mA
+Return value: none
 **************************************************************************/
 void hub_485_Torque(int R_L, int torque)
 {
@@ -733,11 +733,11 @@ void hub_485_Torque(int R_L, int torque)
 	
 	delay_ms(30);
 	
-	//设置左电机还是右电机
-	if     (R_L==0) set_torque[3]=0x90; //左电机
-	else if(R_L==1) set_torque[3]=0x91; //右电机
+	//Set the left motor or the right motor
+	if     (R_L==0) set_torque[3]=0x90; //Left motor
+	else if(R_L==1) set_torque[3]=0x91; //Right motor
 	
-	//设置转速与方向
+	//Set the speed and direction
 	if(torque>=0)
 	{
 		set_torque[4]=torque>>8;
@@ -749,13 +749,13 @@ void hub_485_Torque(int R_L, int torque)
 		set_torque[5]=(0xffff+torque+1);
 	}
 	
-	//CRC校验
+	//CRC verification
 	ArraySize=sizeof(set_torque);	
 	check=ModbusCRC16_Check(set_torque, ArraySize);
 	set_torque[6]=check;
 	set_torque[7]=check>>8;
 
-	//485发送数据
+	//485 sends data
 	for(i=0; i<8; i++)
 	{
 		usart3_send(set_torque[i]);
@@ -765,9 +765,9 @@ void hub_485_Torque(int R_L, int torque)
 Function: 
 Input   : none
 Output  : none
-函数功能：设置轮毂同步转矩
-入口参数：±2000ma
-返回  值：无
+Function: Set hub synchronous torque
+Input parameters: ±2000mA
+Return value: none
 **************************************************************************/
 void hub_485_Syn_Torque(int torque)
 {
@@ -779,7 +779,7 @@ void hub_485_Syn_Torque(int torque)
 	
 	delay_ms(30);
 	
-	//设置转速与方向
+	//Set the speed and direction
 	if(torque>=0)
 	{
 		set_torque[7] =torque>>8;
@@ -795,13 +795,13 @@ void hub_485_Syn_Torque(int torque)
 		set_torque[10]=(0xffff+torque+1);
 	}
 	
-	//CRC校验
+	//CRC verification
 	ArraySize=sizeof(set_torque);	
 	check=ModbusCRC16_Check(set_torque, ArraySize);
 	set_torque[11]=check;
 	set_torque[12]=check>>8;
 
-	//485发送数据
+	//485 sends data
 	for(i=0; i<13; i++)
 	{
 		usart3_send(set_torque[i]);

@@ -4,7 +4,7 @@ RECEIVE_DATA Receive_Data;
 SEND_AutoCharge_DATA Send_AutoCharge_Data;
 extern int Time_count;
 u8 usart_sent[21];
-u8 usart_sent_current[21];//发送电流
+u8 usart_sent_current[21];//Send current
 u8 	fun_flag;
 float Step_SPEED=90;
 float last_Moveit_Angle1,last_Moveit_Angle2,last_Moveit_Angle3;
@@ -13,9 +13,9 @@ SemaphoreHandle_t xMutex;
 Function: Usartx3, Usartx1 and CAN send data task 
 Input   : none
 Output  : none
-函数功能：串口3、串口1、CAN发送数据任务
-入口参数：无
-返回  值：无
+Function: Serial Ports 3, 1, and CAN send data task
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void data_task(void *pvParameters)
 {
@@ -24,7 +24,7 @@ void data_task(void *pvParameters)
 while(1)
     {	
 			//The task is run at 20hz
-			//此任务以20Hz的频率运行
+			//This task runs at a frequency of 20Hz
 			vTaskDelayUntil(&lastWakeTime, F2T(RATE_20_HZ));
       data_transition(); 
 			USART3_SEND(); 
@@ -40,18 +40,18 @@ while(1)
 Function: The data sent by the serial port is assigned
 Input   : none
 Output  : none
-函数功能：串口发送的数据进行赋值
-入口参数：无
-返回  值：无
+Function: Assign values to the data sent by the serial port
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void data_transition(void)
 {
-	Send_Data.Sensor_Str.Frame_Header = FRAME_HEADER; //Frame_header //帧头
-	Send_Data.Sensor_Str.Frame_Tail = FRAME_TAIL;     //Frame_tail //帧尾
+	Send_Data.Sensor_Str.Frame_Header = FRAME_HEADER; //Frame_header // Frame header
+	Send_Data.Sensor_Str.Frame_Tail = FRAME_TAIL;     //Frame_tail // End of frame
 	
 	//According to different vehicle types, different kinematics algorithms were selected to carry out the forward kinematics solution, 
 	//and the three-axis velocity was obtained from each wheel velocity
-	//根据不同车型选择不同运动学算法进行运动学正解，从各车轮速度求出三轴速度
+	//Select different kinematic algorithms for different vehicle models to perform kinematic correct solutions, calculating the three-axis speeds from the speeds of each wheel
 	#if Mec
 	Motion_analysis_transformation(MOTOR_A.Encoder,MOTOR_B.Encoder,MOTOR_C.Encoder,MOTOR_D.Encoder); 
 	#elif Omni
@@ -60,32 +60,32 @@ void data_transition(void)
 	Motion_analysis_transformation(MOTOR_A.Encoder,MOTOR_B.Encoder);
 	#endif
 	
-	//The acceleration of the triaxial acceleration //加速度计三轴加速度
-	Send_Data.Sensor_Str.Accelerometer.X_data= accel[1]; //The accelerometer Y-axis is converted to the ros coordinate X axis //加速度计Y轴转换到ROS坐标X轴
-	Send_Data.Sensor_Str.Accelerometer.Y_data=-accel[0]; //The accelerometer X-axis is converted to the ros coordinate y axis //加速度计X轴转换到ROS坐标Y轴
-	Send_Data.Sensor_Str.Accelerometer.Z_data= accel[2]; //The accelerometer Z-axis is converted to the ros coordinate Z axis //加速度计Z轴转换到ROS坐标Z轴
+	//The acceleration of the triaxial acceleration // Triaxial accelerometer acceleration
+	Send_Data.Sensor_Str.Accelerometer.X_data= accel[1]; //The accelerometer Y-axis is converted to the ROS coordinate X-axis // Accelerometer Y-axis converted to ROS coordinate X-axis
+	Send_Data.Sensor_Str.Accelerometer.Y_data=-accel[0]; //The accelerometer X-axis is converted to the ROS coordinate Y-axis // Accelerometer X-axis converted to ROS coordinate Y-axis
+	Send_Data.Sensor_Str.Accelerometer.Z_data= accel[2]; //The accelerometer Z-axis is converted to the ROS coordinate Z-axis // Accelerometer Z-axis converted to ROS coordinate Z-axis
 	
-	//The Angle velocity of the triaxial velocity //角速度计三轴角速度
-	Send_Data.Sensor_Str.Gyroscope.X_data= gyro[1]; //The Y-axis is converted to the ros coordinate X axis //角速度计Y轴转换到ROS坐标X轴
-	Send_Data.Sensor_Str.Gyroscope.Y_data=-gyro[0]; //The X-axis is converted to the ros coordinate y axis //角速度计X轴转换到ROS坐标Y轴
+	//The angular velocity of the triaxial gyro //Triaxial gyro angular velocity
+	Send_Data.Sensor_Str.Gyroscope.X_data= gyro[1]; //The Y-axis is converted to the ROS coordinate X-axis // Gyroscope Y-axis converted to ROS coordinate X-axis
+	Send_Data.Sensor_Str.Gyroscope.Y_data=-gyro[0]; //The X-axis is converted to the ROS coordinate Y-axis // Gyroscope X-axis converted to ROS coordinate Y-axis
 	if(Flag_Stop==0) 
 		//If the motor control bit makes energy state, the z-axis velocity is sent normall
-	  //如果电机控制位使能状态，那么正常发送Z轴角速度
+	  //If motor control is enabled, normally send Z-axis angular velocity
 		Send_Data.Sensor_Str.Gyroscope.Z_data=gyro[2];  
 	else  
 		//If the robot is static (motor control dislocation), the z-axis is 0
-    //如果机器人是静止的（电机控制位失能），那么发送的Z轴角速度为0		
+    //If the robot is stationary (motor control disabled), then the sent Z-axis angular velocity is 0
 		Send_Data.Sensor_Str.Gyroscope.Z_data=0;  
 	
 	//Battery voltage (this is a thousand times larger floating point number, which will be reduced by a thousand times as well as receiving the data).
-	//电池电压(这里将浮点数放大一千倍传输，相应的在接收端在接收到数据后也会缩小一千倍)
+	//Battery voltage (here, the floating-point number is amplified by 1,000 times for transmission, and correspondingly, the receiver will reduce the data by 1,000 times after receiving it)
 	Send_Data.Sensor_Str.Power_Voltage = Voltage*1000; 
 	
-	Send_Data.buffer[0]=Send_Data.Sensor_Str.Frame_Header; //Frame_heade //帧头
-  Send_Data.buffer[1]=Flag_Stop; //Car software loss marker //小车软件失能标志位
+	Send_Data.buffer[0]=Send_Data.Sensor_Str.Frame_Header; //Frame_heade // Frame header
+  Send_Data.buffer[1]=Flag_Stop; //Chassis software-disable flag
 	
 	//The three-axis speed of / / car is split into two eight digit Numbers
-	//小车三轴速度,各轴都拆分为两个8位数据再发送
+	//The cart's three-axis speed is split into two 8-bit data points for each axle and then sent
 	Send_Data.buffer[2]=Send_Data.Sensor_Str.X_speed >>8; 
 	Send_Data.buffer[3]=Send_Data.Sensor_Str.X_speed ;    
 	Send_Data.buffer[4]=Send_Data.Sensor_Str.Y_speed>>8;  
@@ -94,7 +94,7 @@ void data_transition(void)
 	Send_Data.buffer[7]=Send_Data.Sensor_Str.Z_speed ;    
 	
 	//The acceleration of the triaxial axis of / / imu accelerometer is divided into two eight digit reams
-	//IMU加速度计三轴加速度,各轴都拆分为两个8位数据再发送
+	//IMU accelerometer three-axis acceleration, each axis is split into two 8-bit data before sending
 	Send_Data.buffer[8]=Send_Data.Sensor_Str.Accelerometer.X_data>>8; 
 	Send_Data.buffer[9]=Send_Data.Sensor_Str.Accelerometer.X_data;   
 	Send_Data.buffer[10]=Send_Data.Sensor_Str.Accelerometer.Y_data>>8;
@@ -103,7 +103,7 @@ void data_transition(void)
 	Send_Data.buffer[13]=Send_Data.Sensor_Str.Accelerometer.Z_data;
 	
 	//The axis of the triaxial velocity of the / /imu is divided into two eight digits
-	//IMU角速度计三轴角速度,各轴都拆分为两个8位数据再发送
+	//IMU angular velocity meter for three axes, with each axis split into two 8-bit data points for transmission
 	Send_Data.buffer[14]=Send_Data.Sensor_Str.Gyroscope.X_data>>8;
 	Send_Data.buffer[15]=Send_Data.Sensor_Str.Gyroscope.X_data;
 	Send_Data.buffer[16]=Send_Data.Sensor_Str.Gyroscope.Y_data>>8;
@@ -112,15 +112,15 @@ void data_transition(void)
 	Send_Data.buffer[19]=Send_Data.Sensor_Str.Gyroscope.Z_data;
 	
 	//Battery voltage, split into two 8 digit Numbers
-	//电池电压,拆分为两个8位数据发送
+	//Battery voltage, split into two 8-bit data transmissions
 	Send_Data.buffer[20]=Send_Data.Sensor_Str.Power_Voltage >>8; 
 	Send_Data.buffer[21]=Send_Data.Sensor_Str.Power_Voltage; 
 
   //Data check digit calculation, Pattern 1 is a data check
-  //数据校验位计算，模式1是发送数据校验
+  //Data parity calculations, Mode 1 is data parity
 	Send_Data.buffer[22]=Check_Sum(22,1); 
 	
-	Send_Data.buffer[23]=Send_Data.Sensor_Str.Frame_Tail; //Frame_tail //帧尾
+	Send_Data.buffer[23]=Send_Data.Sensor_Str.Frame_Tail; //Frame_tail // End of frame
 	
 	
 }
@@ -130,9 +130,9 @@ void data_transition(void)
 Function: Serial port 1 sends data
 Input   : none
 Output  : none
-函数功能：串口1发送数据
-入口参数：无
-返回  值：无
+Function: Send data via Serial Port 1
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void USART1_SEND(void)
 {
@@ -147,9 +147,9 @@ void USART1_SEND(void)
 Function: Serial port 3 sends data
 Input   : none
 Output  : none
-函数功能：串口3发送数据
-入口参数：无
-返回  值：无
+Function: Send data via Serial Port 3
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void USART3_SEND(void)
 {
@@ -164,9 +164,9 @@ void USART3_SEND(void)
 Function: CAN sends data
 Input   : none
 Output  : none
-函数功能：CAN发送数据
-入口参数：无
-返 回 值：无
+Function: CAN to send data
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void CAN_SEND(void) 
 {
@@ -195,9 +195,9 @@ void CAN_SEND(void)
 Function: Serial port 1 initialization
 Input   : none
 Output  : none
-函数功能：串口1初始化
-入口参数：无
-返 回 值：无
+Function: Initialize Serial Port 1
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void uart1_init(u32 bound)
 {  	 
@@ -205,50 +205,50 @@ void uart1_init(u32 bound)
 	USART_InitTypeDef USART_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 	
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);	 //Enable the gpio clock //使能GPIO时钟
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE); //Enable the Usart clock //使能USART时钟
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);	 //Enable the gpio clock
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE); //Enable the Usart clock
 
 	GPIO_PinAFConfig(GPIOA,GPIO_PinSource9,GPIO_AF_USART1);	
 	GPIO_PinAFConfig(GPIOA,GPIO_PinSource10 ,GPIO_AF_USART1);	 
 	
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9|GPIO_Pin_10;
-	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_AF;            //输出模式
-	GPIO_InitStructure.GPIO_OType=GPIO_OType_PP;          //推挽输出
-	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;       //高速50MHZ
-	GPIO_InitStructure.GPIO_PuPd=GPIO_PuPd_UP;            //上拉
-	GPIO_Init(GPIOA, &GPIO_InitStructure);  		          //初始化
+	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_AF;            //Output mode
+	GPIO_InitStructure.GPIO_OType=GPIO_OType_PP;          //Push-pull output
+	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;       //High speed: 50MHz
+	GPIO_InitStructure.GPIO_PuPd=GPIO_PuPd_UP;            //Pull up
+	GPIO_Init(GPIOA, &GPIO_InitStructure);  		          //Initialize
 	
-  //UsartNVIC configuration //UsartNVIC配置
+  //UsartNVIC configuration // UsartNVIC configuration
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-	//Preempt priority //抢占优先级
+	//Preempt priority //Preempt priority
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=1 ;
-	//Subpriority //子优先级
+	//Subpriority // Subpriority
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;		
-	//Enable the IRQ channel //IRQ通道使能
+	//Enable the IRQ channel
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;	
   //Initialize the VIC register with the specified parameters 
-	//根据指定的参数初始化VIC寄存器	
+	//Initialize the VIC register according to the specified parameters
 	NVIC_Init(&NVIC_InitStructure);	
 	
-  //USART Initialization Settings 初始化设置
-	USART_InitStructure.USART_BaudRate = bound; //Port rate //串口波特率
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b; //The word length is 8 bit data format //字长为8位数据格式
-	USART_InitStructure.USART_StopBits = USART_StopBits_1; //A stop bit //一个停止位
-	USART_InitStructure.USART_Parity = USART_Parity_No; //Prosaic parity bits //无奇偶校验位
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None; //No hardware data flow control //无硬件数据流控制
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//Sending and receiving mode //收发模式
-	USART_Init(USART1, &USART_InitStructure); //Initialize serial port 1 //初始化串口1
+  //USART Initialization Settings initialization settings
+	USART_InitStructure.USART_BaudRate = bound; //Port rate // Serial port baud rate
+	USART_InitStructure.USART_WordLength = USART_WordLength_8b; //Word length is 8-bit data format // Word length is 8-bit data format
+	USART_InitStructure.USART_StopBits = USART_StopBits_1; //A stop bit // A stop bit
+	USART_InitStructure.USART_Parity = USART_Parity_No; //Prosaic parity bits //No parity bits
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None; //No hardware data flow control // No hardware data flow control
+	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//Sending and receiving mode //Sending and receiving mode
+	USART_Init(USART1, &USART_InitStructure); //Initialize serial port 1
 	
-	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); //Open the serial port to accept interrupts //开启串口接受中断
-	USART_Cmd(USART1, ENABLE);                     //Enable serial port 1 //使能串口1
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); //Open the serial port to accept interrupts
+	USART_Cmd(USART1, ENABLE);                     //Enable serial port 1
 }
 /**************************************************************************
 Function: Serial port 4 initialization
 Input   : none
 Output  : none
-函数功能：串口4初始化
-入口参数：无
-返回  值：无
+Function: Initialize Serial Port 4
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void uart4_init(u32 bound)
 {  	 
@@ -256,50 +256,50 @@ void uart4_init(u32 bound)
 	USART_InitTypeDef USART_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);	 //Enable the gpio clock  //使能GPIO时钟
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE); //Enable the Usart clock //使能USART时钟
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);	 //Enable the gpio clock
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE); //Enable the Usart clock
 	
 	GPIO_PinAFConfig(GPIOC,GPIO_PinSource10,GPIO_AF_UART4);	
 	GPIO_PinAFConfig(GPIOC,GPIO_PinSource11 ,GPIO_AF_UART4);	 
 	
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10|GPIO_Pin_11;
-	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_AF;            //输出模式
-	GPIO_InitStructure.GPIO_OType=GPIO_OType_PP;          //推挽输出
-	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;       //高速50MHZ
-	GPIO_InitStructure.GPIO_PuPd=GPIO_PuPd_UP;            //上拉
-	GPIO_Init(GPIOC, &GPIO_InitStructure);  		          //初始化
+	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_AF;            //Output mode
+	GPIO_InitStructure.GPIO_OType=GPIO_OType_PP;          //Push-pull output
+	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;       //High speed: 50MHz
+	GPIO_InitStructure.GPIO_PuPd=GPIO_PuPd_UP;            //Pull up
+	GPIO_Init(GPIOC, &GPIO_InitStructure);  		          //Initialize
 	
-	//UsartNVIC configuration //UsartNVIC配置
+	//UsartNVIC configuration // UsartNVIC configuration
 	NVIC_InitStructure.NVIC_IRQChannel = UART4_IRQn;
-	//Preempt priority //抢占优先级
+	//Preempt priority //Preempt priority
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=1 ;
-	//Subpriority //子优先级
+	//Subpriority // Subpriority
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;	
-  //Enable the IRQ channel //IRQ通道使能	
+  //Enable the IRQ channel
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   //Initialize the VIC register with the specified parameters 
-	//根据指定的参数初始化VIC寄存器		
+	//Initialize the VIC register according to the specified parameters
 	NVIC_Init(&NVIC_InitStructure);	
 	
-	//USART Initialization Settings 初始化设置
-	USART_InitStructure.USART_BaudRate = bound; //Port rate //串口波特率
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b; //The word length is 8 bit data format //字长为8位数据格式
-	USART_InitStructure.USART_StopBits = USART_StopBits_1; //A stop bit //一个停止
-	USART_InitStructure.USART_Parity = USART_Parity_No; //Prosaic parity bits //无奇偶校验位
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None; //No hardware data flow control //无硬件数据流控制
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//Sending and receiving mode //收发模式
-	USART_Init(UART4, &USART_InitStructure);      //Initialize serial port 2 //初始化串口2
+	//USART Initialization Settings initialization settings
+	USART_InitStructure.USART_BaudRate = bound; //Port rate // Serial port baud rate
+	USART_InitStructure.USART_WordLength = USART_WordLength_8b; //Word length is 8-bit data format // Word length is 8-bit data format
+	USART_InitStructure.USART_StopBits = USART_StopBits_1; //A stop bit // A stop
+	USART_InitStructure.USART_Parity = USART_Parity_No; //Prosaic parity bits //No parity bits
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None; //No hardware data flow control // No hardware data flow control
+	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//Sending and receiving mode //Sending and receiving mode
+	USART_Init(UART4, &USART_InitStructure);      //Initialize serial port 2
 	
-	USART_ITConfig(UART4, USART_IT_RXNE, ENABLE); //Open the serial port to accept interrupts //开启串口接受中断
-	USART_Cmd(UART4, ENABLE);                     //Enable serial port 2 //使能串口2 
+	USART_ITConfig(UART4, USART_IT_RXNE, ENABLE); //Open the serial port to accept interrupts
+	USART_Cmd(UART4, ENABLE);                     //Enable serial port 2
 }
 /**************************************************************************
 Function: Serial port 3 initialization
 Input   : none
 Output  : none
-函数功能：串口3初始化
-入口参数：无
-返回  值：无
+Function: Initialize Serial Port 3
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void uart3_init(u32 bound)
 {  	 
@@ -307,50 +307,50 @@ void uart3_init(u32 bound)
 	USART_InitTypeDef USART_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 	
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);	 //Enable the gpio clock  //使能GPIO时钟
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE); //Enable the Usart clock //使能USART时钟
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);	 //Enable the gpio clock
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE); //Enable the Usart clock
 	
 	GPIO_PinAFConfig(GPIOB,GPIO_PinSource10,GPIO_AF_USART3);	
 	GPIO_PinAFConfig(GPIOB,GPIO_PinSource11,GPIO_AF_USART3);	 
 	
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10|GPIO_Pin_11;
-	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_AF;            //输出模式
-	GPIO_InitStructure.GPIO_OType=GPIO_OType_PP;          //推挽输出
-	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;       //高速50MHZ
-	GPIO_InitStructure.GPIO_PuPd=GPIO_PuPd_UP;            //上拉
-	GPIO_Init(GPIOB, &GPIO_InitStructure);  		          //初始化
+	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_AF;            //Output mode
+	GPIO_InitStructure.GPIO_OType=GPIO_OType_PP;          //Push-pull output
+	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;       //High speed: 50MHz
+	GPIO_InitStructure.GPIO_PuPd=GPIO_PuPd_UP;            //Pull up
+	GPIO_Init(GPIOB, &GPIO_InitStructure);  		          //Initialize
 	
-  //UsartNVIC configuration //UsartNVIC配置
+  //UsartNVIC configuration // UsartNVIC configuration
   NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
-	//Preempt priority //抢占优先级
+	//Preempt priority //Preempt priority
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=2 ;
-	//Preempt priority //抢占优先级
+	//Preempt priority //Preempt priority
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;		
-	//Enable the IRQ channel //IRQ通道使能	
+	//Enable the IRQ channel
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;	
   //Initialize the VIC register with the specified parameters 
-	//根据指定的参数初始化VIC寄存器		
+	//Initialize the VIC register according to the specified parameters
 	NVIC_Init(&NVIC_InitStructure);
 	
-  //USART Initialization Settings 初始化设置
-	USART_InitStructure.USART_BaudRate = bound; //Port rate //串口波特率
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b; //The word length is 8 bit data format //字长为8位数据格式
-	USART_InitStructure.USART_StopBits = USART_StopBits_1; //A stop bit //一个停止
-	USART_InitStructure.USART_Parity = USART_Parity_No; //Prosaic parity bits //无奇偶校验位
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None; //No hardware data flow control //无硬件数据流控制
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//Sending and receiving mode //收发模式
-  USART_Init(USART3, &USART_InitStructure);      //Initialize serial port 3 //初始化串口3
+  //USART Initialization Settings initialization settings
+	USART_InitStructure.USART_BaudRate = bound; //Port rate // Serial port baud rate
+	USART_InitStructure.USART_WordLength = USART_WordLength_8b; //Word length is 8-bit data format // Word length is 8-bit data format
+	USART_InitStructure.USART_StopBits = USART_StopBits_1; //A stop bit // A stop
+	USART_InitStructure.USART_Parity = USART_Parity_No; //Prosaic parity bits //No parity bits
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None; //No hardware data flow control // No hardware data flow control
+	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//Sending and receiving mode //Sending and receiving mode
+  USART_Init(USART3, &USART_InitStructure);      //Initialize serial port 3
 	
-  USART_ITConfig(USART3, USART_IT_RXNE, ENABLE); //Open the serial port to accept interrupts //开启串口接受中断
-  USART_Cmd(USART3, ENABLE);                     //Enable serial port 3 //使能串口3 
+  USART_ITConfig(USART3, USART_IT_RXNE, ENABLE); //Open the serial port to accept interrupts
+  USART_Cmd(USART3, ENABLE);                     //Enable serial port 3
 }
 /**************************************************************************
 Function: Serial port 1 receives interrupted
 Input   : none
 Output  : none
-函数功能：串口1接收中断
-入口参数：无
-返 回 值：无
+Function: Serial Port 1 receive interrupt
+Entry parameters: None
+Return value: none
 **************************************************************************/
 int USART1_IRQHandler(void)
 {	
@@ -358,20 +358,20 @@ int USART1_IRQHandler(void)
 	u8 Usart_Receive;
 	static char rxbuf_moveit[11];
 		int check=0,error=1,i;
-	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) //Check if data is received //判断是否接收到数据
+	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) //Check if data is received // Check if data has been received
 	{
-		Usart_Receive = USART_ReceiveData(USART1);//Read the data //读取数据
+		Usart_Receive = USART_ReceiveData(USART1);//Read the data //Read data
 		if(Time_count<CONTROL_DELAY)
 			// Data is not processed until 25 seconds after startup
-		  //开机25秒前不处理数据
-			return 0;	//前期不进入中断
+		  //Do not process data 25 seconds before powering on
+			return 0;	//Do not interrupt early on
 		
 		//Fill the array with serial data
-		//串口数据填入数组
+		//Serial port data is populated into an array
        Receive_Data.buffer[Count]=Usart_Receive;
 	   rxbuf_moveit[Count_moveit]=Usart_Receive;
 		//Ensure that the first data in the array is FRAME_HEADER
-		//确保数组第一个数据为FRAME_HEADER
+		//Ensure the first data in the array is FRAME_HEADER
 		if(Usart_Receive == FRAME_HEADER||Count>0) 
 			Count++; 
 		else if(Usart_Receive == FRAME_HEADER_MOVEIT||Count_moveit>0)
@@ -379,52 +379,52 @@ int USART1_IRQHandler(void)
 		else 
 			Count=0,Count_moveit=0;
 		
-		if(Count == 11) //Verify the length of the packet //验证数据包的长度
+		if(Count == 11) //Verify the length of the packet // Verify the length of the packet
 		{   
-				Count=0; //Prepare for the serial port data to be refill into the array //为串口数据重新填入数组做准备
-				if(Receive_Data.buffer[10] == FRAME_TAIL) //Verify the frame tail of the packet //验证数据包的帧尾
+				Count=0; //Prepare for the serial port data to be refill into the array //Get ready to refill data from the serial port into the array
+				if(Receive_Data.buffer[10] == FRAME_TAIL) //Verify the frame tail of the packet // Verify the frame tail of the packet
 				{
 					//Data exclusionary or bit check calculation, mode 0 is sent data check
-					//数据异或位校验计算，模式0是发送数据校验
+					//Data XOR bit verification calculation, mode 0 is the data sending validation
 					if(Receive_Data.buffer[9] ==Check_Sum(9,0))
 				  {		
 						//Serial port 1 controls flag position 1, other flag position 0
-						//串口1控制标志位置1，其它标志位置0
+						//Set serial-port-1 control flag to 1 and all other flags to 0
 						PS2_ON_Flag=0;
 						Remote_ON_Flag=0;
 						APP_ON_Flag=0;
 						CAN_ON_Flag=0;
 						Usart_ON_Flag=1;
-						command_lost_count=0;//串口、CAN控制命令丢失计数清零
+						command_lost_count=0;//Reset the serial port and CAN control command loss counts
 					  
 						//Calculate the target speed of three axis from serial data, unit m/s
-						//从串口数据求三轴目标速度， 单位m/s
+						//Calculate the three-axis target velocity from serial port data, unit m/s
 						Move_X=XYZ_Target_Speed_transition(Receive_Data.buffer[3],Receive_Data.buffer[4]);
 						Move_Y=XYZ_Target_Speed_transition(Receive_Data.buffer[5],Receive_Data.buffer[6]);
 						Move_Z=XYZ_Target_Speed_transition(Receive_Data.buffer[7],Receive_Data.buffer[8]);
 				  }
 			}
 		}
-		if (Count_moveit == 10) //Verify the length of the packet //验证数据包的长度
+		if (Count_moveit == 10) //Verify the length of the packet // Verify the length of the packet
 		{   
 			   Count_moveit=0;
-		       if(rxbuf_moveit[9] == FRAME_TAIL_MOVEIT) //验证数据包的尾部校验信息
+		       if(rxbuf_moveit[9] == FRAME_TAIL_MOVEIT) //Verify the checksum at the end of the data packet
 				{ 
 					for(i=0; i<8; i++)
 					{
-						check=rxbuf_moveit[i]^check; //异或，用于检测数据是否出错
+						check=rxbuf_moveit[i]^check; //XOR, used to detect data errors
 					}
-					if(check==rxbuf_moveit[8]) error=0; //检验成功
+					if(check==rxbuf_moveit[8]) error=0; //Inspection successful
 					
-					if(error==0)	 //数据校验位计算
+					if(error==0)	 //Data parity calculations
 				  {		
 					    
 						A280.control_mode=ROS_Mode;
 			            
 						       
-						A280.joint_rad[0]=((short)((rxbuf_moveit[1]<<8)+(rxbuf_moveit[2])))*0.001f;   //取第1个电机的目标角度 分高8位和低8位 单位(弧度)
-						A280.joint_rad[1]=((short)((rxbuf_moveit[3]<<8)+(rxbuf_moveit[4])))*0.001f;   //取第2个电机的目标角度 分高8位和低8位 单位(弧度)
-						A280.joint_rad[2]=((short)((rxbuf_moveit[5]<<8)+(rxbuf_moveit[6])))*0.001f;   //取第3个电机的目标角度 分高8位和低8位 单位(弧度)
+						A280.joint_rad[0]=((short)((rxbuf_moveit[1]<<8)+(rxbuf_moveit[2])))*0.001f;   //Take the target angle of the first motor, divided into 8 high and low 8 bits, units (radians)
+						A280.joint_rad[1]=((short)((rxbuf_moveit[3]<<8)+(rxbuf_moveit[4])))*0.001f;   //Take the target angle of the second motor, divided into 8 high and low 8 bits, unit (radians)
+						A280.joint_rad[2]=((short)((rxbuf_moveit[5]<<8)+(rxbuf_moveit[6])))*0.001f;   //Take the target angle of the third motor, divided into 8 high and low 8 bits, unit (radians)
 						A280.gripper=rxbuf_moveit[7];   
 						UpdateMotorTargets_FromJoints(&A280,123);
 						Gripper_SetLevel(A280.gripper);
@@ -442,49 +442,49 @@ int USART1_IRQHandler(void)
 Function: Refresh the OLED screen
 Input   : none
 Output  : none
-函数功能：串口4接收中断
-入口参数：无
-返回  值：无
+Function: Serial Port 4 receive interrupt
+Entry parameters: None
+Return value: none
 **************************************************************************/
 int UART4_IRQHandler(void)
 {	
 	  int Usart_Receive;
 	  u8 Last_Usart_Receive;
-    if(USART_GetITStatus(UART4, USART_IT_RXNE) != RESET) //Check if data is received //判断是否接收到数据
+    if(USART_GetITStatus(UART4, USART_IT_RXNE) != RESET) //Check if data is received // Check if data has been received
     {
         static u8 Flag_PID,i,j,Receive[50];
         static float Data;
 
-        Usart_Receive=UART4->DR; //Read the data //读取数据
+        Usart_Receive=UART4->DR; //Read the data //Read data
 
         if(Deviation_Count<CONTROL_DELAY)
             // Data is not processed until 10 seconds after startup
-            //开机10秒前不处理数据
+            //Do not process data 10 seconds before powering on
             return 0;
 
 //		if(Usart_Receive==0x41&&Last_Usart_Receive==0x41&&APP_ON_Flag==0)
 //			//10 seconds after startup, press the forward button of APP to enter APP control mode
 //		  //The APP controls the flag position 1 and the other flag position 0
-//			//开机10秒之后，按下APP的前进键进入APP控制模式
-//		  //APP控制标志位置1，其它标志位置0
+//			//After turning on the device for 10 seconds, press the APP's forward button to enter app control mode
+//		  //Set app-control flag to 1 and all other flags to 0
 //		  Arm_Mode_APP=0,
 //			PS2_ON_Flag=0,Remote_ON_Flag=0,APP_ON_Flag=1,CAN_ON_Flag=0,Usart_ON_Flag=0;
 
-        //切换APP控制小车模式
-       //切换APP控制小车模式
+        //Switch APP control car mode
+       //Switch APP control car mode
          if(Usart_Receive=='a')
         {
             APP_ON_Flag=1;
            A280.control_mode=ROS_Mode;
         }
-        //切换正解模式
+        //Switch forward kinematics mode
         else if(Usart_Receive=='b')
         {
             APP_ON_Flag=0;
             A280.control_mode=APP_Mode;
 					  A280.kinematic_mode=Forward_Kinematic;
         }
-        //切换逆解模式
+        //Switch inverse kinematics mode
         else if(Usart_Receive=='c')
         {
             APP_ON_Flag=0;
@@ -494,17 +494,17 @@ int UART4_IRQHandler(void)
 
        if(Usart_Receive==0x4B) 
 			//Enter the APP steering control interface
-		  //进入APP转向控制界面
+		  //Enter the app steering-control screen
 			  Turn_Flag=1;  
 	  else	if(Usart_Receive==0x49||Usart_Receive==0x4A) 
       // Enter the APP direction control interface		
-			//进入APP方向控制界面	
+			//Enter the app direction-control screen
 			Turn_Flag=0;	
 		
 		if(Turn_Flag==0) 
 		{
 			//App rocker control interface command
-			//APP摇杆控制界面命令
+			//APP joystick control interface commands
 			if(Usart_Receive>=0x41&&Usart_Receive<=0x48)  
 			{	
 				Flag_Direction=Usart_Receive-0x40;
@@ -518,9 +518,9 @@ int UART4_IRQHandler(void)
 		else if(Turn_Flag==1)
 		{
 			//APP steering control interface command
-			//APP转向控制界面命令
-			if     (Usart_Receive==0x43) Flag_Left=0,Flag_Right=1; //Right rotation //右自转
-			else if(Usart_Receive==0x47) Flag_Left=1,Flag_Right=0; //Left rotation  //左自转
+			//APP steering control interface commands
+			if     (Usart_Receive==0x43) Flag_Left=0,Flag_Right=1; //Right rotation // Right rotation
+			else if(Usart_Receive==0x47) Flag_Left=1,Flag_Right=0; //Left rotation // rotate left
 			else                         Flag_Left=0,Flag_Right=0;
 			if     (Usart_Receive==0x41||Usart_Receive==0x45) Flag_Direction=Usart_Receive-0x40;
 			else  Flag_Direction=0;
@@ -532,20 +532,20 @@ int UART4_IRQHandler(void)
 				}
 					
 				
-        if(Usart_Receive==0x58)  RC_Velocity=RC_Velocity+100; //Accelerate the keys, +100mm/s //加速按键，+100mm/s
-        else if(Usart_Receive==0x59)  RC_Velocity=RC_Velocity-100; //Slow down buttons,   -100mm/s //减速按键，-100mm/s
+        if(Usart_Receive==0x58)  RC_Velocity=RC_Velocity+100; //Accelerate the keys, +100mm/s // Accelerate the keys, +100mm/s
+        else if(Usart_Receive==0x59)  RC_Velocity=RC_Velocity-100; //Slow down buttons, -100mm/s // Slow down button, -100mm/s
 
         // The following is the communication with the APP debugging interface
-        //以下是与APP调试界面通讯
-        if(Usart_Receive==0x7B) Flag_PID=1;   //The start bit of the APP parameter instruction //APP参数指令起始位
-        else if(Usart_Receive==0x7D) Flag_PID=2;   //The APP parameter instruction stops the bit    //APP参数指令停止位
+        //The following is communication with the APP debugging interface
+        if(Usart_Receive==0x7B) Flag_PID=1;   //Start bit of the APP parameter command // Start bit of APP parameter instruction
+        else if(Usart_Receive==0x7D) Flag_PID=2;   //The APP parameter instruction stop bit //APP parameter instruction stop bit
 
-        if(Flag_PID==1) //Collect data //采集数据
+        if(Flag_PID==1) //Collect data // Collect data
         {
             Receive[i]=Usart_Receive;
             i++;
         }
-        if(Flag_PID==2) //Analyze the data //分析数据
+        if(Flag_PID==2) //Analyze the data // Analyze data
         {
             if(Receive[3]==0x50) 	 PID_Send=1;
             else  if(Receive[1]!=0x23)
@@ -586,12 +586,12 @@ int UART4_IRQHandler(void)
                 }
             }
             //Relevant flag position is cleared
-            //相关标志位清零
+            //Reset relevant marker positions
             Flag_PID=0;
             i=0;
             j=0;
             Data=0;
-            memset(Receive, 0, sizeof(u8)*50); //Clear the array to zero//数组清零
+            memset(Receive, 0, sizeof(u8)*50); //Clear the array to zero
         }
         if(RC_Velocity<0)   RC_Velocity=0;
     }
@@ -601,9 +601,9 @@ int UART4_IRQHandler(void)
 Function: Serial port 3 receives interrupted
 Input   : none
 Output  : none
-函数功能：串口3接收中断
-入口参数：无
-返回  值：无
+Function: Serial Port 3 receive interrupt
+Entry parameters: None
+Return value: none
 **************************************************************************/
 int USART3_IRQHandler(void)
 {	
@@ -611,20 +611,20 @@ int USART3_IRQHandler(void)
 	u8 Usart_Receive;
 	static char rxbuf_moveit[11];
 	int check=0,error=1,i;
-	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET) //Check if data is received //判断是否接收到数据
+	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET) //Check if data is received // Check if data has been received
 	{
-		Usart_Receive = USART_ReceiveData(USART3);//Read the data //读取数据
+		Usart_Receive = USART_ReceiveData(USART3);//Read the data //Read data
 		if(Time_count<CONTROL_DELAY)
 			// Data is not processed until 10 seconds after startup
-		  //开机10秒前不处理数据
+		  //Do not process data 10 seconds before powering on
 		  return 0;	
 		
 		//Fill the array with serial data
-		//串口数据填入数组
+		//Serial port data is populated into an array
 		 Receive_Data.buffer[Count]=Usart_Receive;
 	   rxbuf_moveit[Count_moveit]=Usart_Receive;
 		//Ensure that the first data in the array is FRAME_HEADER
-		//确保数组第一个数据为FRAME_HEADER
+		//Ensure the first data in the array is FRAME_HEADER
 		if(Usart_Receive == FRAME_HEADER||Count>0) 
 			Count++; 
 		else if(Usart_Receive == FRAME_HEADER_MOVEIT||Count_moveit>0)
@@ -633,21 +633,21 @@ int USART3_IRQHandler(void)
 			Count=0,Count_moveit=0;
 		
 		
-		if (Count == 11) //Verify the length of the packet //验证数据包的长度
+		if (Count == 11) //Verify the length of the packet // Verify the length of the packet
 		{   
-			Count=0; //Prepare for the serial port data to be refill into the array //为串口数据重新填入数组做准备
-			if(Receive_Data.buffer[10] == FRAME_TAIL) //Verify the frame tail of the packet //验证数据包的帧尾
+			Count=0; //Prepare for the serial port data to be refill into the array //Get ready to refill data from the serial port into the array
+			if(Receive_Data.buffer[10] == FRAME_TAIL) //Verify the frame tail of the packet // Verify the frame tail of the packet
 			{
 				//Data exclusionary or bit check calculation, mode 0 is sent data check
-				//数据异或位校验计算，模式0是发送数据校验
+				//Data XOR bit verification calculation, mode 0 is the data sending validation
 				if(Receive_Data.buffer[9] ==Check_Sum(9,0))	 
 			   {		
-				  command_lost_count=0; //CAN/串口控制命令丢失计数清零
+				  command_lost_count=0; //CAN/serial port control command loss count cleared to zero
 					if(Receive_Data.buffer[1]==0)
 					{
 						
 						//All modes flag position 0, USART3 control mode
-						//所有模式标志位置0，为Usart3控制模式						
+						//Set all mode flags to 0 for Usart3 control mode
 						PS2_ON_Flag=0;
 						Remote_ON_Flag=0;
 						APP_ON_Flag=0;
@@ -655,7 +655,7 @@ int USART3_IRQHandler(void)
 						Usart_ON_Flag=0;
 										
 						//Calculate the target speed of three axis from serial data, unit m/s
-						//从串口数据求三轴目标速度， 单位m/s
+						//Calculate the three-axis target velocity from serial port data, unit m/s
 						Move_X=XYZ_Target_Speed_transition(Receive_Data.buffer[3],Receive_Data.buffer[4]);
 						Move_Y=XYZ_Target_Speed_transition(Receive_Data.buffer[5],Receive_Data.buffer[6]);
 						Move_Z=XYZ_Target_Speed_transition(Receive_Data.buffer[7],Receive_Data.buffer[8]);		
@@ -664,27 +664,27 @@ int USART3_IRQHandler(void)
 			}
 		}
 		
-		if (Count_moveit == 10) //Verify the length of the packet //验证数据包的长度
+		if (Count_moveit == 10) //Verify the length of the packet // Verify the length of the packet
 		{   
 			   Count_moveit=0;
-		       if(rxbuf_moveit[9] == FRAME_TAIL_MOVEIT) //验证数据包的尾部校验信息
+		       if(rxbuf_moveit[9] == FRAME_TAIL_MOVEIT) //Verify the checksum at the end of the data packet
 				{ 
 					 
 					for(i=0; i<8; i++)
 					{
-						check=rxbuf_moveit[i]^check; //异或，用于检测数据是否出错
+						check=rxbuf_moveit[i]^check; //XOR, used to detect data errors
 					}
-					if(check==rxbuf_moveit[8]) error=0; //检验成功
+					if(check==rxbuf_moveit[8]) error=0; //Inspection successful
 					
-					if(error==0)	 //数据校验位计算
+					if(error==0)	 //Data parity calculations
 				  {		
 					    
 							A280.control_mode=ROS_Mode;
 			            
 						       
-						A280.joint_rad[0]=((short)((rxbuf_moveit[1]<<8)+(rxbuf_moveit[2])))*0.001f;   //取第1个电机的目标角度 分高8位和低8位 单位(弧度)
-						A280.joint_rad[1]=((short)((rxbuf_moveit[3]<<8)+(rxbuf_moveit[4])))*0.001f;   //取第2个电机的目标角度 分高8位和低8位 单位(弧度)
-						A280.joint_rad[2]=((short)((rxbuf_moveit[5]<<8)+(rxbuf_moveit[6])))*0.001f;   //取第3个电机的目标角度 分高8位和低8位 单位(弧度)
+						A280.joint_rad[0]=((short)((rxbuf_moveit[1]<<8)+(rxbuf_moveit[2])))*0.001f;   //Take the target angle of the first motor, divided into 8 high and low 8 bits, units (radians)
+						A280.joint_rad[1]=((short)((rxbuf_moveit[3]<<8)+(rxbuf_moveit[4])))*0.001f;   //Take the target angle of the second motor, divided into 8 high and low 8 bits, unit (radians)
+						A280.joint_rad[2]=((short)((rxbuf_moveit[5]<<8)+(rxbuf_moveit[6])))*0.001f;   //Take the target angle of the third motor, divided into 8 high and low 8 bits, unit (radians)
 						A280.gripper=rxbuf_moveit[7];   
 						UpdateMotorTargets_FromJoints(&A280,123);
 						Gripper_SetLevel(A280.gripper);
@@ -699,30 +699,30 @@ return 0;
 Function: After the top 8 and low 8 figures are integrated into a short type data, the unit reduction is converted
 Input   : 8 bits high, 8 bits low
 Output  : The target velocity of the robot on the X/Y/Z axis
-函数功能：将上位机发过来的高8位和低8位数据整合成一个short型数据后，再做单位还原换算
-入口参数：高8位，低8位
-返回  值：机器人X/Y/Z轴的目标速度
+Function: Integrates the high 8-bit and low 8-bit data sent from the host computer into a single short data, then performs unit restore and conversion
+Entry parameters: 8 bits high, 8 bits lower
+Return value: robot target X/Y/Z-axis velocities
 **************************************************************************/
 float XYZ_Target_Speed_transition(u8 High,u8 Low)
 {
 	//Data conversion intermediate variable
-	//数据转换的中间变量
+	//Intermediate variable for data transformation
 	short transition; 
 	
-	//将高8位和低8位整合成一个16位的short型数据
+	//Combine the high 8 bits and low 8 bits into a single 16-bit short data
 	//The high 8 and low 8 bits are integrated into a 16-bit short data
 	transition=((High<<8)+Low); 
 	return 
-		transition/1000+(transition%1000)*0.001; //Unit conversion, mm/s->m/s //单位转换, mm/s->m/s						
+		transition/1000+(transition%1000)*0.001; //Unit conversion, mm/s - >m/s // Unit conversion, mm/s - >m/s
 }
 
 /**************************************************************************
 Function: The current XYZ three axis velocity of the robot is calculated from the data of the encoder
 Input   : Data from various encoders
 Output  : none
-函数功能：通过编码器的数据计算机器人当前的XYZ三轴速度
-入口参数：各路编码器的数据
-返回  值：无
+Function: Calculates the robot's current XYZ three-axis speed based on encoder data
+Input parameters: data from each encoder
+Return value: none
 **************************************************************************/
 #if Mec
 void Motion_analysis_transformation(float Encoder_A,float Encoder_B,float Encoder_C,float Encoder_D)
@@ -741,18 +741,18 @@ void Motion_analysis_transformation(float Encoder_A,float Encoder_B,float Encode
 #elif Diff
 void Motion_analysis_transformation(float Encoder_A,float Encoder_B)
 {
-		Send_Data.Sensor_Str.X_speed = ((Encoder_A+Encoder_B)/2)*1000; //小车x轴速度
+		Send_Data.Sensor_Str.X_speed = ((Encoder_A+Encoder_B)/2)*1000; //The speed of the cart's x-axis
 		Send_Data.Sensor_Str.Y_speed = 0;
-		Send_Data.Sensor_Str.Z_speed = ((Encoder_B-Encoder_A)/Wheel_spacing)*1000;//小车z轴速度
+		Send_Data.Sensor_Str.Z_speed = ((Encoder_B-Encoder_A)/Wheel_spacing)*1000;//chassis Z-axis speed
 }
 #endif
 /**************************************************************************
 Function: Serial port 1 sends data
 Input   : The data to send
 Output  : none
-函数功能：串口1发送数据
-入口参数：要发送的数据
-返回  值：无
+Function: Send data via Serial Port 1
+Entry parameters: Data to send
+Return value: none
 **************************************************************************/
 void usart1_send(u8 data)
 {
@@ -763,9 +763,9 @@ void usart1_send(u8 data)
 Function: Serial port 2 sends data
 Input   : The data to send
 Output  : none
-函数功能：串口2发送数据
-入口参数：要发送的数据
-返回  值：无
+Function: Send data via Serial Port 2
+Entry parameters: Data to send
+Return value: none
 **************************************************************************/
 void usart4_send(u8 data)
 {
@@ -776,9 +776,9 @@ void usart4_send(u8 data)
 Function: Serial port 3 sends data
 Input   : The data to send
 Output  : none
-函数功能：串口3发送数据
-入口参数：要发送的数据
-返回  值：无
+Function: Send data via Serial Port 3
+Entry parameters: Data to send
+Return value: none
 **************************************************************************/
 void usart3_send(u8 data)
 {
@@ -789,16 +789,16 @@ void usart3_send(u8 data)
 Function: Calculates the check bits of data to be sent/received
 Input   : Count_Number: The first few digits of a check; Mode: 0-Verify the received data, 1-Validate the sent data
 Output  : Check result
-函数功能：计算要发送/接收的数据校验结果
-入口参数：Count_Number：校验的前几位数；Mode：0-对接收数据进行校验，1-对发送数据进行校验
-返回  值：校验结果
+Function: Calculates the data validation results to be sent or received
+Entry parameters: Count_Number: Verify the first few digits; Mode: 0 - Verify received data, 1 - Verify sent data
+Return value: checksum result
 **************************************************************************/
 u8 Check_Sum(unsigned char Count_Number,unsigned char Mode)
 {
 	unsigned char check_sum=0,k;
 	
 	//Validate the data to be sent
-	//对要发送的数据进行校验
+	//Validate the data to be sent
 	if(Mode==1)
 	for(k=0;k<Count_Number;k++)
 	{
@@ -806,7 +806,7 @@ u8 Check_Sum(unsigned char Count_Number,unsigned char Mode)
 	}
 	
 	//Verify the data received
-	//对接收到的数据进行校验
+	//Validate the received data
 	if(Mode==0)
 	for(k=0;k<Count_Number;k++)
 	{
@@ -815,13 +815,13 @@ u8 Check_Sum(unsigned char Count_Number,unsigned char Mode)
 	return check_sum;
 }
 
-//自动回充发送字节专用校验函数
+//Automatic recharge sends byte-specific parity functions
 u8 Check_Sum_AutoCharge(unsigned char Count_Number,unsigned char Mode)
 {
 	unsigned char check_sum=0,k;
 	
 	//Validate the data to be sent
-	//对要发送的数据进行校验
+	//Validate the data to be sent
 	if(Mode==1)
 	for(k=0;k<Count_Number;k++)
 	{
@@ -832,79 +832,79 @@ u8 Check_Sum_AutoCharge(unsigned char Count_Number,unsigned char Mode)
 }
 
 
-//蓝牙AT指令抓包，防止指令干扰到机器人正常的蓝牙通信
+//Bluetooth AT command packet capture to prevent instructions from interfering with the robot's normal Bluetooth communication
 u8 AT_Command_Capture(u8 uart_recv)
 {
 	/*
-	蓝牙链接时发送的字符，00:11:22:33:44:55为蓝牙的MAC地址
+	Characters sent during Bluetooth connection, 00:11:22:33:44:55 are the MAC addresses of Bluetooth
 	+CONNECTING<<00:11:22:33:44:55\r\n
 	+CONNECTED\r\n
-	共44个字符
+	A total of 44 characters
 	
-	蓝牙断开时发送的字符
+	Characters sent when Bluetooth is disconnected
 	+DISC:SUCCESS\r\n
 	+READY\r\n
 	+PAIRABLE\r\n
-	共34个字符
+	A total of 34 characters
 	\r -> 0x0D
 	\n -> 0x0A
 	*/
 	
-	static u8 pointer = 0; //蓝牙接受时指针记录器
-	static u8 bt_line = 0; //表示现在在第几行
+	static u8 pointer = 0; //Pointer recorder when Bluetooth accepts
+	static u8 bt_line = 0; //indicates which row it is currently on
 	static u8 disconnect = 0;
 	static u8 connect = 0;
 	
-	//断开连接
+	//Disconnect
 	static char* BlueTooth_Disconnect[3]={"+DISC:SUCCESS\r\n","+READY\r\n","+PAIRABLE\r\n"};
 	
-	//开始连接
+	//Start the connection
 	static char* BlueTooth_Connect[2]={"+CONNECTING<<00:00:00:00:00:00\r\n","+CONNECTED\r\n"};
 
 
-	//特殊标识符，开始警惕(使用时要-1)
+	//Special identifiers, start alert (use -1)
 	if(uart_recv=='+') 
 	{
-		bt_line++,pointer=0; //收到‘+’，表示切换了行数	
+		bt_line++,pointer=0; //Receiving a '+' means the number of lines has been switched
 		disconnect++,connect++;
-		return 1;//抓包，禁止控制
+		return 1;//Capture packets, prohibit control
 	}
 
 	if(bt_line!=0) 
 	{	
 		pointer++;
 
-		//开始追踪数据是否符合断开的特征，符合时全部屏蔽，不符合时取消屏蔽
+		//Start tracking whether the data matches the disconnected feature; if it does, block all; if not, unmask
 		if(uart_recv == BlueTooth_Disconnect[bt_line-1][pointer])
 		{
 			disconnect++;
 			if(disconnect==34) disconnect=0,connect=0,bt_line=0,pointer=0;
-			return 1;//抓包，禁止控制
+			return 1;//Capture packets, prohibit control
 		}			
 
-		//追踪连接特征 (bt_line==1&&connect>=13)区段是蓝牙MAC地址，每一个蓝牙MAC地址都不相同，所以直接屏蔽过去
+		//Track connection signature: the (bt_line==1&&connect>=13) segment is the Bluetooth MAC address; skip it because each address differs
 		else if(uart_recv == BlueTooth_Connect[bt_line-1][pointer] || (bt_line==1&&connect>=13) )
 		{		
 			connect++;
 			if(connect==44) connect=0,disconnect=0,bt_line=0,pointer=0;		
-			return 1;//抓包，禁止控制
+			return 1;//Capture packets, prohibit control
 		}	
 
-		//在抓包期间收到其他命令，停止抓包
+		//Stop capturing after receiving other commands during packet capture
 		else
 		{
 			disconnect = 0;
 			connect = 0;
 			bt_line = 0;		
 			pointer = 0;
-			return 0;//非禁止数据，可以控制
+			return 0;//Data is not prohibited; control is allowed
 		}			
 	}
 	
-	return 0;//非禁止数据，可以控制
+	return 0;//Data is not prohibited; control is allowed
 }
 
-//软复位进BootLoader区域
+//Software reset into the BootLoader region
 void _System_Reset_(u8 uart_recv)
 {
 	static u8 res_buf[5];
@@ -920,10 +920,10 @@ void _System_Reset_(u8 uart_recv)
 	if(res_count==5)
 	{
 		res_count = 0;
-		//接受到上位机请求的复位字符“reset”，执行软件复位
+		//Upon receiving the reset character "reset" requested by the host computer, perform a software reset
 		if( res_buf[0]=='r'&&res_buf[1]=='e'&&res_buf[2]=='s'&&res_buf[3]=='e'&&res_buf[4]=='t' )
 		{
-			NVIC_SystemReset();//进行软件复位，复位后执行 BootLoader 程序
+			NVIC_SystemReset();//Perform a software reset; execute BootLoader after reset
 		}
 	}
 }

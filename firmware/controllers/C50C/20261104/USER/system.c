@@ -1,69 +1,69 @@
 /* LucSys Robotics distribution maintenance.
  * Third-party license terms remain applicable.
- * 版本：V3.5
- * 修改时间：2021-01-29
+ * Version: V3.5
+ * Modification date: 2021-01-29
  * Version: V3.5
  * Update：2021-01-29
  */
 
 #include "system.h"
 
-//系统相关变量
+//System-related variables
 SYS_VAL_t SysVal;
 
 void systemInit(void)
 {
 	//================= General Hardware Initialization Section =================//
-	//================= 通用硬件初始化部分 =================//
+	//================= General Hardware Initialization Section =================//
     //Interrupt priority group setting
-    //中断优先级分组设置
+    //Interrupt priority grouping settings
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
     //Delay function initialization
-    //延时函数初始化
+    //Delay function initialization
     delay_init(168);
 	
 	//Prioritize initializing IIC and IMU C50C board distinguishes between new and old versions based on IMU model
-	//优先初始化IIC与IMU.C50C板通过IMU型号区分新板与旧版
+	//Prioritize initialization of IIC and IMU. The C50C board distinguishes new and old versions by IMU model
     //IIC initialization
-    //IIC初始化
+    //IIC Initialization
     I2C_GPIOInit();
 	
-	//系统相关软件参数初始化
+	//Initialize system-related software parameters
 	SYS_VAL_t_Init(&SysVal);
 	
     //Serial port 1 initialization, communication baud rate 115200,
     //can be used to communicate with ROS terminal
-    //串口1初始化，通信波特率115200，可用于与ROS端通信
+    //Serial port 1 initialized, communication baud rate 115200, usable for communication with ROS terminals
     UART1_Init(115200);
 	
-	//如果IMU为MPU6050,则是旧版C50C
+	//If the IMU is MPU6050, it is the older version of the C50C
 	if( MPU6050_DEFAULT_ADDRESS == MPU6050_getDeviceID() )
 	{
 		SysVal.HardWare_Ver = V1_0;
 		
-		//旧版C50C硬件初始化
+		//Initialize the hardware of the older version of the C50C
 		V1_0_LED_Init();
 		V1_0_CAN1_Mode_Init(1,3,3,6,0);
 		V1_0_LucSys_PWM_Init(16799,0);
 		
 		//Initialize the hardware interface to the PS2 controller
-		//初始化与PS2手柄连接的硬件接口
+		//Initialize the hardware interface connected to the PS2 controller
 		PS2_Init();
 		
-		//PS2软件参数初始化
+		//Initialize PS2 software parameters
 		PS2_Key_Param_Init();
 		
 		//MPU6050 is initialized to read the vehicle's three-axis attitude,
 		//three-axis angular velocity and three-axis acceleration information
-		//MPU6050初始化，用于读取小车三轴角速度、三轴加速度信息
+		//MPU6050 initialization, used to read the cart's three-axis angular velocity and three-axis acceleration information
 		MPU6050_initialize();
 	}
 	
-	//如果IMU型号为ICM20948,则是新版C50C
-	else if( REG_VAL_WIA == ICM20948_getDeviceID() )//读取ICM20948 id
+	//If the IMU model is ICM20948, it is the new C50C
+	else if( REG_VAL_WIA == ICM20948_getDeviceID() )//Read ICM20948 ID
 	{
-		//初始化版本接口
+		//Initialize version interface
 		Version_GPIO_Init();
 		
 		uint8_t ver=0;
@@ -78,56 +78,56 @@ void systemInit(void)
 				break;
 			case 1:
 				SysVal.HardWare_Ver = V1_2;
-				UART2_Init(115200); //v1.2版本后支持485接口
+				UART2_Init(115200); //Supports 485 interface after version 1.2
 				break;
 		}
 
 	
 		//Initialize the hardware interface connected to the LED lamp
-		//初始化与LED灯连接的硬件接口
+		//Initialize the hardware interface connected to the LED lights
 		RGB_LightStrip_Init();
 		
 		//Initialize the CAN communication interface
-		//CAN通信接口初始化
+		//Initialize the CAN communication interface
 		CAN1_Mode_Init(1,3,3,6,0);
 		
 		//Initialize motor speed control and, for controlling motor speed, PWM frequency 10kHz
-		//初始化电机速度控制以及，用于控制电机速度，PWM频率10KHZ
-		LucSys_PWM_Init(16799,0);  //高级定时器TIM8的频率为168M，满PWM为16799，频率=168M/((16799+1)*(0+1))=10k
+		//Initialize motor speed control and control motor speed, PWM frequency 10KHZ
+		LucSys_PWM_Init(16799,0);  //Advanced timer TIM8 frequency is 168M; full PWM is 16799; frequency=168M/((16799+1)*(0+1))=10k
 	
 		//MPU6050 is initialized to read the vehicle's three-axis attitude,
 		//three-axis angular velocity and three-axis acceleration information
-		//ICM20948初始化，用于读取小车三轴角速度、三轴加速度信息
+		//ICM20948 Initialization, used to read the car's three-axis angular velocity and three-axis acceleration information
 		invMSInit();
 		
-		//USB PS2初始化
-		MX_USB_HOST_Init();//创建usb手柄任务
+		//USB PS2 initialization
+		MX_USB_HOST_Init();//Create USB controller task
 	}
-	else //无法识别的陀螺仪,复位系统
+	else //Unrecognized gyroscope, reset system
 	{
 		NVIC_SystemReset();
 	}
 	
     //Initialize the hardware interface connected to the buzzer
-    //初始化与蜂鸣器连接的硬件接口
+    //Initialize the hardware interface connected to the buzzer
     Buzzer_Init();
     
     //Initialize the hardware interface connected to the enable switch
-    //初始化与使能开关连接的硬件接口
+    //Initialize the hardware interface connected to the enable switch
     EnableKey_Init();
 
     //Initialize the hardware interface connected to the user's key
-    //初始化与用户按键连接的硬件接口
+    //Initialize the hardware interface connected to the user key
     KEY_Init();
 	
     //Initialize the hardware interface connected to the OLED display
-    //初始化与OLED显示屏连接的硬件接口
+    //Initialize the hardware interface connected to the OLED display
     OLED_Init();
 
     //Serial port 4 initialization, communication baud rate 9600,
     //used to communicate with Bluetooth APP terminal
-    //串口4初始化，通信波特率9600，用于与蓝牙APP端通信
-	#if VECT_TAB_OFFSET == 0x10000 //根据是否配置无线烧录来选择蓝牙的波特率
+    //Serial port 4 initialized, communication baud rate 9600, used for communication with Bluetooth app terminals
+	#if VECT_TAB_OFFSET == 0x10000 //Choose the Bluetooth baud rate based on whether wireless burning is enabled
 		UART4_Init(230400);
 	#elif VECT_TAB_OFFSET == 0
 		UART4_Init(9600);
@@ -135,109 +135,109 @@ void systemInit(void)
 	
     //Serial port 3 is initialized and the baud rate is 115200.
     //Serial port 3 is the default port used to communicate with ROS terminal
-    //串口3初始化，通信波特率115200，串口3为默认用于与ROS端通信的串口
+    //Serial port 3 initialized, communication baud rate 115200, serial port 3 is the default serial port used for communication with the ROS side
     UART3_Init(115200);
 
     //Initialize the model remote control interface
-    //初始化航模遥控接口
+    //Initialize the RC transmitter interface
     Remoter_Init();
 	
     //Encoder A is initialized to read the real time speed of motor A
-    //编码器A初始化，用于读取电机A的实时速度
+    //Encoder A initializes to read the real-time speed of motor A
     EncoderA_Init();
     //Encoder B is initialized to read the real time speed of motor B
-    //编码器B初始化，用于读取电机B的实时速度
+    //Encoder B initializes to read the real-time speed of motor B
     EncoderB_Init();
 	
     //ADC pin initialization, used to read the battery voltage and potentiometer gear,
     //potentiometer gear determines the car after the boot of the car model
-    //ADC引脚初始化，用于读取电池电压与电位器档位，电位器档位决定小车开机后的小车适配型号
+    //ADC pin initialization is used to read battery voltage and potentiometer gear. The potentiometer gear determines the model of the car after startup
     ADC1_Init();
 	
-	//阿克曼车型使用ADC2,不使用编码器C、D;其他车型反之
+	//Ackermann chassis uses ADC2, not encoders C/D; other chassis types do the opposite
 	#if defined AKM_CAR
 		ADC2_Init();
 	#else
 		//Encoder C is initialized to read the real time speed of motor C  
-		//编码器C初始化，用于读取电机C的实时速度	
+		//Encoder C initialization, used to read the real-time speed of motor C
 		EncoderC_Init();
 		//Encoder D is initialized to read the real time speed of motor D
-		//编码器D初始化，用于读取电机D的实时速度	
+		//Encoder D initialization, used to read the real-time speed of motor D
 		EncoderD_Init();  
 	#endif
 	
-	//================= 软件参数初始化部分 =================//
+	//================= Software Parameter Initialization Section =================//
 	
-	//确定机器人型号,初始化机器人机械参数和PID参数.
+	//Determine the robot model and initialize the robot's mechanical parameters and PID parameters.
 	Robot_Select(); 
 	
-	//车型已确定后再按D50A启用标志和数量建立设备表，写参数仍在任务等待窗口中进行.
+	//After the model is determined, the D50A activation flag and quantity are used to create the equipment table, while parameter writing continues in the task waiting window.
 	if(SysVal.HardWare_Ver==V1_2) D50A_Init();
 	
-	//机器人控制相关变量初始化,包含遥控速度基准、最大速度限制、速度平滑系数等内容.
+	//Initialization of robot control-related variables, including remote control speed references, maximum speed limits, speed smoothing coefficients, and other content.
 	ROBOT_CONTROL_t_Init(&robot_control); 
 	
-	//4个PI控制器初始化
+	//Initialize 4 PI controllers
 	PI_Controller_Init(&PI_MotorA,robot.V_KP,robot.V_KI);
 	PI_Controller_Init(&PI_MotorB,robot.V_KP,robot.V_KI);
 	PI_Controller_Init(&PI_MotorC,robot.V_KP,robot.V_KI);
 	PI_Controller_Init(&PI_MotorD,robot.V_KP,robot.V_KI);
 	
-	//自动回充设备软件参数初始化
+	//Automatic recharge equipment software parameter initialization
 	auto_recharge_reset();
 	
-	//OLED软件参数初始化
+	//OLED software parameter initialization
 	OLED_Param_Init(&oled);
 	
-	//APP软件参数初始化
+	//Initialize the app software parameters
 	APPKey_Param_Init(&appkey);
 	
-	//航模遥控软件参数初始化
+	//Initialize parameters of the RC transmitter software
 	Remoter_Param_Init(&remoter);
 	
-	//舵机参数初始化
+	//Servo parameter initialization
 	Akm_ServoParam_Init(&Akm_Servo);
 	
-	//从Flash读出舵机数据,若无数据则使用默认初始化值
+	//Read servo data from Flash; if no data exists, default initialization values are used
 	FlashParam_Read();    
 	
-	//阿克曼车型对舵机初始化
+	//Initialize servo for Ackermann chassis
 	#if defined AKM_CAR
 	
-	//高配阿克曼车型舵机初始化
+	//Initialize high-spec Ackermann servo
 	Servo_Senior_Init(10000-1,168-1,Akm_Servo.Mid);
 	robot.SERVO.Output = Akm_Servo.Mid;
 	
-	//顶配阿克曼车型舵机初始化
+	//Initialize top-spec Ackermann servo
 	if( robot.type >= 2 && robot.type!= 9 )
 	{
-		//等待DMA采集数据
+		//Wait for DMA to collect data
 		delay_ms(200);
 		
-		//读取一组滑轨数据,估测舵机的位置.再将估测的位置作为PWM值初始化,可避免舵机突然快速归位.
+		//Read a set of rail data to estimate the servo's position. Then initialize the estimated position as the PWM value to avoid sudden and rapid servo repositioning.
 		short TmpPWM = get_ServoPWM( get_DMA_SlideRes() );
 		
-		//顶配阿克曼车型舵机初始化,加入偏差值,避免舵机快速复位
+		//Initialize top-spec Ackermann servo with an offset to avoid rapid reset
 		Servo_Top_Init(10000-1,84-1, TmpPWM );
 		
-		//舵机PI控制器初始化.注：舵机的PID参数不开放修改.
+		//Servo PI controller initialization. Note: The servo PID parameters cannot be modified.
 		PI_Controller_Init(&PI_Servo,0,0);
 		
-		//设置舵机PI控制基准值,加入偏差值,避免刚进入PI控制时舵机抖动
+		//Set the servo PI control reference value and add deviation values to prevent servo jittering when PI control is first entered
 		PI_Servo.Output =  TmpPWM;
 		
-		//舵机速度平滑值
+		//Servo speed smoothing value
 		robot_control.smooth_Servo = TmpPWM;
 		
-		//设置低速舵机模式,让舵机缓慢归位
+		//Set the low-speed servo mode to allow the servo to return to position slowly
 		robot_control.ServoLow_flag = 1;
 	}
 	
 
 	#endif
 	
-	//所有软硬件设备初始化完毕,使用蜂鸣器提示进入rtos
-	Buzzer_AddTask(1,100);//蜂鸣1次,时间1000ms
+	//All hardware and software devices are initialized, and the buzzer prompts you to enter RTOS
+	Buzzer_AddTask(1,100);//One beep for 1000ms
 }
 
 

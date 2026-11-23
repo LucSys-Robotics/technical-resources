@@ -3,37 +3,37 @@
 #include "sys.h"
 #include "system.h"
 
-#define STEPPER_TASK_PRIO		4     //Task priority //任务优先级
-#define STEPPER_STK_SIZE 		256   //Task stack size //任务堆栈大小
+#define STEPPER_TASK_PRIO		4     //Task priority //Task Priority
+#define STEPPER_STK_SIZE 		256   //Task stack size //Task Stack Size
 #define RAD2DEG    57.2957795f
-#define Link_B     0.1400f //杆B长度
-#define Link_C     0.1600f //杆C长度
+#define Link_B     0.1400f //Length of pole B
+#define Link_C     0.1600f //Length of rod C
 #define AngleA_Min -1.9f
 #define AngleA_Max  1.9f 
 
-#define AngleB_Min -0.1700f //关节B角度最小值(相对X轴)，逆时针为正
-#define AngleB_Max  1.5708f //关节B角度最大值(相对X轴)，顺时针为负
+#define AngleB_Min -0.1700f //Minimum angle B of joints (relative to the X-axis), counterclockwise is positive
+#define AngleB_Max  1.5708f //Maximum angle of joint B (relative to the X-axis), clockwise is negative
 
-#define AngleC_Min -1.1790f //关节C角度最小值(相对X轴)，逆时针为正
-#define AngleC_Max  0.7273f //关节C角度最大值(相对X轴)，顺时针为负
+#define AngleC_Min -1.1790f //Minimum angle of joint C (relative to the X-axis), counterclockwise is positive
+#define AngleC_Max  0.7273f //Maximum angle of joint C (relative to the X-axis), clockwise is negative
 
-#define SERVO_PWM_MIN    500   // 最小脉宽，对应完全张开(假设)
-#define SERVO_PWM_MAX   2500   // 最大脉宽，对应完全闭合(假设)
-#define SERVO_LEVEL_MAX   100   // 控制档位 0~10
+#define SERVO_PWM_MIN    500   // Minimum pulse width, corresponding to full expansion (assumed)
+#define SERVO_PWM_MAX   2500   // Maximum pulse width, corresponding to complete closure (hypothetical)
+#define SERVO_LEVEL_MAX   100   // Control gear: 0~10
 #define ANGLE_CHANGE_THRESHOLD 0.05f
-#define MAX_SPEED  90     // 最大速度（你的电机速度范围：0-90）
-#define MIN_SPEED  5      // 最小速度（避免速度过低导致电机不转，建议 5-10）
+#define MAX_SPEED  90     // Maximum speed (your motor speed range: 0-90)
+#define MIN_SPEED  5      // Minimum speed (avoid speeds too low to turn the motor; recommended 5-10)
 
-#define STEPS_PER_DEG (10.0f*13.755f) //十倍发送*减速比
+#define STEPS_PER_DEG (10.0f*13.755f) //Tenfold transmission * reduction ratio
 
 typedef enum {
-    DISTANCE_LESS_OR_EQUAL,   // 距离小于或等于半径
-    DISTANCE_GREATER_OR_EQUAL // 距离大于或等于半径
+    DISTANCE_LESS_OR_EQUAL,   // Distance less than or equal to the radius
+    DISTANCE_GREATER_OR_EQUAL // Distance greater than or equal to radius
 } DistanceComparison;
 
 typedef enum {
-    Forward_Kinematic,   //正运动学
-    Inverse_Kinematic    //逆运动学
+    Forward_Kinematic,   //Positive kinematics
+    Inverse_Kinematic    //Inverse kinematics
 } Kinematic_Mode;
 
 

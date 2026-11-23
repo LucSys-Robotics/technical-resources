@@ -2,9 +2,9 @@
 #define __ADC_H	
 #include "sys.h"
 #include "system.h"
-#define Battery_Ch    8 //Battery voltage, ADC channel 14 //电池电压，ADC通道14
+#define Battery_Ch    8 //Battery voltage, ADC channel 14 // Battery voltage, ADC channel 14
 #define WEITIAO 11
-#define CAR_MODE_ADC 12  //Potentiometer, ADC channel 8 //电位器，ADC通道8
+#define CAR_MODE_ADC 12  //Potentiometer, ADC channel 8 // Potentiometer, ADC channel 8
 #define Potentiometer   13
 void Adc_Init(void);
 u16 Get_Adc(u8 ch);

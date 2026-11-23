@@ -4,7 +4,7 @@
 #include "sys.h"
 #include "system.h"
 /**************************************************************************
-作者：LucSys Robotics
+By LucSys Robotics
 **************************************************************************/
 
 
@@ -14,7 +14,7 @@
 #define Absolute         0
 
 //Diameter of trolley tire
-//无刷电机轮胎直径
+//Brushless motor tire diameter
 #define HUB_130_Diameter  0.13
 #define HUB_200_Diameter  0.20
 

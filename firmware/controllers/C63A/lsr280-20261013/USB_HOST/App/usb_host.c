@@ -77,22 +77,22 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef *phost)
 		0,0,0
 	};
 	
-	//start按键
+	//start button
 	static uint8_t startkey = 0;
 	
-	//空闲检测
+	//Idle detection
 	static uint8_t idleCount=0;
 	
-	//摇杆值
+	//Joystick value
 	float LX=127,LY=127,RX=127;
 	float ThrottleTri = 255;
-	float base_vz = PI/4.0f ;//Z轴基础速度
+	float base_vz = PI/4.0f ;//Z-axis base speed
 
 	LY = GamePadInterface->LY - 127;
 	LX = 127 - GamePadInterface->LX;
 	RX = 127 - GamePadInterface->RX;
 	
-	//忽略小幅度摇杆值
+	//Ignore small joystick values
 	if( fabs(LY)<50 ) LY = 0;
 	if( fabs(LX)<50 ) LX = 0;
 	if( fabs(RX)<50 ) RX = 0;
@@ -127,10 +127,10 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef *phost)
 		}
 	}
 	
-	//将摇杆值转换为3轴目标速度
+	//Convert joystick values to 3-axis target speeds
 	cmd.Vx = (LY/127.0f) * RobotControlParam.defalutSpeed * (ThrottleTri/255.0f);
 	cmd.Vy = (LX/127.0f) * RobotControlParam.defalutSpeed;
-	//cmd.Vy=0;//暂无使用Vy的车型
+	//cmd.Vy=0; There are currently no models using Vy
 	cmd.Vz = base_vz * (RX/127.0f) * ( RobotControlParam.defalutSpeed/500.0f );
 	
     //Unit conversion, mm/s -> m/s
@@ -146,13 +146,13 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef *phost)
 	{
 		static TickType_t tick = 0;
 		
-		//限制手柄控制频率为10hz
+		//Limit gamepad control frequency to 10Hz
 		if( xTaskGetTickCount() - tick >= 100 )
 		{
 			tick = xTaskGetTickCount();
 			WriteRobotControlQueue(&cmd,0);
 		}
-		/* 震动反馈添加处 */
+		/* Add vibration feedback here */
 		
 		/* END */
 	}
@@ -170,7 +170,7 @@ void MX_USB_HOST_Init(void)
 {
   /* USER CODE BEGIN USB_HOST_Init_PreTreatment */
 	
-	//V1.0版本无游戏手柄硬件接口
+	//V1.0 version does not have a gamepad hardware interface
 	if( HW_1_0 == get_HardWareVersion() ) return;
 	
 	GamePadInterface = &GamePadDefalut;

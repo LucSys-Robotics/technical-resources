@@ -7,7 +7,7 @@
 
 typedef struct  
 {
-	int LX; //航模通道1~4读取到的数值,与控制相关
+	int LX; //Values read from model aircraft channels 1~4, related to control
 	int LY; 
 	int RX;
 	int RY;

@@ -75,7 +75,7 @@ void UpdateMotorTargets_FromJoints(Arm_t *arm,uint8_t idx){
     }
 
     if (idx == 23 || idx == 123) {
-        // 检查 B 轴
+        // Check the B axis
         if (fabsf(new_deg_B - arm->last_joint_deg[1]) > ANGLE_CHANGE_THRESHOLD) {
             arm->joint_deg[1] = new_deg_B;
             arm->joint_flag[1] = 1;
@@ -83,7 +83,7 @@ void UpdateMotorTargets_FromJoints(Arm_t *arm,uint8_t idx){
             arm->joint_flag[1] = 0;
         }
 
-        // 检查 C 轴
+        // Check the C-axis
         if (fabsf(new_deg_C - arm->last_joint_deg[2]) > ANGLE_CHANGE_THRESHOLD) {
             arm->joint_deg[2] = new_deg_C;
             arm->joint_flag[2] = 1;
@@ -176,9 +176,9 @@ void CAN_UpdateAndSend(void){
   float max_angle_diff=0.0f;
   u8  i;
   u8  motor_id[3]={0x01,0x02,0x03};
-  u8  active_axis_count = 0; // 记录有几个轴需要动
+  u8  active_axis_count = 0; // Records several axes that need to be moved
 	
-  // 1) 只对有 joint_flag 的轴计算角度差 & 最大差
+  // 1) Only calculate angle difference & maximum difference for axes with joint_flag
   for(i=0;i<3;i++){
     if(A280.joint_flag[i]){
       angle_diff[i]=fabsf(A280.joint_deg[i]-A280.last_joint_deg[i]);
@@ -191,7 +191,7 @@ void CAN_UpdateAndSend(void){
 	if(active_axis_count == 0) return;
 	
 	
-	  // 2) 按最大差计算同步速度
+	  // 2) Calculate synchronization speed based on the maximum difference
   if(max_angle_diff>0.01f){
     for(i=0;i<3;i++){
       if(A280.joint_flag[i]){
@@ -204,7 +204,7 @@ void CAN_UpdateAndSend(void){
   }else{
 	    return;
   }
-  // 3) 更新 last_joint_deg，并对每个需要动的轴封包+发送
+  // 3) Update the last_joint_deg and send + packets to each axis that needs to be moved
 	  for(i=0;i<3;i++){
     if(!A280.joint_flag[i]) continue;
     A280.last_joint_deg[i]=A280.joint_deg[i];
@@ -218,7 +218,7 @@ void CAN_UpdateAndSend(void){
 
     u16 spd  =(u16)A280.joint_speed[i];
 
-    // 方向：A轴 正=0 负=1；B/C轴 正=1 负=0
+    // Direction: Axis A Positive = 0 Negative = 1; Axis B/C Positive = 1 Negative = 0
     if(i==0) dir=(A280.joint_deg[i]>0.0f)?0:1;
     else     dir=(A280.joint_deg[i]>0.0f)?1:0;
 
@@ -238,52 +238,52 @@ void CAN_UpdateAndSend(void){
 
 
 
-//机械臂夹爪PWM初始化
+//Initialize the PWM of the robotic arm gripper
 void TIM9_Init(u16 arr,u16 psc)
 {		 					 
 	GPIO_InitTypeDef GPIO_InitStructure;
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 	TIM_OCInitTypeDef  TIM_OCInitStructure;
 	
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9,ENABLE);  	  //TIM9时钟使能    
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE); 	//使能PORTA时钟	
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9,ENABLE);  	  //TIM9 clock enabled
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE); 	//Enable the PORTA clock
 	
 	GPIO_PinAFConfig(GPIOA,GPIO_PinSource3,GPIO_AF_TIM9); 
  
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;   //GPIO
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;        //复用功能
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	//速度100MHz
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;      //推挽复用输出
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;        //上拉
-	GPIO_Init(GPIOA,&GPIO_InitStructure);              //初始化PC口
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;        //Reuse function
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	//Speed: 100MHz
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;      //Push-pull reuse output
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;        //Pull up
+	GPIO_Init(GPIOA,&GPIO_InitStructure);              //Initialize PC port
 	
 	//Sets the value of the auto-reload register cycle for the next update event load activity
-	//设置在下一个更新事件装入活动的自动重装载寄存器周期的值	 
+	//Set the value of the automatic reload register cycle for the next update event to load the activity
 	TIM_TimeBaseStructure.TIM_Period = arr; 
 	//Sets the pre-divider value used as the TIMX clock frequency divisor
-	//设置用来作为TIMx时钟频率除数的预分频值
+	//Set the predivision value used as the divisor of the TIMx clock frequency
 	TIM_TimeBaseStructure.TIM_Prescaler =psc; 
 	//Set the clock split :TDTS = Tck_tim
-	//设置时钟分割:TDTS = Tck_tim
+	//Set clock split: TDTS = Tck_tim
 	TIM_TimeBaseStructure.TIM_ClockDivision = 1; 
 	//Up counting mode 
-	//向上计数模式  
+	//Count Up mode
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  
 	//Initializes the timebase unit for TIMX based on the parameter specified in TIM_TIMEBASEINITSTRUCT
-	//根据TIM_TimeBaseInitStruct中指定的参数初始化TIMx的时间基数单位
+	//Initialize TIMx time base units based on the parameters specified in the TIM_TimeBaseInitStruct
 	TIM_TimeBaseInit(TIM9, &TIM_TimeBaseStructure); 
 
   //Select Timer mode :TIM Pulse Width Modulation mode 1
-  //选择定时器模式:TIM脉冲宽度调制模式1
+  //Select timer mode: TIM pulse-width modulation mode 1
  	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; 
 	//Compare output enablement
-	//比较输出使能
+	//Compare output enablement
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; 
   //Output polarity :TIM output polarity is higher	
-  //输出极性:TIM输出比较极性高	
+  //Output polarity: TIM output compare active high
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;     
 	//Initialize the peripheral TIMX based on the parameter specified in TIM_OCINITSTRUCT
-  //根据TIM_OCInitStruct中指定的参数初始化外设TIMx	
+  //Initialize the peripheral TIMx according to the parameters specified in the TIM_OCInitStruct
 	TIM_OC2Init(TIM9, &TIM_OCInitStructure); 
 	
 	
@@ -291,13 +291,13 @@ void TIM9_Init(u16 arr,u16 psc)
 	TIM_OC2PreloadConfig(TIM9, TIM_OCPreload_Enable);  
 
   // Enable the TIMX preloaded register on the ARR
-  //使能TIMx在ARR上的预装载寄存器	
+  //Enable TIMx preload registers on ARR
 	TIM_ARRPreloadConfig(TIM9, ENABLE); 
 		
     TIM9->CCR2=1500;	
 	
 	
 	//Enable TIM9
-	//使能TIM9
+	//Enable TIM9
 	TIM_Cmd(TIM9, ENABLE);  
 } 

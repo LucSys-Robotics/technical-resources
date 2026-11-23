@@ -4,23 +4,23 @@
 #include "system.h"
 
 //Parameter structure of robot
-//机器人结构相关参数
+//Parameters related to robot structure
 typedef struct  
 {
-	float WheelSpacing;           //Wheelspacing, Mec_Car is half wheelspacing //轮距参数 麦轮、四驱为半轮距
-	float AxleSpacing;            //Axlespacing, Mec_Car is half axlespacing   //轴距参数 麦轮、四驱为半轴距	
-	float Wheel_Circ;             //Wheel circumference                        //主动轮周长
-	float GearRatio;              //Motor_gear_ratio                           //电机减速比参数
-	float Encoder_precision;      //车轮转一圈对应的编码器数值
-	uint16_t   EncoderAccuracy;   //Number_of_encoder_lines                    //编码器精度(编码器线数)
+	float WheelSpacing;           //Wheelspacing, Mec_Car is half wheelspacing // Wheel spacing parameter, for mecanum and 4WD it's half wheel spacing
+	float AxleSpacing;            //Axlespacing, Mec_Car is half axlespacing // Wheelbase parameters Wheat wheels and four-wheel drive have half wheelbase
+	float Wheel_Circ;             //Wheel circumference // Wheel circumference
+	float GearRatio;              //Motor_gear_ratio // Motor reduction ratio parameters
+	float Encoder_precision;      //The encoder value corresponding to one wheel rotation
+	uint16_t   EncoderAccuracy;   //Number_of_encoder_lines // Encoder accuracy (number of encoder lines)
 	
-	//不同类型车的专属参数
+	//Exclusive parameters for different types of vehicles
 	#if defined AKM_CAR
-		float MIN_turn_radius;    //阿克曼小车的最小转弯半径限制
+		float MIN_turn_radius;    //Minimum turning-radius limit for Ackermann chassis
 	#endif
 	
 	#if defined OMNI_CAR
-		float TurnRadiaus;        //Rotation radius of omnidirectional trolley //全向轮小车旋转半径
+		float TurnRadiaus;        //Rotation radius of omnidirectional chassis // Rotation radius of omnidirectional chassis
 		float X_PARAMETER;
 		float Y_PARAMETER;
 		float L_PARAMETER;
@@ -29,50 +29,50 @@ typedef struct
 }Robot_Parament_InitTypeDef;
 
 //Robot servo motor related parameters
-//机器人伺服电机相关参数
+//Parameters related to robot servo motors
 typedef struct  
 {
-	float Target;                //Control the target speed of the motor            //电机目标速度值，控制电机目标速度
-	float Encoder;               //Read the real time speed of the motor by encoder //编码器数值，读取电机实时速度
-	int Output;                  //Output PWM Values to Motors for Controlling Rotation //输出到电机的PWM值,用于控制电机转动
+	float Target;                //Control the target speed of the motor // Motor target speed value, control motor target speed
+	float Encoder;               //Read the real-time speed of the motor by encoder //Encoder value, read motor real-time speed
+	int Output;                  //Output PWM values to motors for controlling rotation
 }Moto_parameter;
 
 typedef struct
 {
-	Robot_Parament_InitTypeDef HardwareParam;//机器人的结构参数
+	Robot_Parament_InitTypeDef HardwareParam;//Structural parameters of the robot
 	
 	Moto_parameter MOTOR_A;
 	Moto_parameter MOTOR_B;
 	Moto_parameter MOTOR_C;
 	Moto_parameter MOTOR_D;
 	
-	//阿克曼车型增加舵机定义
+	//Add servo definition for Ackermann chassis
 	#if defined AKM_CAR
 		Moto_parameter SERVO;
 	#endif
 	
 	//Robot model 
-	//小车型号
+	//Car model
 	uint8_t    type;      
 	
-	//机器人电池电压
+	//Robot battery voltage
 	float voltage;
 	
-	//用于控制机器人运动的pid参数
+	//PID parameters used to control robot movement
 	int V_KP;
 	int V_KI;
 	
 	uint8_t LowPower;
 	
-	//D50A自动管理参数，由各车型Robot_Select统一设置.
-	uint8_t D50A_Enable;          // 0=不启用，1=启用配置、轮询和保护检查
-	uint8_t D50A_Number;          // 1=地址1，2=地址1和2，不根据在线数量推断
-	uint16_t D50A_OverCurrent_mA; // M1/M2启动阈值，单位mA，1000~16000且为10的倍数
-	uint16_t D50A_OverTime_ms;    // M1/M2启动过流时间，单位ms，范围10~10000
+	//D50A Automatic Management Parameters, uniformly set by each vehicle Robot_Select.
+	uint8_t D50A_Enable;          // 0=Not enabled, 1=Enable configuration, polling, and protection checks
+	uint8_t D50A_Number;          // 1 = address 1, 2 = addresses 1 and 2, not based on online count
+	uint16_t D50A_OverCurrent_mA; // M1/M2 startup threshold, unit mA, 1000~16000 and multiples of 10
+	uint16_t D50A_OverTime_ms;    // M1/M2 startup overcurrent time, unit ms, range 10~10000
 }ROBOT_t;
 
 
-//模块内部函数声明，仅各车型实现文件定义ROBOT_INIT_SOURCE后可见.
+//Internal function declarations in modules, visible only after each vehicle model implements the file definition ROBOT_INIT_SOURCE.
 #if defined ROBOT_INIT_SOURCE
 static void set_RobotType(uint8_t type);
 
@@ -88,12 +88,12 @@ static void Robot_Init(float wheelspacing,float axlespacing,float gearratio,int 
 #endif
 #endif
 
-//对外接口
+//External interface
 extern ROBOT_t robot;
 void Robot_Select(void);
 
 //Motor_gear_ratio
-//电机减速比
+//Motor reduction ratio
 #define   MD36N_5_18  5.18
 #define   MD36N_27    27
 #define   MD36N_51    51
@@ -102,82 +102,82 @@ void Robot_Select(void);
 #define   MD60N_47    47
 
 //Number_of_encoder_lines
-//编码器精度
+//Encoder accuracy
 #define		GMR_500  500
 #define	    Hall_13  13
 
 //The encoder octave depends on the encoder initialization Settings
-//编码器倍频数，取决于编码器初始化设置
+//The number of encoder multipliers, depending on the encoder initialization settings
 #define   EncoderMultiples 4
 
-//默认PID参数
+//Default PID parameters
 #define VEL_KP 300
 #define VEL_KI 300
 
-//不同类别车型下的参数
+//Parameters under different categories of models
 #if defined AKM_CAR
-	//阿克曼小车拥有的车型数量
+	//Number of Ackermann chassis types
 	#define CAR_NUMBER    10    
-	//Wheel_spacing //轮距
-	#define   SENIOR_AKM_wheelspacing  0.322f //高配阿克曼
-	#define   TOP_AKM_BS_wheelspacing  0.510f //顶配摆式悬挂阿克曼
-	#define   TOP_AKM_DL_wheelspacing  0.595f //顶配独立悬挂阿克曼
+	//Wheel_spacing // Wheel spacing
+	#define   SENIOR_AKM_wheelspacing  0.322f //High-spec Ackermann chassis
+	#define   TOP_AKM_BS_wheelspacing  0.510f //Top-spec oscillating-axle Ackermann chassis
+	#define   TOP_AKM_DL_wheelspacing  0.595f //Top-spec independent-suspension Ackermann chassis
 	
-	//Axle_spacing //轴距
-	#define   SENIOR_AKM_axlespacing   0.322f //高配阿克曼
-	#define   TOP_AKM_BS_axlespacing   0.594f //顶配摆式悬挂阿克曼
-	#define   TOP_AKM_DL_axlespacing   0.525f //顶配独立悬挂阿克曼
+	//Axle_spacing // Wheelbase
+	#define   SENIOR_AKM_axlespacing   0.322f //High-spec Ackermann chassis
+	#define   TOP_AKM_BS_axlespacing   0.594f //Top-spec oscillating-axle Ackermann chassis
+	#define   TOP_AKM_DL_axlespacing   0.525f //Top-spec independent-suspension Ackermann chassis
 	
 	//Diameter of trolley tire
-	//小车轮胎直径
-	#define   SENIOR_AKM_WheelDiameter  0.125 //高配阿克曼
-	#define   TOP_AKM_BS_WheelDiameter  0.180 //顶配摆式悬挂阿克曼
-	#define   TOP_AKM_DL_WheelDiameter  0.254 //顶配独立悬挂阿克曼
+	//Diameter of the car tire
+	#define   SENIOR_AKM_WheelDiameter  0.125 //High-spec Ackermann chassis
+	#define   TOP_AKM_BS_WheelDiameter  0.180 //Top-spec oscillating-axle Ackermann chassis
+	#define   TOP_AKM_DL_WheelDiameter  0.254 //Top-spec independent-suspension Ackermann chassis
 
 	//The minimum turning radius of different Ackermann models is determined by the mechanical structure:
 	//the maximum Angle of the wheelbase, wheelbase and front wheel
-	//不同阿克曼车型的最小转弯半径，由机械结构决定：轮距、轴距、前轮最大转角
-	#define   SENIOR_AKM_MIN_TURN_RADIUS  0.750f //高配阿克曼
-	#define   TOP_AKM_BS_MIN_TURN_RADIUS  1.400f //顶配摆式悬挂阿克曼
-	#define   TOP_AKM_DL_MIN_TURN_RADIUS  1.200f //顶配独立悬挂阿克曼
+	//The minimum turning radius of different Ackermann models is determined by the mechanical structure: track width, wheelbase, and maximum front wheel turning angle
+	#define   SENIOR_AKM_MIN_TURN_RADIUS  0.750f //High-spec Ackermann chassis
+	#define   TOP_AKM_BS_MIN_TURN_RADIUS  1.400f //Top-spec oscillating-axle Ackermann chassis
+	#define   TOP_AKM_DL_MIN_TURN_RADIUS  1.200f //Top-spec independent-suspension Ackermann chassis
 	
 #elif defined DIFF_CAR
-	//差速小车的车型数量
+	//Number of differential car models
 	#define   CAR_NUMBER    9   
 	
-	//轮距
-	#define   TOP_DIFF_wheelspacing            0.329f //差速车
-	#define   FOUR_WHEEL_DIFF_BS_wheelspacing  0.573f //四轮差速摆式悬挂
-	#define   FOUR_WHEEL_DIFF_DL_wheelspacing  0.605f //四轮差速独立悬挂
+	//Track width
+	#define   TOP_DIFF_wheelspacing            0.329f //Differential cars
+	#define   FOUR_WHEEL_DIFF_BS_wheelspacing  0.573f //Four-wheel differential swing suspension
+	#define   FOUR_WHEEL_DIFF_DL_wheelspacing  0.605f //Four-wheel differential independent suspension
 	
-	//差速车无轴距数据
+	//Differential cars do not have wheelbase data
 	
-	//轮胎直径
-	#define   TOP_DIFF_WheelDiameter        0.125 //两轮差速主动轮直径
-	#define   FOUR_WHEEL_DIFF_WheelDiameter 0.254 //四轮差速主动轮直径
+	//Tire diameter
+	#define   TOP_DIFF_WheelDiameter        0.125 //Diameter of the two-wheel differential driving wheel
+	#define   FOUR_WHEEL_DIFF_WheelDiameter 0.254 //Four-wheel differential driving wheel diameter
 	
 #elif defined MEC_CAR
-	//麦轮小车的车型数量
+	//Number of Mecanum chassis types
 	#define CAR_NUMBER    11     
-	//半轮距
+	//Half track width
 	#define SENIOR_MEC_BS_wheelspacing    0.176 
 	#define SENIOR_MEC_DL_wheelspacing    0.247 
 	#define TOP_MEC_BS_wheelspacing       0.311
 	#define TOP_MEC_DL_wheelspacing       0.295
 	#define FLAGSHIP_MEC_DL_wheelspacing  0.285
 	#define FLAGSHIP_MEC_BS_wheelspacing  0.292
-	#define TOP_MEC_DL_wheelspacing_Customized    0.446 //Custom size //定制尺寸
-	#define Senior_MEC_DL_wheelspacing_Customized 0.3   //Custom size //定制尺寸
-	//半轴距
+	#define TOP_MEC_DL_wheelspacing_Customized    0.446 //Custom size // Custom size
+	#define Senior_MEC_DL_wheelspacing_Customized 0.3   //Custom size // Custom size
+	//Half wheelbase
 	#define SENIOR_MEC_BS_axlespacing    0.156
 	#define SENIOR_MEC_DL_axlespacing    0.214 
 	#define TOP_MEC_BS_axlespacing       0.308
 	#define TOP_MEC_DL_axlespacing       0.201
 	#define FLAGSHIP_MEC_DL_axlespacing  0.178
 	#define FLAGSHIP_MEC_BS_axlespacing  0.178
-	#define TOP_MEC_DL_axlespacing_Customized     0.401 //Custom size //定制尺寸
-	#define Senior_MEC_DL_axlespacing_Customized  0.24  //Custom size //定制尺寸
-	//轮胎直径
+	#define TOP_MEC_DL_axlespacing_Customized     0.401 //Custom size // Custom size
+	#define Senior_MEC_DL_axlespacing_Customized  0.24  //Custom size // Custom size
+	//Tire diameter
 	#define		Mecanum_60  0.060f
 	#define		Mecanum_75  0.075f
 	#define		Mecanum_100 0.100f
@@ -185,9 +185,9 @@ void Robot_Select(void);
 	#define		Mecanum_152 0.152f
 	
 #elif defined _4WD_CAR
-	//四驱小车的车型数量
+	//Number of models of four-wheel-drive small cars
 	#define CAR_NUMBER    13    
-	//half wheelspacing //半轮距
+	//half wheelspacing // half wheelspace
 	#define SENIOR_4WD_BS_wheelspacing   0.176 
 	#define SENIOR_4WD_DL_wheelspacing   0.230
 	#define TOP_4WD_BS_wheelspacing      0.311
@@ -195,7 +195,7 @@ void Robot_Select(void);
 	#define FlagShip_4WD_BS_wheelspacing 0.286
 	#define FlagShip_4WD_DL_wheelspacing 0.24
 
-	//half axlespacing //半轴距
+	//half axlespacing // Half wheelbase
 	#define SENIOR_4WD_BS_axlespacing   0.150
 	#define SENIOR_4WD_DL_axlespacing   0.20 
 	#define TOP_4WD_BS_axlespacing      0.308
@@ -204,23 +204,23 @@ void Robot_Select(void);
 	#define FlagShip_4WD_DL_axlespacing 0.14
 
 	//4WD wheel tire diameter series
-	//四驱车轮胎直径
+	//Diameter of four-wheel drive tires
 	#define  WheelDiameter_4WD_152  0.152f
 	#define  WheelDiameter_4WD_225  0.225f
 	#define	 WheelDiameter_4WD_250  0.250f
 	
 #elif defined OMNI_CAR
-	//全向轮小车的车型数量
+	//Number of models of omnidirectional wheel trolleys
 	#define CAR_NUMBER    7     
 	
 	//Rotation radius of omnidirectional trolley
-	//全向轮小车旋转半径
+	//Radius of rotation of the omnidirectional wheel cart
 	#define   Omni_Turn_Radiaus_164 0.164
 	#define   Omni_Turn_Radiaus_180 0.180 
 	#define   Omni_Turn_Radiaus_290 0.290 
 	
 	//Omni wheel tire diameter series
-	//全向轮轮胎直径
+	//Diameter of the all-wheel tire
 	#define	  FullDirecion_75  0.075
 	#define	  FullDirecion_127 0.127
 	#define	  FullDirecion_152 0.152

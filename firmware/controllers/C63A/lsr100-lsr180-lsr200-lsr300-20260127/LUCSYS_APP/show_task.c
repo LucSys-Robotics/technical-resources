@@ -25,7 +25,7 @@
 #include "AutoRecharge_task.h"
 
 static uint8_t page = 0;
-extern uint8_t Received_IP[4];           // 确认接收的IP
+extern uint8_t Received_IP[4];           // Confirm the received IP
 static pOLEDInterface_t oled = &UserOLED;
 
 
@@ -71,7 +71,7 @@ static void ServoDriverInfo_Show(ServoDriverHWType_t* driver)
 
 static void HardWare_Info_show(void)
 {
-	//车型
+	//Model
 	oled->ShowString(0,0,"CarType:");
 	     if( RobotHardWareParam.CarType == S300 ) oled->ShowString(70,0,"S300  ");
 	else if( RobotHardWareParam.CarType == S200 ) oled->ShowString(70,0,"S200  ");
@@ -82,14 +82,14 @@ static void HardWare_Info_show(void)
 	else if( RobotHardWareParam.CarType == SX04 ) oled->ShowString(70,0,"SX04  ");
 	else oled->ShowString(70,0,"UKOW  ");
 	
-	//硬件版本
+	//Hardware version
 	oled->ShowString(0,12," HW_Ver:");
 	if( get_HardWareVersion() == HW_1_0 )
 		oled->ShowString(70,12,"1.0");
 	else if( get_HardWareVersion() == HW_1_1 )
 		oled->ShowString(70,12,"1.1");
 	
-	//驱动器个数
+	//Number of drivers
 	oled->ShowString(0,24," DriveN:");
 	oled->ShowNumber(70,24,RobotHardWareParam.driveCounts,3,12);
 	
@@ -109,7 +109,7 @@ static void HardWare_Info_show(void)
 			oled->ShowString(70,36,"8-D");
 			break;
 	}
-	//IP显示
+	//IP display
 	oled->ShowString(0,48,"IP:");
 	oled->ShowNumber(24,48,Received_IP[0],3,12);
 	oled->ShowNumber(48,48,Received_IP[1],3,12);
@@ -145,7 +145,7 @@ static void ChargerDev_Info_show(void)
 
 static void RobotMainInfoShow(void)
 {
-	//首行,所有车型固定显示
+	//First row; fixed display for all chassis types
 	uint16_t Divisor_Mode = 4095/(Number_of_CAR-1);
 	uint8_t cartypeshow = USER_ADC_Get_AdcBufValue(userconfigADC_CARMODE_CHANNEL)/Divisor_Mode;
 	
@@ -164,17 +164,17 @@ static void RobotMainInfoShow(void)
 	oled->ShowFloat(87,0,ChargeDev.ChargingCur/1000.0f,1,2);
 	oled->ShowString(120,0,"A");
 	
-	//第2-4行,不同车型显示不一样的信息
-	//六轮车
+	//Lines 2-4 display different information depending on the model
+	//Six-wheeled vehicle
 	if( RobotHardWareParam.CarType == S260 )
 	{
-		//左右轮目标值
+		//Left and right wheel target values
 		oled->ShowString(0,10,"L");
 		oled->ShowShort(15,10,rpm_to_linearVel(RobotControlParam.MotorA.target,RobotHardWareParam.WheelPerimeter)*1000,4,12);
 		oled->ShowString(60,10,"R");
 		oled->ShowShort(70,10,rpm_to_linearVel(-RobotControlParam.MotorD.target,RobotHardWareParam.WheelPerimeter)*1000,4,12);
 		
-		//6轮实际值
+		//6 rounds of actual values
 		oled->ShowString(0,20,"C");
 		oled->ShowString(0,30,"B");
 		oled->ShowString(0,40,"A");
@@ -190,7 +190,7 @@ static void RobotMainInfoShow(void)
 		oled->ShowShort(70,40,RobotControlParam.MotorF.feedback*1000,4,12);
 	}
 	
-	//四驱车
+	//Four-wheel drive vehicles
 	else if( RobotHardWareParam.CarType == S200 || RobotHardWareParam.CarType == S200_OUTDOOR )
 	{
 		oled->ShowString(0,10,"A:");
@@ -208,7 +208,7 @@ static void RobotMainInfoShow(void)
 		oled->ShowShort(75,40,RobotControlParam.MotorD.feedback*1000,5,12);
 	}
 
-	//差速车
+	//Differential cars
 	else if( RobotHardWareParam.CarType == S300 || RobotHardWareParam.CarType == S300Mini || 
 		     RobotHardWareParam.CarType == S100 )
 	{
@@ -229,8 +229,8 @@ static void RobotMainInfoShow(void)
 	}
 	
 
-	//最后一行,所有车型固定显示
-	//控制方式,使能状态,电池电压
+	//The last line shows all models in a fixed display
+	//Control method, enabled state, battery voltage
 	if( RobotControl_CMDsource==NONE_CMD )          oled->ShowString(0,50,"ROS ");
 	else if( RobotControl_CMDsource==GamePad_CMD )  oled->ShowString(0,50,"PS2 ");
 	else if( RobotControl_CMDsource==ROS_CMD )      oled->ShowString(0,50,"ROS ");
@@ -251,7 +251,7 @@ static void RobotMainInfoShow(void)
 	
 }
 
-//超声波显示
+//Ultrasonic display
 static void RangerSensorShow(void)
 {
 	oled->ShowString(0,0,"A");
@@ -335,7 +335,7 @@ void show_task(void* param)
 	pRTOSDebugInterface_t debug = &RTOSDebugTimer;
 	RTOSDebugPrivateVar debugvar = { 0 };
 	
-	//不同车型驱动个数不一样,对应不同的可显示OLED页数
+	//Different models have different drivers and corresponding OLED display pages
 	switch(RobotHardWareParam.CarType)
 	{
 		case S260:
@@ -353,7 +353,7 @@ void show_task(void* param)
 	static uint32_t LedTickCnt = 0;
 	while(1)
 	{
-		//OLED页数更变时刷新屏幕
+		//Refresh screen when OLED page changes
 		if( page!=LastPage ) oled->Clear();
 		if( page >= page_max )
 		{
@@ -380,11 +380,11 @@ void show_task(void* param)
 		else if( page==8 ) ServoDriverInfo_Show(&Driver3);
 		
 		if( RobotControlParam.LedTickState==2 )
-		{	//标零完成时LED灯慢速闪烁
+		{	//When zero marking is complete, the LED light flashes slowly
 			LedTickCnt++;
 			if( LedTickCnt>= taskfreq/2 ) LedTickCnt=0,HAL_GPIO_TogglePin(UserLED_GPIO_Port,UserLED_Pin);
 		}
-		//未标零时快速闪烁
+		//Flashes rapidly when zero is not marked
 		else HAL_GPIO_TogglePin(UserLED_GPIO_Port,UserLED_Pin);
 		
 		vTaskDelay(50);

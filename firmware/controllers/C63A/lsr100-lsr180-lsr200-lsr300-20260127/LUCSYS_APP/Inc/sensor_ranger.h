@@ -14,7 +14,7 @@
 
 #include "bsp_dwt.h"
 
-//与硬件绑定的超声波对象
+//Ultrasonic objects bound to hardware
 typedef struct{
 	uint8_t sm;
 	float dis;

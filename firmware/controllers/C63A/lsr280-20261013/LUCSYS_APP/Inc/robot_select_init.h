@@ -6,55 +6,55 @@
 #define PI  3.14159265358979f
 
 typedef struct{
-	uint8_t CarType;     //车型
-	uint8_t PotCarType;  //电位器读到的车型档位(仅诊断使用)
-	uint8_t driveCounts; //驱动器的数量
-	uint8_t wheeltype;   //轮子的型号：5寸单出轴、5寸双出轴、8寸单出轴、8寸双出轴
-	float WheelSpacing; //轮距
-	float AxleSpacing;  //轴距
-	float WheelPerimeter;//轮子周长
+	uint8_t CarType;     //Model
+	uint8_t PotCarType;  //Vehicle gear reads by potentiometer (diagnostic use only)
+	uint8_t driveCounts; //Number of drivers
+	uint8_t wheeltype;   //Wheel types: 5-inch single-shaft, 5-inch double-shaft, 8-inch single-shaft, 8-inch double-shaft
+	float WheelSpacing; //Track width
+	float AxleSpacing;  //Wheelbase
+	float WheelPerimeter;//Wheel circumference
 }RobotParmentType_t;
 
-//S300轮距、轮径
+//S300 track and diameter
 #define S300_Wheelspacing 0.398
 #define S300_Diameter 0.20
 
-//S150轮距、轮径
+//S150 track and diameter
 #define S150_Wheelspacing 0.26
 #define S150_Diameter 0.13
 
-//S100轮距、轮距
+//S100 track and track width
 #define S100_Wheelspacing 0.2272f
 #define S100_Diameter 0.13
 
-//S200轮距、轮径
-#define S200_Wheelspacing 0.23 //半轮距
-#define S200_axlespacing  0.15//半轴距
+//S200 track and diameter
+#define S200_Wheelspacing 0.23 //Half track width
+#define S200_axlespacing  0.15//Half wheelbase
 #define S200_Diameter 0.205
 
-#define S200_OUTDOOR_Wheelspacing 0.23 //半轮距
-#define S200_OUTDOOR_axlespacing  0.15//半轴距
+#define S200_OUTDOOR_Wheelspacing 0.23 //Half track width
+#define S200_OUTDOOR_axlespacing  0.15//Half wheelbase
 #define S200_OUTDOOR_Diameter 0.205
 
-//S260轮距、轮径
-#define S260_Wheelspacing 0.29  //半轮距
+//S260 track and diameter
+#define S260_Wheelspacing 0.29  //Half track width
 
-//S260轴距不是真正意义上的轴距,需要根据imu的数据来联合调试到一个合适的值
-#define S260_axlespacing  0.08  //半轴距
+//The S260's wheelbase is not a true wheelbase in the strict sense; it needs to be coordinated and adjusted to an appropriate value based on IMU data
+#define S260_axlespacing  0.08  //Half wheelbase
 #define S260_Diameter 0.205
 
-//四轮转向小车轮距轴距
+//Four-wheel steering chassis, wheelbase, and wheelbase
 #define T280_Wheelspacing 0.335
 #define T280_axlespacing  0.43
 #define T280_Diameter     0.13
 
 #define T280_WheelTurnSpeed 40
 
-//车型枚举
+//Enumeration of models
 enum CAR_MODE{
 	S300,
 	S200,
-	S200_OUTDOOR, //S200户外版
+	S200_OUTDOOR, //S200 Outdoor Edition
 	S300Mini,
 	S100,
 	S260,
@@ -62,52 +62,52 @@ enum CAR_MODE{
 	Number_of_CAR
 };
 
-//机器人硬件参数
+//Robot hardware parameters
 extern RobotParmentType_t RobotHardWareParam;
 
-//车轮变量,包含车轮目标速度和车轮实际速度
+//Wheel variable, including the target speed and actual speed of the wheel
 typedef struct{
 	float targetSpeed;
-	float feedbackSpeed; //速度
+	float feedbackSpeed; //Velocity
 	float feedbackCurrent;     // Wheel motor current, unit: A
 	float feedbackTemperature; // Wheel motor temperature, unit: degC
 	float targetRadian;
-	float feedbackRadian;//弧度
+	float feedbackRadian;//radians
 	
 	float ori_pos;
 	
 }RobotMotorType_t;
 
-//机器人控制参数
+//Robot control parameters
 typedef struct{
-	uint8_t en_flag;         //小车全局使能标志位,1使能可控制 0失能禁止控制
-	uint32_t ErrNum ;        //小车报错码
-	short defalutSpeed;     //小车默认遥控速度,单位mm/s
-	uint8_t Enkeystate;      //小车硬件使能开关的状态,1开关弹起 0开关按下
-	float Vol;              //小车电池电压
-	uint8_t DriveErrRecovery;//小车请求清除驱动报错,设置1请求清除驱动器的报错,此位会自动置0,
-	uint8_t ChargeMode;      //自动回充模式, 1开启自动回充,0关闭自动回充
-	uint8_t SecurityLevel;   //安全等级 0:若小车没有持续收到目标速度,则会主动停止 1:小车将保持最后一次的目标速度响应  
-	uint8_t EmergencyMode;   //应急模式,此位为1时,非电机无法驱动的报错,都可以强行控制小车,以应对在室外突发情况.若存在还可驱动的电机,也能拖动无法驱动的电机行驶
-	uint8_t softwareEnflag;  //软件急停标志位,设1可使小车进入急停状态
-	uint8_t RangerAvoidEN;   //超声波避障使能位,1使能超声波避障 0关闭
-	uint32_t LineDiffParam;  //机器人纠偏系数，0-100可调整
-	uint8_t ImuAssistedFlag; //imu辅助小车走直线标志位. 0无赋值,设置1时,小车被控制时,将通过imu的数据辅助小车走直线
-	uint8_t DebugLevel;      //小车报错调试等级. 0正常控制, 置1时小车将通过串口1、蓝牙串口汇报错误信息
-	uint8_t LedTickState;    //小车板载LED提示状态
-	uint8_t LowPowerFlag;    //小车电量低标志位
+	uint8_t en_flag;         //Vehicle global enable marker position: 1 enables control, 0 disabled prohibits control
+	uint32_t ErrNum ;        //Error code for the chassis
+	short defalutSpeed;     //Default remote control speed for small cars, unit: mm/s
+	uint8_t Enkeystate;      //The state of the car's hardware enable switch: switch 1 pops up, 0 switch presses
+	float Vol;              //Car battery voltage
+	uint8_t DriveErrRecovery;//The cart requests to clear driver errors. Set 1 to request driver clearing errors; this bit will automatically be set to 0.
+	uint8_t ChargeMode;      //Automatic recharge mode: 1 Enable auto recharge, 0 Turn auto recharge off
+	uint8_t SecurityLevel;   //Safety Level 0: If the car does not continuously receive target velocity, it will automatically stop 1: The chassis will maintain the final target speed response
+	uint8_t EmergencyMode;   //Emergency mode: When this position is set to 1, even if the motor cannot drive the error system, you can forcibly control the car to handle unexpected outdoor situations. If there is still a motor that can be driven, you can also pull the motor that cannot be driven to proceed
+	uint8_t softwareEnflag;  //Software emergency-stop flag; set to 1 to put the chassis into the emergency-stop state
+	uint8_t RangerAvoidEN;   //Ultrasonic obstacle avoidance enable position: 1 enables ultrasonic obstacle avoidance, 0 closes
+	uint32_t LineDiffParam;  //Robot correction coefficient, adjustable from 0 to 100
+	uint8_t ImuAssistedFlag; //imu flag to assist the car in moving straight. 0 means no assignment. When set to 1, the car will use imu data to help move straight while being controlled
+	uint8_t DebugLevel;      //The chassis reports error debugging level. 0 Normal control; when set to 1, the chassis will report error messages via serial port 1 and Bluetooth serial port
+	uint8_t LedTickState;    //Onboard LED status indicator on the chassis
+	uint8_t LowPowerFlag;    //Low battery mark for the chassis
 	
-	uint8_t ParkingMode;     //私有变量,小车驻车模式标志位（用户勿操作）
+	uint8_t ParkingMode;     //Private variable, parking mode marker (user do not operate)
 	
-	//机器人车轮目标值与反馈值
-	RobotMotorType_t MotorA;  //车轮的目标速度和反馈速度存放于此
+	//Robot wheel target value and feedback value
+	RobotMotorType_t MotorA;  //The target speed and feedback speed of the wheels are stored here
 	RobotMotorType_t MotorB;
 	RobotMotorType_t MotorC;
 	RobotMotorType_t MotorD;
 	RobotMotorType_t MotorE;
 	RobotMotorType_t MotorF;
 	
-	//机器人三轴实际速度存放于此,由运动学正解获得
+	//The actual speed of the robot's three axes is stored here, obtained from the forward kinematics
 	float feedbackVx;
 	float feedbackVy;
 	float feedbackVz;

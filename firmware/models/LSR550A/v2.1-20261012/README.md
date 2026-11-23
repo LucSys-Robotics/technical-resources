@@ -21,3 +21,9 @@ All project-listed files exist. Local quoted include paths were checked; unresol
 **Native Keil compilation, flashing and vehicle tests have not been performed.** Generated binaries, IDE caches, unreferenced cleanup tools and bundled non-source drawings are not included. Original archives remain unchanged. Source files retain their original UTF-8 or GB18030 encoding; select the matching editor encoding for Chinese comments.
 
 LucSys Robotics prepares and maintains this distribution. Third-party ST, ARM and FreeRTOS notices remain applicable. This maintenance notice grants no new blanket open-source license.
+
+## English documentation edition — 2026-11-23
+
+Chinese source comments and accompanying TXT/Markdown explanations have been translated into English. Executable code, runtime messages, protocol strings, configuration values and firmware selection logic are unchanged. Runtime console output may therefore still contain Chinese. Changelogs describe historical source changes, not verified behavior of every delivered vehicle. Match the controller, hardware revision and firmware version before use.
+
+TXT notes use `CHANGELOG.txt` (and `VERSION_NOTES.txt` where present); Keil project references were updated accordingly. Earlier source releases remain available for comparison. Translation does not add hardware compatibility or safety guarantees.

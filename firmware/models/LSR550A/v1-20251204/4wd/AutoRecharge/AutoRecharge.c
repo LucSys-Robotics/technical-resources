@@ -1,13 +1,13 @@
 #include "AutoRecharge.h"
 
 // Enable navigation to find charging pile
-//是否开启导航寻找充电桩
+//Whether navigation is enabled to find the charging station
 u8 nav_walk=0;
 // Whether automatic charging is allowed
-//是否允许进行自动回充
+//Whether automatic recharge is allowed
 u8 Allow_Recharge=0;
 // Whether the robot is charging, and whether the recharge equipment receives infrared signals
-//机器人是否在充电，回充装备是否接收到红外信号
+//Whether the robot is charging, and whether the recharging equipment has received infrared signals
 u8 Charging, RED_STATE;
 float Charging_Current=0;
 float Recharge_Red_Move_X, Recharge_Red_Move_Y, Recharge_Red_Move_Z; 
@@ -18,11 +18,11 @@ void CAN_Send_AutoRecharge(void)
 {
 	u8 CAN_SENT[8];
 	
-	//预留位
+	//Reserved bit
 	CAN_SENT[0]=0;
 	
 	//Set the speed of the infrared interconnection, unit m/s
-	//设置红外对接的速度大小，单位mm/s
+	//Set the speed and magnitude of infrared docking, unit: mm/s
 	CAN_SENT[1]=((short)(Red_Docker_X*1000))>>8;
 	CAN_SENT[2]=((short)(Red_Docker_X*1000));
 	CAN_SENT[3]=((short)(Red_Docker_Y*1000))>>8;

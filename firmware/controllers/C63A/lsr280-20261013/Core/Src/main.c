@@ -61,14 +61,14 @@
 
 /* USER CODE BEGIN PV */
 
-static uint8_t HardWareVersion = HW_UnKnown; //系统硬件版本
+static uint8_t HardWareVersion = HW_UnKnown; //System hardware version
 
-uint8_t BlueToothBuffer = 0;//蓝牙串口接收缓冲
-uint8_t rosbuffer = 0;      //ROS串口接收缓冲区
-uint8_t usart1_buffer = 0;  //串口1接收缓冲区
-uint8_t rs485_buffer = 0;   //485接收缓冲区
+uint8_t BlueToothBuffer = 0;//Bluetooth serial port receives buffer
+uint8_t rosbuffer = 0;      //ROS serial receive buffer
+uint8_t usart1_buffer = 0;  //Serial port 1 receives buffer
+uint8_t rs485_buffer = 0;   //485 receive buffer
 
-DebugType_t g_sys_debug = { 0 }; //全局调试变量
+DebugType_t g_sys_debug = { 0 }; //Global debugging variables
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -128,20 +128,20 @@ int main(void)
   MX_CAN2_Init();
   /* USER CODE BEGIN 2 */
 	
-	//DWT定时器初始化,用于实现ms、us延时函数
+	//DWT timer initialization for implementing ms and US delay functions
 	DWT_Init();
 
-	//ADC用户配置初始化
+	//ADC user configuration initialization
 	ADC_Userconfig_Init();
 	
-	//启动FreeRTOS系统调试定时器
+	//Start the FreeRTOS system debugging timer
 	HAL_TIM_Base_Start(&htim6);
 	
-	//OLED屏幕初始化
+	//Initialize the OLED screen
 	pOLEDInterface_t oled = &UserOLED;
 	oled->init();
 	
-	//C63X硬件版本确定(通过版本io口,确认硬件版本)
+	//Confirm C63X hardware version (confirm hardware version via version IO)
 	uint8_t Version = 0;
 	Version |= (HAL_GPIO_ReadPin(VersionBit2_GPIO_Port,VersionBit2_Pin))<<2;
 	Version |= (HAL_GPIO_ReadPin(VersionBit1_GPIO_Port,VersionBit1_Pin))<<1;
@@ -155,10 +155,10 @@ int main(void)
 	{
 		HardWareVersion = HW_1_0;
 		
-		//反初始化V2.0版本的CAN引脚
+		//Deinitialize V2.0 version CAN pins
 		HAL_GPIO_DeInit(GPIOD, GPIO_PIN_0|GPIO_PIN_1);
 		
-		//初始化V1.0版本CAN引脚
+		//Initialize the V1.0 version CAN pin
 		GPIO_InitTypeDef GPIO_InitStruct = {0};
 		__HAL_RCC_GPIOA_CLK_ENABLE();
 		GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
@@ -168,7 +168,7 @@ int main(void)
 		GPIO_InitStruct.Alternate = GPIO_AF9_CAN1;
 		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 		
-		//V1.0版本急停开关
+		//V1.0 version emergency stop switch
 		HAL_GPIO_DeInit(ENKey_GPIO_Port,ENKey_Pin);
 		__HAL_RCC_GPIOD_CLK_ENABLE();
 		GPIO_InitStruct.Pin = ENKey_V1_0_Pin;
@@ -176,7 +176,7 @@ int main(void)
 		GPIO_InitStruct.Pull = GPIO_PULLUP;
 		HAL_GPIO_Init(ENKey_V1_0_GPIO_Port, &GPIO_InitStruct);
 		
-		//V1.0版本按键
+		//V1.0 version button
 		HAL_GPIO_DeInit(UserKey_V1_0_Port,UserKey_V1_0_Pin);
 		HAL_GPIO_DeInit(UserKey_GPIO_Port,UserKey_Pin);
 		__HAL_RCC_GPIOD_CLK_ENABLE();
@@ -197,38 +197,38 @@ int main(void)
 		}
 	}
 	
-	//开启航模遥控相关定时器捕获功能
+	//Enable timer capture function related to RC transmitter
 	HAL_TIM_IC_Start_IT(&htim4,TIM_CHANNEL_1);
 	HAL_TIM_IC_Start_IT(&htim4,TIM_CHANNEL_2);
 	HAL_TIM_IC_Start_IT(&htim4,TIM_CHANNEL_3);
 	HAL_TIM_IC_Start_IT(&htim4,TIM_CHANNEL_4);
 	
-	//启动串口接收中断
+	//Start serial port reception interrupt
 	HAL_UART_Receive_IT(&huart2,&BlueToothBuffer,1);
 	HAL_UART_Receive_IT(&huart4,&rosbuffer,1);
 	HAL_UART_Receive_IT(&huart1,&usart1_buffer,1);
 	HAL_UART_Receive_IT(&huart3,&rs485_buffer,1);
 	
-	//485接口测试使用
+	//485 interface test use
 //	uint8_t _485debug[] = {"hello c63x! RS485 Test Info"};
 //	HAL_UART_Transmit(&huart3,_485debug,sizeof(_485debug)/sizeof(_485debug[0]),500);
 	
-	//通过电位器确认车型
+	//Identify chassis type from the potentiometer
 	HAL_Delay(500);
 	Robot_Select();
 	
-	//读取用户保存的默认速度值
+	//Read the default speed value saved by the user
 	uint32_t flashdata[2];
 	User_Flash_ReadParam((uint32_t *)flashdata,2);
 	
-	//小车默认遥控速度值
+	//Default remote control speed value for small cars
 	if( flashdata[0]!=0xFFFFFFFF )
 	{
 		if( flashdata[0]<=3500 )
 			RobotControlParam.defalutSpeed = flashdata[0];
 	}
 	
-	//纠偏系数值
+	//Correction factor value
 	if( flashdata[1]!=0xFFFFFFFF )
 	{
 		if( flashdata[1]<=100 )
@@ -306,20 +306,20 @@ void SystemClock_Config(void)
 
 UART_HandleTypeDef *DebugSerial = &huart1;
 
-//printf函数实现
+//Implementation of the printf function
 int fputc(int ch,FILE* stream)
 {
 	while( HAL_OK != HAL_UART_Transmit(DebugSerial,(const uint8_t *)&ch,1,100));
 	return ch;
 }
 
-//获取硬件版本
+//Obtain hardware version
 uint8_t get_HardWareVersion(void)
 {
 	return HardWareVersion;
 }
 
-//获取急停开关状态,与版本相关
+//Get the emergency stop switch status, depending on the version
 GPIO_PinState get_EnKeyState(void)
 {
 	if( HardWareVersion == HW_1_0 )

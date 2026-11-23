@@ -3,48 +3,48 @@
 #include "sys.h"
 
 typedef struct{
-	u8 L_A;          //四路红外信号情况. 1收到信号 0无信号
+	u8 L_A;          //Four-channel infrared signal status. 1 Signal received, 0 No signal
 	u8 L_B;
 	u8 R_A;
 	u8 R_B;
-	u8 RED_STATE;    //四路红外信号汇总 取值0~4
-	u8 NavWalk;      //导航接管回充控制的标志位 1已接管 0无状态
-	u8 AllowRecharge;//自动回充模式标志位 1回充模式 0正常模式
-	u8 Charging;     //充电标志位 1充电 0未充电
+	u8 RED_STATE;    //Summary of four infrared signals: values 0~4
+	u8 NavWalk;      //Navigation takes over the recharge control flag 1 taken over 0 Status
+	u8 AllowRecharge;//Automatic recharge mode flag 1 Recharge mode 0 Normal mode
+	u8 Charging;     //Charging marker position: 1 Charged 0 Not charging
 	
-	u8 RedRefalsh_Time; //红外信号识别时刷新的时间，单位 10ms.
+	u8 RedRefalsh_Time; //Refresh time when infrared signal recognition, unit: 10ms.
 	
-	float ChargingCurrent;//充电电流大小
+	float ChargingCurrent;//Charging current magnitude
 	
-	float Dock_MoveX; //设置对接时速度的大小,此值直接赋值给Red_Move
+	float Dock_MoveX; //Set the speed during docking, which is directly assigned to the Red_Move
 	float Dock_MoveY;
 	float Dock_MoveZ;
 	
-	float Red_MoveX; //识别到红外信号给出的小车3轴速度
+	float Red_MoveX; //Recognize the three-axis speed of the cart as provided by the infrared signal
 	float Red_MoveY;
 	float Red_MoveZ;
 	
-	float Up_MoveX;//导航接管时,给出的小车3轴速度
+	float Up_MoveX;//When navigation takes over, the car's speed of 3 axles is provided
 	float Up_MoveY;
 	float Up_MoveZ;
 	
-	u8 OutLine_Check;//充电装备离线检测
+	u8 OutLine_Check;//Offline inspection of charging equipment
 	
 }CHARGER_t;
 
 
-//对外接口
+//External interface
 extern CHARGER_t charger;
 void auto_recharge_reset(void);
 void CAN_Send_AutoRecharge(void);
 void Find_Charging_HardWare(void);
 
-//自动回充的处理逻辑函数
+//Logic functions for handling automatic recharge
 void Handle_Normal_AutoRecharge(uint8_t* temp_rxbuf);
 void Handle_AKM_AutoRecharge(uint8_t* temp_rxbuf);
 
 #if defined AKM_CAR
-//以下是阿克曼小车自动回充专用.在阿克曼使用自动回充时,速度执行来源是自身,而不采用充电装备的速度逻辑.\
+//The following is dedicated to automatic recharging for Ackermann cars. When using automatic recharge in Ackermann, speed execution comes from the vehicle itself, not the speed logic of charging equipment. \
 (原因是阿克曼对接逻辑不同,充电装备上的逻辑需要满足其他小车,不能只满足阿克曼.故阿克曼独立在控制板端)
 #define cur_front_left do{                          \
 			charger.Red_MoveX = -charger.Dock_MoveX ,\

@@ -35,70 +35,70 @@ void AutoRechargeTask(void* param)
 		
 		if( pdPASS == xQueueReceive(g_xQueueAutoRecharge,&msg,pdMS_TO_TICKS(500)) ) 
 		{
-			//标注控制源,自动回充设备
+			//Label control source and automatic recharge equipment
 			RobotControlCMDType_t cmd = {
 				.cmdsource = Charger_CMD,
 				0,0,0
 			};
 			
-			//充电装备在线
+			//Charging equipment online
 			ChargeDev.online=1;
 
 			//Target speed from charging device
-			//来自充电设备的目标速度
+			//Target speed from the charging device
 			cmd.Vx = (float)((short)(msg.buffer[0]<<8|msg.buffer[1]))/1000.0f;
 			cmd.Vz = (float)((short)(msg.buffer[4]<<8|msg.buffer[5]))/1000.0f;
-			//带后部超声波的车型可根据后部超声波距离减速
+			//Models with rear ultrasound can slow down based on the distance of the rear ultrasound
 			if( RobotHardWareParam.CarType==S200_OUTDOOR || RobotHardWareParam.CarType==S260 )
 			{
 				if( RangerHAL_E.dis < 0.5f || RangerHAL_F.dis < 0.5f )
 					cmd.Vx/=2.0f;
 			}
 			
-			//充电设备的内部状态值
+			//Internal status value of the charging device
 			ChargeDev.devState = msg.buffer[2];
 
-			//充电设备上检测到的电压
+			//Voltage detected on the charging device
 			ChargeDev.ChargingVol= (msg.buffer[3]*30)/100.0f;
 
-			//充电状态标志位
+			//Charging status indicator
 			ChargeDev.ChargingFlag = msg.buffer[6]&0x01; 
 
-			//A:39ms红外情况（正面面向充电桩左边的红外）
-			//B:52ms红外情况（正面面向充电桩右边的红外）
+			//A: 39ms infrared (front facing the left side of the charging pile)
+			//B: 52ms infrared (front facing the right side of the charging pile)
 			ChargeDev.L_A = (msg.buffer[6]>>5)&0x01;
 			ChargeDev.L_B = (msg.buffer[6]>>4)&0x01;
 			ChargeDev.R_B = (msg.buffer[6]>>3)&0x01;
 			ChargeDev.R_A = (msg.buffer[6]>>2)&0x01;
 			
-			//红外管信号个数
+			//Number of infrared tube signals
 			ChargeDev.RedNum = ChargeDev.L_A+ChargeDev.L_B+ChargeDev.R_A+ChargeDev.R_B;
 	
-			//未识别到红外信号、已经在充电 -> 速度置0
+			//No infrared signal detected, already charging, -> speed set to 0
 			if(ChargeDev.RedNum==0 || ChargeDev.ChargingFlag==1 ) cmd.Vx = cmd.Vy = cmd.Vz = 0;
 
-			//接近满电状态，清空速度防止出现充满后小车运动
+			//Near full charge, empty speed to prevent chassis movement after full charge
 			if( ChargeDev.devState==0xAB && RobotControlParam.Vol>24.5f ) cmd.Vx = 0 , cmd.Vy = 0;
 
-			//充电电流换算
+			//Charging current conversion
 			if(msg.buffer[7]>128) ChargeDev.ChargingCur =-(256-msg.buffer[7])*30;
 			else ChargeDev.ChargingCur = (msg.buffer[7]*30);
 			
-			//速度空闲判断
+			//Velocity-idle check
 			uint8_t writeflag=1;
 			static uint8_t idleCount = 0;
 			if( cmd.Vx==0&&cmd.Vy==0&&cmd.Vz==0 ) idleCount++;
 			else idleCount=0;
 			if( idleCount>10 ) writeflag=0,idleCount=10;
 			
-			//自动回充开启,且存在速度,则写入队列
+			//Automatic recharge is enabled and speed is present, write to the queue
 			if( RobotControlParam.ChargeMode==1 && writeflag==1 )
 			{
 				WriteRobotControlQueue(&cmd,0);
 			}
 			
 		}
-		else //自动回充装备离线
+		else //Auto-recharge equipment goes offline
 		{
 			ChargeDev.online=0;
 			ChargeDev.ChargingCur=0;

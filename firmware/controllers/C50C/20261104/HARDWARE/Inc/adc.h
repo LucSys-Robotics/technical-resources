@@ -2,17 +2,17 @@
 #define __ADC_H	
 #include "sys.h"
 
-//阿克曼转向结构 数值结构体
+//Ackermann steering data structure
 typedef struct{
-	int Bias;                      //前轮转角零点值,可作为转向结构的纠正补偿调节
-	int Mid;                       //舵机中值,用于矫正小车复位重启时舵机的方向
-	int Max;                       //舵机转动的最大值
-	int Min;                       //舵机转动的最小值
+	int Bias;                      //Zero point value of front wheel rotation angle, which can be used as a corrective compensation adjustment for the steering structure
+	int Mid;                       //Median servo value, used to correct the direction of the servo during car reset and restart
+	int Max;                       //Maximum servo rotation
+	int Min;                       //Minimum value of servo rotation
 }AKM_SERVO_ADC;
 
 
 /*--------ADC Interface Fun--------*/
-//对外接口
+//External interface
 void ADC1_Init(void);
 void ADC2_Init(void);
 void Akm_ServoParam_Init(AKM_SERVO_ADC* p);
@@ -25,7 +25,7 @@ extern AKM_SERVO_ADC Akm_Servo;
 /*----------------------------------*/
 
 /*--------Battery_PIN config--------*/
-//电池电压采集的引脚
+//Pin for battery voltage acquisition
 #define ENABLE_BATTERY_PIN_CLOCK RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE)
 #define Battery_PORT  GPIOB
 #define Battery_PIN   GPIO_Pin_0
@@ -33,7 +33,7 @@ extern AKM_SERVO_ADC Akm_Servo;
 /*----------------------------------*/
 
 /*--------CarMode_PIN config--------*/
-//用于检测车型调节电位器的引脚
+//Used to detect pins for model adjustment potentiometer
 #define ENABLE_CarMode_PIN_CLOCK RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE)
 #define CarMode_PORT  GPIOC
 #define CarMode_PIN   GPIO_Pin_2
@@ -41,7 +41,7 @@ extern AKM_SERVO_ADC Akm_Servo;
 /*----------------------------------*/
 
 /*--------TurnAdjust_PIN config--------*/
-//阿克曼转向结构补偿电位器采集引脚
+//Ackermann steering compensation potentiometer acquisition pin
 #define ENABLE_ServoAdj_PIN_CLOCK RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE)
 #define ServoAdj_PORT  GPIOC
 #define ServoAdj_PIN   GPIO_Pin_3
@@ -49,13 +49,13 @@ extern AKM_SERVO_ADC Akm_Servo;
 /*----------------------------------*/
 
 /*--------Slide_PIN config--------*/
-//转向滑轨数据采集引脚
+//Steering slide-rail data acquisition pin
 #define ENABLE_SLIDE_PIN_CLOCK RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE)
 #define SLIDE_PORT  GPIOC
 #define SLIDE_PIN   GPIO_Pin_1
 #define SLIDE_Ch    ADC_Channel_11
 
-//滑轨数据引脚对应DMA配置
+//Rail data pins correspond to DMA configurations
 #define ENABLE_DMAx_CLOCK RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE)
 #define DMA_REG_ADDR      (uint32_t)(&ADC2->DR)
 #define DMAx_Streamx      DMA2_Stream3

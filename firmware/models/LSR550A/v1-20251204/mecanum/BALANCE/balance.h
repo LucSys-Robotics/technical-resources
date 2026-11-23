@@ -2,17 +2,17 @@
 #define __BALANCE_H			  	 
 #include "sys.h"
 #include "system.h"
-#define BALANCE_TASK_PRIO		4     //Task priority //任务优先级
-#define BALANCE_STK_SIZE 		512   //Task stack size //任务堆栈大小
+#define BALANCE_TASK_PRIO		4     //Task priority //Task Priority
+#define BALANCE_STK_SIZE 		512   //Task stack size //Task Stack Size
 
 //Parameter of kinematics analysis of omnidirectional trolley
-//全向轮小车运动学分析参数
+//Kinematic analysis parameters of omnidirectional wheel carts
 #define X_PARAMETER    (sqrt(3)/2.f)               
 #define Y_PARAMETER    (0.5f)    
 #define L_PARAMETER    (1.0f)
 
 extern int A,B,C,DD;
-extern u8 command_lost_count;//串口、CAN控制命令丢失时间计数，丢失1秒后停止控制
+extern u8 command_lost_count;//Serial port and CAN control command loss time count; control stops after 1 second of loss
 void Balance_task(void *pvParameters);
 void Limit_Pwm(int amplitude);
 float target_limit_float(float insert,float low,float high);

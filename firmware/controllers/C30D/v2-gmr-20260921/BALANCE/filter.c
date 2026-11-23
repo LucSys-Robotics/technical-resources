@@ -4,9 +4,9 @@ Distribution maintenance: LucSys Robotics
 **************************************************************************/
 float K1 =0.02; 
 float angle, angle_dot; 	
-float Q_angle=0.001;// 过程噪声的协方差
-float Q_gyro=0.003;//0.003 过程噪声的协方差 过程噪声的协方差为一个一行两列矩阵
-float R_angle=0.5;// 测量噪声的协方差 既测量偏差
+float Q_angle=0.001;// Process noise covariance
+float Q_gyro=0.003;//0.003 Covariance of Process Noise The covariance of process noise is a matrix of one row and two columns
+float R_angle=0.5;// Measuring the covariance of noise, i.e., measuring deviation
 float dt=0.005;//                 
 char  C_0 = 1;
 float Q_bias, Angle_err;
@@ -16,24 +16,24 @@ float Pdot[4] ={0,0,0,0};
 float PP[2][2] = { { 1, 0 },{ 0, 1 } };
 
 /**************************************************************************
-函数功能：简易卡尔曼滤波
-入口参数：加速度、角速度
-返回  值：无
+Function: Simple Kalman filtering
+Inlet parameters: acceleration, angular velocity
+Return value: none
 **************************************************************************/
 void Kalman_Filter(float Accel,float Gyro)		
 {
-	angle+=(Gyro - Q_bias) * dt; //先验估计
-	Pdot[0]=Q_angle - PP[0][1] - PP[1][0]; // Pk-先验估计误差协方差的微分
+	angle+=(Gyro - Q_bias) * dt; //A priori estimation
+	Pdot[0]=Q_angle - PP[0][1] - PP[1][0]; // Pk-differentiation of the covariance of the prior estimation error
 
 	Pdot[1]=-PP[1][1];
 	Pdot[2]=-PP[1][1];
 	Pdot[3]=Q_gyro;
-	PP[0][0] += Pdot[0] * dt;   // Pk-先验估计误差协方差微分的积分
-	PP[0][1] += Pdot[1] * dt;   // =先验估计误差协方差
+	PP[0][0] += Pdot[0] * dt;   // Pk - integral of the covariance derivative of the prior estimation error
+	PP[0][1] += Pdot[1] * dt;   // = covariance of the prior estimation error
 	PP[1][0] += Pdot[2] * dt;
 	PP[1][1] += Pdot[3] * dt;
 		
-	Angle_err = Accel - angle;	//zk-先验估计
+	Angle_err = Accel - angle;	//zk-prior estimate
 	
 	PCt_0 = C_0 * PP[0][0];
 	PCt_1 = C_0 * PP[1][0];
@@ -46,20 +46,20 @@ void Kalman_Filter(float Accel,float Gyro)
 	t_0 = PCt_0;
 	t_1 = C_0 * PP[0][1];
 
-	PP[0][0] -= K_0 * t_0;		 //后验估计误差协方差
+	PP[0][0] -= K_0 * t_0;		 //Posterior estimation error, covariance
 	PP[0][1] -= K_0 * t_1;
 	PP[1][0] -= K_1 * t_0;
 	PP[1][1] -= K_1 * t_1;
 		
-	angle	+= K_0 * Angle_err;	 //后验估计
-	Q_bias	+= K_1 * Angle_err;	 //后验估计
-	angle_dot   = Gyro - Q_bias;	 //输出值(后验估计)的微分=角速度
+	angle	+= K_0 * Angle_err;	 //A posterior estimation
+	Q_bias	+= K_1 * Angle_err;	 //A posterior estimation
+	angle_dot   = Gyro - Q_bias;	 //Derivative of the output (posterior estimate) = angular velocity
 }
 
 /**************************************************************************
-函数功能：一阶互补滤波
-入口参数：加速度、角速度
-返回  值：无
+Function: First-order complementary filtering
+Inlet parameters: acceleration, angular velocity
+Return value: none
 **************************************************************************/
 void Yijielvbo(float angle_m, float gyro_m)
 {

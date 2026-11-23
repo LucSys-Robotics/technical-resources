@@ -9,7 +9,7 @@
 
 #include "tim.h"
 
-// 灯带效果模式定义
+// Definition of light strip effect modes
 enum{
 	RGB_MODE_STATIC = 0,
 	RGB_MODE_FADE,
@@ -19,28 +19,28 @@ enum{
 	RGB_MODE_ERRORTIPS
 };
 
-// 灯带配置目标参数（用于传递给任务）
+// Configure target parameters for the strip (passed to the task)
 typedef struct {
-    uint8_t r;          // 目标红色值（用于渐变）
-    uint8_t g;          // 目标绿色值
-    uint8_t b;          // 目标蓝色值
-    uint32_t steps;     // 渐变步数
-    uint32_t delay_ms;  // 每步延迟
+    uint8_t r;          // Target red value (for gradients)
+    uint8_t g;          // Target green value
+    uint8_t b;          // Target blue value
+    uint32_t steps;     // Gradient step count
+    uint32_t delay_ms;  // Delay per step
 } RGB_EffectParams_t;
 
-// 灯带实时状态
+// Real-time status of the light strip
 typedef struct {
-    uint8_t r;          // 当前红色值
-    uint8_t g;          // 当前绿色值
-    uint8_t b;          // 当前蓝色值
-    uint8_t is_on;      // 灯带开关状态（0: 关, 1: 开）
-    uint8_t mode;       // 运行模式
-	RGB_EffectParams_t setTarget;//设置灯带目标值
-	TaskHandle_t TaskHandle;//灯带任务句柄
+    uint8_t r;          // Current red value
+    uint8_t g;          // Current green value
+    uint8_t b;          // Current blue value
+    uint8_t is_on;      // Light strip switch status (0: off, 1: on)
+    uint8_t mode;       // Operating mode
+	RGB_EffectParams_t setTarget;//Set the target value for the light strip
+	TaskHandle_t TaskHandle;//Lightstrip task handle
 } RGB_State_t;
 
 
-// 灯带状态管理
+// Light strip status management
 static RGB_State_t rgb_state = {0, 0, 0, 0, RGB_MODE_STATIC,{0},NULL};
 static SemaphoreHandle_t rgb_mutex = NULL;
 
@@ -49,11 +49,11 @@ static void RGBLight_Init(void)
 	rgb_mutex = xSemaphoreCreateMutex();
     if (rgb_mutex == NULL)
 	{
-        while (1); // 错误处理
+        while (1); // Error handling
     }
     rgb_state.is_on = 0;
 	
-	//定时器配置
+	//Timer configuration
 	HAL_TIM_PWM_Start(&htim9,TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim9,TIM_CHANNEL_2);
 	HAL_TIM_PWM_Start(&htim11,TIM_CHANNEL_1);
@@ -62,7 +62,7 @@ static void RGBLight_Init(void)
 	__HAL_TIM_SetCompare(&htim9, TIM_CHANNEL_1, 0);
 }
 
-//灯带颜色设置函数
+//Light strip color setting function
 static void RGB_Set(uint8_t r_value,uint8_t g_value,uint8_t b_value)
 {
     if (xSemaphoreTake(rgb_mutex, portMAX_DELAY) == pdTRUE)
@@ -77,7 +77,7 @@ static void RGB_Set(uint8_t r_value,uint8_t g_value,uint8_t b_value)
     }
 }
 
-// 停止当前效果任务
+// Stop the current effect task
 static void RGB_StopEffect(void) 
 {
     if ( rgb_state.TaskHandle != NULL)
@@ -87,12 +87,12 @@ static void RGB_StopEffect(void)
     }
 }
 
-// 线性插值
+// Linear interpolation
 static uint8_t lerp(uint8_t start, uint8_t end, float t) {
     return (uint8_t)(start + (end - start) * t);
 }
 
-// 渐变方法设置实现任务
+// Gradient method setup implementation task
 static void RGB_FadeTask(void *pvParameters) {
     for (uint32_t i = 0; i <= rgb_state.setTarget.steps; i++) {
         float t = (float)i / rgb_state.setTarget.steps;
@@ -102,12 +102,12 @@ static void RGB_FadeTask(void *pvParameters) {
         RGB_Set(r, g, b);
         vTaskDelay(pdMS_TO_TICKS(rgb_state.setTarget.delay_ms));
     }
-    rgb_state.mode = RGB_MODE_STATIC; // 渐变完成后切换到静态模式
+    rgb_state.mode = RGB_MODE_STATIC; // Switch to static mode after gradients are complete
 	rgb_state.TaskHandle = NULL;
-    vTaskDelete(NULL); //设置完成,删除任务
+    vTaskDelete(NULL); //Set up and delete the task
 }
 
-// HSV 转 RGB
+// HSV to RGB
 static void HSVtoRGB(float h, uint8_t *r, uint8_t *g, uint8_t *b) {
     h = fmod(h, 360.0f);
     float s = 1.0f, v = 1.0f;
@@ -131,12 +131,12 @@ static void HSVtoRGB(float h, uint8_t *r, uint8_t *g, uint8_t *b) {
     *b = (uint8_t)(b_f * 255);
 }
 
-// 彩虹效果实现任务
+// Rainbow effect implementation task
 static void RGB_RainbowTask(void *pvParameters)
 {
     float hue = 0.0f;
 	
-	//先渐变到彩虹起始位置
+	//Gradually to the starting position of the rainbow first
     for (uint32_t i = 0; i <= 100; i++) {
         float t = (float)i / 200;
         uint8_t r = lerp(rgb_state.r, 255, t);
@@ -150,12 +150,12 @@ static void RGB_RainbowTask(void *pvParameters)
         uint8_t r, g, b;
         HSVtoRGB(hue, &r, &g, &b);
         RGB_Set(r, g, b);
-        hue = fmod(hue + 0.5f, 360.0f);//循环改变色相实现彩虹效果
+        hue = fmod(hue + 0.5f, 360.0f);//Loop through hues to create rainbow effect
         vTaskDelay(pdMS_TO_TICKS(rgb_state.setTarget.delay_ms));
     }
 }
 
-//报错提示
+//Error prompt
 static void RGB_ErrorTipsTask(void* pvParameters)
 {
 	uint8_t tips = 0;
@@ -184,10 +184,10 @@ static void RGB_ErrorTipsTask(void* pvParameters)
 	}
 }
 
-// 呼吸灯效果实现任务
+// Breathing light effect to complete tasks
 static void RGB_BreathTask(void *pvParameters)
 {
-	//渐变到灯带关闭开启呼吸灯
+	//Transition to the light strip to turn off the breathing light
     for (uint32_t i = 0; i <= 100; i++) {
         float t = (float)i / 200;
         uint8_t r = lerp(rgb_state.r, 0, t);
@@ -199,7 +199,7 @@ static void RGB_BreathTask(void *pvParameters)
 	
     while (1) 
 	{
-        // 从 0 到 255 再回到 0，模拟呼吸效果
+        // Goes from 0 to 255 and back to 0, simulating breathing effects
         for (uint32_t i = 0; i <= rgb_state.setTarget.steps; i++) {
             float t = (float)i / rgb_state.setTarget.steps;
             uint8_t brightness = (uint8_t)(255 * sin(t * 3.14159f));
@@ -209,10 +209,10 @@ static void RGB_BreathTask(void *pvParameters)
     }
 }
 
-//用户指定闪烁
+//User-specified blinking
 static void RGB_BlinkTask(void *pvParameters)
 {
-	//渐变到关闭
+	//Transition to Close
     for (uint32_t i = 0; i <= 100; i++) {
         float t = (float)i / 200;
         uint8_t r = lerp(rgb_state.r, 0, t);
@@ -235,7 +235,7 @@ static void RGB_BlinkTask(void *pvParameters)
 }
 
 
-// 立即设置颜色方法
+// Set the color method immediately
 static void RGB_SetColorImmediate(uint8_t r, uint8_t g, uint8_t b)
 {
     RGB_StopEffect();
@@ -247,10 +247,10 @@ static void RGB_SetColorImmediate(uint8_t r, uint8_t g, uint8_t b)
     RGB_Set(r, g, b);
 }
 
-// 渐变设置颜色方法
+// Methods for setting gradient colors
 static void RGB_SetColorFade(uint8_t r, uint8_t g, uint8_t b)
 {
-	//防止同一模式下参数被重复调用
+	//Prevent repeated parameter calls in the same mode
 	if( (rgb_state.mode==RGB_MODE_FADE || rgb_state.mode==RGB_MODE_STATIC) &&
         (r==rgb_state.setTarget.r && g==rgb_state.setTarget.g && b==rgb_state.setTarget.b)	)
 	return;
@@ -266,16 +266,16 @@ static void RGB_SetColorFade(uint8_t r, uint8_t g, uint8_t b)
     xTaskCreate(RGB_FadeTask, "FadeTask", 128*4, NULL, osPriorityBelowNormal6, &rgb_state.TaskHandle);
 }
 
-// 关闭灯带
+// Turn off the light strip
 static void RGB_TurnOff(void)
 {
 	RGB_SetColorFade(0,0,0);
 }
 
-// 彩虹效果设置方法
+// How to set the rainbow effect
 static void RGB_StartRainbow(void)
 {
-	//彩虹模式无参数,防止重复调用
+	//Rainbow mode has no parameters to prevent repeated calls
 	if( rgb_state.mode==RGB_MODE_RAINBOW ) return;
 	
     RGB_StopEffect();
@@ -286,10 +286,10 @@ static void RGB_StartRainbow(void)
     xTaskCreate(RGB_RainbowTask, "RainbowTask", 128*2, NULL, osPriorityBelowNormal6, &rgb_state.TaskHandle);
 }
 
-// 呼吸灯效果设置方法
+// How to set breathing light effects
 static void RGB_StartBreath(uint8_t r, uint8_t g, uint8_t b)
 {
-	//防止同一模式下参数被重复调用
+	//Prevent repeated parameter calls in the same mode
 	if( rgb_state.mode==RGB_MODE_BREATH && r==rgb_state.setTarget.r && g==rgb_state.setTarget.g && b==rgb_state.setTarget.b ) return;
 	
 	RGB_StopEffect();
@@ -315,10 +315,10 @@ static void RGB_ShowError(uint8_t times)
 	xTaskCreate(RGB_ErrorTipsTask, "ErrorTipsTask", 128*2, NULL, osPriorityBelowNormal6, &rgb_state.TaskHandle);
 }
 
-//设置闪烁效果
+//Set the flashing effect
 static void RGB_SetBlink(uint8_t r, uint8_t g, uint8_t b,uint32_t blink_times)
 {
-	//防止同一模式下参数被重复调用
+	//Prevent repeated parameter calls in the same mode
 	if( rgb_state.mode==RGB_MODE_BLINK && r==rgb_state.setTarget.r && g==rgb_state.setTarget.g &&
  		b==rgb_state.setTarget.b && blink_times==rgb_state.setTarget.delay_ms ) return;
 	

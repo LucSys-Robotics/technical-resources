@@ -2,23 +2,23 @@
 #include "bsp_adc.h"
 #include "bsp_ServoDrive.h"
 
-//定义机器人参数
+//Define robot parameters
 RobotParmentType_t RobotHardWareParam = { 0 };
 
-//机器人的控制软件参数
+//Parameters of the robot's control software
 RobotControlParmentType_t RobotControlParam = { 
-	.en_flag = 1,          //小车使能标志位
-	.ErrNum = 0,           //小车报错码
-	.defalutSpeed = 500,   //小车默认遥控速度,单位mm/s
-	.ChargeMode = 0,       //自动回充模式状态,默认关闭
-	.EmergencyMode = 0,    //应急模式,默认关闭
-	.softwareEnflag = 0,   //软件使能位,默认使能
-	.LineDiffParam = 50,   //纠偏系数,用于调整走直线效果
-	.RangerAvoidEN = 0 ,   //超声波避障位
-	.SecurityLevel = 0 ,   //安全等级,0为最高
-	.LowPowerFlag = 0  ,   //小车电量低标志位 1表示低电量
-	.ImuAssistedFlag = 0,  //默认启用小车走直线时用IMU辅助功能
-	.DebugLevel = 0        //调试等级
+	.en_flag = 1,          //Chassis enable flag
+	.ErrNum = 0,           //Error code for the chassis
+	.defalutSpeed = 500,   //Default remote control speed for small cars, unit: mm/s
+	.ChargeMode = 0,       //Auto recharge mode mode, turned off by default
+	.EmergencyMode = 0,    //Emergency mode, turned off by default
+	.softwareEnflag = 0,   //Software enable bit; enabled by default
+	.LineDiffParam = 50,   //Correction factor, used to adjust the effect of straight lines
+	.RangerAvoidEN = 0 ,   //Ultrasonic obstacle avoidance position
+	.SecurityLevel = 0 ,   //safety level, 0 is the highest
+	.LowPowerFlag = 0  ,   //Low battery level marker 1 indicates low battery
+	.ImuAssistedFlag = 0,  //Enable IMU assistance for straight-line motion by default
+	.DebugLevel = 0        //Debug level
 };
 
 static void Robot_Init(float wheelspacing,float axlespacing,float tyre_diameter,uint8_t WheelType);
@@ -26,16 +26,16 @@ static void Robot_Init(float wheelspacing,float axlespacing,float tyre_diameter,
 void Robot_Select(void)
 {
 	//The ADC value is variable in segments, depending on the number of car models. Currently there are 6 car models, CAR_NUMBER=6
-	//ADC值分段变量，取决于小车型号数量
+	//ADC value segment variable, depending on the number of car models
 	uint16_t Divisor_Mode = 4095/(Number_of_CAR);
 	
-	//读取电位器档位,保留供后续T系列车型扩展与产线诊断使用
+	//Read potentiometer settings, reserved for future T series model expansion and production line diagnostics
 	RobotHardWareParam.PotCarType = USER_ADC_Get_AdcBufValue(userconfigADC_CARMODE_CHANNEL)/Divisor_Mode;
 
-	//本工程固化为T280,车型不随电位器变化,避免电位器误读导致参数全零仍使能
+	//This project is solidified to LSR280, with the vehicle not changing with the potentiometer, preventing misreading of the potentiometer and causing parameter zero to remain active
 	RobotHardWareParam.CarType = T280;
 	
-	//车型初始化
+	//Model initialization
 	switch( RobotHardWareParam.CarType )
 	{
 		case S300:

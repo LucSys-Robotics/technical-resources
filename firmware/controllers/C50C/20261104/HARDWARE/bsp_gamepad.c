@@ -6,28 +6,28 @@
 
 GamePadDebugValType_t GamePadDebug = { 0 };
 
-//定义游戏手柄品牌
+//Define the game controller brand
 GamePadBrandType_t gamepad_brand = UnKnown_Dev;
 
 extern void OLED_ShowGamePadState(void);
 
-//手柄设备插入函数_任务环境
+//Handle device insert function_task environment
 void USB_GamePad_InsertCallback(void)
 {
 	OLED_ShowGamePadState();
 	GamePadDebug.enmu_state = EnumWait;
-//	vTaskDelay(pdMS_TO_TICKS(1000)); //延迟1000ms用于OLED显示
+//	vTaskDelay(pdMS_TO_TICKS(1000)); // Delay 1000ms for OLED display
 	GamePadDebug.enmu_state = EnumDone;
 	GamePadDebug.type = gamepad_brand;
 }
 
-//手柄设备拔出_任务环境
+//Handle device ejected _task environment
 void USB_GamePad_PullOutCallback(void)
 {
-	//标定为未知设备
+	//Designated as an unknown device
 	gamepad_brand = UnKnown_Dev;
 	
-	//将当前的手柄摇杆值复位,防止下次识别时有值
+	//Reset the current controller joystick value to prevent it from being recognized next time
 	GamePadInterface->LX = 127;
 	GamePadInterface->RX = 127;
 	GamePadInterface->LY = 127;
@@ -35,16 +35,16 @@ void USB_GamePad_PullOutCallback(void)
 	GamePadInterface->LT = 0;
 	GamePadInterface->RT = 0;
 	
-	//再切回至默认接口防止出现控制量
+	//Switch back to the default interface to prevent control signals
 	GamePadInterface = &GamePadDefalut;
 	
-	//调试相关
+	//Debugging related matters
 	GamePadDebug.enmu_state = EnumNULL;
 	GamePadDebug.type = gamepad_brand;
 	GamePadDebug.ready = 0;
 }
 
-//通用游戏手柄对象
+//Generic gamepad object
 GamePadType_t* GamePadInterface = 0;
 
 GamePadType_t GamePadDefalut = {
@@ -60,10 +60,10 @@ GamePadType_t GamePadDefalut = {
 	.getKeyState = 0
 };
 
-//入口参数：按键原始值，按键属性，需要检测的按键
+//Entry parameters: original key value, key attributes, and the keys to be detected
 GamePadKeyEventType_t GamePadKey_CheckEvent(uint16_t keysource,GamePad_CheckEventType_t* key,uint8_t bit)
 {
-    //读取对应的键值状态
+    //Read the corresponding key-value status
     key->keystate = (keysource>>bit)&0x01;
 
     switch (key->statemachine)
@@ -76,28 +76,28 @@ GamePadKeyEventType_t GamePadKey_CheckEvent(uint16_t keysource,GamePad_CheckEven
             } 
             break;
         case KEYPress:
-            //统计第一次按下按键以后的时间(无符号溢出时自然环绕.不需要溢出判断)
+            //Counts the time after the first key press (natural looping when no symbol overflows. No need to check for overflow)
             key->statetime = xTaskGetTickCount() - key->timebase;
 
-            //检查按键是否有松开
+            //Check if the keys are loose
             if( GamePadKeyState_Release == key->keystate )
             {
-                //单次按键按下的时间太短,忽略.作为滤波作用
+                //If the time spent pressing a key is too short, ignore it. This serves as a filtering effect
                 if( key->statetime < GamePad_KEYFILTER_TIME ) key->statemachine = WaitToPress;
                 else
                 {
-                   key->timebase = xTaskGetTickCount();//重新更新时基,用于下一个状态的检测
-                   key->statemachine = KEYUp;    //按键按下一定时间,又弹起,进入下一个检测状态
+                   key->timebase = xTaskGetTickCount();//Update time base for detection of the next state
+                   key->statemachine = KEYUp;    //Button pressed for a certain time and released, enter the next detection state
                 }
             }
             else if( key->statetime > GamePad_LONGPRESS_TIEM ) 
-            {   //按键未松开,且保持一定的时间,则为长按.
+            {   //Button not released and held for a certain time counts as a long press
                 key->statemachine = LONG_CLICK;
             }
 
             break;
         case KEYUp:
-            //统计第一次按下按键以后的时间(无符号溢出时自然环绕.不需要溢出判断)
+            //Counts the time after the first key press (natural looping when no symbol overflows. No need to check for overflow)
             key->statetime = xTaskGetTickCount() - key->timebase;
 
             if( GamePadKeyState_Press == key->keystate && key->statetime < GamePad_CLICK_TIME && key->statetime > GamePad_KEYFILTER_TIME )
@@ -115,7 +115,7 @@ GamePadKeyEventType_t GamePadKey_CheckEvent(uint16_t keysource,GamePad_CheckEven
             key->statemachine = WaitToRelease;
             return GamePadKeyEvent_LONGCLICK;
         case WaitToRelease:
-            //按键检测完毕,等用户松开按键后,再恢复状态机的状态
+            //After button detection is complete, wait for user to release the button to restore the state machine status
             if( GamePadKeyState_Release == key->keystate ) key->statemachine = WaitToPress;
             break;
         default:

@@ -1,20 +1,20 @@
 #ifndef __ICM20948_REG_H
 #define __ICM20948_REG_H
 
-//选择Bank值
+//Select bank value
 #define REG_VAL_SELECT_BANK_0 0x00
 #define REG_VAL_SELECT_BANK_1 0x10
 #define REG_VAL_SELECT_BANK_2 0x20
 #define REG_VAL_SELECT_BANK_3 0x30
 
-//设备地址
+//Device address
 #define ICM20948_DEV 0x68
 
-//Bank选择寄存器
+//Bank Select Register
 #define REG_BANK_SEL 0x7F
 
-//Bank0 寄存器定义
-#define WHO_AM_I     0x00  //读取该寄存器值,返回0xEA
+//Bank0 register definition
+#define WHO_AM_I     0x00  //Read the value of this register and return the 0xEA
 #define USER_CTRL    0x03
 #define LP_CONFIG    0x05
 #define PWR_MGMT_1   0x06
@@ -79,7 +79,7 @@
 #define DATA_RDY_STATUS 0x74
 #define FIFO_CFG        0x76
 
-//Bank1寄存器
+//Bank1 register
 #define SELF_TEST_X_GYRO 0x02
 #define SELF_TEST_Y_GYRO 0x03
 #define SELF_TEST_Z_GYRO 0x04
@@ -94,7 +94,7 @@
 #define ZA_OFFS_L 0x1B
 #define TIMEBASE_CORRECTION_PLL 0x28
 
-//Bank2寄存器
+//Bank2 register
 #define GYRO_SMPLRT_DIV 0x00
 #define GYRO_CONFIG_1 0x01
 #define GYRO_CONFIG_2 0x02
@@ -115,7 +115,7 @@
 #define TEMP_CONFIG 0x53
 #define MOD_CTRL_USR 0x54
 
-//Bank3寄存器
+//Bank3 register
 #define I2C_MST_ODR_CONFIG 0x00
 #define I2C_MST_CTRL 0x01
 #define I2C_MST_DELAY_CTRL 0x02
@@ -141,9 +141,9 @@
 #define I2C_SLV4_DO 0x16
 #define I2C_SCL4_DI 0x17
 
-//磁力计设备地址
-#define AK09916_DEV 0x0C //磁力计设备地址
-#define WIA 0x01 //who am i寄存器,返回值 0x09
+//Magnetometer device address
+#define AK09916_DEV 0x0C //Magnetometer device address
+#define WIA 0x01 //who am i register, return value 0x09
 #define ST1 0x10
 #define HXL 0x11
 #define HXH 0x12

@@ -11,7 +11,7 @@ __weak void Wired_USB_PS2GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEvent
 
 static GamePadKeyStateType_t WiredPS2_GetKeyState(uint8_t bit);
 
-//有线ps2游戏手柄
+//Wired PS2 game controller
 GamePadType_t Wired_USB_PS2Gamepad = {
 	.LX = 127,
 	.LY = 127,
@@ -25,10 +25,10 @@ GamePadType_t Wired_USB_PS2Gamepad = {
 	.getKeyState = WiredPS2_GetKeyState
 };
 
-//按键值
+//Button value
 static uint16_t GamePad_KeyOriginalVal = 0;
 
-//获取手柄键值状态函数
+//Get the handle key-value status function
 static GamePadKeyStateType_t WiredPS2_GetKeyState(uint8_t bit)
 {
 	if( (GamePad_KeyOriginalVal>>bit)&0x01 )
@@ -38,24 +38,24 @@ static GamePadKeyStateType_t WiredPS2_GetKeyState(uint8_t bit)
 }
 
 
-//定义按键检测事件的各个按键值
+//Defines the individual key values for key detection events
 static GamePad_CheckEventType_t GamePadKeyCheckEvent[16] = { 0 };
 
 
-//标志位设置函数,用于辅助ps2手柄解码
+//Flag setting function to assist PS2 controller decoding
 static void ps2_set_bit(uint16_t* state,uint8_t state_bit,uint8_t bit)
 {
-	if(state_bit==1) //指定的位(bit)设置为1,其他位不变
+	if(state_bit==1) //Set the specified bit to 1, leaving all other bits unchanged
 	{
 		*state |= (1U<<bit);
 	}
-	else //指定的位(bit)设置为0,其他位不变
+	else //Set the specified bit to 0, leaving all other bits unchanged
 	{
 		*state &= ~(1U<<bit);
 	}
 }
 
-//数据解码
+//Data decoding
 void Wired_USB_PS2gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,uint8_t datalen)
 {
 	(void)phost;
@@ -76,19 +76,19 @@ void Wired_USB_PS2gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,uint8
 	Wired_USB_PS2Gamepad.RY = buffer[2];
 	
 	tmp_bool = (buffer[6]>>4)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,0); //seltec key 选择按键
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,0); //Seltec Key Select the key
 	
 	tmp_bool = (buffer[6]>>6)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,1); //左摇杆按键
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,1); //Left analog stick button
 	
 	tmp_bool = (buffer[6]>>7)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,2); //右摇杆按键
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,2); //Right analog stick button
 	
 	tmp_bool = (buffer[6]>>5)&0x01;
 	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,3); //start
 	
-	tmp_bool = buffer[5]&0x0F;//取出低4位
-	if(tmp_bool==0x0F)//没有任何按键按下
+	tmp_bool = buffer[5]&0x0F;//Remove the lower 4 bits
+	if(tmp_bool==0x0F)//No buttons pressed
 	{
 		ps2_set_bit(&GamePad_KeyOriginalVal,0,4); //↑
 		ps2_set_bit(&GamePad_KeyOriginalVal,0,5); //→
@@ -115,7 +115,7 @@ void Wired_USB_PS2gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,uint8
 				break;
 		}
 	}
-	else if( (tmp_bool&0x01)==1 ) //首位为1,代表存在左盘2个按键按下的情况
+	else if( (tmp_bool&0x01)==1 ) //First bit is 1 when two buttons on the left pad are pressed
 	{
 		switch ((tmp_bool>>1)&0x03)
 		{
@@ -141,34 +141,34 @@ void Wired_USB_PS2gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,uint8
 	}
 	
 	tmp_bool = (buffer[6]>>2)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,8); //左扳机2号
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,8); //Left trigger No. 2
 	if( tmp_bool ) Wired_USB_PS2Gamepad.LT = 255;
 	else Wired_USB_PS2Gamepad.LT = 0;
 	
 	tmp_bool = (buffer[6]>>3)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,9); //右扳机2号
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,9); //Right trigger No. 2
 	if( tmp_bool ) Wired_USB_PS2Gamepad.RT = 255;
 	else Wired_USB_PS2Gamepad.RT = 0;
 	
 	tmp_bool = (buffer[6]>>0)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,10); //左扳机1号
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,10); //Left trigger No. 1
 	
 	tmp_bool = (buffer[6]>>1)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,11); //右扳机1号
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,11); //Right trigger No. 1
 
 	tmp_bool = (buffer[5]>>4)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,12); //一号,绿色GREEN
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,12); //Number One, Green GREEN
 	
 	tmp_bool = (buffer[5]>>5)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,13); //二号,红色RED
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,13); //Number two, red RED
 
 	tmp_bool = (buffer[5]>>6)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,14); //三号,蓝牙BLUE
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,14); //No. 3, Bluetooth BLUE
 	
 	tmp_bool = (buffer[5]>>7)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,15); //四号,粉色PINK
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,15); //Number four, pink PINK
 	
-	//按键回调函数触发
+	//Button callback function triggered
 	for (uint8_t key = PS2KEY_SELECT; key <= PS2KEY_4PINK; key++) 
 	{
 		GamePadKeyEventType_t event = GamePadKey_CheckEvent(GamePad_KeyOriginalVal,
@@ -176,13 +176,13 @@ void Wired_USB_PS2gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,uint8
 		
 		if (event == GamePadKeyEvent_NONE) continue;
 		
-		//触发回调函数
+		//Trigger callback function
 		Wired_USB_PS2GamePad_KeyEvent_Callback(key,event);
 	}
 
 }
 
-//数据解码
+//Data decoding
 void Wired_USB_V2_PS2gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,uint8_t datalen)
 {
 	(void)phost;
@@ -203,19 +203,19 @@ void Wired_USB_V2_PS2gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,ui
 	Wired_USB_PS2Gamepad.RY = buffer[4];
 	
 	tmp_bool = (buffer[6]>>4)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,0); //seltec key 选择按键
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,0); //Seltec Key Select the key
 	
 	tmp_bool = (buffer[6]>>6)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,1); //左摇杆按键
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,1); //Left analog stick button
 	
 	tmp_bool = (buffer[6]>>7)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,2); //右摇杆按键
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,2); //Right analog stick button
 	
 	tmp_bool = (buffer[6]>>5)&0x01;
 	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,3); //start
 	
-	tmp_bool = buffer[5]&0x0F;//取出低4位
-	if(tmp_bool==0x0F)//没有任何按键按下
+	tmp_bool = buffer[5]&0x0F;//Remove the lower 4 bits
+	if(tmp_bool==0x0F)//No buttons pressed
 	{
 		ps2_set_bit(&GamePad_KeyOriginalVal,0,4); //↑
 		ps2_set_bit(&GamePad_KeyOriginalVal,0,5); //→
@@ -242,7 +242,7 @@ void Wired_USB_V2_PS2gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,ui
 				break;
 		}
 	}
-	else if( (tmp_bool&0x01)==1 ) //首位为1,代表存在左盘2个按键按下的情况
+	else if( (tmp_bool&0x01)==1 ) //First bit is 1 when two buttons on the left pad are pressed
 	{
 		switch ((tmp_bool>>1)&0x03)
 		{
@@ -268,34 +268,34 @@ void Wired_USB_V2_PS2gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,ui
 	}
 	
 	tmp_bool = (buffer[6]>>2)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,8); //左扳机2号
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,8); //Left trigger No. 2
 	if( tmp_bool ) Wired_USB_PS2Gamepad.LT = 255;
 	else Wired_USB_PS2Gamepad.LT = 0;
 	
 	tmp_bool = (buffer[6]>>3)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,9); //右扳机2号
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,9); //Right trigger No. 2
 	if( tmp_bool ) Wired_USB_PS2Gamepad.RT = 255;
 	else Wired_USB_PS2Gamepad.RT = 0;
 	
 	tmp_bool = (buffer[6]>>0)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,10); //左扳机1号
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,10); //Left trigger No. 1
 	
 	tmp_bool = (buffer[6]>>1)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,11); //右扳机1号
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,11); //Right trigger No. 1
 
 	tmp_bool = (buffer[5]>>4)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,12); //一号,绿色GREEN
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,12); //Number One, Green GREEN
 	
 	tmp_bool = (buffer[5]>>5)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,13); //二号,红色RED
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,13); //Number two, red RED
 
 	tmp_bool = (buffer[5]>>6)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,14); //三号,蓝牙BLUE
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,14); //No. 3, Bluetooth BLUE
 	
 	tmp_bool = (buffer[5]>>7)&0x01;
-	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,15); //四号,粉色PINK
+	ps2_set_bit(&GamePad_KeyOriginalVal,tmp_bool,15); //Number four, pink PINK
 	
-	//按键回调函数触发
+	//Button callback function triggered
 	for (uint8_t key = PS2KEY_SELECT; key <= PS2KEY_4PINK; key++) 
 	{
 		GamePadKeyEventType_t event = GamePadKey_CheckEvent(GamePad_KeyOriginalVal,
@@ -303,7 +303,7 @@ void Wired_USB_V2_PS2gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,ui
 		
 		if (event == GamePadKeyEvent_NONE) continue;
 		
-		//触发回调函数
+		//Trigger callback function
 		Wired_USB_PS2GamePad_KeyEvent_Callback(key,event);
 	}
 

@@ -7,22 +7,22 @@
 #define SHOW_TASK_RATE      RATE_10_HZ
 extern TaskHandle_t show_TaskHandle;
 
-#define OLED_MAX_PAGE 3 //OLED的页数
+#define OLED_MAX_PAGE 3 //Number of OLED pages
 
 typedef struct{
-	u8 page;       //当前页（页数从1开始）
-	u8 last_page;  //上一页
-	u8 refrsh;     //刷新标志位
-	u8 MAX_PAGE;   //OLED最大页数
+	u8 page;       //Current page (page numbers start from 1)
+	u8 last_page;  //Previous page
+	u8 refrsh;     //Refresh the flag
+	u8 MAX_PAGE;   //Maximum OLED pages
 }OLED_t;
 
 extern OLED_t oled;
 
-//对外接口
+//External interface
 void show_task(void *pvParameters);
 void OLED_Param_Init(OLED_t* p);
 
-//内部使用函数
+//Internal use function
 static float VolMean_Filter(float data);
 static void APP_ShowTask(void);
 static void OLED_ShowTask(void);

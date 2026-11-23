@@ -11,24 +11,24 @@
 
 void ImuTask(void* param)
 {
-	//获取时基,用于辅助任务能指定固定频率运行
+	//Obtain the time base, used to assist tasks that specify a fixed frequency to run
 	TickType_t preTime = xTaskGetTickCount();
 	
-	//控制任务的频率,单位HZ
+	//Frequency of control tasks, unit HZ
 	const uint16_t TaskFreq = 100;
 	
 	pIMUInterface_t imu = &UserICM20948;
 	
-	//开机前10秒失能小车,等待imu标零
+	//Disable the chassis for the first 10 seconds after startup while waiting for IMU zero calibration
 	RobotControlParam.softwareEnflag = 1;
 	
-	//陀螺仪初始化
+	//Initialize gyroscope
 	while(imu->Init())
 	{
 		vTaskDelay(1000);
 	}
 	
-	//开机计时
+	//Startup timer
 	uint32_t SystemStartCnt = 0;
 	
 	static uint8_t ZeroMarkState = 0;
@@ -36,19 +36,19 @@ void ImuTask(void* param)
 	
 	while(1)
 	{
-		imu->Update_9axisVal(&axis_9Val,&axis_9ValOri);//陀螺仪数据更新,获取的数据均为原始数据.软件iic耗时1.0 ms
-		imu->UpdateAttitude(axis_9Val,&AttitudeVal);//更新姿态角
+		imu->Update_9axisVal(&axis_9Val,&axis_9ValOri);//Update gyroscope data; all readings are raw. Software IIC takes 1.0 ms
+		imu->UpdateAttitude(axis_9Val,&AttitudeVal);//Updated attitude angles
 		
-		//前30秒计时
+		//Timed for the first 30 seconds
 		if( SystemStartCnt < TaskFreq*30 ) SystemStartCnt++;
 		
-		//7秒后执行imu标零,使能小车
+		//After 7 seconds, perform IMU zeroing to enable the car
 		if( ZeroMarkState!=2 && SystemStartCnt >= TaskFreq*7 )
 		{
 			switch( ZeroMarkState )
 			{
 				case 0:
-					//仅在平面上才执行标零
+					//Zeroing is performed only on the plane
 					if( fabs(AttitudeVal.pitch) < 5.0f && fabs(AttitudeVal.roll) < 5.0f )
 					{
 						if( fabs(axis_9Val.gyro.x)<0.05f && fabs(axis_9Val.gyro.y)<0.05f && fabs(axis_9Val.gyro.z)<0.05f )
@@ -67,11 +67,11 @@ void ImuTask(void* param)
 					break;
 				case 1:
 				{
-					//原始值标定完毕后,等待角度稳定再执行角度标零
+					//After the original value calibration is completed, wait for the angle to stabilize before zeroing the angle
 					static uint8_t lowFre = 0;
 					static float lastpitch = 0,lastroll = 0;
 
-					//500ms扫描1次
+					//One 500ms scan
 					lowFre++;
 					if( lowFre>= TaskFreq/2)
 					{
@@ -98,7 +98,7 @@ void ImuTask(void* param)
 			}			
 		}
 		
-		/* 延迟指定频率 */
+		/* Delay the specified frequency */
 		vTaskDelayUntil(&preTime,pdMS_TO_TICKS( (1.0f/(float)TaskFreq)*1000) );
 	}
 }

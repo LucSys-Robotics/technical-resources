@@ -386,9 +386,9 @@
           <GroupName>Updatelog</GroupName>
           <Files>
             <File>
-              <FileName>更新记录.txt</FileName>
+              <FileName>CHANGELOG.txt</FileName>
               <FileType>5</FileType>
-              <FilePath>..\更新记录.txt</FilePath>
+              <FilePath>..\CHANGELOG.txt</FilePath>
             </File>
           </Files>
         </Group>
@@ -1413,9 +1413,9 @@
           <GroupName>Updatelog</GroupName>
           <Files>
             <File>
-              <FileName>更新记录.txt</FileName>
+              <FileName>CHANGELOG.txt</FileName>
               <FileType>5</FileType>
-              <FilePath>..\更新记录.txt</FilePath>
+              <FilePath>..\CHANGELOG.txt</FilePath>
             </File>
           </Files>
         </Group>
@@ -2440,9 +2440,9 @@
           <GroupName>Updatelog</GroupName>
           <Files>
             <File>
-              <FileName>更新记录.txt</FileName>
+              <FileName>CHANGELOG.txt</FileName>
               <FileType>5</FileType>
-              <FilePath>..\更新记录.txt</FilePath>
+              <FilePath>..\CHANGELOG.txt</FilePath>
             </File>
           </Files>
         </Group>
@@ -3467,9 +3467,9 @@
           <GroupName>Updatelog</GroupName>
           <Files>
             <File>
-              <FileName>更新记录.txt</FileName>
+              <FileName>CHANGELOG.txt</FileName>
               <FileType>5</FileType>
-              <FilePath>..\更新记录.txt</FilePath>
+              <FilePath>..\CHANGELOG.txt</FilePath>
             </File>
           </Files>
         </Group>
@@ -4494,9 +4494,9 @@
           <GroupName>Updatelog</GroupName>
           <Files>
             <File>
-              <FileName>更新记录.txt</FileName>
+              <FileName>CHANGELOG.txt</FileName>
               <FileType>5</FileType>
-              <FilePath>..\更新记录.txt</FilePath>
+              <FilePath>..\CHANGELOG.txt</FilePath>
             </File>
           </Files>
         </Group>

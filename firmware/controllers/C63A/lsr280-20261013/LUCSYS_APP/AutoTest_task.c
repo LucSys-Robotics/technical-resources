@@ -1,26 +1,26 @@
 /**
  * @file    AutoTest_task.c
- * @brief   2.4m x 2.4m 场地自动耐久测试任务
+ * @brief 2.4m x 2.4m site automatic endurance test task
  * @date    2026-07-08
  *
  * @details
- * - 通过控制队列(WriteRobotControlQueue)以最低优先级发布预设动作序列,
- *   循环执行 直行/横移/倒退/斜移/原地旋转,轨迹为"正方形四边+两条对角线X".
- * - 简单闭环:
- *     平移段 = 航迹推算(里程计速度按IMU航向积分)路点导航 + IMU航向保持;
- *     旋转段 = IMU计圈;
- *     时间仅作为每段的兜底超时,超时强制切下一段.
- * - 脚本按回文编排,每条边/对角线正反各走一遍,系统性漂移首阶对消.
- * - 有人监督场景,不做虚拟围栏:位置漂出场地由人工搬回(测试继续跑).
+ * - Publish preset action sequences with the lowest priority via the control queue (WriteRobotControlQueue),
+ *   Loop execution: move forward/sideways/backward/diagonal/in-place rotation. Path is "square with all four sides + two diagonal lines X".
+ * - Simple closed loop:
+ *     Translation segment = track estimation (odometer speed integrated by IMU heading) waypoint navigation + IMU heading hold;
+ *     Rotation segment = IMU lap counting;
+ *     Time is only used as a bottom-line timeout for each segment; if the timeout is timeout, the segment will be forcibly cut.
+ * - The script is arranged according to palindromes, with each side/diagonal moving forward and backward once, systematically drifting first-step reversal.
+ * - In supervised scenarios, no virtual fence is set: if the position drifts out of the area, it is manually moved back (testing continues).
  *
  * @note
- * - 启动: 手柄方向上键长按(记当前位置为原点,当前车头方向为+X)
- * - 停止: 手柄方向上键单击/双击;急停/失能自动停止;
- *         摇杆一动(高优先级源持续抢占队列)也会自动停止.
+ * - Start: Long press the up key on the handlebar (record current position as origin, current front direction as +X)
+ * - Stop: single/double click the gamepad D-pad up button; automatically stop on emergency stop or disable;
+ *         When the joystick moves (high-priority sources continuously occupy the queue), it will automatically stop.
  */
 #include "AutoTest_task.h"
 
-//DATALOG_ENABLE=0(出货)时整个实现不参与编译,不占Flash也不会被创建
+//DATALOG_ENABLE=0 (shipping), the entire implementation does not participate in compilation, does not occupy Flash, and will not be created
 #if DATALOG_ENABLE
 
 //HAL Lib Include File
@@ -37,87 +37,87 @@
 #include "RobotControl_task.h"
 #include "robot_select_init.h"
 
-//======== 测试参数(按需调整) ========
-#define AT_RUN_FREQ_HZ     50       //任务运行频率
-#define AT_EDGE_M          1.6f     //虚拟正方形边长(2.4m场地内四周各留0.4m裕量)
-#define AT_SPEED_MPS       0.3f     //平移巡航速度
-#define AT_MIN_SPEED_MPS   0.08f    //接近路点时的最低速度
-#define AT_DECEL_DIST_M    0.35f    //开始线性减速的剩余距离
-#define AT_ARRIVE_DIST_M   0.05f    //到点判定半径
-#define AT_ROT_SPEED_RAD   0.4f     //旋转段角速度 rad/s
-#define AT_ROT_TURNS       2.0f     //每个旋转段圈数
-#define AT_PAUSE_MS        800      //段间停顿(等转向对准,同时反复考验转向保护逻辑)
-#define AT_YAW_KP          0.05f    //平移段航向保持P增益 (rad/s)/度
-#define AT_YAW_KD          0.02f    //平移段航向保持D增益(对角速度deg/s)
-#define AT_YAW_VZ_MAX      0.3f     //航向修正角速度限幅 rad/s
-#define AT_TIMEOUT_SCALE   1.5f     //段兜底超时 = 标称耗时 x 该系数 + 基数
-#define AT_TIMEOUT_BASE_MS 500     //段兜底超时附加基数(ms)
-#define AT_WRITE_FAIL_MS   500      //队列持续写入失败超过此时长,判定控制权被抢占,自动停止
-#define AT_STOP_HOLD_MS    200      //停止时发零速收尾的时长
+//======== Test parameters (adjusted as needed) ========
+#define AT_RUN_FREQ_HZ     50       //Task run frequency
+#define AT_EDGE_M          1.6f     //Virtual square side length (leave a 0.4m margin on each side inside the 2.4m test area)
+#define AT_SPEED_MPS       0.3f     //Translation cruise speed
+#define AT_MIN_SPEED_MPS   0.08f    //Minimum speed as you approach the waypoint
+#define AT_DECEL_DIST_M    0.35f    //Remaining distance to start linear deceleration
+#define AT_ARRIVE_DIST_M   0.05f    //Determine the radius at the point of arrival
+#define AT_ROT_SPEED_RAD   0.4f     //Angular velocity of the rotating segment rad/s
+#define AT_ROT_TURNS       2.0f     //Number of turns per rotation segment
+#define AT_PAUSE_MS        800      //Pause between segments (waiting for steering alignment while repeatedly testing the steering protection logic)
+#define AT_YAW_KP          0.05f    //Translation section heading maintains P-gain (rad/s)/degree
+#define AT_YAW_KD          0.02f    //Translation Section Heading Maintain D Gain (diagonal velocity deg/s)
+#define AT_YAW_VZ_MAX      0.3f     //Heading correction angular velocity limit rad/s
+#define AT_TIMEOUT_SCALE   1.5f     //Segment fallback timeout = nominal duration x this coefficient + base
+#define AT_TIMEOUT_BASE_MS 500     //Additional base for segment fallback timeout (ms)
+#define AT_WRITE_FAIL_MS   500      //If queue writes continuously fail longer than this duration, assume control has been preempted and stop automatically
+#define AT_STOP_HOLD_MS    200      //Duration of zero-speed ending when stopped
 
-//段类型
+//segment type
 typedef enum{
-	SEG_MOVE = 0,   //平移到路点
-	SEG_ROT,        //原地旋转N圈
+	SEG_MOVE = 0,   //Pan to the waypoint
+	SEG_ROT,        //Spinning N times in place
 }SegType_t;
 
-//测试脚本单段:SEG_MOVE时p1/p2为路点坐标(m);SEG_ROT时p1为带符号圈数
+//Test script single segment: At SEG_MOVE, p1/p2 are the coordinates of the route point (m); When SEG_ROT, p1 is the number of signed turns
 typedef struct{
 	uint8_t type;
 	float p1;
 	float p2;
 }TestSeg_t;
 
-//测试脚本:世界系以启动点为原点,启动时车头方向为+X,车体左侧为+Y
-//四角: A(0,0) B(E,0) C(E,E) D(0,E)
-//回文编排:每条边/对角线正反各走一遍
+//Test script: The World series uses the starting point as the origin; at startup, the front direction is +X, and the left side of the hull is +Y
+//Four corners: A(0,0) B(E,0) C(E,E) D(0,E)
+//Palindrome arrangement: Walk through each side/diagonal once on both sides
 #define E_ AT_EDGE_M
 static const TestSeg_t TestScript[] = {
-	{ SEG_MOVE, E_,  0   },          //S1  A->B 前进直行
-	{ SEG_MOVE, E_,  E_  },          //S2  B->C 左横移
-	{ SEG_MOVE, 0,   E_  },          //S3  C->D 倒退
-	{ SEG_MOVE, 0,   0   },          //S4  D->A 右横移
-	{ SEG_MOVE, E_,  E_  },          //S5  A->C 斜移(前左45度)
-	{ SEG_ROT,  +AT_ROT_TURNS, 0 },  //S6  原地旋转+2圈
-	{ SEG_MOVE, 0,   0   },          //S7  C->A 斜移返回(后右)
-	{ SEG_MOVE, 0,   E_  },          //S8  A->D 左横移
-	{ SEG_MOVE, E_,  E_  },          //S9  D->C 前进直行
-	{ SEG_MOVE, E_,  0   },          //S10 C->B 右横移
-	{ SEG_MOVE, 0,   0   },          //S11 B->A 倒退
-	{ SEG_MOVE, E_,  0   },          //S12 A->B 前进直行
-	{ SEG_MOVE, 0,   E_  },          //S13 B->D 斜移(后左,另一条对角线)
-	{ SEG_ROT,  -AT_ROT_TURNS, 0 },  //S14 原地旋转-2圈
-	{ SEG_MOVE, E_,  0   },          //S15 D->B 斜移返回(前右)
-	{ SEG_MOVE, 0,   0   },          //S16 B->A 倒退,回到起点
+	{ SEG_MOVE, E_,  0   },          //S1 A->B Straight ahead
+	{ SEG_MOVE, E_,  E_  },          //S2 B->C Move left sideways
+	{ SEG_MOVE, 0,   E_  },          //S3 C->D reversed
+	{ SEG_MOVE, 0,   0   },          //S4 D->A Move right sideways
+	{ SEG_MOVE, E_,  E_  },          //S5 A->C Diagonal shift (front left 45 degrees)
+	{ SEG_ROT,  +AT_ROT_TURNS, 0 },  //S6 Spins in place + 2 turns
+	{ SEG_MOVE, 0,   0   },          //S7 C->A Diagonal Return (Back Right)
+	{ SEG_MOVE, 0,   E_  },          //S8 A->D Left lateral shift
+	{ SEG_MOVE, E_,  E_  },          //S9 D->C Straight ahead
+	{ SEG_MOVE, E_,  0   },          //S10 C->B right lateral shift
+	{ SEG_MOVE, 0,   0   },          //S11 B->A backwards
+	{ SEG_MOVE, E_,  0   },          //S12 A->B Straight ahead
+	{ SEG_MOVE, 0,   E_  },          //S13 B->D diagonal shift (rear left, another diagonal)
+	{ SEG_ROT,  -AT_ROT_TURNS, 0 },  //S14 spin in place - 2 turns
+	{ SEG_MOVE, E_,  0   },          //S15 D->B Diagonal Return (Front Right)
+	{ SEG_MOVE, 0,   0   },          //S16 B->A backed up and returned to the starting line
 };
 #undef E_
 #define SEG_COUNT  ( sizeof(TestScript)/sizeof(TestScript[0]) )
 
-//任务状态机
+//Task state machine
 typedef enum{
-	AT_IDLE = 0,     //待机,不写控制队列
-	AT_RUN,          //执行当前段
-	AT_SEG_PAUSE,    //段间停顿
-	AT_STOPPING,     //发零速收尾后释放控制权
+	AT_IDLE = 0,     //Standby, do not write to control queue
+	AT_RUN,          //Execute the current segment
+	AT_SEG_PAUSE,    //Pause between segments
+	AT_STOPPING,     //Release control after zero-speed finishing
 }ATState_t;
 
-//启停请求(手柄按键回调置位,本任务消费)
+//Start-stop request (controller key pullback to set position, consumed by this task)
 static volatile uint8_t StartReq = 0;
 static volatile uint8_t StopReq  = 0;
 
-//运行状态(供调试/显示查看)
+//Runtime status (for debugging/display)
 static volatile ATState_t at_state = AT_IDLE;
-static uint16_t at_seg   = 0;    //当前段索引
-static uint32_t at_cycle = 0;    //已完成的循环数
+static uint16_t at_seg   = 0;    //Current segment index
+static uint32_t at_cycle = 0;    //Number of completed cycles
 
-//航迹推算(世界系,原点=启动点,+X=启动时车头方向)
+//Track estimation (World system, origin = start point, +X = front direction at start)
 static float odo_x = 0, odo_y = 0;
 
-//启动时的IMU航向(度).全程不刷新是刻意的:它同时充当测试世界系的基准方向与航向
-//保持的目标,一旦中途重采,世界系会跟着IMU漂移一起转,航迹推算的坐标随之失去意义。
+//IMU heading at startup (degrees). Not refreshing throughout the process is intentional: it serves both as the reference direction and heading for the test world
+//Maintain the goal. If you re-pick midway, the World system will drift along with the IMU, and the coordinates for track calculation lose their meaning.
 static float yaw0  = 0;
 
-//诊断量,供数据观察任务读取,详见 AutoTest_task.h
+//Diagnostic quantity for data observation tasks, see AutoTest_task.h
 volatile AutoTestDbg_t g_AutoTestDbg = { 0 };
 
 void AutoTest_DbgWindowReset(void)
@@ -127,7 +127,7 @@ void AutoTest_DbgWindowReset(void)
 	g_AutoTestDbg.flipCnt = 0;
 }
 
-//每个控制周期调用一次,累积本窗口的Vz包络与符号翻转次数
+//Each control cycle is called once, accumulating the number of Vz envelopes and symbol flips in this window
 static void AutoTest_DbgUpdate(float vz)
 {
 	float prev = g_AutoTestDbg.vzLast;
@@ -135,7 +135,7 @@ static void AutoTest_DbgUpdate(float vz)
 	if( vz < g_AutoTestDbg.vzMin ) g_AutoTestDbg.vzMin = vz;
 	if( vz > g_AutoTestDbg.vzMax ) g_AutoTestDbg.vzMax = vz;
 
-	//两拍都不接近零才算一次翻转,避免零附近的噪声被计入
+	//A flip is only counted as one flip if neither beat approaches zero, avoiding noise near zero being counted
 	if( vz*prev < 0.0f && fabsf(vz) > 0.02f && fabsf(prev) > 0.02f )
 	{
 		if( g_AutoTestDbg.flipCnt < 255 ) g_AutoTestDbg.flipCnt++;
@@ -144,7 +144,7 @@ static void AutoTest_DbgUpdate(float vz)
 	g_AutoTestDbg.vzLast = vz;
 }
 
-//角度归一化到(-180,180]
+//Normalize angles to (-180,180]
 static float at_wrap180(float a)
 {
 	while( a >  180.0f ) a -= 360.0f;
@@ -159,7 +159,7 @@ static float at_clampf(float v,float lo,float hi)
 	return v;
 }
 
-//计算某段的兜底超时时间(ms):标称耗时x系数+基数,时间仅兜底不作主判据
+//Calculating the bottom-line timeout (ms) for a segment: nominal time consumption x coefficient + base value; time only serves as a bottom-line and does not serve as the main criterion
 static uint32_t at_seg_timeout_ms(const TestSeg_t* seg)
 {
 	float nominal_s;
@@ -185,16 +185,16 @@ void AutoTest_task(void* param)
 	const float dt = 1.0f/(float)AT_RUN_FREQ_HZ;
 	pBuzzerInterface_t buzzer = &UserBuzzer;
 
-	//段执行过程量
-	TickType_t segStart   = 0;   //当前段开始时刻
-	TickType_t pauseStart = 0;   //停顿开始时刻
-	TickType_t stopStart  = 0;   //收尾开始时刻
-	uint32_t   segTimeoutMs = 0; //当前段兜底超时
-	float      rotAcc  = 0;      //旋转段累计角度(度)
-	float      lastYaw = 0;      //上周期航向,用于计圈
-	TickType_t writeFailStart = 0; //队列首次写失败时刻,0表示写入正常
+	//segment execution process amount
+	TickType_t segStart   = 0;   //Current segment start time
+	TickType_t pauseStart = 0;   //Pause at the start of the moment
+	TickType_t stopStart  = 0;   //Finish the start moment
+	uint32_t   segTimeoutMs = 0; //Current segment fallback timeout
+	float      rotAcc  = 0;      //Cumulative angle of the rotation segment (degrees)
+	float      lastYaw = 0;      //Previous cycle heading, used for lap counting
+	TickType_t writeFailStart = 0; //Time of first queue-write failure; 0 means writes are normal
 
-	//等系统与IMU稳定
+	//and other systems are stable with IMUs
 	vTaskDelay(3000);
 	TickType_t preTime = xTaskGetTickCount();
 
@@ -203,7 +203,7 @@ void AutoTest_task(void* param)
 		RobotControlCMDType_t cmd = { 0 };
 		cmd.cmdsource = AutoTest_CMD;
 
-		//---- 停止请求 ----
+		//---- Stop Request----
 		if( StopReq )
 		{
 			StopReq = 0;
@@ -214,7 +214,7 @@ void AutoTest_task(void* param)
 			}
 		}
 
-		//---- 启动请求 ----
+		//---- Initiate request ----
 		if( StartReq )
 		{
 			StartReq = 0;
@@ -222,7 +222,7 @@ void AutoTest_task(void* param)
 			{
 				if( RobotControlParam.en_flag == 1 )
 				{
-					//以当前位置为原点,当前车头方向为+X建立测试坐标系
+					//Set up the test coordinate system with the current position as the origin and the current front direction at +X
 					odo_x = 0; odo_y = 0;
 					yaw0 = AttitudeVal.yaw;
 					lastYaw = AttitudeVal.yaw;
@@ -232,16 +232,16 @@ void AutoTest_task(void* param)
 					segStart = xTaskGetTickCount();
 					segTimeoutMs = at_seg_timeout_ms(&TestScript[0]);
 					at_state = AT_RUN;
-					buzzer->AddTask(1,300); //启动提示:1声
+					buzzer->AddTask(1,300); //Startup prompt: 1 sound
 				}
 				else
 				{
-					buzzer->AddTask(3,100); //小车失能,拒绝启动:3短声
+					buzzer->AddTask(3,100); //Chassis disabled; refuse startup: 3 short beeps
 				}
 			}
 		}
 
-		//---- 航迹推算(测试运行期间) ----
+		//---- Trajectory Calculation (During Test Run) ----
 		if( at_state==AT_RUN || at_state==AT_SEG_PAUSE )
 		{
 			float psi = at_wrap180(AttitudeVal.yaw - yaw0) * 0.0174533f;
@@ -251,14 +251,14 @@ void AutoTest_task(void* param)
 			odo_y += ( vx*sinf(psi) + vy*cosf(psi) ) * dt;
 		}
 
-		//---- 安全:急停/失能时立即结束测试 ----
+		//---- Safety: Immediate test termination in case of emergency stop/disable ----
 		if( (at_state==AT_RUN || at_state==AT_SEG_PAUSE) && RobotControlParam.en_flag==0 )
 		{
 			at_state = AT_IDLE;
-			buzzer->AddTask(2,200); //停止提示:2声
+			buzzer->AddTask(2,200); //Stop prompt: 2 sounds
 		}
 
-		//---- 状态机 ----
+		//---- State Machine ----
 		switch( at_state )
 		{
 			case AT_RUN:
@@ -278,7 +278,7 @@ void AutoTest_task(void* param)
 					}
 					else
 					{
-						//接近路点线性减速,防过冲
+						//Linear deceleration near the route point to prevent overshoot
 						float v = AT_SPEED_MPS;
 						if( dist < AT_DECEL_DIST_M )
 						{
@@ -286,25 +286,25 @@ void AutoTest_task(void* param)
 							if( v < AT_MIN_SPEED_MPS ) v = AT_MIN_SPEED_MPS;
 						}
 
-						//世界系速度指向路点(位置闭环),再按航向旋转到车体系
+						//The world system speeds to the route point (position closed loop), then rotates according to the heading to the vehicle system
 						float vwx = v * dx/dist;
 						float vwy = v * dy/dist;
 						float psi = at_wrap180(AttitudeVal.yaw - yaw0) * 0.0174533f;
 						cmd.Vx =  cosf(psi)*vwx + sinf(psi)*vwy;
 						cmd.Vy = -sinf(psi)*vwx + cosf(psi)*vwy;
 
-						//航向保持(PD,符号约定与Linear_IMUHelp一致):车头锁定启动方向,
-						//保证倒退段真在倒退/横移段真在横移
+						//Heading hold (PD, symbols consistent with Linear_IMUHelp): The front of the vehicle locks the starting direction,
+						//Ensure the backward segment is truly backward/the transverse segment is truly transverse
 						float yaw_err = at_wrap180(yaw0 - AttitudeVal.yaw);
 						float vz = AT_YAW_KP*yaw_err - AT_YAW_KD*axis_9Val.gyro.z*57.3f;
 						cmd.Vz = at_clampf(vz,-AT_YAW_VZ_MAX,AT_YAW_VZ_MAX);
 
-						//诊断:记下限幅前的原始输出与PD输入,用于判断振荡来自哪一环
+						//Diagnosis: Record the original output and PD input before the limit to determine which ring the oscillation originates from
 						g_AutoTestDbg.yawErr = yaw_err;
 						g_AutoTestDbg.vzRaw  = vz;
 					}
 				}
-				else //SEG_ROT:原地旋转,IMU计圈
+				else //SEG_ROT: Spins in place, IMU lap counting
 				{
 					float dyaw = at_wrap180(AttitudeVal.yaw - lastYaw);
 					rotAcc += dyaw;
@@ -315,7 +315,7 @@ void AutoTest_task(void* param)
 						cmd.Vz = (seg->p1 >= 0) ? AT_ROT_SPEED_RAD : -AT_ROT_SPEED_RAD;
 				}
 
-				//兜底超时:强制切下一段,3短声提醒观察者
+				//Fallback timeout: force transition to the next segment; 3 short beeps alert the observer
 				if( !arrived && xTaskGetTickCount()-segStart > pdMS_TO_TICKS(segTimeoutMs) )
 				{
 					arrived = 1;
@@ -326,7 +326,7 @@ void AutoTest_task(void* param)
 				{
 					at_state = AT_SEG_PAUSE;
 					pauseStart = xTaskGetTickCount();
-					//cmd保持零速,进入停顿
+					//cmd maintains zero speed and enters a pause
 					cmd.Vx = 0; cmd.Vy = 0; cmd.Vz = 0;
 				}
 				break;
@@ -334,7 +334,7 @@ void AutoTest_task(void* param)
 
 			case AT_SEG_PAUSE:
 			{
-				//段间停顿发零速,等转向对准
+				//Pause between sections to zero speed, then wait for the steering to align
 				if( xTaskGetTickCount()-pauseStart >= pdMS_TO_TICKS(AT_PAUSE_MS) )
 				{
 					at_seg++;
@@ -353,11 +353,11 @@ void AutoTest_task(void* param)
 
 			case AT_STOPPING:
 			{
-				//发零速收尾,之后释放控制权(2s后低优先级源可接管)
+				//Zero-speed finishing send, then release control (after 2 seconds, low-priority sources can take over)
 				if( xTaskGetTickCount()-stopStart >= pdMS_TO_TICKS(AT_STOP_HOLD_MS) )
 				{
 					at_state = AT_IDLE;
-					buzzer->AddTask(2,200); //停止提示:2声
+					buzzer->AddTask(2,200); //Stop prompt: 2 sounds
 				}
 				break;
 			}
@@ -367,19 +367,19 @@ void AutoTest_task(void* param)
 				break;
 		}
 
-		//---- 控制指令下发与抢占检测 ----
+		//---- Control Command Issuance and Preemptive Detection ----
 		if( at_state != AT_IDLE )
 		{
 			if( WriteRobotControlQueue(&cmd,0) != 0 )
 			{
-				//写入失败=更高优先级控制源正在活跃(如手柄摇杆)
+				//Write failed = a higher-priority control source is active (like joystick)
 				if( writeFailStart == 0 )
 				{
 					writeFailStart = xTaskGetTickCount();
 				}
 				else if( xTaskGetTickCount()-writeFailStart > pdMS_TO_TICKS(AT_WRITE_FAIL_MS) )
 				{
-					//控制权被持续抢占,自动结束测试
+					//Control is continuously seized, automatically ending the test
 					at_state = AT_IDLE;
 					buzzer->AddTask(2,200);
 				}
@@ -390,13 +390,13 @@ void AutoTest_task(void* param)
 			}
 		}
 
-		//诊断量每周期更新,窗口由日志任务读走后清零
+		//Diagnostic volume is updated every cycle, and the window is cleared after reading from the log task
 		g_AutoTestDbg.yaw0  = yaw0;
 		g_AutoTestDbg.seg   = (uint8_t)at_seg;
 		g_AutoTestDbg.state = (uint8_t)at_state;
 		AutoTest_DbgUpdate(cmd.Vz);
 
-		//计圈基准每周期更新
+		//Lap counting reference updated every cycle
 		lastYaw = AttitudeVal.yaw;
 
 		vTaskDelayUntil(&preTime, pdMS_TO_TICKS(1000/AT_RUN_FREQ_HZ));

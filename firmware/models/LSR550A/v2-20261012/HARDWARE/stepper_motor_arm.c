@@ -75,7 +75,7 @@ void UpdateMotorTargets_FromJoints(Arm_t *arm,uint8_t idx){
     }
 
     if (idx == 23 || idx == 123) {
-        // 检查 B 轴
+        // Check the B axis
         if (fabsf(new_deg_B - arm->last_joint_deg[1]) > ANGLE_CHANGE_THRESHOLD) {
             arm->joint_deg[1] = new_deg_B;
             arm->joint_flag[1] = 1;
@@ -83,7 +83,7 @@ void UpdateMotorTargets_FromJoints(Arm_t *arm,uint8_t idx){
             arm->joint_flag[1] = 0;
         }
 
-        // 检查 C 轴
+        // Check the C-axis
         if (fabsf(new_deg_C - arm->last_joint_deg[2]) > ANGLE_CHANGE_THRESHOLD) {
             arm->joint_deg[2] = new_deg_C;
             arm->joint_flag[2] = 1;
@@ -176,9 +176,9 @@ void CAN_UpdateAndSend(void){
   float max_angle_diff=0.0f;
   u8  i;
   u8  motor_id[3]={0x01,0x02,0x03};
-  u8  active_axis_count = 0; // 记录有几个轴需要动
+  u8  active_axis_count = 0; // Records several axes that need to be moved
 	
-  // 1) 只对有 joint_flag 的轴计算角度差 & 最大差
+  // 1) Only calculate angle difference & maximum difference for axes with joint_flag
   for(i=0;i<3;i++){
     if(A280.joint_flag[i]){
       angle_diff[i]=fabsf(A280.joint_deg[i]-A280.last_joint_deg[i]);
@@ -191,7 +191,7 @@ void CAN_UpdateAndSend(void){
 	if(active_axis_count == 0) return;
 	
 	
-	  // 2) 按最大差计算同步速度
+	  // 2) Calculate synchronization speed based on the maximum difference
   if(max_angle_diff>0.01f){
     for(i=0;i<3;i++){
       if(A280.joint_flag[i]){
@@ -204,7 +204,7 @@ void CAN_UpdateAndSend(void){
   }else{
 	    return;
   }
-  // 3) 更新 last_joint_deg，并对每个需要动的轴封包+发送
+  // 3) Update the last_joint_deg and send + packets to each axis that needs to be moved
 	  for(i=0;i<3;i++){
     if(!A280.joint_flag[i]) continue;
     A280.last_joint_deg[i]=A280.joint_deg[i];
@@ -218,7 +218,7 @@ void CAN_UpdateAndSend(void){
 
     u16 spd  =(u16)A280.joint_speed[i];
 
-    // 方向：A轴 正=0 负=1；B/C轴 正=1 负=0
+    // Direction: Axis A Positive = 0 Negative = 1; Axis B/C Positive = 1 Negative = 0
     if(i==0) dir=(A280.joint_deg[i]>0.0f)?0:1;
     else     dir=(A280.joint_deg[i]>0.0f)?1:0;
 

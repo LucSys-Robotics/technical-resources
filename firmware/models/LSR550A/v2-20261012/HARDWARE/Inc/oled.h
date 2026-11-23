@@ -2,8 +2,8 @@
 #define __OLED_H			  	 
 #include "sys.h"
 
-#define OLED_CMD  0	//Command //Ð´ÃüÁî
-#define OLED_DATA 1	//Data //Ð´Êý¾Ý
+#define OLED_CMD  0	//Command // Write command
+#define OLED_DATA 1	//Data // Write data
 
 #define CNSizeWidth  16
 #define CNSizeHeight 16

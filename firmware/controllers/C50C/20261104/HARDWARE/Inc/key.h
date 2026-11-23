@@ -12,7 +12,7 @@
 
 
 /*--------KEY Interface Fun --------*/
-enum { //°´¼ü×´Ì¬Ã¶¾Ù
+enum { //Button state enumeration
 	key_stateless,
 	single_click,
 	double_click,

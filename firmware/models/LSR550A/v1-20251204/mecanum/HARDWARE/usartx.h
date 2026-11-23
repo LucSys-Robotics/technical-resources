@@ -6,7 +6,7 @@
 #include "system.h"
 extern   float sync_speed[3];
 extern u8 usart_sent[21];
-extern u8 usart_sent_current[21];//发送电流
+extern u8 usart_sent_current[21];//Send current
 extern float Step_SPEED;
 
 extern volatile float g_pc_px ,g_pc_py ;
@@ -15,42 +15,42 @@ extern volatile uint8_t g_pc_cmd_ready ;
 #define DATA_STK_SIZE   512 
 #define DATA_TASK_PRIO  4
 
-#define FRAME_HEADER      0X7B //Frame_header //帧头
-#define FRAME_TAIL        0X7D //Frame_tail   //帧尾
+#define FRAME_HEADER      0X7B //Frame_header // Frame header
+#define FRAME_TAIL        0X7D //Frame_tail // End of frame
 #define SEND_DATA_SIZE    24
 #define RECEIVE_DATA_SIZE 11
 
-#define FRAME_HEADER_MOVEIT 0XAA //控制机械臂运动的数据帧头
-#define FRAME_TAIL_MOVEIT 0XBB //控制机械臂运动的数据帧尾
+#define FRAME_HEADER_MOVEIT 0XAA //Data frame head that controls the movement of the robotic arm
+#define FRAME_TAIL_MOVEIT 0XBB //Data frame tails that control the movement of the robotic arm
 
-#define AutoCharge_HEADER      0X7C //Frame_header //帧头
-#define AutoCharge_TAIL        0X7F //Frame_tail   //帧尾
+#define AutoCharge_HEADER      0X7C //Frame_header // Frame header
+#define AutoCharge_TAIL        0X7F //Frame_tail // End of frame
 #define AutoCharge_DATA_SIZE    8
 
 /*****A structure for storing triaxial data of a gyroscope accelerometer*****/
-/*****用于存放陀螺仪加速度计三轴数据的结构体*********************************/
+/*****Structure used to store three-axis gyroscope and accelerometer data*/
 typedef struct __Mpu6050_Data_ 
 {
-	short X_data; //2 bytes //2个字节
-	short Y_data; //2 bytes //2个字节
-	short Z_data; //2 bytes //2个字节
+	short X_data; //2 bytes // 2 bytes
+	short Y_data; //2 bytes // 2 bytes
+	short Z_data; //2 bytes // 2 bytes
 }Mpu6050_Data;
 
 /*******The structure of the serial port sending data************/
-/*******串口发送数据的结构体*************************************/
+/*******Structure for sending data via serial port*************************************/
 typedef struct _SEND_DATA_  
 {
 	unsigned char buffer[SEND_DATA_SIZE];
 	struct _Sensor_Str_
 	{
-		unsigned char Frame_Header; //1个字节
-		short X_speed;	            //2 bytes //2个字节
-		short Y_speed;              //2 bytes //2个字节
-		short Z_speed;              //2 bytes //2个字节
-		short Power_Voltage;        //2 bytes //2个字节
-		Mpu6050_Data Accelerometer; //6 bytes //6个字节
-		Mpu6050_Data Gyroscope;     //6 bytes //6个字节	
-		unsigned char Frame_Tail;   //1 bytes //1个字节
+		unsigned char Frame_Header; //1 byte
+		short X_speed;	            //2 bytes // 2 bytes
+		short Y_speed;              //2 bytes // 2 bytes
+		short Z_speed;              //2 bytes // 2 bytes
+		short Power_Voltage;        //2 bytes // 2 bytes
+		Mpu6050_Data Accelerometer; //6 bytes // 6 bytes
+		Mpu6050_Data Gyroscope;     //6 bytes // 6 bytes
+		unsigned char Frame_Tail;   //1 bytes //1 byte
 	}Sensor_Str;
 }SEND_DATA;
 
@@ -59,12 +59,12 @@ typedef struct _SEND_AutoCharge_DATA_
 	unsigned char buffer[AutoCharge_DATA_SIZE];
 	struct _AutoCharge_Str_
 	{
-		unsigned char Frame_Header; //1 bytes //1个字节
-		short Charging_Current;	    //2 bytes //2个字节
-		unsigned char RED;          //1 bytes //1个字节
-		unsigned char Charging;     //1 bytes //1个字节
-		unsigned char yuliu;		//1 bytes //1个字节
-		unsigned char Frame_Tail;   //1 bytes //1个字节
+		unsigned char Frame_Header; //1 bytes //1 byte
+		short Charging_Current;	    //2 bytes // 2 bytes
+		unsigned char RED;          //1 bytes //1 byte
+		unsigned char Charging;     //1 bytes //1 byte
+		unsigned char yuliu;		//1 bytes //1 byte
+		unsigned char Frame_Tail;   //1 bytes //1 byte
 	}AutoCharge_Str;
 }SEND_AutoCharge_DATA;
 
@@ -73,11 +73,11 @@ typedef struct _RECEIVE_DATA_
 	unsigned char buffer[RECEIVE_DATA_SIZE];
 	struct _Control_Str_
 	{
-		unsigned char Frame_Header; //1 bytes //1个字节
-		float X_speed;	            //4 bytes //4个字节
-		float Y_speed;              //4 bytes //4个字节
-		float Z_speed;              //4 bytes //4个字节
-		unsigned char Frame_Tail;   //1 bytes //1个字节
+		unsigned char Frame_Header; //1 bytes //1 byte
+		float X_speed;	            //4 bytes // 4 bytes
+		float Y_speed;              //4 bytes // 4 bytes
+		float Z_speed;              //4 bytes // 4 bytes
+		unsigned char Frame_Tail;   //1 bytes //1 byte
 	}Control_Str;
 }RECEIVE_DATA;
 

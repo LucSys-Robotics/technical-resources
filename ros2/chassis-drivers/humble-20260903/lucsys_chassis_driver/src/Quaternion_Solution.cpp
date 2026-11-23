@@ -1,11 +1,11 @@
 
 #include "lucsys_chassis_driver/Quaternion_Solution.h"
-#define SAMPLING_FREQ 20.0f // 采样频率
-sensor_msgs::msg::Imu onboard_imu; //Instantiate the onboard IMU object //实例化板载IMU对象
+#define SAMPLING_FREQ 20.0f // Sampling frequency
+sensor_msgs::msg::Imu onboard_imu; //Instantiate the onboard IMU object //Instantiate the onboard IMU object
 
 /**************************************
 Date: May 31, 2020
-Function: 平方根倒数 求四元数用到
+Function: Reciprocal of the square root Used to find quaternions
 ***************************************/
 float InvSqrt(float number)
 {
@@ -23,7 +23,7 @@ float InvSqrt(float number)
 }
 /**************************************
 Date: May 31, 2020
-Function: 四元数解算
+Function: Quaternion solve
 ***************************************/
 volatile float twoKp = 1.0f;     // 2 * proportional gain (Kp)
 volatile float twoKi = 0.0f;     // 2 * integral gain (Ki)
@@ -46,20 +46,20 @@ void Quaternion_Solution(float gx, float gy, float gz, float ax, float ay, float
   
   // Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
   if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
-    // 首先把加速度计采集到的值(三维向量)转化为单位向量，即向量除以模
+    // First normalize the three-dimensional accelerometer vector by dividing by its magnitude
     recipNorm = InvSqrt(ax * ax + ay * ay + az * az);
     ax *= recipNorm;
     ay *= recipNorm;
     az *= recipNorm;      
-    // 把四元数换算成方向余弦中的第三行的三个元素
+    // Convert quaternions into the three elements in the third row of the direction cosine
     halfvx = q1 * q3 - q0 * q2;
     halfvy = q0 * q1 + q2 * q3;
     halfvz = q0 * q0 - 0.5f + q3 * q3;
-    //误差是估计的重力方向和测量的重力方向的交叉乘积之和
+    //Error is the sum of the cross product of the estimated and measured directions of gravity
     halfex = (ay * halfvz - az * halfvy);
     halfey = (az * halfvx - ax * halfvz);
     halfez = (ax * halfvy - ay * halfvx);
-    // 计算并应用积分反馈（如果启用）
+    // Calculate and apply point feedback (if enabled)
     if(twoKi > 0.0f) {
       integralFBx += twoKi * halfex * (1.0f / SAMPLING_FREQ);  // integral error scaled by Ki
       integralFBy += twoKi * halfey * (1.0f / SAMPLING_FREQ);

@@ -2,7 +2,7 @@
 #define __SYS_H	 
 #include "stm32f4xx.h" 
 
-//TODO:用于debug调试变量
+//TODO: Used for debugging variables
 typedef struct{
 	float   f_val1;
 	float   f_val2;
@@ -11,7 +11,7 @@ typedef struct{
 	uint8_t  u8_val;
 	uint16_t u16_val;
 	
-	//TODO:阿克曼调试新增
+	//TODO: Added to Ackermann debugging
 //	float akm_left_angle;
 //	float akm_right_angle;
 //	float akm_turnR;
@@ -21,31 +21,31 @@ typedef struct{
 //	float odom_z;
 //	
 //	uint16_t set_turnangle;
-	//1.一定要注意除法相关语句,分母变量一定要初始化,不能为0
+	//1. Be sure to pay attention to division-related statements; denominator variables must be initialized and cannot be zero
 }DEBUG_t;
 
 
-//硬件版本,以V1.0开始
+//Hardware version, starting with V1.0
 typedef enum{
 	HW_NONE = 0,
-	V1_0 = 0x0001,  //Ver1.0：C50C,陀螺仪MPU6050,PS2手柄为普通插座版本
-	V1_1 = 0x0002,  //Ver1.1：C50C,陀螺仪ICM20948,PS2手柄升级为USB手柄
+	V1_0 = 0x0001,  //Ver1.0: C50C, gyroscope MPU6050, PS2 controller with a standard socket
+	V1_1 = 0x0002,  //Ver1.1: C50C, gyroscope ICM20948, PS2 controller upgraded to USB controller
 }HARDWARE_VERSION;
 
-//软件版本,以V1.00开始.
+//Software version, starting at V1.00.
 typedef enum{
 	SW_NONE = 0,
-	V1_00 = 0x0001, //Ver1.00：软件版本更新请查看 Updatalog/更新记录.txt
+	V1_00 = 0x0001, //Ver1.00: For software version updates, please refer to the Updatalog/Update Log .txt
 }SOFTWARE_VERSION;
 
-//机器人系统级相关变量
+//System-level variables related to the robot
 typedef struct{
-	HARDWARE_VERSION HardWare_Ver;  //硬件版本
-	SOFTWARE_VERSION SoftWare_Ver;  //软件版本
-	int Time_count;      // 系统上电计时
-	u8 HardWare_charger; // 系统是否存在充电装备硬件 1:存在 0:不存在
-	u8 SecurityLevel;    // 系统安全等级 默认为1    0:最高等级,对机器人控制命令持续监测,若丢失则自动停止. 1:不对控制命令监测,命令丢失保留最后一个速度指令运动.  2~255：...待定
-	u16 LED_delay;       // 系统状态指示灯闪烁时间 单位 ms
+	HARDWARE_VERSION HardWare_Ver;  //Hardware version
+	SOFTWARE_VERSION SoftWare_Ver;  //Software version
+	int Time_count;      // System power-on timer
+	u8 HardWare_charger; // Whether the system has charging equipment hardware 1: Present 0: Not present
+	u8 SecurityLevel;    // System safety level Default is 1 0: Highest level, continuously monitors robot control commands; automatically stops if lost. 1: Does not monitor control commands; if command loss, the last speed command is retained 2~255：... TBA
+	u16 LED_delay;       // System status indicator flashing time in milliseconds
 }SYS_VAL_t;
 
 extern SYS_VAL_t SysVal;
@@ -55,26 +55,26 @@ const uint8_t* getHW_Ver(HARDWARE_VERSION ver);
 
 //extern DEBUG_t debug;
 
-//math abs接口
-//abs() :  用于 int类型
-//fabs():  用于 float类型
-//labs()： 用于 long int 类型的数据。
-//llabs()：用于 long long int 类型的数据。
-//fabsf()：用于 float 类型的数据。
-//fabsl()：用于 long double 类型的数据。
+//Math ABS interface
+//abs(): Used for int type
+//fabs(): used for float type
+//labs(): used for long int type data.
+//llabs(): for data of type long long int.
+//fabsf(): used for float type data
+//fabsl(): used for long double type data
 
-//0,不支持os
-//1,支持os
-#define SYSTEM_SUPPORT_OS		1		//定义系统文件夹是否支持OS
+//0, OS not supported
+//1, supports OS
+#define SYSTEM_SUPPORT_OS		1		//Defines whether system folders support the OS
 																	    
 	 
-//位带操作,实现51类似的GPIO控制功能
-//具体实现思想,参考<<CM3权威指南>>第五章(87页~92页).M4同M3类似,只是寄存器地址变了.
-//IO口操作宏定义
+//bit band operation enables GPIO control functions similar to 51
+//For the specific implementation idea, refer to <<CM3 Authority Guide>> Chapter 5 (pages 87~92). M4 is similar to M3, only the register addresses have changed.
+//IO port macro definition
 #define BITBAND(addr, bitnum) ((addr & 0xF0000000)+0x2000000+((addr &0xFFFFF)<<5)+(bitnum<<2)) 
 #define MEM_ADDR(addr)  *((volatile unsigned long  *)(addr)) 
 #define BIT_ADDR(addr, bitnum)   MEM_ADDR(BITBAND(addr, bitnum)) 
-//IO口地址映射
+//IO port address mapping
 #define GPIOA_ODR_Addr    (GPIOA_BASE+20) //0x40020014
 #define GPIOB_ODR_Addr    (GPIOB_BASE+20) //0x40020414 
 #define GPIOC_ODR_Addr    (GPIOC_BASE+20) //0x40020814 
@@ -95,40 +95,40 @@ const uint8_t* getHW_Ver(HARDWARE_VERSION ver);
 #define GPIOH_IDR_Addr    (GPIOH_BASE+16) //0x40021C10 
 #define GPIOI_IDR_Addr    (GPIOI_BASE+16) //0x40022010 
  
-//IO口操作,只对单一的IO口!
-//确保n的值小于16!
-#define PAout(n)   BIT_ADDR(GPIOA_ODR_Addr,n)  //输出 
-#define PAin(n)    BIT_ADDR(GPIOA_IDR_Addr,n)  //输入 
+//IO port operation, only for a single IO port!
+//Ensure the value of n is less than 16!
+#define PAout(n)   BIT_ADDR(GPIOA_ODR_Addr,n)  //Output
+#define PAin(n)    BIT_ADDR(GPIOA_IDR_Addr,n)  //Input
 
-#define PBout(n)   BIT_ADDR(GPIOB_ODR_Addr,n)  //输出 
-#define PBin(n)    BIT_ADDR(GPIOB_IDR_Addr,n)  //输入 
+#define PBout(n)   BIT_ADDR(GPIOB_ODR_Addr,n)  //Output
+#define PBin(n)    BIT_ADDR(GPIOB_IDR_Addr,n)  //Input
 
-#define PCout(n)   BIT_ADDR(GPIOC_ODR_Addr,n)  //输出 
-#define PCin(n)    BIT_ADDR(GPIOC_IDR_Addr,n)  //输入 
+#define PCout(n)   BIT_ADDR(GPIOC_ODR_Addr,n)  //Output
+#define PCin(n)    BIT_ADDR(GPIOC_IDR_Addr,n)  //Input
 
-#define PDout(n)   BIT_ADDR(GPIOD_ODR_Addr,n)  //输出 
-#define PDin(n)    BIT_ADDR(GPIOD_IDR_Addr,n)  //输入 
+#define PDout(n)   BIT_ADDR(GPIOD_ODR_Addr,n)  //Output
+#define PDin(n)    BIT_ADDR(GPIOD_IDR_Addr,n)  //Input
 
-#define PEout(n)   BIT_ADDR(GPIOE_ODR_Addr,n)  //输出 
-#define PEin(n)    BIT_ADDR(GPIOE_IDR_Addr,n)  //输入
+#define PEout(n)   BIT_ADDR(GPIOE_ODR_Addr,n)  //Output
+#define PEin(n)    BIT_ADDR(GPIOE_IDR_Addr,n)  //Input
 
-#define PFout(n)   BIT_ADDR(GPIOF_ODR_Addr,n)  //输出 
-#define PFin(n)    BIT_ADDR(GPIOF_IDR_Addr,n)  //输入
+#define PFout(n)   BIT_ADDR(GPIOF_ODR_Addr,n)  //Output
+#define PFin(n)    BIT_ADDR(GPIOF_IDR_Addr,n)  //Input
 
-#define PGout(n)   BIT_ADDR(GPIOG_ODR_Addr,n)  //输出 
-#define PGin(n)    BIT_ADDR(GPIOG_IDR_Addr,n)  //输入
+#define PGout(n)   BIT_ADDR(GPIOG_ODR_Addr,n)  //Output
+#define PGin(n)    BIT_ADDR(GPIOG_IDR_Addr,n)  //Input
 
-#define PHout(n)   BIT_ADDR(GPIOH_ODR_Addr,n)  //输出 
-#define PHin(n)    BIT_ADDR(GPIOH_IDR_Addr,n)  //输入
+#define PHout(n)   BIT_ADDR(GPIOH_ODR_Addr,n)  //Output
+#define PHin(n)    BIT_ADDR(GPIOH_IDR_Addr,n)  //Input
 
-#define PIout(n)   BIT_ADDR(GPIOI_ODR_Addr,n)  //输出 
-#define PIin(n)    BIT_ADDR(GPIOI_IDR_Addr,n)  //输入
+#define PIout(n)   BIT_ADDR(GPIOI_ODR_Addr,n)  //Output
+#define PIin(n)    BIT_ADDR(GPIOI_IDR_Addr,n)  //Input
 
-//以下为汇编函数
-void WFI_SET(void);		//执行WFI指令
-void INTX_DISABLE(void);//关闭所有中断
-void INTX_ENABLE(void);	//开启所有中断
-void MSR_MSP(u32 addr);	//设置堆栈地址 
+//The following are assembly functions
+void WFI_SET(void);		//Execute WFI instructions
+void INTX_DISABLE(void);//Close all interrupts
+void INTX_ENABLE(void);	//Enable all interrupts
+void MSR_MSP(u32 addr);	//Set the stack address
 #endif
 
 

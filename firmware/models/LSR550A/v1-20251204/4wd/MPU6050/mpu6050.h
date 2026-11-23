@@ -364,15 +364,15 @@ extern float Roll,Pitch,Yaw;
 extern  short Deviation_gyro[3],Original_gyro[3];
 extern short Deviation_accel[3],Original_accel[3]; 
 extern int Deviation_Count;
-//供外部调用的API
-u8 MPU6050_initialize(void); //初始化
-uint8_t MPU6050_testConnection(void); //检测MPU6050是否存在
-//读取ADC值
+//APIs for external calls
+u8 MPU6050_initialize(void); //Initialize
+uint8_t MPU6050_testConnection(void); //Detect whether MPU6050 exists
+//Read ADC values
 void MPU6050_getMotion6(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz);
 void MPU6050_getlastMotion6(int16_t* ax, int16_t* ay, 
 		int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz);
-uint8_t MPU6050_getDeviceID(void); //读取MPU6050的ID
-void MPU6050_InitGyro_Offset(void);//初始化陀螺仪偏置
+uint8_t MPU6050_getDeviceID(void); //Read the ID of the MPU6050
+void MPU6050_InitGyro_Offset(void);//Initialize gyro bias
 void DMP_Init(void);
 void Read_DMP(void);
 int Read_Temperature(void);

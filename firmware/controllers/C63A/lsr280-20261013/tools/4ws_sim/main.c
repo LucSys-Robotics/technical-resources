@@ -1,21 +1,21 @@
 /**
  * @file    main.c
- * @brief   四轮四转运动学 PC 端对拍工程
+ * @brief PC differential-test harness for four-wheel steering kinematics
  *
  * @details
- * 直接编译固件里的真实源文件(../../LUCSYS_BSP/4ws_v2.c),不做任何拷贝或改写,
- * 保证测的就是实际跑在车上的那份代码.
+ * Directly compile the real source files in the firmware (.. /.. /LUCSYS_BSP/4ws_v2.c), no copying or rewriting is done,
+ * Ensures that the code tested is actually running on the car.
  *
- * 覆盖 5 项不变量:
- *   T1 往返对拍     逆解->假设到位->正解, 三轴速度应还原
- *   T2 物理角度范围 AB轮目标∈[-50,220]度, CD轮∈[-220,50]度
- *   T3 投影法一致性 WheelSpeedProjection 与 InverseKinematics 的轮速必须相同
- *   T4 速度矢量连续 输入连续变化时,轮速矢量不应跳变(180度翻转+速度取反是合法的)
- *   T5 零速保持     三轴为零时保持上次角度,仅轮速归零
+ * Covers 5 invariants:
+ *   T1 round-trip check: inverse kinematics -> assume alignment -> forward kinematics; recover the original three-axis velocity
+ *   T2 Physical Angle Range AB Round Target ∈ [-50,220] degrees, CD Round ∈ [-220,50] degrees
+ *   T3 projection consistency: WheelSpeedProjection must have the same wheel speed as InverseKinematics
+ *   T4 Velocity vector continuous. When input is continuously changing, the wheel speed vector should not jump (180-degree flip + speed inversion is legal).
+ *   T5 zero-speed hold: When all three axes are zero, the previous angle is maintained, only the wheel speed returns to zero
  *
- * T3 对应 code review 第7条: 固件用逆解取角度、用投影取轮速,两者必须严格一致,
- * 否则会出现"下发的角度与轮速符号不匹配,轮子瞬间反转".
- * T4 对应实车观察到的转向抖动: 上游指令连续变化时目标角不应出现无意义突跳.
+ * T3 corresponds to code review Article 7: Firmware uses reverse resolution to obtain angles, and projections to obtain wheel speed; both must be strictly consistent.
+ * Otherwise, "the angle of the release does not match the wheel speed symbol, causing the wheel to instantly reverse."
+ * Steering jitter observed in the actual vehicle corresponding to T4: When upstream commands change continuously, the target angle should not experience meaningless jumps.
  */
 
 #include <stdio.h>
@@ -23,8 +23,8 @@
 #include <math.h>
 #include <string.h>
 
-/* 本文件为 UTF-8 编码,而 Windows 控制台默认是 GBK(CP936),
-   不切换会把中文输出显示成乱码.Linux 终端本来就是 UTF-8,无需处理. */
+/* This file is UTF-8 encoded, while the Windows console defaults to GBK (CP936).
+   If you don't switch, the Chinese output will appear as garbled text. Linux terminals are originally UTF-8, so no processing is needed. */
 #ifdef _WIN32
 #include <windows.h>
 static void console_use_utf8(void){ SetConsoleOutputCP(CP_UTF8); }
@@ -41,17 +41,17 @@ static void console_use_utf8(void){ }
 #define RAD2DEG(r)  ((r)*57.29577951308232f)
 #define DEG2RAD(d)  ((d)*0.01745329251994330f)
 
-/* T280 实机参数, 与 robot_select_init.h 保持一致 */
+/* LSR280 actual specifications, consistent with robot_select_init.h */
 #define T280_WHEELSPACING   0.335f
 #define T280_AXLESPACING    0.43f
 #define T280_WHEELTURNR     0.0f
 #define T280_WHEELPERIMETER (0.13f*3.14159265f)
 
-/* 判据阈值 */
-#define EPS_ROUNDTRIP   1e-3f    /* 往返对拍允许误差 m/s, rad/s */
-#define EPS_PROJECTION  1e-4f    /* 投影法与逆解的轮速差 */
-#define ANGLE_MARGIN    0.5f     /* 物理范围判定余量(度), 容忍浮点边界 */
-#define EPS_CONTINUITY  0.05f    /* 速度矢量连续性阈值 m/s */
+/* Criteria threshold */
+#define EPS_ROUNDTRIP   1e-3f    /* Allowed round-trip comparison error, m/s and rad/s */
+#define EPS_PROJECTION  1e-4f    /* The difference in wheel speed between the projection method and the inverse solution */
+#define ANGLE_MARGIN    0.5f     /* Physical range determination margin (degrees), tolerance floating-point boundary */
+#define EPS_CONTINUITY  0.05f    /* Velocity-vector continuity threshold, m/s */
 
 static int g_fail = 0;
 
@@ -71,7 +71,7 @@ static float frand(float lo,float hi)
     return lo + ((float)rand()/(float)RAND_MAX)*(hi-lo);
 }
 
-/* 把四个目标值搬到实际值, 模拟"轮子完全到位" */
+/* Move four target values to actual values to simulate "wheels fully in place" */
 static void assume_reached(RobotParam_t* car)
 {
     car->RealMotorA = car->TargetMotorA;
@@ -88,7 +88,7 @@ static void car_init(RobotParam_t* car)
 }
 
 /* ------------------------------------------------------------------ */
-/* T1 往返对拍: 逆解 -> 假设到位 -> 正解, 应还原出原始三轴速度            */
+/* T1 round-trip check: inverse kinematics -> assume alignment -> forward kinematics; recover the original three-axis velocity            */
 /* ------------------------------------------------------------------ */
 static void test_roundtrip(long n)
 {
@@ -115,7 +115,7 @@ static void test_roundtrip(long n)
 }
 
 /* ------------------------------------------------------------------ */
-/* T2 物理角度范围: AB∈[-50,220]度  CD∈[-220,50]度                      */
+/* T2 Physical angle range: AB∈ [-50,220] degrees; CD∈ [-220,50] degrees                      */
 /* ------------------------------------------------------------------ */
 static void test_angle_range(long n)
 {
@@ -151,8 +151,8 @@ static void test_angle_range(long n)
 }
 
 /* ------------------------------------------------------------------ */
-/* T3 投影法一致性: 同一组速度下, 投影出的轮速必须等于逆解出的轮速        */
-/*    固件用逆解取角度、用投影取轮速, 两者不一致会导致角度与轮速符号打架  */
+/* T3 Projection Consistency: Under the same set of speeds, the projected wheel speed must equal the wheel speed obtained by inverse solution        */
+/*    Firmware uses reverse resolution to obtain angles and projections to get wheel speed; inconsistencies between the two can cause conflicts between angle and wheel speed symbols  */
 /* ------------------------------------------------------------------ */
 static void test_projection(long n)
 {
@@ -167,7 +167,7 @@ static void test_projection(long n)
         float sInv[4] = { car.TargetMotorA.speed, car.TargetMotorB.speed,
                           car.TargetMotorC.speed, car.TargetMotorD.speed };
 
-        /* 投影法复用逆解写入的角度, 只重算轮速 */
+        /* The projection method multiplexes the angle written in the inverse solution, only recalculating the wheel speed */
         four_ws_WheelSpeedProjection(vx,vy,vz,&car);
         float sPrj[4] = { car.TargetMotorA.speed, car.TargetMotorB.speed,
                           car.TargetMotorC.speed, car.TargetMotorD.speed };
@@ -186,9 +186,9 @@ static void test_projection(long n)
 }
 
 /* ------------------------------------------------------------------ */
-/* T4 速度矢量连续性                                                    */
-/*    轮速矢量 v = speed*(cos a, sin a) 应随输入连续变化.                */
-/*    180度翻转配合速度取反不改变该矢量, 所以合法翻转不会被误判.          */
+/* T4 velocity vector continuity                                                    */
+/*    Wheel velocity vector v = speed*(cos a, sin a) should vary continuously with the input.                */
+/*    180-degree flip with reversed speed does not change the vector, so legal flips will not be misjudged.          */
 /* ------------------------------------------------------------------ */
 static void test_continuity(void)
 {
@@ -244,7 +244,7 @@ static void test_continuity(void)
 }
 
 /* ------------------------------------------------------------------ */
-/* T5 零速保持: 三轴为零时保持上次角度, 仅轮速归零                        */
+/* T5 zero-speed hold: When all three axes are zero, the previous angle is maintained; only wheel speed returns to zero                        */
 /* ------------------------------------------------------------------ */
 static void test_zero_hold(long n)
 {
@@ -266,8 +266,8 @@ static void test_zero_hold(long n)
 
         int hit=0;
         for(int k=0;k<4;k++){
-            if(fabsf(keep[k]-now[k])>1e-6f) hit=1;   /* 角度必须保持 */
-            if(fabsf(spd[k])>1e-6f)         hit=1;   /* 轮速必须归零 */
+            if(fabsf(keep[k]-now[k])>1e-6f) hit=1;   /* The angle must be maintained */
+            if(fabsf(spd[k])>1e-6f)         hit=1;   /* Wheel speed must return to zero */
         }
         if(hit) bad++;
         assume_reached(&car);
@@ -276,17 +276,17 @@ static void test_zero_hold(long n)
 }
 
 /* ------------------------------------------------------------------ */
-/* T6 分支抖动: 轮子追不上目标时, 小幅抖动的Vz不应让目标反复翻转180度      */
+/* T6 Branch jitter: When the wheel cannot keep up with the target, the slightly shaking Vz should not cause the target to repeatedly flip 180 degrees      */
 /*                                                                     */
-/* PathChange 用"实测轮角 vs 目标"判断走哪条路(直接到位 / +180度并反转轮速)。*/
-/* 判据输入是实测轮角, 而轮子又在朝目标转 —— 零迟滞时会自持振荡:          */
-/* 越过90度门限 -> 目标翻180度 -> 轮子掉头 -> 又越回门限 -> 再翻。         */
-/* 实车表现: 转向目标反复翻转, 轮子永远追不上, 限速器把车速压到0, 车卡死。  */
-/* 本用例用一阶滞后模拟"轮子跟不上", 复现该工况。                          */
+/* PathChange uses "measured wheel angle vs target" to determine which route to take (directly in position / +180 degrees and reverse wheel speed).*/
+/* The criterion input is the measured wheel angle, and the wheel is rotating toward the target — it oscillates at zero hysteresis:          */
+/* Cross the 90-degree threshold -> Target flips 180 degrees -> Wheel turns -> Crosses back to the threshold -> Flips again.         */
+/* Real car performance: The steering target repeatedly flips, the wheels never catch up, the speed limiter lowers the speed to zero, and the car gets stuck.  */
+/* This use case simulates "wheels not keeping up" with first-order lag to reproduce the operating condition.                          */
 /* ------------------------------------------------------------------ */
 static void lag_wheels(RobotParam_t* car,float k)
 {
-    /* 轮子以 k 的比例向目标靠拢, k<1 表示追不上 */
+    /* Wheel approaches the target by a factor k; k<1 means it cannot catch up */
     car->RealMotorA.radian += k*(car->TargetMotorA.radian - car->RealMotorA.radian);
     car->RealMotorB.radian += k*(car->TargetMotorB.radian - car->RealMotorB.radian);
     car->RealMotorC.radian += k*(car->TargetMotorC.radian - car->RealMotorC.radian);
@@ -295,11 +295,11 @@ static void lag_wheels(RobotParam_t* car,float k)
 
 static void test_branch_chatter(void)
 {
-    const int  CASES  = 4000;    /* 随机工作点数 */
-    const int  CYCLES = 24;      /* 每个工作点上抖动多少拍 */
-    const float DVZ   = 0.02f;   /* Vz 抖动幅度 rad/s, 很小 */
-    const float LAG   = 0.02f;   /* 轮子每拍只走 2% 的差距: 追不上, 长时间停在分界附近 */
-    const float FLIP  = 2.6f;    /* 判为翻转的目标跳变门限(rad), 约150度 */
+    const int  CASES  = 4000;    /* Number of random operating points */
+    const int  CYCLES = 24;      /* How many beats are jittered at each work point */
+    const float DVZ   = 0.02f;   /* Vz jitter amplitude rad/s, very small */
+    const float LAG   = 0.02f;   /* Wheel covers only 2% of the error per cycle: cannot catch up and stays near the boundary for a long time */
+    const float FLIP  = 2.6f;    /* Target jump threshold (RAD) judged to be flipped, approximately 150 degrees */
     const float HALFPI = 1.5707963f;
 
     RobotParam_t car;
@@ -314,11 +314,11 @@ static void test_branch_chatter(void)
         float vy  = frand(-0.4f,0.4f);
         float vzc = frand(-0.6f,0.6f);
 
-        /* 先解一次拿到该工作点的目标角 */
+        /* First solve the target angle that obtains the work point */
         four_ws_InverseKinematics(vx,vy,vzc,&car);
 
-        /* 关键: 把实测轮角按在距目标约90度处, 也就是 PathChange 的判定分界上。
-           这正是实车卡死时的状态(转向偏差 60~130 度), 直接热身到稳态是复现不出来的。*/
+        /* Key: Set the measured wheel angle about 90 degrees from the target, which is the PathChange determination boundary.
+           This is the state seen when the physical chassis stalls (steering error 60~130 degrees); warming directly to steady state cannot reproduce it.*/
         float off = HALFPI + frand(-0.10f,0.10f);
         car.RealMotorA.radian = car.TargetMotorA.radian - off;
         car.RealMotorB.radian = car.TargetMotorB.radian - off;
@@ -343,21 +343,21 @@ static void test_branch_chatter(void)
             lag_wheels(&car,LAG);
         }
         total++;
-        /* 判据盯的是"自持振荡"而不是"翻转次数不为零"。
-           合法的重新选路本来就会翻,偶尔翻几次不是缺陷;
-           24拍内翻够 8 次(相当于某个轮子每三拍就翻一次)才说明陷进了极限环 ——
-           实车卡死时正是这种状态:目标每拍都反,轮子永远追不上,限速器把车速压到0。*/
+        /* The criterion focuses on "self-sustaining oscillations" rather than "flips not zero."
+           Legal re-selection will naturally be overturned; occasionally flipping a few times is not a flaw;
+           8 flips within 24 cycles (one wheel flipping every three cycles) indicate a limit cycle --
+           This is exactly the state when the real car gets stuck: the target reverses with every beat, the wheels never catch up, and the speed limiter lowers the speed to zero.*/
         if( flips >= 8 ) bad++;
         if( flips > worst ) worst = flips;
     }
 
-    /* 判据是"不劣于已知底线"而不是"零抖动"。
-       PathChange 里除了路径优化,还有两处物理限位翻转(角度越出 -50/+220 度时无条件
-       翻转并反速),那两处没有分支记忆,原始角在限位附近摆动时照样会来回翻。
-       余量扫描证实了这一点:0度余量 28.8% 抖动,15度 11.8%,35度 3.7%,
-       再加到 45/60 度仍停在 3.1% 不再降 —— 剩下的就是限位翻转贡献的底线。
-       给限位判据也加迟滞是可行的(理论范围 -90/+270 与实际启用的 -50/+220 之间
-       本就留了 40 度余量),属于未完成项。此处门限设 5%,足以拦住路径判据的回归。 */
+    /* The criterion is "not worse than the known bottom line" rather than "zero jitter."
+       Besides path optimization,  PathChange also includes two physical limit reversals (unconditional when the angle exceeds -50/+220 degrees).
+       Flip and reverse speed), those two places have no branch memory, and the original angle will flip back and forth when swinging near the limit.
+       Margin scans confirm this: 0 degrees margin 28.8% jitter, 15 degrees 11.8%, 35 degrees 3.7%,
+       Still stops at 3.1% after adding to 45/60 degrees — the rest is just the bottom line contributed by limit inversion.
+       It is feasible to add hysteresis to the limit criterion (theoretical range between -90/+270 and the actual -50/+220).
+       already leaves a 40-degree margin), which is an incomplete term. Here, the threshold is set at 5%, which is enough to block the regression of the path criterion. */
     const double LIMIT_PCT = 1.0;
     double pct = 100.0*bad/total;
     char det[160];
@@ -387,7 +387,7 @@ int main(int argc,char** argv)
     long n = (argc>1) ? atol(argv[1]) : 200000L;
     unsigned seed = (argc>2) ? (unsigned)atoi(argv[2]) : 1u;
     if(n<1000) n=1000;
-    srand(seed);   /* 固定种子, 结果可复现 */
+    srand(seed);   /* Fix the seed, and the fruit can be reproducible */
     console_use_utf8();
 
     printf("四轮四转运动学对拍  样本 %ld 组  随机种子 %u\n", n, seed);

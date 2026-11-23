@@ -4,14 +4,14 @@
 #include <stdint.h>
 
 typedef struct {
-	void (*init)(void);                                            //灯带初始化
-	void (*turnoff)(void);                                         //关闭灯带
-    void (*SetColor)(uint8_t r,uint8_t g,uint8_t b);               //直接设置灯带颜色
-    void (*SetColorFade)(uint8_t r,uint8_t g,uint8_t b);           //渐变设置灯带颜色
-	void (*SetBreath)(uint8_t r,uint8_t g,uint8_t b);              //指定一个颜色让灯带进行呼吸
-	void (*ShowError)(uint8_t times);                              //让灯带闪烁报错,入口参数为闪烁次数
-	void (*RainbowMode)(void);                                     //彩虹灯带
-	void (*SetBlink)(uint8_t r,uint8_t g,uint8_t b,uint32_t times);//设置灯带闪烁,times为闪烁延迟时间,单位ms
+	void (*init)(void);                                            //Initialize the light strip
+	void (*turnoff)(void);                                         //Turn off the light strip
+    void (*SetColor)(uint8_t r,uint8_t g,uint8_t b);               //Set the light strip color directly
+    void (*SetColorFade)(uint8_t r,uint8_t g,uint8_t b);           //Gradient sets the color of the light strip
+	void (*SetBreath)(uint8_t r,uint8_t g,uint8_t b);              //Specify a color to let the light strip breathe
+	void (*ShowError)(uint8_t times);                              //Make the light strip flash with an error; the entry parameter is the number of flashes
+	void (*RainbowMode)(void);                                     //Rainbow LED strip
+	void (*SetBlink)(uint8_t r,uint8_t g,uint8_t b,uint32_t times);//Set the light strip to flash, where times is the flashing delay time, measured in milliseconds
 }RGBLightInterface_t,*pRGBLightInterface_t;
 
 extern RGBLightInterface_t UserRGBLight;

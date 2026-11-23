@@ -55,7 +55,7 @@ private:
         imu_freeze = abslt(static_threshold,static_count);
 
         //imu_freeze = is_static ? 1 : 0;
-        //姿态解算
+        //Posture Solution
         Quaternion_Solution(
             msg->angular_velocity.x,
             msg->angular_velocity.y,
@@ -67,7 +67,7 @@ private:
 
         sensor_msgs::msg::Imu out = *msg;
 
-        //使用Quaternion_Solution中的全局姿态
+        //Use global poses in Quaternion_Solution
         out.orientation.w = q0;
         out.orientation.x = q1;
         out.orientation.y = q2;

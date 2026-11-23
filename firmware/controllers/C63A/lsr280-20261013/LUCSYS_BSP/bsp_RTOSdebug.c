@@ -3,36 +3,36 @@
 #include "gpio.h"
 
 
-//定时器频率,单位为Hz.根据配置不同修改
+//Timer frequency, unit in Hz. Modified according to configuration
 #define TIM_FREQ 100000
 
 static uint16_t get_TickCount(void)
 {
-    //获取计数值的方法.注意该数值跟定时器配置有关,当前配置为 0.01ms 计数1
+    //Method to obtain count values. Note that this value depends on the timer configuration; the current setting is 0.01ms count 1
     return TIM6->CNT;
 }
 
-//获取debug计时的方法
+//Methods to get debug timing
 static void get_StartCount(RTOSDebugPrivateVar* priv_var)
 {
-    //0替换为读取计数的方法
+    //0 replaced by the method of reading the count
     priv_var->TickLast = get_TickCount();
 }
 
-//获取频率的方法,注意：频率过慢无法检测,这里只处理了1次定时器数据溢出情况
+//Method to obtain frequency. Note: Too slow frequency cannot be detected; only one timer data overflow case is handled here
 static uint16_t get_Freq(RTOSDebugPrivateVar* priv_var)
 {
     priv_var->countState = !priv_var->countState;
 
     if( 1 == priv_var->countState )
-        priv_var->TickLast = get_TickCount(),//保存1次计数
+        priv_var->TickLast = get_TickCount(),//Save the count once
         priv_var->TaskFreq = priv_var->LastFreq;
     else
     {
-        //第二次进入,开始计算频率
+        //Enter the second time and start calculating frequency
         priv_var->TickNow = get_TickCount();
         if( priv_var->TickNow < priv_var->TickLast )
-        {   //数值溢出了
+        {   //Numeric overflow
             priv_var->TaskFreq = priv_var->TickNow + 0xFFFF - priv_var->TickLast;
         }
         else
@@ -45,13 +45,13 @@ static uint16_t get_Freq(RTOSDebugPrivateVar* priv_var)
     return priv_var->TaskFreq;
 }
 
-//获取函数运行时间的方法,注意需要计时开始端使用 TickStart方法保存1次计数值
+//Method to obtain the function runtime; note that the timing start side uses the TickStart method to save the count value once
 static float get_UsedTime(RTOSDebugPrivateVar* priv_var)
 {
-    //获取计数
+    //Get the count
     priv_var->TickNow = get_TickCount();
 
-    //上一次数据比本次获取的值大,说明计数溢出了
+    //If the previous data is larger than the value obtained this time, it indicates count overflow
     if( priv_var->TickLast > priv_var->TickNow )  
     {
         priv_var->UseTime = priv_var->TickNow + 0xFFFF - priv_var->TickLast;
@@ -59,12 +59,12 @@ static float get_UsedTime(RTOSDebugPrivateVar* priv_var)
     else
         priv_var->UseTime = priv_var->TickNow - priv_var->TickLast;
     
-    priv_var->UseTime = ((float)priv_var->UseTime/(float)TIM_FREQ)*1000;//转换为ms单位输出
+    priv_var->UseTime = ((float)priv_var->UseTime/(float)TIM_FREQ)*1000;//Convert output to ms
 
     return priv_var->UseTime;
 }
 
-//驱动挂载
+//Attach driver
 RtosDebugInterface_t RTOSDebugTimer = {
     .TickStart = get_StartCount,
     .UpdateFreq = get_Freq,

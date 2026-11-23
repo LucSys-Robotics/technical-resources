@@ -1,221 +1,207 @@
-# LSR280 数据观察工具（临时调试用）
+# LSR280 data-logging tools — development diagnostics
 
-上位机侧脚本，配合固件 `LUCSYS_APP/datalog_task.c` 使用。
+Host-side scripts for the firmware's `LUCSYS_APP/datalog_task.c`. This guide translates the supplied development notes for this source snapshot. Its thresholds, reported observations and diagnostic interpretations are not new measurements or verified specifications for every delivered LSR280.
 
-## 环境
+## Environment
 
-Linux + Python 3.8.10，串口设备 `/dev/ttyCH343USB0`（CH343 USB 转串口）。
+The original setup uses Linux, Python 3.8.10 and `/dev/ttyCH343USB0` (CH343 USB-to-serial).
 
 ```bash
 pip3 install pyserial pandas matplotlib
 ```
 
-出图需要中文字体，没有会自动退回英文标题：
+The plotting script supports Chinese fonts and falls back to English titles when they are unavailable. To install CJK fonts, if needed:
 
 ```bash
 sudo apt install fonts-noto-cjk
-rm -rf ~/.cache/matplotlib
 ```
 
-## 一、准备工作
+Rebuild Matplotlib's font cache if the installed font is not detected. This documentation translation does not change runtime messages, plot strings or CSV field names.
 
-### 1. 固件侧确认
+## 1. Preparation
 
-- `LUCSYS_APP/Inc/datalog_task.h` 里 `DATALOG_ENABLE` 为 `1`
-- `data_task.c` 里两处 `HAL_UART_Transmit_DMA(serial,...)` 处于注释状态（串口4已让给本工具）
+### Firmware configuration
 
-### 2. 串口权限
+- Check that `DATALOG_ENABLE` in `LUCSYS_APP/Inc/datalog_task.h` is `1`.
+- Check that both `HAL_UART_Transmit_DMA(serial,...)` calls in `data_task.c` are commented out. UART4 is used by this diagnostic tool in that configuration.
+
+These are instructions for selecting the documented diagnostic configuration, not changes applied by the English translation.
+
+### Serial permissions
 
 ```bash
 ls -l /dev/ttyCH343USB0
-sudo usermod -aG dialout $USER     # 加完要重新登录
+sudo usermod -aG dialout $USER
 ```
 
-临时办法：`sudo chmod 666 /dev/ttyCH343USB0`
+Log out and back in after changing group membership. Use the actual serial device on your system. The original note also suggests temporary `chmod 666` access; that grants access to every local user, so group-based access is preferred here.
 
-### 3. 先确认有数据
+### Check incoming data
 
 ```bash
 stty -F /dev/ttyCH343USB0 115200 raw -echo
 cat /dev/ttyCH343USB0
 ```
 
-应该能看到滚动的 `D,...` 文本行。看到了再往下走，Ctrl+C 退出。
+Expect scrolling `D,...` text records. Stop with Ctrl+C before proceeding.
 
-## 二、采集
+## 2. Capture
 
-**必须指定数据组编号**，例如 `01`：
+A data-group identifier is required:
 
 ```bash
 python3 datalog_recv.py 01
-```
-
-常用参数：
-
-```bash
 python3 datalog_recv.py 01 --port /dev/ttyCH343USB0 --outdir ./logs
 ```
 
-运行中每 5 秒打一行状态，事件（报错/掉线/急停）会实时打到终端。
-`Ctrl+C` 结束，文件自动收尾。
+The script prints status every 5 seconds and reports events such as errors, disconnections and emergency-stop indications immediately. Ctrl+C closes the output files cleanly.
 
-产出 4 个文件，全部以组编号命名：
+| File | Contents |
+| --- | --- |
+| `01_data.csv` | Periodic 10 Hz data converted to physical units, including derived analysis columns |
+| `01_event.csv` | Errors, enable-state transitions, deceleration hold-gate events, driver disconnections and control-source changes |
+| `01_stat.csv` | Every 10 seconds: accumulated distance, operating time and current/temperature peaks |
+| `01_raw.txt` | Original text for troubleshooting |
 
-| 文件 | 内容 |
-|---|---|
-| `01_data.csv` | 10 Hz 周期数据，已还原成物理单位，含派生分析列 |
-| `01_event.csv` | 事件行：报错、使能跳变、泄压闸、驱动掉线、控制源切换 |
-| `01_stat.csv` | 每 10 秒的累计里程、运行时间、电流温度峰值 |
-| `01_raw.txt` | 原始文本，出问题时用来复查 |
+### Existing-data protection
 
-### 数据组保护
+If any output file for a group already exists, the script refuses to run and lists the existing files. Choose a different group name. Use `--force` only when intentionally replacing that group's captured data. These runtime messages may remain in Chinese; their behavior is unchanged.
 
-**该组任一文件已存在时，脚本直接拒绝运行**，不会覆盖已采集的数据：
+Group names may contain letters, numbers, underscores, periods and hyphens, and must begin with a letter or number. Examples: `01`, `02`, `endurance_a`, `slope-test.2`.
 
-```
-拒绝运行: 数据组 '01' 已存在, 不能覆盖已采集的数据.
+For a long run, first record approximately one minute under a temporary group such as `t00`. Confirm that the measured rate is close to 10 Hz, statistics increase, and dropped-frame and malformed-line counts remain zero. Then use the intended group name.
 
-    ./logs/01_data.csv   4823910 字节   2026-08-03 15:12:44
-    ./logs/01_event.csv     1204 字节   2026-08-03 15:12:44
-    ...
-
-请换一个组名, 或确认要重采后加 --force 覆盖.
-```
-
-换个组名接着测就行。确实要重采同一组时才加 `--force`。
-
-组名允许字母/数字/下划线/点/减号，必须以字母或数字开头。`01`、`02`、`endurance_a`、`slope-test.2` 都可以。
-
-**长时间测试建议**：正式开测前先用一个临时组名（如 `t00`）短跑 1 分钟，确认 `实测速率` 接近 10 Hz、`统计` 在涨、`丢帧` 和 `坏行` 都是 0，再用正式组名开跑。
-
-## 三、出图
+## 3. Plot
 
 ```bash
 python3 datalog_plot.py 01 --decimate 20
 ```
 
-按组编号自动找 `logs/01_data.csv` 和 `logs/01_event.csv`，图片输出到 `charts/01/`。
-也可以直接给路径：`python3 datalog_plot.py logs/01_data.csv`
+The script finds `logs/01_data.csv` and `logs/01_event.csv`, then writes figures to `charts/01/`. A direct path is also accepted:
 
-组名写错时会列出 `logs/` 下已有的所有数据组。
+```bash
+python3 datalog_plot.py logs/01_data.csv
+```
 
-**长时间数据一定要加 `--decimate`**。10 Hz 跑 8 小时是 29 万个点，不抽稀 matplotlib 会非常慢。经验值：1 小时用 5，8 小时用 20，24 小时用 50。
+An unknown group name causes the available groups under `logs/` to be listed.
 
-产出 7 张图到 `charts/<组名>/`：
+Use `--decimate` for long recordings: 8 hours at 10 Hz produces approximately 290,000 points. The original guidance recommends factors of 5 for 1 hour, 20 for 8 hours and 50 for 24 hours.
 
-| 图 | 看什么 |
-|---|---|
-| `01_temperature.png` | 温度是否收敛；四轮温差大 = 机械阻力不均 |
-| `02_current.png` | 单轮持续偏高 = 机械/胎压/编码器问题；尖峰对齐 pitch = 上坡，正常 |
-| `03_steer_error.png` | 误差大时 `scl` 应同步下降；没下降说明限速逻辑没生效 |
-| `04_slip.png` | **打滑量**。尖峰对齐 hold = 泄压闸不够快；不对齐 = 有工况漏判 |
-| `05_command_chain.png` | cmd→sm→fb 三层，一眼看出瓶颈在限速器还是电机 |
-| `06_power.png` | 验证 20.5V 告警、20.0V 失能的动作点是否与阈值一致 |
-| `07_overview.png` | 速度/使能/报错时间线总览 |
+The following interpretations are diagnostic guidance from the original development note, not conclusive fault diagnoses:
 
-同时在终端打印关键统计（最高温度、电流峰值、转向误差峰值、打滑量峰值、电压区间、丢帧数、事件分类计数）。
+| Figure | What to inspect |
+| --- | --- |
+| `01_temperature.png` | Whether temperatures settle; large wheel-to-wheel differences can indicate unequal mechanical resistance |
+| `02_current.png` | Persistently high current at one wheel: inspect mechanics, tire pressure and encoder configuration. Peaks aligned with pitch may correspond to climbing |
+| `03_steer_error.png` | `scl` should decrease with large steering error; otherwise inspect speed-limit activation |
+| `04_slip.png` | Slip indicator: peaks aligned with `hold` suggest a slow deceleration hold response; other peaks may indicate an unhandled operating case |
+| `05_command_chain.png` | Compare command → smoothed → feedback values to locate limitations in the limiter or motor response |
+| `06_power.png` | Compare the observed alarm/disable transitions with this development note's 20.5 V alarm and 20.0 V disable thresholds |
+| `07_overview.png` | Velocity, enable-state and error timelines |
 
-## 四、改动前后对比
+The console also reports peak temperature/current, steering error, slip, voltage range, dropped frames and event counts.
+
+## 4. Compare before and after a change
 
 ```bash
 python3 datalog_compare.py 04 05
 ```
 
-把改动前（04）和改动后（05）两组放一起，逐项算变化倍数并给出判定：
+The script compares groups 04 and 05 and reports ratios and assessments. The original illustrative output is translated below; these numbers are examples, not new test results:
 
-```
-指标                              改动前        改动后          变化  判定
-----------------------------------------------------------------------------
-目标跳变>50度_次数                  444            18        0.04x  明显改善
-下发速率_均值_次每秒               18.30          2.10        0.11x  明显改善
-comm_qua_最低%                     82.00         97.00        1.18x  改善
-HOLD事件_次数                      15.00         14.00        0.93x  正常
-最高速度_m每s                       0.73          0.71        0.97x  正常
-```
+| Metric | Before | After | Ratio | Assessment |
+| --- | ---: | ---: | ---: | --- |
+| Target jumps greater than 50 degrees: count | 444 | 18 | 0.04x | Significant improvement |
+| Mean command transmission rate, per second | 18.30 | 2.10 | 0.11x | Significant improvement |
+| Minimum `comm_qua`, % | 82.00 | 97.00 | 1.18x | Improvement |
+| HOLD event count | 15.00 | 14.00 | 0.93x | Normal |
+| Maximum speed, m/s | 0.73 | 0.71 | 0.97x | Normal |
 
-判定规则内置：该降的（跳变次数、下发速率、转向误差）降一半以上算"明显改善"；
-**不该变的**（最高速度、HOLD 事件次数）偏离超过 30% 会标 `<<<` 提示人工确认。
+For metrics expected to decrease, such as jump count, transmission rate or steering error, a reduction exceeding half is classified as significant improvement. Metrics expected to remain stable, including maximum speed and HOLD count, are marked `<<<` for manual review if they change by more than 30%.
 
-最后还会检查两组的**上游抖动程度是否接近**（`cmd_vz` 打满占比），
-差太多会提示结论不可信 —— 必须用同样的测试脚本和场地重跑才有可比性。
+The script also compares upstream command variation using the proportion of saturated `cmd_vz` values. A large mismatch makes the comparison unreliable; rerun using the same test sequence and test area.
 
-## 五、数据字典
+## 5. Data dictionary
 
-`data.csv` 的列已经是物理单位，可直接进 Excel。
+`data.csv` uses physical units and can be opened in Excel. Field names remain unchanged.
 
-### 状态类
+### State
 
-| 列 | 含义 |
-|---|---|
-| `t_ms` | 固件时间戳（ms） |
-| `t_s` | 从第一帧起的秒数，**画图用这个做横轴** |
-| `seq` | 帧序号，断号即丢帧 |
-| `src` | 控制来源：2=手柄 3=航模 4=APP 5=ROS 6=CAN 7=回充 8=自动测试 |
-| `en` | 整车使能，0=失能 |
-| `err` | 报错位图，见下表 |
-| `hold` | 重定向泄压闸，1=正在等车身减速 |
-| `park` | 驻车模式 |
-| `scl` | 转向限速比例 0~1，**0 表示本周期下发的是停止指令** |
-| `mprg` / `mprg_deg` | 四轮最大转向偏差（counts / 度） |
+| Field | Meaning |
+| --- | --- |
+| `t_ms` | Firmware timestamp, ms |
+| `t_s` | Seconds since the first frame; use this as the plot time axis |
+| `seq` | Frame sequence number; gaps indicate missing frames |
+| `src` | Control source: 2 = handheld controller, 3 = RC transmitter, 4 = app, 5 = ROS, 6 = CAN, 7 = automatic recharging, 8 = automatic test |
+| `en` | Robot enable state; 0 = disabled |
+| `err` | Error bitmap, below |
+| `hold` | Steering-redirection deceleration hold gate; 1 = waiting for the chassis to slow down. This is a control-logic state, not a claim of a hydraulic valve |
+| `park` | Parking mode |
+| `scl` | Steering-related speed scale, 0–1; 0 means a stop command is issued in that cycle |
+| `mprg` / `mprg_deg` | Maximum steering deviation across four wheels, in counts / degrees |
 
-### 报错位图 `err`
+### Error bitmap: `err`
 
-| 位 | 含义 | 位 | 含义 |
-|---|---|---|---|
-| 0 | 电量不足 | 6 | 2号驱动报错 |
-| 1 | 急停按下 | 7 | 3号驱动离线 |
-| 2 | 软件急停 | 8 | 3号驱动报错 |
-| 3 | 1号驱动离线 | 9 | 4号驱动离线 |
-| 4 | 1号驱动报错 | 10 | 4号驱动报错 |
-| 5 | 2号驱动离线 | 11 | 转向回零超时 |
+| Bit | Meaning | Bit | Meaning |
+| --- | --- | --- | --- |
+| 0 | Low battery | 6 | Driver 2 error |
+| 1 | Emergency-stop button pressed | 7 | Driver 3 offline |
+| 2 | Software emergency-stop indication | 8 | Driver 3 error |
+| 3 | Driver 1 offline | 9 | Driver 4 offline |
+| 4 | Driver 1 error | 10 | Driver 4 error |
+| 5 | Driver 2 offline | 11 | Steering-homing timeout |
 
-`event.csv` 里的 `ERR` 事件已经翻译成可读名（如 `LowPower|Drv3_offline`）。
+`ERR` records in `event.csv` use readable names such as `LowPower|Drv3_offline`. A software emergency-stop indication is not evidence of physical power isolation.
 
-### 速度类（m/s，角速度 rad/s）
+### Velocity: m/s; angular velocity: rad/s
 
-| 列 | 含义 |
-|---|---|
-| `cmd_vx/vy/vz` | 队列收到的原始指令 |
-| `sm_vx/vy/vz` | 平滑限速后实际执行值 |
-| `fb_vx/vy/vz` | 运动学正解出的实际值 |
-| `spd_mps` | 合成线速度 |
+| Field | Meaning |
+| --- | --- |
+| `cmd_vx/vy/vz` | Raw command received by the queue |
+| `sm_vx/vy/vz` | Values executed after smoothing and speed limiting |
+| `fb_vx/vy/vz` | Feedback calculated by forward kinematics |
+| `spd_mps` | Resultant linear speed |
 
-### 电机类
+### Motors
 
-| 列 | 单位 | 含义 |
-|---|---|---|
-| `st_tgt_A~D` | counts | 转向目标位置 |
-| `st_act_A~D` | counts | 转向实际位置 |
-| `st_err_A~D_deg` | 度 | 转向跟随误差（派生） |
-| `rpm_tgt_A~D` | rpm | 轮毂目标转速 |
-| `spd_act_A~D` | m/s | 轮毂实际线速度 |
-| `cur_A~D` | A | 轮毂电流，**实际更新率 5 Hz** |
-| `tmp_A~D` | degC | 轮毂温度，**实际更新率 5 Hz** |
-| `cur_sum_A` | A | 四轮电流绝对值之和（派生） |
+| Field | Unit | Meaning |
+| --- | --- | --- |
+| `st_tgt_A~D` | counts | Steering-position target |
+| `st_act_A~D` | counts | Actual steering position |
+| `st_err_A~D_deg` | degrees | Derived steering tracking error |
+| `rpm_tgt_A~D` | rpm | Hub-motor speed target |
+| `spd_act_A~D` | m/s | Actual hub linear speed |
+| `cur_A~D` | A | Hub current; actual update rate is 5 Hz |
+| `tmp_A~D` | degC | Hub temperature; actual update rate is 5 Hz |
+| `cur_sum_A` | A | Derived sum of the absolute currents of all four wheels |
 
-编码器 16384 counts/圈，即 45.51 counts/度。
+The original note uses 16,384 encoder counts per revolution, approximately 45.51 counts per degree. These values apply to the documented reference, not automatically to another encoder or hardware revision.
 
-### 整车与健康度
+### Vehicle and communication health
 
-| 列 | 含义 |
-|---|---|
-| `vol` | 电池电压 V |
-| `pitch` `roll` `yaw` | 姿态角（度） |
-| `gyro_z` | IMU 实测 Z 轴角速度 rad/s |
-| `slip_radps` | **打滑量 = `fb_vz` − `gyro_z`**，四轮四转最关键的诊断量 |
-| `online_bm` | 驱动在线位图，bit0~3 对应 1~4 号，正常为 15 |
-| `err_bm` | 驱动报错位图，正常为 0 |
-| `comm_qua` | 四驱中最低的通信质量（%） |
-| `fw_drop` | 固件因 DMA 忙丢弃的帧数，应保持 0 |
+| Field | Meaning |
+| --- | --- |
+| `vol` | Battery voltage, V |
+| `pitch`, `roll`, `yaw` | Attitude angles, degrees |
+| `gyro_z` | IMU-measured Z-axis angular velocity, rad/s |
+| `slip_radps` | Slip indicator = `fb_vz` − `gyro_z`; a diagnostic quantity for four-wheel drive/four-wheel steering |
+| `online_bm` | Driver online bitmap; bits 0–3 represent drivers 1–4; normal value is 15 |
+| `err_bm` | Driver error bitmap; normal value is 0 |
+| `comm_qua` | Lowest communication-quality value across the four drives, % |
+| `fw_drop` | Frames discarded because DMA was busy; should remain 0 |
 
-## 六、已知限制
+## 6. Known limitations of this reference
 
-1. **电流和温度实际只有 5 Hz**。底层 TPDO1 周期 200 ms，10 Hz 采样出来是每 2 点重复一次的阶梯，看趋势不受影响。
-2. **转向电机（1/2 号驱动）没有电流和温度 —— 硬件限制，加不了**。转向用的中空电机本身就没有电流与温度采集，不是软件没配。带载时判断转向是否吃力，只能看 `st_err_A~D_deg` 的**稳态误差**：空载实测稳态误差约 0.3~2.5°，负载下明显变大即说明转向顶不住。
-3. **低电量没有蜂鸣提示**（原有行为，非本工具引入）。长测跑到没电时不会有声音提示，注意看 `vol` 列。
-4. 采集期间上位机**只读不写**串口4，板子那边 ROS 解析任务还在收这个口。
+1. Current and temperature update at 5 Hz. TPDO1 has a 200 ms period, so 10 Hz logging repeats each value across two samples. This still supports trend inspection.
+2. The original note states that steering motors associated with drivers 1/2 do not provide current or temperature sensing. This is described as a hardware limitation, not a missing software setting. Inspect steady-state `st_err_A~D_deg` when assessing load. The note reports approximately 0.3–2.5° unloaded error; a substantially greater loaded error suggests insufficient steering capability. This historical observation is not a new test or guarantee.
+3. The original firmware behavior described here has no audible low-battery warning. Watch `vol` during long runs; the logging tool did not introduce this behavior.
+4. During capture, the host must only read UART4, not transmit to it; the board's ROS receive parser is still active on that port.
 
-## 七、恢复出货固件
+## 7. Return from the diagnostic configuration
 
-1. `datalog_task.h` 里 `DATALOG_ENABLE` 改回 `0`
-2. `data_task.c` 里取消那两行 `HAL_UART_Transmit_DMA(serial,...)` 的注释（注释里有 `[DATALOG]` 标记，好找）
+The original note gives these steps:
+
+1. Set `DATALOG_ENABLE` in `datalog_task.h` back to `0`.
+2. Uncomment the two `HAL_UART_Transmit_DMA(serial,...)` calls in `data_task.c`, identified by `[DATALOG]` comments.
+
+These steps restore the referenced diagnostic settings; they do not prove that the resulting build matches an individual robot's shipped firmware. No firmware configuration is changed by translating this guide.

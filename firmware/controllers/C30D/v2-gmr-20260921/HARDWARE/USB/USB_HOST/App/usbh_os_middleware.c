@@ -1,5 +1,5 @@
 /*
- * 为标准库+FreeRTOS环境下的USB Host功能提供支持文件
+ * Provides support files for USB Host functionality in the standard library + FreeRTOS environment
 */
 
 #include "usbh_os_middleware.h"
@@ -13,12 +13,12 @@ void osMessageQueuePut(osMessageQueueId_t mq_id, const void *msg_ptr, uint8_t ms
 
 	(void)msg_prio; /* Message priority is ignored */
 	
-	//ISR中断环境
+	//ISR interrupt environment
 	if (IS_IRQ())
 	{
 		if ((hQueue == NULL) || (msg_ptr == NULL) || (timeout != 0U))
 		{
-		  //参数合法检查
+		  //Parameter validity check
 		}
 		else
 		{
@@ -26,20 +26,20 @@ void osMessageQueuePut(osMessageQueueId_t mq_id, const void *msg_ptr, uint8_t ms
 
 			if (xQueueSendToBackFromISR (hQueue, msg_ptr, &yield) != pdTRUE)
 			{
-				//写入失败
+				//Write failed
 			}
 			else
 			{
-				portYIELD_FROM_ISR (yield);//写入成功,并根据情况主动发起任务调度
+				portYIELD_FROM_ISR (yield);//Write successful, and initiate task scheduling as needed
 			}
 		}
 	}
-	//普通任务环境
+	//Normal mission environment
 	else 
 	{
 		if ((hQueue == NULL) || (msg_ptr == NULL)) 
 		{
-			//检查参数是否合法
+			//Check whether the parameters are valid
 		}
 		else 
 		{

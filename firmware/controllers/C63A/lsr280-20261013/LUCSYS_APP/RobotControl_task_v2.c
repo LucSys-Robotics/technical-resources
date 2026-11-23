@@ -1,14 +1,14 @@
 /**
  * @file    RobotControl_task.c
- * @brief   小车控制逻辑文件.
+ * @brief Cart control logic file.
  * @note LucSys Robotics distribution maintenance; original authorship not claimed
  * @date    2025-07-10
  * @version 1.0.0
  *
  * @details
- * - 本文件是小车运行的核心内容,由任务RobotControl_task,从控制队列中接收各种遥控或串口的
- *   速度指令信息,使用速度信息进行运动学分析解算后,获得小车各个轮子的转速,进而下发转速
- *   指令到驱动器,完成小车的驱动
+ * - This file is the core content of the chassis's operation, RobotControl_task by the task, receiving various remote or serial ports from the control queue
+ *   Velocity command data: use kinematics to calculate each wheel's rotational speed, then transmit the speeds
+ *   Command to the driver to complete the chassis's drive
  * @note
  *
  */
@@ -37,13 +37,13 @@
 #include "AutoTest_task.h"
 #include "datalog_task.h"
 
-//用于存放小车的控制队列数据
+//Used to store the control queue data of the car
 QueueHandle_t  g_xQueueRobotControl = NULL;
 
-//用于记录小车当前的控制来源
+//Used to record the current control source of the car
 volatile uint8_t RobotControl_CMDsource = NONE_CMD;
 
-//内部使用函数
+//Internal use function
 static float linearVel_to_rpm(float linearVel,float wheelper);
 static void Robot_DriverRecovery(void);
 static void robot_en_check(void);
@@ -63,10 +63,10 @@ static float _4ws_SteerScaleByProgress(int max_progress);
 static void _4ws_LimitWheelRPM(float* rpm,float max_rpm);
 static uint8_t SteeringHoming(uint32_t timeout_ms);
 
-//转向回零失败持久标志:置位后小车失能,可通过错误恢复(DriveErrRecovery)重试回零
+//Persistent steering-homing failure flag: setting it disables the chassis; retry homing through error recovery (DriveErrRecovery)
 static uint8_t SteeringHomeFailed = 0;
 
-//4轮转向保护参数
+//4-wheel steering protection parameters
 #define ROBOT_CONTROL_FREQ_HZ      100u
 #define TURN_WAIT_ANGLE_DEG        40.0f
 #define TURN_DRIVE_ALLOW_DEG       60.0f
@@ -78,51 +78,51 @@ static uint8_t SteeringHomeFailed = 0;
 #define CMD_CHANGE_EPS_V           0.005f
 #define CMD_CHANGE_EPS_W           0.01f
 #define T280_MAX_DRIVE_RPM         1000.0f
-#define ENCODER_COUNTS_PER_REV     16384.0f  //转向电机编码器每圈counts
+#define ENCODER_COUNTS_PER_REV     16384.0f  //Steering motor encoder counts per revolution
 #define COUNTS_PER_DEG             (ENCODER_COUNTS_PER_REV/360.0f)
-#define HOMING_TIMEOUT_MS          5000      //开机回零超时时间(ms)
-#define HOMING_RESEND_MS           500       //回零指令重发周期(ms)
-#define HOMING_TOL_COUNTS          15.0f     //回零到位容差(counts)
-#define STARTUP_STOP_EPS           0.01f     //静止判定:s_drive.smooth三轴均小于此值视为完全静止
-#define STARTUP_ALIGN_TOL_DEG      5.0f      //静止起步对齐容差(度),轮子误差小于此值才放行给速
-//大重定向门限:45°对应counts(45/360*16384),超过视为切自转/横移
+#define HOMING_TIMEOUT_MS          5000      //Power-on zero timeout (ms)
+#define HOMING_RESEND_MS           500       //Resend Cycle (ms) for Zeroback Instructions
+#define HOMING_TOL_COUNTS          15.0f     //Zero-to-Position Counts
+#define STARTUP_STOP_EPS           0.01f     //Stationary check: all three s_drive.smooth axes below this value means fully stationary
+#define STARTUP_ALIGN_TOL_DEG      5.0f      //Startup alignment tolerance (degrees); allow speed only when wheel error is below this value
+//Large redirection threshold: 45° corresponds to counts (45/360*16384); exceeding this is considered tangent rotation/lateral shift
 #define REORIENT_JUMP_COUNTS       (45.0f*COUNTS_PER_DEG)
-//转向指令平滑:上游(ROS/CAN/手柄)的速度抖动会被逆解放大成转向角突跳,
-//低速时最剧烈(Vx=0.06/Vz=0.3 对应转弯半径0.2m,轮子接近±90度),故先限幅再送逆解.
+//Steering command smoothing: upstream (ROS/CAN/handle) speed jitter will be reverse-relieved by major steering angle jumps,
+//At low speeds, the intensity is most intense (Vx=0.06/Vz=0.3, corresponding to a turning radius of 0.2m, wheels close to ±90 degrees), so limit the width first and then send the reverse solution.
 //
-//ACC_W 是本平滑唯一的强度旋钮,取值受两头夹逼:
-//  往下调 -> 手柄响应变迟钝.20 时满打Vz=1.294rad/s需65ms到位,降到5要259ms,实车能明显感觉到
-//  往上调 -> 对高频噪声的滤除能力下降
-//实测该平滑对转向抖动的抑制有限(衰减仅1%量级),压住抖动靠的是下面的时间节流与
-//泄压闸意图判据.本平滑的定位是对上游异常噪声(如客户导航栈输出)的兜底防线.
-#define STEER_ACC_XY               2.0f      //转向指令XY线加速度限值(m/s2),驱动起步为1.0
-#define STEER_ACC_W                20.0f     //转向指令Z角加速度限值(rad/s2),驱动起步为5.0
-//下发下限门:仅用于避免零变化的无效下发,不承担限流职责(限流由时间节流负责).
-//门槛过大会造成永久量化误差 —— 取2度时稳态误差落在2~5度的比例达20%.
+//ACC_W is the only strength knob in this smoothing system, with values squeezed by both ends:
+//  Adjust down -> controller response becomes sluggish. At 20, full Vz=1.294 rad/s reaches in 65ms; dropping to 5 takes 259ms, noticeable in real car
+//  Adjust up -> reduces ability to filter high-frequency noise
+//Tests show that this smoothing suppresses steering jitter only (attenuation by only about 1%), and suppresses jitter through the following time throttling and
+//deceleration hold gate intent criteria. This smooth positioning serves as a safety net against upstream abnormal noise (such as customer navigation stack output).
+#define STEER_ACC_XY               2.0f      //Steering instruction XY line acceleration limit (m/s²), drive start set at 1.0
+#define STEER_ACC_W                20.0f     //Steering instruction Z-angle acceleration limit (rad/s2), drive start set at 5.0
+//Lower limit issuance gate: only used to avoid invalid issuance with zero change, not responsible for flow limitation (rate limiting is handled by time conservation).
+//Too large a threshold causes permanent quantization error; with 2 degrees, steady-state error falls within 2~5 degrees in 20% of cases.
 #define STEER_SEND_EPS_COUNTS      (0.5f*COUNTS_PER_DEG)
-//最小重发间隔(ms).转向驱动器自带位置环,收到目标会自己走到位,每10ms刷新纯属浪费.
-//这是CAN负载的硬上界:位置门槛拦不住峰值(可达206次/秒),只有时间节流能给出确定值.
+//Minimum resend interval (ms). The steering driver has a built-in position ring; when the target is received, it will automatically move to its position. Refreshing every 10ms is a waste.
+//This is a hard upper bound on CAN load: a position threshold cannot suppress peaks (up to 206 transmissions/second); only time-based throttling provides a definite bound.
 #define STEER_SEND_MIN_INTERVAL_MS 25
 
-//泄压闸门限.判据用 intent_jump(未平滑指令算出的意图目标 vs 当前实际轮角),
-//与转向平滑解耦 —— 若改用平滑后目标的单周期跳变量,渐变的目标够不到门限,
-//保护会静默失效(实测触发率从1.44次/分掉到0.23次/分).
-#define REORIENT_HOLD_TIMEOUT_MS   500       //重定向减速等待最长时间(ms),到点强制放行,防止锁死
+//deceleration hold gate threshold. Criteria are intent_jump (intention target calculated by unsmoothed instructions vs. current actual wheel angle),
+//Decoupling from Steering Smoothing — If a single-cycle hop variable of the smoothed target is used, the gradient target will not reach the threshold,
+//Protection will silently fail (tested trigger rate drops from 1.44 times/min to 0.23 times/min).
+#define REORIENT_HOLD_TIMEOUT_MS   500       //Maximum redirection deceleration wait (ms); force release at timeout to prevent lockup
 
 /**
- * 车轮编号 —— 四轮同构量的统一下标
+ * Wheel Numbering — a unified subscript for the four wheel isomorphisms
  *
- * 车头朝前时的物理位置:
- *     B(左前)   C(右前)
- *     A(左后)   D(右后)
- * 即 A/B 为左侧两轮,C/D 为右侧两轮 —— 一个转向驱动器管一整侧,不是管一根轴.
+ * Physical position when the front of the car faces forward:
+ *     B (front left) C (front right)
+ *     A (left rear) D (right rear)
+ * That is, A/B are the two left wheels, C/D are the right wheels—one steering drive tube is one side, not one shaft.
  *
- * 与逆解输出的 TargetMotorA~D 一一对应.本文件所有四轮数组
- * (target/speed/progress/lastSent/rpm 等)都用这套下标,不写裸数字.
+ * Corresponds one-to-one with the inverse output TargetMotorA~D. All four-wheel arrays in this file
+ * (target/speed/progress/lastSent/rpm, etc.) all use this set of subscripts, without writing bare numbers.
  *
- * 硬件绑定:A/B 由 Driver1(NodeID=1)驱动,C/D 由 Driver2(NodeID=2)驱动,
- * 每个驱动器的通道1接前者,通道2接后者.右侧(C/D)转向电机镜像安装,
- * 零点比左侧差 180 度,故解算时 C/D 要先补 180 再转成电机位置.
+ * Hardware binding: A/B is driven by Driver1 (NodeID=1), C/D is driven by Driver2 (NodeID=2),
+ * For each drive, channel 1 connects to the front, channel 2 to the latter. Right side (C/D) mirror mounting of the steering motor,
+ * Zero position differs from the left side by 180 degrees; add 180 to C/D before converting to motor position.
  */
 typedef enum{
 	WHEEL_A = 0,
@@ -133,63 +133,63 @@ typedef enum{
 }WheelIndex_t;
 
 /**
- * 转向控制器状态
+ * Steering controller status
  *
- * 四轮同构量一律用数组,下标见 WheelIndex_t.
- * 实例为静态存储且全局唯一,需要整体复位时对本结构体清零即可.
+ * All four rounds of isomorphism are used as arrays, with subscripts shown in WheelIndex_t.
+ * The instance is stored statically and globally unique; when a full reset is needed, the structure is reset to zero.
  */
 typedef struct{
-	float      target[WHEEL_COUNT];        //已解算的目标位置(counts)
-	uint16_t   speed[WHEEL_COUNT];         //转向速度,按等时到达分配
-	float      lastSent[WHEEL_COUNT];      //上次实际下发的目标,用于下发节流判据
-	int32_t    progress[WHEEL_COUNT];      //本周期各轮距目标的剩余偏差(counts)
-	int32_t    lastProgress[WHEEL_COUNT];  //看门狗比较快照,每100ms刷新一次
-	int32_t    maxProgress;                //四轮中的最大偏差
-	float      scale;                      //本周期施加到指令上的限速比例(0=下发停止)
-	uint8_t    reorientHold;               //重定向泄压闸
-	uint8_t    lowfreCnt;                  //看门狗分频计数
-	uint8_t    lastEnFlag;                 //使能边沿检测
-	TickType_t reorientHoldStart;          //泄压闸起始时刻,用于减速超时判断
-	TickType_t lastSendTick;               //上次实际下发时刻,用于最小间隔节流
+	float      target[WHEEL_COUNT];        //Calculated target positions (counts)
+	uint16_t   speed[WHEEL_COUNT];         //Steering speeds allocated for simultaneous arrival
+	float      lastSent[WHEEL_COUNT];      //The last actual target issued, used to issue cost-cutting criteria
+	int32_t    progress[WHEEL_COUNT];      //Remaining deviations (counts) of targets for each track width in the current cycle
+	int32_t    lastProgress[WHEEL_COUNT];  //Watchdog is a snapshot, refreshing every 100ms
+	int32_t    maxProgress;                //Maximum deviation among four wheels
+	float      scale;                      //Speed limit ratio applied to instructions in this cycle (0 = Stop issuance)
+	uint8_t    reorientHold;               //Redirection deceleration hold gate
+	uint8_t    lowfreCnt;                  //Watchdog frequency counting
+	uint8_t    lastEnFlag;                 //Enable edge detection
+	TickType_t reorientHoldStart;          //Start time of the deceleration hold gate, used to determine deceleration timeout
+	TickType_t lastSendTick;               //The last actual issuance time, used for the minimum interval throttling
 }SteerCtrl_t;
 
-/** 驱动控制器状态 */
+/** Drive controller status */
 typedef struct{
-	RobotControlCMDType_t smooth;            //平滑限速后的实际执行速度
-	float                 rpm[WHEEL_COUNT];  //四轮目标转速
+	RobotControlCMDType_t smooth;            //Actual execution speed after smoothing the speed limit
+	float                 rpm[WHEEL_COUNT];  //Four-wheel target speed
 }DriveCtrl_t;
 
-//转向下发出口(需在 SteerCtrl_t 定义之后声明)
+//Turn to Down Export (must be declared after SteerCtrl_t definition)
 static void Steer_SendDriver(SteerCtrl_t* s,ServoDriverHWType_t* drv,WheelIndex_t i0,WheelIndex_t i1);
 static void Steer_Send(SteerCtrl_t* s);
 
 #if DATALOG_ENABLE
-//set_MotorPos 累计调用次数.相邻两次采样之差即转向下发速率,用于量化CAN负载.
-//下发已收敛到 Steer_SendDriver 单一出口,故此处一处自增即覆盖全部下发路径.
+//set_MotorPos Cumulative number of calls. The difference between two consecutive samples is the turn-down rate, used to quantify CAN load.
+//The issuance has converged to Steer_SendDriver single outlet, so one autoincrement here covers the entire disbursement path.
 static uint32_t s_steerSendCnt = 0;
 #endif
 
 /**
- * 控制器持久状态
+ * Controller persistence state
  *
- * 主循环各职责函数共享这几项.仅本文件可见,不对外暴露.
+ * The main loop duty functions share these items. Only visible in this file, not exposed externally.
  */
-static SteerCtrl_t           s_steer;     //转向控制器状态
-static DriveCtrl_t           s_drive;     //驱动控制器状态
-static RobotParam_t          s_car;       //四轮转向小车模型(逆解/正解/投影共用)
+static SteerCtrl_t           s_steer;     //Steering controller status
+static DriveCtrl_t           s_drive;     //Drive controller status
+static RobotParam_t          s_car;       //Four-wheel steering car model (shared with reverse solution/correct solution/projection)
 static uint8_t s_steerSendFault = 0; // One fault bit per steering driver.
 static RobotParam_t          s_sentCar; // Wheel-speed projection uses successfully sent steering targets.
-static RobotParam_t          s_rawCar;    //泄压闸判据专用实例,用未平滑指令算意图目标
-static RobotControlCMDType_t s_steerCmd;  //转向解算专用指令(对原始指令限幅平滑后)
-static RobotControlCMDType_t s_lastCmd;   //上次触发转向重算时的指令,用于变化检测
+static RobotParam_t          s_rawCar;    //Dedicated instance for the deceleration hold gate criterion; compute intended targets from unsmoothed commands
+static RobotControlCMDType_t s_steerCmd;  //Dedicated steering calculation command after limiting and smoothing the raw command
+static RobotControlCMDType_t s_lastCmd;   //The command from the last turn recalculation triggered for change detection
 static const RobotControlCMDType_t s_stopCmd = {0,0,0,0};
 
-//IMU辅助小车走直线变量
+//IMU assists the cart in a straight line
 static RobotControlCMDType_t LinearHelp_Target = { 0 };
 
-//主循环职责函数.RobotControl_task 按此顺序逐个调用,实现在本文件后半部分.
-//顺序不可随意调整:转向解算的结果被驱动平滑读取,驱动平滑又负责放行泄压闸,
-//而转向看门狗以泄压闸未生效为前提.
+//Main loop duty function. RobotControl_task calls in this order one by one, implemented in the latter half of this file.
+//Do not reorder: drive smoothing reads steering-calculation results and also releases the deceleration hold gate,
+//The steering watchdog operates only when the deceleration hold gate is inactive.
 static void Robot_CmdReceive(RobotControlCMDType_t* cmd,uint8_t* lostCnt);
 static void Steer_Solve(const RobotControlCMDType_t* cmd,uint16_t taskFreq);
 static void Drive_Update(const RobotControlCMDType_t* cmd,uint16_t taskFreq);
@@ -203,11 +203,11 @@ static void Robot_Housekeeping(uint8_t* driverCheck,uint16_t taskFreq,TickType_t
 
 #if DATALOG_ENABLE
 /**
- * 日志快照 —— 把控制器内部状态一次性拷给数据观察任务
+ * Log snapshot — copies the controller's internal state all at once to the data observation task
  *
- * s_steer/s_drive 等为本文件私有,日志任务看不到.每周期末尾整体拷贝一次,
- * 避免日志任务逐字段读取期间被下一周期改写而拿到半新半旧的数据.
- * 仅在 DATALOG_ENABLE=1 时编译,出货固件不产生任何代码.
+ * s_steer/s_drive etc. are private to this file and cannot be seen in log tasks. Copy the entire file once at the end of each cycle,
+ * Prevent the next cycle from overwriting individual fields while the logging task reads them, which would produce a mixed old/new snapshot.
+ * Only compiled when DATALOG_ENABLE=1, shipped firmware generates no code.
  */
 static void Robot_LogSnapshot(const RobotControlCMDType_t* cmd)
 {
@@ -229,91 +229,91 @@ static void Robot_LogSnapshot(const RobotControlCMDType_t* cmd)
 }
 #endif
 
-//针对4轮转向的控制函数
+//Control function for four-wheel steering
 void RobotControl_task(void* param)
 {
 	vTaskDelay(2000);
 
-	//创建控制指令队列
+	//Create control command queue
 	g_xQueueRobotControl = xQueueCreate(1,sizeof(RobotControlCMDType_t));
 
-	//获取时基,用于辅助任务能按固定频率运行
+	//Obtain the timebase, which can run at a fixed frequency for auxiliary tasks
 	TickType_t preTime = xTaskGetTickCount();
 
-	//本任务的控制频率,单位为Hz
+	//The control frequency for this task, in Hz
 	const uint16_t TaskFreq = ROBOT_CONTROL_FREQ_HZ;
 
-	//伺服电机自检变量
+	//Servo motor self-check variables
 	uint8_t driverCheck = 0;
 
-	//空闲计数
+	//Idle count
 	TickType_t ActiveTick = xTaskGetTickCount();
 
-	//队列无数据统计
+	//Empty-queue statistics
 	uint8_t LostCmdCounts = 0;
 
-	//队列控制命令
+	//Queued control command
 	RobotControlCMDType_t cmd = { 0 };
 
-	//上电初值.控制器状态(s_steer/s_drive/s_car 等)为静态存储,已由启动代码清零,
-	//这里只补两项非零初值:小车机械参数,转向速度默认值.
+	//Initial power-on value. Controller status (s_steer/s_drive/s_car, etc.) is static storage and has been reset by the startup code,
+	//Set only two nonzero initial values here: chassis mechanical parameters and default steering speed.
 	FourWSCar_param_init(&s_car,RobotHardWareParam.WheelSpacing,RobotHardWareParam.AxleSpacing,0,RobotHardWareParam.WheelPerimeter);
 	s_sentCar = s_car;
 	for(uint8_t si=0;si<WHEEL_COUNT;si++) s_steer.speed[si]=T280_WheelTurnSpeed;
 
-	//等待所有转向电机复位
+	//Wait for all steering motors to reset
 	if( SteeringHoming(HOMING_TIMEOUT_MS)!=0 )
 	{
-		//回零超时:置持久错误标志,小车失能,可通过错误恢复(B键长按)重试
+		//Homing timeout: set persistent error flag and disable the chassis; retry through error recovery (long press B)
 		SteeringHomeFailed = 1;
 	}
 	vTaskDelay(200);
 
 	while(1)
 	{
-		//取控制指令:队列读取 + IMU直线补偿
+		//Obtain control commands: queue read + IMU linear compensation
 		Robot_CmdReceive(&cmd,&LostCmdCounts);
 
-		//电压更新
+		//Voltage update
 		Robot_UpdateVoltageEstimate(&cmd);
 		
-		//小车使能状态检查,根据自检参数判断是否允许启动小车
+		//Cart enable status check, determining whether to start the chassis based on self-test parameters
 		robot_en_check();
 
-		//转向链路:解算目标 -> 驱动平滑(顺带放行泄压闸) -> 执行看门狗
+		//Steering path: calculate targets -> smooth drive commands (also release the deceleration hold gate) -> run watchdog
 		Steer_Solve(&cmd,TaskFreq);
 		Drive_Update(&cmd,TaskFreq);
 		Steer_Watchdog();
 
-		//驱动链路:轮速下发 -> 正解回填三轴速度
+		//Drive path: transmit wheel speeds -> populate three-axis velocity using forward kinematics
 		Drive_Output();
 		Robot_Odometry();
 
-		//状态机:活跃刷新 -> 失控保护 -> 驻车判定
+		//State machine: Active refresh -> Runaway protection -> Parking detection
 		Robot_ActiveUpdate(&cmd,&ActiveTick);
 		// Command expiry is handled before IMU correction in Robot_CmdReceive.
 		Robot_ParkingEnter(&ActiveTick);
 
-		//低频巡检:驱动器自检,报错恢复,低电量提示
+		//Low-frequency inspection: drive self-check, error recovery, low battery alert
 		Robot_Housekeeping(&driverCheck,TaskFreq,&preTime);
 
 		#if DATALOG_ENABLE
-		//本周期状态快照,供数据观察任务读取
+		//Snapshot of the current cycle status for data observation tasks
 		Robot_LogSnapshot(&cmd);
 		#endif
 
-		/* 延迟指定频率 */
+		/* Delay the specified frequency */
 		vTaskDelayUntil(&preTime,pdMS_TO_TICKS( (1.0f/(float)TaskFreq)*1000) );
 
 	}
 }
 
-//判断两次控制命令是否有变化
+//Check if the two control commands have changed
 uint8_t cmd_is_change(const RobotControlCMDType_t* cmd1,const RobotControlCMDType_t* cmd2)
 {
 	uint8_t ischange = 0;
 
-	//增加控制死区,避免遥控/上位机微小抖动反复触发转向重算
+	//Added control dead zone to prevent minor jitters from the remote/host repeatedly triggering turn recalculations
 	if( fabsf(cmd1->Vx - cmd2->Vx) > CMD_CHANGE_EPS_V  )
 		ischange=1;
 
@@ -326,7 +326,7 @@ uint8_t cmd_is_change(const RobotControlCMDType_t* cmd1,const RobotControlCMDTyp
 	return ischange;
 }
 
-//根据转向剩余误差计算牵引速度比例,避免轮子未对准时直接满速拖拽
+//Calculate the towing speed ratio based on residual steering errors to avoid full speed towing when wheels are misaligned
 static float _4ws_SteerScaleByProgress(int max_progress)
 {
 	float err_deg = (1.0f/COUNTS_PER_DEG) * (float)max_progress;
@@ -337,7 +337,7 @@ static float _4ws_SteerScaleByProgress(int max_progress)
 	return t * t * (3.0f - 2.0f * t);
 }
 
-//四个轮子转速统一等比例限幅,保持底盘速度方向与旋转比例不被单轮限速破坏
+//Four wheels have uniform proportional speed limits, maintaining chassis speed direction and rotation ratio so that single-wheel speed limits do not disrupt them
 static void _4ws_LimitWheelRPM(float* rpm,float max_rpm)
 {
 	float max_abs_rpm = 0.0f;
@@ -353,7 +353,7 @@ static void _4ws_LimitWheelRPM(float* rpm,float max_rpm)
 	}
 }
 
-//判断当前是否仍存在有效运动控制量
+//Determine whether an effective motor control quantity still exists
 static uint8_t _4ws_HasMoveCmd(const RobotControlCMDType_t* cmd)
 {
 	if( fabsf(cmd->Vx) > TURN_MOVE_CMD_EPS || fabsf(cmd->Vy) > TURN_MOVE_CMD_EPS || fabsf(cmd->Vz) > TURN_MOVE_CMD_EPS )
@@ -361,7 +361,7 @@ static uint8_t _4ws_HasMoveCmd(const RobotControlCMDType_t* cmd)
 	return 0;
 }
 
-//判断当前车速是否已满足大角度转向保护条件
+//Determine whether the current speed meets the conditions for wide steering protection
 static uint8_t _4ws_TurnSpeedReady(void)
 {
 	if( fabsf(RobotControlParam.feedbackVx) < TURN_SAFE_VX && fabsf(RobotControlParam.feedbackVy) < TURN_SAFE_VY &&
@@ -371,10 +371,10 @@ static uint8_t _4ws_TurnSpeedReady(void)
 }
 
 /**
- * 转向目标下发 —— 底层出口
+ * Send steering targets: low-level output
  *
- * 全工程唯一知道"哪个驱动器管哪两个轮"的地方(Driver1->A/B, Driver2->C/D).
- * 换驱动器编号或调整轮序时只需改这里的调用参数.
+ * The only place in the entire project where "which drive controls which two wheels" (Driver1->A/B, Driver2->C/D).
+ * When changing driver number or adjusting wheel sequence, just change the call parameters here
  */
 static void Steer_SendDriver(SteerCtrl_t* s,ServoDriverHWType_t* drv,WheelIndex_t i0,WheelIndex_t i1)
 {
@@ -406,10 +406,10 @@ static void Steer_SendDriver(SteerCtrl_t* s,ServoDriverHWType_t* drv,WheelIndex_
 }
 
 /**
- * 转向目标下发 —— 完整四轮,并同步记账
+ * Send steering targets for all four wheels and update tracking records
  *
- * 下发与记账(lastSent / lastSendTick)必须成对发生,否则节流判据会失准.
- * 需要下发就调本函数,不要在别处直接碰这两个字段.
+ * Dispatch and posting (lastSent / lastSendTick) must occur in pairs; otherwise, throttling criteria will be inaccurate.
+ * Call this function when transmission is needed; do not access these two fields directly elsewhere.
  */
 static void Steer_Send(SteerCtrl_t* s)
 {
@@ -431,20 +431,20 @@ float pos_to_angle(int pos)
 }
 
 /* ==========================================================================
- * 主循环职责函数实现
+ * Implementation of main loop duty functions
  *
- * 每个函数只做一件事.调用顺序及其约束见文件前部的声明块.
+ * Each function does only one thing. The call order and its constraints are shown in the declaration block at the beginning of the file.
  * ========================================================================== */
 
 /**
- * 取指令 —— 队列读取与IMU直线补偿
+ * Receive instructions — queue reading and IMU linear compensation
  *
- * 队列空时不改写cmd,沿用上一周期的值;连续空的次数由lostCnt累计,
- * 交由失控保护判定是否超时.
+ * When the queue is empty, retain cmd from the previous cycle; lostCnt accumulates consecutive empty cycles,
+ * Hand over to the safety protection to determine if timeout occurred.
  */
 static void Robot_CmdReceive(RobotControlCMDType_t* cmd,uint8_t* lostCnt)
 {
-	//从队列中读取控制指令
+	//Read control instructions from the queue
 	BaseType_t control_queue_state = pdFAIL;
 	static RobotControlCMDType_t rawCmd = {0};
 	control_queue_state = xQueueReceive(g_xQueueRobotControl,&rawCmd,0);
@@ -457,12 +457,12 @@ static void Robot_CmdReceive(RobotControlCMDType_t* cmd,uint8_t* lostCnt)
 	Robot_FailSafe(&rawCmd,lostCnt,ROBOT_CONTROL_FREQ_HZ);
 	*cmd = rawCmd;
 
-	//陀螺仪直线补偿
+	//Gyroscope straight-line compensation
 	if( RobotControlParam.ImuAssistedFlag == 1 )
 	{
 		Linear_IMUHelp(cmd);
 
-		//直线Z速度补偿
+		//Straight-line Z-speed compensation
 		float final_vz = cmd->Vz + LinearHelp_Target.Vz;
 		cmd->Vz = final_vz;
 	}
@@ -473,68 +473,68 @@ static void Robot_CmdReceive(RobotControlCMDType_t* cmd,uint8_t* lostCnt)
 }
 
 /**
- * 转向解算 —— 由速度指令算出四轮转向目标并按需下发
+ * Steering calculation: compute four wheel steering targets from the velocity command and transmit as needed
  *
- * 固定顺序:限幅平滑 -> 逆解目标 -> 等时到达的速度分配 -> 泄压闸判据 -> 下发 -> 偏差统计.
- * 目标只在指令变化时重算,下发却每周期评估:被节流挡掉的一次下发必须还有下一次机会,
- * 否则误差会停在门槛与看门狗之间的死区里.
+ * Fixed sequence: Limit smoothing -> Inverse target -> Equal arrival velocity distribution -> deceleration hold gate criterion -> Distribution -> Deviation statistics.
+ * Goals are only recalculated when instructions change, but issuance is evaluated every cycle: a single issuance blocked by throttling must have a next opportunity,
+ * Otherwise, the error will remain stuck in the dead zone between the threshold and the watchdog.
  */
 static void Steer_Solve(const RobotControlCMDType_t* cmd,uint16_t taskFreq)
 {
-	//转向输入限幅平滑:拦住上游抖动,且不受任何闸门影响
+	//Limit and smooth steering input to suppress upstream jitter, independently of all gates
 	_4ws_SpeedSmoothLimit(&s_steerCmd,cmd,taskFreq,
 		STEER_ACC_XY,STEER_ACC_XY,STEER_ACC_XY,STEER_ACC_XY,STEER_ACC_W,STEER_ACC_W);
 
-	//运动学逆解,获取车轮线速度m/s
-	//命令变化标志位
+	//Inverse kinematics: obtain wheel linear speed in m/s
+	//Command to change flag positions
 	uint8_t changeFlag = 0;
 
-	//检查速度是否发生变化
+	//Check if the speed has changed
 	changeFlag = cmd_is_change(&s_steerCmd,&s_lastCmd);
 
-	//超过死区才更新历史数据,使缓慢变化的控制量可累积触发转向重算
+	//Historical data is updated only after the dead zone is exceeded, allowing slow-changing control to accumulate and trigger recalculations
 	if( changeFlag )
 		memcpy(&s_lastCmd,&s_steerCmd,sizeof(RobotControlCMDType_t));
 
 	if( changeFlag )
 	{
-		//用未平滑的原始指令算一份'意图目标',仅供泄压闸判据使用.
-		//平滑只改变执行过程,不该改变'是否需要先泄掉动量'的判断.
-		//逆解是纯函数(只读RealMotor*.radian与hardware),两个实例互不干扰.
+		//Use unsmoothed raw instructions to calculate an 'intent target' for deceleration hold gate criterion only.
+		//Smoothing only changes the execution process and should not alter the judgment of 'whether momentum needs to be discharged first.'
+		//Inverse kinematics is a pure function (only reads RealMotor*.radian and hardware); the two instances do not interfere.
 		s_rawCar = s_car;
 		four_ws_InverseKinematics(cmd->Vx,cmd->Vy,cmd->Vz,&s_rawCar);
 
-		//意图目标(counts).CD电机镜像安装,零点与AB相差180度,故C/D先补180再转位置
+		//Intent Target (counts). CD motor mirror installation, zero point differs 180 degrees from AB, so C/D first fills 180 before rotating position
 		float rawPos[WHEEL_COUNT];
 		rawPos[WHEEL_A] = angle_to_pos(s_rawCar.TargetMotorA.radian*57.2958f);
 		rawPos[WHEEL_B] = angle_to_pos(s_rawCar.TargetMotorB.radian*57.2958f);
 		rawPos[WHEEL_C] = angle_to_pos(s_rawCar.TargetMotorC.radian*57.2958f+180);
 		rawPos[WHEEL_D] = angle_to_pos(s_rawCar.TargetMotorD.radian*57.2958f+180);
 
-		//再用平滑后的指令算实际要下发的目标
+		//Calculate the actual target to issue using the smoothed command
 		four_ws_InverseKinematics(s_steerCmd.Vx,s_steerCmd.Vy,s_steerCmd.Vz,&s_car);
 
-		//弧度转角度,再转换为转向电机的位置
+		//Rotate the angle by the radian and then convert to the position of the steering motor
 		s_steer.target[WHEEL_A] = angle_to_pos(s_car.TargetMotorA.radian*57.2958f);
 		s_steer.target[WHEEL_B] = angle_to_pos(s_car.TargetMotorB.radian*57.2958f);
 		s_steer.target[WHEEL_C] = angle_to_pos(s_car.TargetMotorC.radian*57.2958f+180);
 		s_steer.target[WHEEL_D] = angle_to_pos(s_car.TargetMotorD.radian*57.2958f+180);
 
-		//获得所有电机实际总路径
+		//Obtain the actual total path of all motors
 		int total_path[WHEEL_COUNT];
 		total_path[WHEEL_A] = fabsf(s_steer.target[WHEEL_A]-RobotControlParam.MotorA.ori_pos);
 		total_path[WHEEL_B] = fabsf(s_steer.target[WHEEL_B]-RobotControlParam.MotorB.ori_pos);
 		total_path[WHEEL_C] = fabsf(s_steer.target[WHEEL_C]-RobotControlParam.MotorC.ori_pos);
 		total_path[WHEEL_D] = fabsf(s_steer.target[WHEEL_D]-RobotControlParam.MotorD.ori_pos);
 
-		//获得最大路径的轮子
+		//Wheel with the largest path to get it
 		int max_path = total_path[WHEEL_A];
 		if( total_path[WHEEL_B] > max_path ) max_path = total_path[WHEEL_B];
 		if( total_path[WHEEL_C] > max_path ) max_path = total_path[WHEEL_C];
 		if( total_path[WHEEL_D] > max_path ) max_path = total_path[WHEEL_D];
 
-		//最远的一路在最大速度下的耗时即本次转向的总时长(S=V*t),
-		//其余各路按各自行程除以该时长分配速度,四轮同时到位.
+		//The time taken for the farthest path at maximum speed is the total duration of this turn (S = V * t),
+		//Assign speeds for the remaining channels by dividing their travel by this duration, with all four wheels reaching the position simultaneously.
 		float tmpT = 0;
 		if( max_path > 5 )
 		{
@@ -543,24 +543,24 @@ static void Steer_Solve(const RobotControlCMDType_t* cmd,uint16_t taskFreq)
 
 		for(uint8_t i=0;i<WHEEL_COUNT;i++)
 		{
-			//行程太短(tmpT为0)时不重算速度,沿用上次的值即可
+			//If the stroke is too short (tmpT is 0), do not recalculate speed; just use the previous value
 			if( tmpT!=0 ) s_steer.speed[i] = total_path[i]/tmpT;
 
 			if( s_steer.speed[i] < 5 ) s_steer.speed[i] = 5;
 			if( s_steer.speed[i] > T280_WheelTurnSpeed ) s_steer.speed[i] = T280_WheelTurnSpeed;
 		}
 
-		//泄压闸判据只在重算目标时评估(依赖本周期算出的rawPos)
+		//deceleration hold gate criterion is only evaluated when recalculating targets (relying on rawPos calculated for the current cycle)
 		if( RobotControlParam.en_flag==1 )
 		{
-			//'意图目标'与当前实际轮角之差 = 用户要求轮子还得摆多远.
-			//用未平滑的原始指令算,平滑前后同一动作算出的幅度一致,不会因平滑而漏判.
+			//The difference between the 'intended target' and the current actual wheel angle = how far the user expects the wheel to be shelved.
+			//Using the original unsmoothed command, the magnitude calculated by the same action before and after smoothing is consistent, with no missed judgments due to smoothing.
 			float intent_jump = fabsf(rawPos[WHEEL_A]-RobotControlParam.MotorA.ori_pos);
 			if( fabsf(rawPos[WHEEL_B]-RobotControlParam.MotorB.ori_pos) > intent_jump ) intent_jump = fabsf(rawPos[WHEEL_B]-RobotControlParam.MotorB.ori_pos);
 			if( fabsf(rawPos[WHEEL_C]-RobotControlParam.MotorC.ori_pos) > intent_jump ) intent_jump = fabsf(rawPos[WHEEL_C]-RobotControlParam.MotorC.ori_pos);
 			if( fabsf(rawPos[WHEEL_D]-RobotControlParam.MotorD.ori_pos) > intent_jump ) intent_jump = fabsf(rawPos[WHEEL_D]-RobotControlParam.MotorD.ori_pos);
 
-			//大重定向 且 车身仍快:先进减速等待闸,泄掉动量再放轮子过去
+			//Large redirection and still moving the car body: slow down first, wait for the brake, release momentum, then let the wheels pass
 			if( intent_jump > REORIENT_JUMP_COUNTS && _4ws_TurnSpeedReady()==0 )
 			{
 				if( s_steer.reorientHold==0 ){ s_steer.reorientHold=1; s_steer.reorientHoldStart=xTaskGetTickCount(); }
@@ -568,10 +568,10 @@ static void Steer_Solve(const RobotControlCMDType_t* cmd,uint16_t taskFreq)
 		}
 	}
 
-	//转向目标下发:独立于changeFlag每周期评估.
-	//若关在changeFlag里,一旦某次下发被时间节流或门槛挡掉就再无第二次机会
-	//(指令已稳定,changeFlag不会再为真),误差会停在2~5度死区:
-	//看门狗只在>5度时才重发,下面的门槛以下又不发,中间这段无人负责.
+	//Evaluate steering target transmission every cycle, independently of changeFlag.
+	//If locked in a changeFlag, once a single issuance is blocked by time savings or thresholds, there will be no second chance
+	//(the instruction is stable, changeFlag will no longer be true), the error will stop at the 2~5 degree dead zone:
+	//The watchdog resends only above 5 degrees, while transmission is suppressed below the threshold below; the interval between them is not covered.
 	if( RobotControlParam.en_flag==1 && s_steer.reorientHold==0 )
 	{
 		float send_jump = 0.0f;
@@ -581,7 +581,7 @@ static void Steer_Solve(const RobotControlCMDType_t* cmd,uint16_t taskFreq)
 			if( d > send_jump ) send_jump = d;
 		}
 
-		//目标变化够大 且 距上次下发够久.发完send_jump归零,自然停止,不会持续占用总线.
+		//The target changes significantly and the last issuance has been long enough since the last issue. After sending send_jump, reset to zero and stop naturally, without continuously occupying the bus.
 		if( (send_jump > STEER_SEND_EPS_COUNTS || s_steerSendFault) &&
 		    (xTaskGetTickCount()-s_steer.lastSendTick) >= pdMS_TO_TICKS(STEER_SEND_MIN_INTERVAL_MS) )
 		{
@@ -589,23 +589,23 @@ static void Steer_Solve(const RobotControlCMDType_t* cmd,uint16_t taskFreq)
 		}
 	}
 
-	//转向电机原始值:逆时针为正.
-	//剩余偏差同时供起步对齐闸,连续限速与执行看门狗三处判据使用.
+	//Raw steering motor value: positive counterclockwise.
+	//The remaining deviation is used simultaneously for start-up alignment brakes, continuous speed limiting, and enforcement of the watchdog at three points.
 	s_steer.progress[WHEEL_A] = abs((int)s_steer.target[WHEEL_A]-RobotControlParam.MotorA.ori_pos);
 	s_steer.progress[WHEEL_B] = abs((int)s_steer.target[WHEEL_B]-RobotControlParam.MotorB.ori_pos);
 	s_steer.progress[WHEEL_C] = abs((int)s_steer.target[WHEEL_C]-RobotControlParam.MotorC.ori_pos);
 	s_steer.progress[WHEEL_D] = abs((int)s_steer.target[WHEEL_D]-RobotControlParam.MotorD.ori_pos);
 
-	//找出最大值
+	//Find the maximum value
 	s_steer.maxProgress = s_steer.progress[WHEEL_A];
 	if( s_steer.progress[WHEEL_B] > s_steer.maxProgress ) s_steer.maxProgress = s_steer.progress[WHEEL_B];
 	if( s_steer.progress[WHEEL_C] > s_steer.maxProgress ) s_steer.maxProgress = s_steer.progress[WHEEL_C];
 	if( s_steer.progress[WHEEL_D] > s_steer.maxProgress ) s_steer.maxProgress = s_steer.progress[WHEEL_D];
 
-	//本周期实际施加到指令上的转向限速比例(0=本周期下发停止指令),供数据观察使用
+	//The steering speed limit ratio actually applied to the instructions in this cycle (0 = stop command issued in this cycle), for data observation purposes
 	s_steer.scale = 0.0f;
 
-	//使能恢复(0->1)时主动重发一次当前转向目标,不再依赖看门狗的副作用
+	//Actively reactivates the current turn target during enable recovery (0->1), no longer relying on watchdog side effects
 	if( RobotControlParam.en_flag==1 && s_steer.lastEnFlag==0 && s_steer.reorientHold==0 )
 	{
 		Steer_Send(&s_steer);
@@ -614,18 +614,18 @@ static void Steer_Solve(const RobotControlCMDType_t* cmd,uint16_t taskFreq)
 }
 
 /**
- * 驱动平滑 —— 决定本周期实际执行的三轴速度
+ * Drive smoothing: determine the three-axis velocity actually applied in this cycle
  *
- * 三条互斥路径:泄压闸急刹 / 起步对齐等待 / 按轮角偏差连续限速.
- * 泄压闸的放行在本函数内完成,而 Steer_Watchdog 的守卫以 reorientHold==0 为条件,
- * 故调用顺序必须是 Steer_Solve -> Drive_Update -> Steer_Watchdog.
+ * Three mutually exclusive paths: emergency brake for deceleration hold gate / Alignment waiting for start / Continuous speed limiting based on wheel angle deviation.
+ * The release of the deceleration hold gate is completed within this function, while the Steer_Watchdog guard is conditioned by reorientHold==0,
+ * Therefore, the call order must be Steer_Solve -> Drive_Update -> Steer_Watchdog.
  */
 static void Drive_Update(const RobotControlCMDType_t* cmd,uint16_t taskFreq)
 {
-	//转向逻辑处理
+	//Steering logic
 	if( s_steer.reorientHold )
 	{
-		//重定向闸:高速切自转/横移时先直线急刹泄掉动量,再放轮子过去,防止打滑
+		//Redirection gate: when switching at high speed to rotation/lateral motion, first decelerate sharply in a straight line to dissipate momentum, then allow wheel steering to prevent slipping
 		if( _4ws_TurnSpeedReady() )
 		{
 			s_steer.reorientHold = 0;
@@ -634,7 +634,7 @@ static void Drive_Update(const RobotControlCMDType_t* cmd,uint16_t taskFreq)
 				Steer_Send(&s_steer);
 			}
 		}
-		//等待期间全力急刹,泄掉前冲动量
+		//Braking hard at full force while waiting to release the previous momentum
 		_4ws_SpeedSmoothFastBrake(&s_drive.smooth,&s_stopCmd,taskFreq);
 		// A timeout is not evidence that the chassis has slowed down.
 		if( s_steer.reorientHold && xTaskGetTickCount()-s_steer.reorientHoldStart > pdMS_TO_TICKS(REORIENT_HOLD_TIMEOUT_MS) )
@@ -642,16 +642,16 @@ static void Drive_Update(const RobotControlCMDType_t* cmd,uint16_t taskFreq)
 	}
 	else if( RobotControlParam.en_flag==1 && _4ws_HasMoveCmd(cmd) )
 	{
-		//静止起步对齐闸:上一刻完全静止时,先等轮子摆到位(误差<容差)再给速,消除起步抖动
+		//Startup alignment gate: after a fully stationary state, wait for wheel alignment (error<tolerance) before applying speed to eliminate startup jitter
 		uint8_t was_static = ( fabsf(s_drive.smooth.Vx)<STARTUP_STOP_EPS && fabsf(s_drive.smooth.Vy)<STARTUP_STOP_EPS && fabsf(s_drive.smooth.Vz)<STARTUP_STOP_EPS );
 		if( was_static && s_steer.maxProgress > COUNTS_PER_DEG * STARTUP_ALIGN_TOL_DEG )
 		{
-			//轮子尚未就位,保持不动直到摆到位
+			//Wheels are not aligned yet; remain stationary until alignment is complete
 			_4ws_SpeedSmooth(&s_drive.smooth,&s_stopCmd,taskFreq);
 		}
 		else
 		{
-			//车速按实时轮角偏差连续限速:偏差大(舵机未追上)则慢,对齐则快,杜绝转来转去的反复刹停
+			//Speed is continuously limited according to real-time wheel angle deviation: large deviations (servo not caught up) mean slow, alignment means fast, avoiding repeated braking around and spinning
 			RobotControlCMDType_t SteerLimitCmd = *cmd;
 			s_steer.scale = _4ws_SteerScaleByProgress(s_steer.maxProgress);
 			SteerLimitCmd.Vx *= s_steer.scale;
@@ -667,21 +667,21 @@ static void Drive_Update(const RobotControlCMDType_t* cmd,uint16_t taskFreq)
 }
 
 /**
- * 转向执行看门狗 —— 每100ms比对一次进度
+ * Turn to executing the watchdog — Progress is matched every 100ms
  *
- * 驱动器偶发丢帧会让目标停在半路,靠比较窗口内的偏差增量发现并补发.
- * 泄压闸期间不介入,否则会顶着急刹把轮子推过去.
+ * Occasional lost driver frames can leave a target halfway; detect error increments within a comparison window and resend.
+ * Do not intervene while the deceleration hold gate is active; otherwise wheel steering would proceed against the sharp deceleration.
  */
 static void Steer_Watchdog(void)
 {
-	//检查转向电机指令是否失效
-	if( s_steer.reorientHold==0 && RobotControlParam.en_flag==1 && RobotControlParam.ParkingMode==0 && s_steer.maxProgress > COUNTS_PER_DEG * 5.0f ) //目标未到达时检测
+	//Check if the steering motor command is invalid
+	if( s_steer.reorientHold==0 && RobotControlParam.en_flag==1 && RobotControlParam.ParkingMode==0 && s_steer.maxProgress > COUNTS_PER_DEG * 5.0f ) //Detection when the target is not reached
 	{
 		s_steer.lowfreCnt++;
 		if( s_steer.lowfreCnt == 10 )
 		{
 			s_steer.lowfreCnt=0;
-			//如检测到任意一路转向电机未运动,则重新发送目标指令
+			//If any steering motor is detected not moving, resend the target command
 			if( (s_steer.progress[WHEEL_A] > COUNTS_PER_DEG*5.0f && abs(s_steer.progress[WHEEL_A]-s_steer.lastProgress[WHEEL_A]) < 10) || (s_steer.progress[WHEEL_B] > COUNTS_PER_DEG*5.0f && abs(s_steer.progress[WHEEL_B]-s_steer.lastProgress[WHEEL_B]) < 10) )
 			{
 				Steer_SendDriver(&s_steer,&Driver1,WHEEL_A,WHEEL_B);
@@ -691,7 +691,7 @@ static void Steer_Watchdog(void)
 				Steer_SendDriver(&s_steer,&Driver2,WHEEL_C,WHEEL_D);
 			}
 
-			//快照只在每次比较时刷新,保证比较的是完整100ms窗口的增量
+			//Snapshots are only refreshed each time you compare, ensuring the comparison is the increment of the full 100ms window
 			for(uint8_t i=0;i<WHEEL_COUNT;i++) s_steer.lastProgress[i] = s_steer.progress[i];
 		}
 	}
@@ -703,28 +703,28 @@ static void Steer_Watchdog(void)
 }
 
 /**
- * 轮速输出 —— 三轴速度投影到四轮转速并下发
+ * Wheel-speed output: project three-axis velocity onto four wheel speeds and transmit
  *
- * 沿已下发的转向目标投影,轮速符号与转角天然一致.整体归一化保证单轮限幅
- * 不破坏四轮之间的运动比例.失能时显式下发0转速,不依赖驱动器自行停车.
+ * Projection along the already issued steering target, with wheel speed symbols naturally consistent with the turning angle. Overall normalization ensures single-wheel width
+ * Preserve the motion ratios between all four wheels. Explicitly transmit 0 speed when disabled; do not rely on the driver stopping by itself.
  */
 static void Drive_Output(void)
 {
-	//使用平滑值计算当前的速度
-	//轮速沿已下发的目标转向角投影,符号与角度天然一致,不再二次逆解
+	//Calculates the current speed using smoothing values
+	//Project wheel speeds along the transmitted target steering angles; signs and angles remain consistent without a second inverse solution
 	four_ws_WheelSpeedProjection(s_drive.smooth.Vx,s_drive.smooth.Vy,s_drive.smooth.Vz,&s_sentCar);
 
-	//轮速m/s转为转速rpm
+	//Convert wheel speed in m/s to rpm
 	s_drive.rpm[WHEEL_A] = linearVel_to_rpm(s_sentCar.TargetMotorA.speed,s_car.hardware.WheelPerimeter);
 	s_drive.rpm[WHEEL_B] = linearVel_to_rpm(s_sentCar.TargetMotorB.speed,s_car.hardware.WheelPerimeter);
 	s_drive.rpm[WHEEL_C] = linearVel_to_rpm(s_sentCar.TargetMotorC.speed,s_car.hardware.WheelPerimeter);
 	s_drive.rpm[WHEEL_D] = linearVel_to_rpm(s_sentCar.TargetMotorD.speed,s_car.hardware.WheelPerimeter);
-	//轮速整体归一化,防止单个轮子超过驱动限制后破坏运动比例
+	//Normalize all wheel speeds together to prevent individual driver limits from distorting the motion ratios
 	_4ws_LimitWheelRPM(s_drive.rpm,T280_MAX_DRIVE_RPM);
 
 	if( RobotControlParam.en_flag==1 && s_steerSendFault==0 )
 	{
-		//轮毂电机执行
+		//Execute hub motor commands
 		set_MotorRPM(&Driver3,-s_drive.rpm[WHEEL_A],-s_drive.rpm[WHEEL_B]);
 		set_MotorRPM(&Driver4,-s_drive.rpm[WHEEL_C],-s_drive.rpm[WHEEL_D]);
 	}
@@ -736,19 +736,19 @@ static void Drive_Output(void)
 }
 
 /**
- * 里程正解 —— 由实测轮角与轮速反推三轴速度
+ * Odometry forward kinematics: derive three-axis velocity from measured wheel angles and speeds
  *
- * 结果写回 RobotControlParam.feedbackV*,供上位机上报与IMU直线补偿读取.
+ * The result is written back to RobotControlParam.feedbackV* for the host computer to report and read for IMU linear compensation.
  */
 static void Robot_Odometry(void)
 {
-	//编码器位置转轮角
+	//Encoder position wheel angle
 	RobotControlParam.MotorA.feedbackRadian = pos_to_angle(RobotControlParam.MotorA.ori_pos);
 	RobotControlParam.MotorB.feedbackRadian = pos_to_angle(RobotControlParam.MotorB.ori_pos);
-	RobotControlParam.MotorC.feedbackRadian = pos_to_angle(RobotControlParam.MotorC.ori_pos)-180;//CD电机镜像安装,减去180度
+	RobotControlParam.MotorC.feedbackRadian = pos_to_angle(RobotControlParam.MotorC.ori_pos)-180;//CD motor image installation, minus 180 degrees
 	RobotControlParam.MotorD.feedbackRadian = pos_to_angle(RobotControlParam.MotorD.ori_pos)-180;
 
-	//赋值实际数据到小车模型,用于计算3轴速度
+	//Assign actual data to the cart model to calculate the speed of the 3-axis system
 	s_car.RealMotorA.radian = RobotControlParam.MotorA.feedbackRadian*0.0174533f;
 	s_car.RealMotorB.radian = RobotControlParam.MotorB.feedbackRadian*0.0174533f;
 	s_car.RealMotorC.radian = RobotControlParam.MotorC.feedbackRadian*0.0174533f;
@@ -758,54 +758,54 @@ static void Robot_Odometry(void)
 	s_car.RealMotorC.speed = RobotControlParam.MotorC.feedbackSpeed;
 	s_car.RealMotorD.speed = RobotControlParam.MotorD.feedbackSpeed;
 
-	//运动学正解
+	//Forward kinematics
 	four_ws_kinematics(&s_car);
 
-	//输出3轴速度
+	//Output three-axis velocity
 	RobotControlParam.feedbackVx = s_car.feedback_Vx;
 	RobotControlParam.feedbackVy = s_car.feedback_Vy;
 	RobotControlParam.feedbackVz = s_car.feedback_Vz;
 }
 
 /**
- * 活跃刷新 —— 收到运动指令则刷新时间戳并退出驻车
+ * Active Refresh — Refreshes timestamps upon receiving a motion command and exits the park
  */
 static void Robot_ActiveUpdate(const RobotControlCMDType_t* cmd,TickType_t* activeTick)
 {
-	//判断当前是否有活跃的控制量
+	//Determine whether there is currently an active control quantity
 	if( _4ws_HasMoveCmd(cmd) )
 	{
 		(*activeTick) = xTaskGetTickCount();
 		if( RobotControlParam.ParkingMode==1 )
 		{
 			RobotControlParam.ParkingMode=0;
-			//驻车模式解除
+			//Release parking mode
 			Robot_DriverSetParkingMode(0);
 		}
 	}
 }
 
 /**
- * 失控保护 —— 指令超时后按控制源决定是否清零速度
+ * Command-loss protection: after command timeout, use the control source to decide whether to set velocity to zero
  *
- * lostCnt 在此封顶,避免长时间无指令时计数回绕导致保护间歇性失效.
+ * lostCnt is capped here to prevent counter wraparound from intermittently disabling protection during prolonged command loss.
  */
 static void Robot_FailSafe(RobotControlCMDType_t* cmd,uint8_t* lostCnt,uint16_t taskFreq)
 {
-	//小车失控保护设置(队列无数据超时情况)
+	//Car loss of control protection settings (queue without data timeout)
 	if( (*lostCnt) > taskFreq )
 	{
 		(*lostCnt)=taskFreq;
 
 		switch( RobotControl_CMDsource )
 		{
-			//非上位机类型的控制默认需要保护
-			//此处原本APP控制也应执行,但为了兼容IOS APP(数据非连续发送),保护无法开启.
+			//Non-host control types require protection by default
+			//This protection would also apply to app control, but cannot be enabled for compatibility with the iOS app, which sends data intermittently.
 			case GamePad_CMD:case RCJOY_CMD: case Charger_CMD: case AutoTest_CMD:
 				cmd->Vx=0;cmd->Vy=0;cmd->Vz=0;
 				break;
 
-			//上位机类型,根据用户设置的安全级别启用保护
+			//Host type, protection enabled according to user-set safety levels
 			case ROS_CMD:case CAN_CMD:
 				if( RobotControlParam.SecurityLevel==0 )
 				{
@@ -817,40 +817,40 @@ static void Robot_FailSafe(RobotControlCMDType_t* cmd,uint8_t* lostCnt,uint16_t 
 }
 
 /**
- * 驻车判定 —— 静止满10秒且车身水平则进入省电驻车
+ * Parking decision: enter power-saving parking after 10 seconds stationary with the chassis level
  *
- * 斜坡上不驻车(驻车会松开保持力矩),改为刷新时间戳继续等待.
+ * Do not stop on the slope (parking releases the holding moment); instead, refresh the timestamp and continue waiting.
  */
 static void Robot_ParkingEnter(TickType_t* activeTick)
 {
-	//根据控制量是否活跃来判断是否进入驻车模式,若小车停止10秒后无控制量,将进入驻车模式省电
+	//Determine whether to enter parking mode based on whether the control amount is active. If the car stops for 10 seconds and there is no control mode, it will enter parking mode to save power
 	if( RobotControlParam.ParkingMode==0 && xTaskGetTickCount() - (*activeTick) > 10000 )
 	{
-		//根据imu角度判断是否位于斜坡上
+		//Determine whether the site is on a slope based on the IMU angle
 		if(fabs(AttitudeVal.pitch) < 2.5f && fabs(AttitudeVal.roll)<2.5f )
 		{
 			RobotControlParam.ParkingMode=1;
-			//发送驻车指令
+			//Send a hold command
 			Robot_DriverSetParkingMode(1);
 		}
 		else
-		{	//小车位于斜坡上,刷新用于判断的时间
+		{	//The car is on a slope, refreshing the time used for judgment
 			(*activeTick) = xTaskGetTickCount();
 		}
 	}
 }
 
 /**
- * 巡检 —— 驱动器自检,报错恢复,低电量提示
+ * Inspection — Drive self-test, error recovery, low battery alert
  *
- * 报错恢复可能阻塞数百毫秒,故在此重置周期基准,避免 vTaskDelayUntil
- * 事后补偿性地连跑几个周期.
+ * Error recovery may block for hundreds of milliseconds, so reset the periodic baseline here to avoid vTaskDelayUntil
+ * Compensate by running a few cycles afterwards
  */
 static void Robot_Housekeeping(uint8_t* driverCheck,uint16_t taskFreq,TickType_t* preTime)
 {
 	pBuzzerInterface_t buzzer = &UserBuzzer;
 
-	//驱动器低频获取自检参数,包含电机报错码,驱动报错情况
+	//Poll driver self-test parameters at low frequency, including motor error codes and driver errors
 	(*driverCheck)++;
 	if( (*driverCheck)==10 )
 	{
@@ -858,17 +858,17 @@ static void Robot_Housekeeping(uint8_t* driverCheck,uint16_t taskFreq,TickType_t
 		Robot_DriverCheckError();
 	}
 
-	//驱动报错恢复请求,驱动器报错后,用户可通过此标志位请求尝试清除报错
+	//Driver fault-recovery request; after a fault, users can set this flag to request an attempt to clear it
 	if( RobotControlParam.DriveErrRecovery )
 	{
 		RobotControlParam.DriveErrRecovery = 0;
 		Robot_DriverRecovery();
 
-		//恢复过程可能阻塞较久(含回零重试),重置周期基准避免vTaskDelayUntil补偿性连跑
+		//The recovery process may be stuck for a long time (including retrying), and resetting the cycle baseline avoids compensatory continuous running of vTaskDelayUntil
 		(*preTime) = xTaskGetTickCount();
 	}
 
-	//小车低电量蜂鸣器提示,仅无灯带车型使用蜂鸣器提示
+	//Low battery buzzer alert for small cars; only models without light strips use buzzer alerts
 	static uint32_t LowPowerTipsCnt = 0;
 	switch( RobotHardWareParam.CarType )
 	{
@@ -888,12 +888,12 @@ static void Robot_Housekeeping(uint8_t* driverCheck,uint16_t taskFreq,TickType_t
 	}
 }
 
-//多模智控手柄按键回调函数,均与小车功能相关
+//Multi-mode intelligent control handle button callback functions, all related to the car's functions
 void Xbox360GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 {
 	pBuzzerInterface_t buzzer = &UserBuzzer;
 
-	//LB左上按键:减速
+	//LB top-left button: decelerate
 	if( keyid == Xbox360KEY_LB )
 	{
 		RobotControlParam.defalutSpeed -= 50;
@@ -901,7 +901,7 @@ void Xbox360GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 		buzzer->AddTask(1,200);
 	}
 
-	//RB右上按键:加速
+	//RB upper-right button: accelerate
 	if( keyid == Xbox360KEY_RB )
 	{
 		RobotControlParam.defalutSpeed += 50;
@@ -909,51 +909,51 @@ void Xbox360GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 		buzzer->AddTask(1,200);
 	}
 
-	//右摇杆Rjoy:IMU标零
+	//Right joystick Rjoy: IMU marked zero
 	if( keyid == Xbox360KEY_RJoy && event == GamePadKeyEvent_LONGCLICK)
 	{
 		pIMUInterface_t imu = &UserICM20948;
 		imu->UpdateZeroPoint_axis();
 		imu->UpdateZeroPoint_attitude();
-		buzzer->AddTask(1,200);//使用蜂鸣器提示操作成功
+		buzzer->AddTask(1,200);//Use the buzzer to indicate the operation was successful
 	}
 
-	//Y:自动回充开启/关闭
+	//Y: Auto recharge on/off
 	if( keyid == Xbox360KEY_Y && event == GamePadKeyEvent_LONGCLICK )
 	{
 		RobotControlParam.ChargeMode = !RobotControlParam.ChargeMode;
 		buzzer->AddTask(1,200);
 	}
 
-	//B:清除电机报错请求
+	//B: Clear motor error requests
 	if( keyid == Xbox360KEY_B && event == GamePadKeyEvent_LONGCLICK )
 	{
 		RobotControlParam.DriveErrRecovery=1;
 		buzzer->AddTask(1,200);
 	}
 
-	//A:超声波避障开关.仅切换RangerAvoidEN标志位与蜂鸣提示,避障决策逻辑尚未实现
+	//A: Ultrasonic obstacle avoidance switch. Only switches the RangerAvoidEN flag and beep prompt; the obstacle avoidance decision logic has not yet been implemented
 	if( keyid == Xbox360KEY_A && event == GamePadKeyEvent_LONGCLICK )
 	{
 		RobotControlParam.RangerAvoidEN = !RobotControlParam.RangerAvoidEN;
 		buzzer->AddTask(1,200);
 	}
 
-	//X:IMU辅助走直线开关
+	//X: IMU assists straight switching
 	if( keyid==Xbox360KEY_X && event == GamePadKeyEvent_LONGCLICK )
 	{
 		RobotControlParam.ImuAssistedFlag = !RobotControlParam.ImuAssistedFlag;
 		buzzer->AddTask(1,200);
 	}
 
-	//左摇杆LJoy:应急模式
+	//Left analog stick LJoy: Emergency mode
 	if( keyid == Xbox360KEY_LJoy && event == GamePadKeyEvent_LONGCLICK )
 	{
 		RobotControlParam.EmergencyMode = !RobotControlParam.EmergencyMode;
 		buzzer->AddTask(1,200);
 	}
 
-	//方向按键,左右对应OLED翻页
+	//Directional buttons for left and right OLED page turning
 	if( keyid == Xbox360KEY_LEFT )
 	{
 		oled_page_down();
@@ -967,7 +967,7 @@ void Xbox360GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 	}
 
 	#if DATALOG_ENABLE
-	//上键:场地自动测试,长按启动,单击/双击停止(蜂鸣反馈由测试任务发出)
+	//Up key: Venue auto-test, long press to start, click/double-click to stop (beep feedback sent by the test task)
 	if( keyid == Xbox360KEY_UP )
 	{
 		if( event == GamePadKeyEvent_LONGCLICK )
@@ -979,19 +979,19 @@ void Xbox360GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 
 }
 
-//线速度m/s转RPM转速
+//Linear speed m/s to RPM speed
 static float linearVel_to_rpm(float linearVel,float wheelper)
 {
 	return linearVel*60.0f/wheelper;
 }
 
-//转向电机回零:周期性重发回零指令并等待全部到位;成功返回0,超时返回1
+//Steering motor homing: periodically resend the homing command and wait for all motors; return 0 on success, 1 on timeout
 static uint8_t SteeringHoming(uint32_t timeout_ms)
 {
 	TickType_t start = xTaskGetTickCount();
 	TickType_t lastSend = start;
 
-	//先发一次回零指令
+	//Issue one zero-back instruction first
 	set_MotorPos(&Driver1,0,T280_WheelTurnSpeed,0,T280_WheelTurnSpeed);
 	set_MotorPos(&Driver2,0,T280_WheelTurnSpeed,0,T280_WheelTurnSpeed);
 
@@ -999,7 +999,7 @@ static uint8_t SteeringHoming(uint32_t timeout_ms)
 	{
 		vTaskDelay(20);
 
-		//四轮全部回到零点(容差内)才算完成
+		//All four wheels return to zero (within tolerance) to be considered complete
 		float zeroA = fabsf(RobotControlParam.MotorA.ori_pos);
 		float zeroB = fabsf(RobotControlParam.MotorB.ori_pos);
 		float zeroC = fabsf(RobotControlParam.MotorC.ori_pos);
@@ -1010,7 +1010,7 @@ static uint8_t SteeringHoming(uint32_t timeout_ms)
 		if( xTaskGetTickCount() - start > pdMS_TO_TICKS(timeout_ms) )
 			return 1;
 
-		//周期性重发,防止上电初期总线未就绪导致指令丢失
+		//Periodic retransmission to prevent instructions from being lost due to bus incompleteness during initial power-up
 		if( xTaskGetTickCount() - lastSend >= pdMS_TO_TICKS(HOMING_RESEND_MS) )
 		{
 			lastSend = xTaskGetTickCount();
@@ -1020,27 +1020,27 @@ static uint8_t SteeringHoming(uint32_t timeout_ms)
 	}
 }
 
-//驱动报错恢复函数
+//Driver fault-recovery function
 static void Robot_DriverRecovery(void)
 {
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
 	{
-		//如果电机存在报错,则清除
+		//If the motor has errors, clear them
 		if(g_ServoDriveList[i]->errFlag==1)
 		{
 			ServoDriver_ClearError(g_ServoDriveList[i]);
 		}
 
-		//根据使能开关的状态确定是否要使能电机
+		//Determine whether to enable the motor based on the state of the enable switch
 		if( RobotControlParam.Enkeystate==1 ) ServoDriver_Enable(g_ServoDriveList[i]);
 		else ServoDriver_Disable(g_ServoDriveList[i]);
 
-		//转速清零
+		//Reset rotational speed to zero
 		if( g_ServoDriveList[i]->initMode==SpeedMode )
 			set_MotorRPM(g_ServoDriveList[i],0,0);
 	}
 
-	//回零失败后,借错误恢复动作重试回零,成功则清除持久错误标志
+	//After zeroing fails, retry the error recovery action; if successful, clear persistent error flags
 	if( SteeringHomeFailed )
 	{
 		if( SteeringHoming(HOMING_TIMEOUT_MS)==0 )
@@ -1048,18 +1048,18 @@ static void Robot_DriverRecovery(void)
 	}
 }
 
-//设置驻车模式
+//Set parking mode
 static void Robot_DriverSetParkingMode(uint8_t setflag)
 {
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
 	{
-		//驻车只对轮毂电机(速度模式)下发,转向电机不处理
+		//Send parking commands only to hub motors (velocity mode); leave steering motors unchanged
 		if( g_ServoDriveList[i]->initMode==SpeedMode )
 			ServoDriver_ParkingMode(g_ServoDriveList[i],setflag);
 	}
 }
 
-//获取驱动报错信息
+//Obtain driver error information
 static void Robot_DriverCheckError(void)
 {
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
@@ -1068,7 +1068,7 @@ static void Robot_DriverCheckError(void)
 	}
 }
 
-//失能电机
+//Disable motor
 static void Robot_DriverDisable(void)
 {
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
@@ -1077,7 +1077,7 @@ static void Robot_DriverDisable(void)
 	}
 }
 
-//使能电机
+//Enable motor
 static void Robot_DriverEnable(void)
 {
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
@@ -1086,24 +1086,24 @@ static void Robot_DriverEnable(void)
 	}
 }
 
-//电机自锁停转
+//Motor self-locking stops
 //static void Robot_DriverStop(void)
 //{
 //	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
 //	{
 //		if( g_ServoDriveList[i]->initMode == SpeedMode )
 //			set_MotorRPM(g_ServoDriveList[i],0,0);
-//		else if( g_ServoDriveList[i]->initMode == PosMode ) //TODO:待测试
+//		else if (g_ServoDriveList[i]->initMode == PosMode) // TODO: to be tested
 //			set_MotorPosStop(g_ServoDriveList[i]);
 //	}
 //}
 
-//根据运动状态低频更新电池电压估计值
+//Updates battery voltage estimates at low frequency based on the state of motion
 static void Robot_UpdateVoltageEstimate(const RobotControlCMDType_t* cmd)
 {
 	const float eps = 0.001f;
 	float rawVol = (float)USER_ADC_Get_AdcBufValue(userconfigADC_VOL_CHANNEL)/4095.0f*3.3f*11;
-	float weight = 0.5f;//默认权重
+	float weight = 0.5f;//Default weight
 	static uint8_t volInit = 0;
 	static TickType_t lastVolUpdateTick = 0;
 	TickType_t nowTick = xTaskGetTickCount();
@@ -1119,7 +1119,7 @@ static void Robot_UpdateVoltageEstimate(const RobotControlCMDType_t* cmd)
 	if( nowTick - lastVolUpdateTick < pdMS_TO_TICKS(500) ) return;
 	lastVolUpdateTick = nowTick;
 	
-	//驻车模式下的权重最高
+	//Parking mode has highest priority
 	if( RobotControlParam.en_flag == 1 && RobotControlParam.ParkingMode==1 )
 	{
 		weight = 0.9f;
@@ -1129,37 +1129,37 @@ static void Robot_UpdateVoltageEstimate(const RobotControlCMDType_t* cmd)
 	{
 		if( (fabsf(cmd->Vx) > eps || fabsf(cmd->Vy) > eps) && (fabsf(cmd->Vz) > eps) )
 		{
-			weight = 0.3f; //可能存在滑动摩擦的运动场景,降低权重
+			weight = 0.3f; //Possible sliding friction in motion scenarios, reducing weight
 		}
 	}
 	
 	RobotControlParam.Vol = RobotControlParam.Vol*(1.0f-weight) + rawVol*weight;
 }
 
-//小车使能状态检查
+//Cart enable status check
 static void robot_en_check(void)
 {
-	//报错码默认为0,根据下列报错情况而设置
+	//The default error code is 0, set according to the following error situations
 	RobotControlParam.ErrNum = 0;
 
-	//软件急停开关状态
+	//Software emergency-stop switch state
 	if( RobotControlParam.softwareEnflag == 1 ) Set_RobotErrorCode(errCode_SoftWareStop);
 
-	//转向回零失败,持续置错误码使小车失能
+	//Steering homing failed; keep the error code set to disable the chassis
 	if( SteeringHomeFailed ) Set_RobotErrorCode(errCode_SteeringHome);
 
-	//读取机器人急停开关的状态,按键切换时作出对应操作
+	//Read the status of the robot's emergency stop switch and perform corresponding operations when switching buttons
 	static uint8_t last_EnKey = 1;
 	RobotControlParam.Enkeystate = get_EnKeyState();
 	if( RobotControlParam.Enkeystate==0 ) Set_RobotErrorCode(errCode_StopKeyEn);
 
-	//使能开关按下
+	//Enable switch is pressed
 	if( RobotControlParam.Enkeystate==0 && last_EnKey==1 )
 	{
 		Robot_DriverDisable();
 	}
 
-	//使能开关弹起
+	//Enable switch pops up
 	else if( last_EnKey==0 && RobotControlParam.Enkeystate==1 )
 	{
 		Robot_DriverEnable();
@@ -1167,7 +1167,7 @@ static void robot_en_check(void)
 
 	last_EnKey = RobotControlParam.Enkeystate;
 
-	//机器人电量低状态获取
+	//Robot low battery status acquisition
 	static uint8_t LowPowerTiming=0U;
 	static TickType_t LowPowerStartTick=0U;
 	if( RobotControlParam.Vol>18.0f && RobotControlParam.Vol < 20.2f )
@@ -1181,7 +1181,7 @@ static void robot_en_check(void)
 		if( nowTick - LowPowerStartTick >= pdMS_TO_TICKS(10000U) )
 		{
 			RobotControlParam.LowPowerFlag=1;
-			//电压不足.(若开启了自动回充模式,则忽略电压)
+			//Insufficient voltage. (If automatic recharge mode is enabled, voltage is ignored)
 			if( RobotControlParam.Vol < 20.0f && RobotControlParam.ChargeMode==0 ) Set_RobotErrorCode(errCode_LowPower);
 		}
 	}
@@ -1192,7 +1192,7 @@ static void robot_en_check(void)
 		if( RobotControlParam.Vol>21.5f) RobotControlParam.LowPowerFlag=0;
 	}
 
-	//根据不同的驱动个数生成不同的报错码
+	//Generate different error codes based on the number of drivers
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
 	{
 		if( g_ServoDriveList[i]->errFlag==1 )
@@ -1223,25 +1223,25 @@ static void robot_en_check(void)
 }
 
 /**
- * @brief  此函数用于写控制队列,所有需要控制小车的任务均需要通过此任务写入控制量.
- * @param  cmd:参数需要包含指令来源,以及指定小车的三轴目标速度大小
- *         woken:如果是在中断中调用,需要传入此参数.非中断中调用直接写入0
- * @retval 0写入成功,1写入失败.写入失败原因:未指定控制指令来源或当前有更高优先级控制在活跃
+ * @brief This function is used to write control queues; all tasks that need to control the cart must write control quantities through this task.
+ * @param cmd: The parameter must include the instruction source and specify the three-axis target speed for the cart
+ *         woken: if called in an interrupt, this parameter needs to be passed. For non-interrupt calls, just write 0
+ * @retval 0 write successful, 1 write failed. Reason for write failure: No specified source of control instruction or currently a higher-priority control is active
  *
  * @details
- * - 用户需要新增控制方式时,需要先在RobotControl_task.h头文件新增一个控制类型的枚举并确定优先级,
- *   然后通过 WriteControlQueue 写控制队列进行小车的控制
+ * - When users need to add control methods, they must first add an enumeration of control types in the RobotControl_task.h header file and determine their priority.
+ *   Then control the cart via the WriteControlQueue write control queue
  */
 uint8_t WriteRobotControlQueue(RobotControlCMDType_t* cmd,BaseType_t* woken)
 {
 	static uint32_t lastTick = 0;
 	uint8_t writeflag = 0;
 
-	//队列未创建或未指定的控制源,忽略写入
+	//Ignore writes if the queue is not created or the control source is unspecified
 	if(g_xQueueRobotControl == NULL || cmd->cmdsource == NONE_CMD ||
 		cmd->cmdsource >= UnKnownCMD ) return 1;
 
-	//高优先级的控制指令,可直接抢占控制
+	//High-priority commands can preempt control directly
 	if( cmd->cmdsource <= RobotControl_CMDsource )
 	{
 		RobotControl_CMDsource = cmd->cmdsource;
@@ -1249,12 +1249,12 @@ uint8_t WriteRobotControlQueue(RobotControlCMDType_t* cmd,BaseType_t* woken)
 	}
 	else
 	{
-		//接受到低优先级控制指令,检查活跃时间戳
+		//Receive low-priority control instructions and check active timestamps
 		uint32_t tick = 0;
 		if( __get_IPSR()!=0 ) tick = xTaskGetTickCountFromISR();
 		else tick = xTaskGetTickCount();
 
-		//高优先级指令超2000ms未活跃,则允许低优先级指令执行
+		//If a high-priority command is inactive for more than 2000ms, allow low-priority commands
 		if( tick - lastTick >= 2000 )
 		{
 			RobotControl_CMDsource = cmd->cmdsource;
@@ -1262,10 +1262,10 @@ uint8_t WriteRobotControlQueue(RobotControlCMDType_t* cmd,BaseType_t* woken)
 		}
 	}
 
-	//允许写入队列
+	//Allow writing to the queue
 	if( writeflag )
 	{
-		if( __get_IPSR()!=0 ) //中断上下文判断
+		if( __get_IPSR()!=0 ) //Interrupt contextual judgment
 		{
 			lastTick = xTaskGetTickCountFromISR();
 			xQueueOverwriteFromISR(g_xQueueRobotControl,cmd,woken);
@@ -1282,47 +1282,47 @@ uint8_t WriteRobotControlQueue(RobotControlCMDType_t* cmd,BaseType_t* woken)
 }
 
 /**
- * @brief  此函数用于计算纠偏系数,用于纠正小车走直线的效果
- * @param  纠偏系数值,左轮/右轮
- * @retval 纠偏倍数
+ * @brief This function is used to calculate the correction factor and to correct the effect of the cart moving in a straight line
+ * @param Correction coefficient value, left wheel/right wheel
+ * @retval Correction multiplier
  *
  * @details
- * 当小车无法走直线时,可通过调整纠偏系数来改善走直线的效果.
- * 0-100为可调值,50表示无纠偏效果.大于50小车主动往右偏,
- * 小于50小车主动往左偏.
+ * When the car can't go straight, you can adjust the correction factor to improve straight-line performance.
+ * 0-100 is an adjustable value, 50 means no correction effect. If the car is more than 50, it will automatically veer to the right,
+ * Cars less than 50 meters automatically veer to the left.
  */
 float wheelCoefficient(uint32_t diffparam,uint8_t isLeftWheel)
 {
-	if( 1 == isLeftWheel ) //左轮纠偏,对应50~100对应1.0~1.2倍的纠偏系数
+	if( 1 == isLeftWheel ) //Left-wheel correction, corresponding to a correction factor of 50~100 and 1.0~1.2 times
 	{
 		if( diffparam>50 )
 			return 1.0f + 0.004f*(diffparam-50);
 	}
-	else //右轮纠偏,50~0对应1.0~1.2倍的纠偏系数
+	else //Right wheel correction: 50~0 corresponds to a correction factor of 1.0~1.2 times
 	{
 		if( diffparam<50 )
 			return 1.0f + 0.004f*(50-diffparam);
 	}
 
-	return 1.0f;//不满足条件时,默认是1.
+	return 1.0f;//If the condition is not met, the default is 1.
 }
 
 static void _4ws_SpeedSmooth(RobotControlCMDType_t* smoothcmd,const RobotControlCMDType_t* cmdtarget,uint16_t RunFreq)
 {
-	#define ACCEL_START_X 1.0f  //启动(加速)时最大线加速度 m/s2
-	#define ACCEL_BRAKE_X 1.5f  //停车(减速)时最大线加速度 m/s2
-	#define ACCEL_START_Y 1.0f  //启动(加速)时最大线加速度 m/s2
-	#define ACCEL_BRAKE_Y 1.5f  //停车(减速)时最大线加速度 m/s2
-	#define ACCEL_START_W 5.0f  //自转启动角加速度 rad/s2
-	#define ACCEL_BRAKE_W 7.0f  //自转刹车角加速度
+	#define ACCEL_START_X 1.0f  //Maximum linear acceleration m/s² during startup (acceleration).
+	#define ACCEL_BRAKE_X 1.5f  //Maximum linear acceleration m/s² when stopping (decelerating).
+	#define ACCEL_START_Y 1.0f  //Maximum linear acceleration m/s² during startup (acceleration).
+	#define ACCEL_BRAKE_Y 1.5f  //Maximum linear acceleration m/s² when stopping (decelerating).
+	#define ACCEL_START_W 5.0f  //Acceleration at rotational start angle rad/s²
+	#define ACCEL_BRAKE_W 7.0f  //Acceleration of the rotational braking angle
 
-	//载人参数
-//	#define ACCEL_START_X 0.5f  //启动(加速)时最大线加速度 m/s2
-//	#define ACCEL_BRAKE_X 0.5f  //停车(减速)时最大线加速度 m/s2
-//	#define ACCEL_START_Y 0.5f  //启动(加速)时最大线加速度 m/s2
-//	#define ACCEL_BRAKE_Y 0.5f  //停车(减速)时最大线加速度 m/s2
-//	#define ACCEL_START_W 1.5f  //自转启动角加速度 rad/s2
-//	#define ACCEL_BRAKE_W 1.5f  //自转刹车角加速度
+	//Passenger-carrying parameters
+//	#define ACCEL_START_X 0.5f //Max linear acceleration when starting (accelerating) m/s2
+//	#define ACCEL_BRAKE_X 0.5f //Max linear acceleration when stopping (decelerating) m/s2
+//	#define ACCEL_START_Y 0.5f //Max linear acceleration when starting (accelerating) m/s2
+//	#define ACCEL_BRAKE_Y 0.5f //Max linear acceleration when stopping (decelerating) m/s2
+//	#define ACCEL_START_W 1.5f //Angular acceleration at rotation startup rad/s2
+//	#define ACCEL_BRAKE_W 1.5f // Acceleration of the braking angle during rotation
 
 	_4ws_SpeedSmoothLimit(smoothcmd,cmdtarget,RunFreq,
 		ACCEL_START_X,ACCEL_BRAKE_X,ACCEL_START_Y,ACCEL_BRAKE_Y,ACCEL_START_W,ACCEL_BRAKE_W);
@@ -1330,14 +1330,14 @@ static void _4ws_SpeedSmooth(RobotControlCMDType_t* smoothcmd,const RobotControl
 
 static void _4ws_SpeedSmoothFastBrake(RobotControlCMDType_t* smoothcmd,const RobotControlCMDType_t* cmdtarget,uint16_t RunFreq)
 {
-	#define FAST_ACCEL_START_X 1.0f   //快速减速模式下仍使用正常启动加速度
-	#define FAST_BRAKE_X       5.0f   //转向保护等待时快速线减速度 m/s2
-	#define FAST_ACCEL_START_Y 1.0f   //快速减速模式下仍使用正常启动加速度
-	#define FAST_BRAKE_Y       5.0f   //转向保护等待时快速线减速度 m/s2
-	#define FAST_ACCEL_START_W 5.0f   //快速减速模式下仍使用正常自转启动角加速度
-	#define FAST_BRAKE_W       15.0f  //转向保护等待时快速自转减速度 rad/s2
+	#define FAST_ACCEL_START_X 1.0f   //Normal start acceleration is still used in rapid deceleration mode
+	#define FAST_BRAKE_X       5.0f   //Rapid line deceleration m/s² while waiting for steering protection
+	#define FAST_ACCEL_START_Y 1.0f   //Normal start acceleration is still used in rapid deceleration mode
+	#define FAST_BRAKE_Y       5.0f   //Rapid line deceleration m/s² while waiting for steering protection
+	#define FAST_ACCEL_START_W 5.0f   //Normal rotational starting angular acceleration is still used in rapid deceleration mode
+	#define FAST_BRAKE_W       15.0f  //Rapid rotational deceleration rad/s2 while waiting for steering protection
 
-	//仅在转向保护等待阶段调用,避免影响正常驾驶手感
+	//Activated only during the steering protection waiting phase to avoid affecting normal driving feel
 	_4ws_SpeedSmoothLimit(smoothcmd,cmdtarget,RunFreq,
 		FAST_ACCEL_START_X,FAST_BRAKE_X,FAST_ACCEL_START_Y,FAST_BRAKE_Y,FAST_ACCEL_START_W,FAST_BRAKE_W);
 }
@@ -1345,20 +1345,20 @@ static void _4ws_SpeedSmoothFastBrake(RobotControlCMDType_t* smoothcmd,const Rob
 static void _4ws_SpeedSmoothLimit(RobotControlCMDType_t* smoothcmd,const RobotControlCMDType_t* cmdtarget,uint16_t RunFreq,
 	float accel_start_x,float accel_brake_x,float accel_start_y,float accel_brake_y,float accel_start_w,float accel_brake_w)
 {
-	//计算速度增量
+	//Calculate speed increments
 	float dvx = cmdtarget->Vx - smoothcmd->Vx;
 	float dvy = cmdtarget->Vy - smoothcmd->Vy;
 	float dvz = cmdtarget->Vz - smoothcmd->Vz;
 
-	//当前控制周期
+	//Current control cycle
 	const float dt = 1.0f/(float)RunFreq;
 
-	//XY平面速度按向量整体限加速度,避免斜向运动时合成加速度超限
+	//XY plane velocity limits acceleration as a vector to prevent combined acceleration exceeding limits during oblique motion
 	float dxy_len = sqrtf(dvx * dvx + dvy * dvy);
 	float current_dot_delta = smoothcmd->Vx * dvx + smoothcmd->Vy * dvy;
 	if (dxy_len > 0.00001f)
 	{
-		//沿变化方向做椭圆合成,X/Y限值不同时斜向加速度限值仍准确
+		//Ellipse synthesis is performed along the direction of change; even if the X/Y limits differ, the oblique acceleration limit remains accurate
 		float accel_x = (current_dot_delta >= 0.0f) ? accel_start_x : accel_brake_x;
 		float accel_y = (current_dot_delta >= 0.0f) ? accel_start_y : accel_brake_y;
 		float ux = dvx / dxy_len;
@@ -1373,7 +1373,7 @@ static void _4ws_SpeedSmoothLimit(RobotControlCMDType_t* smoothcmd,const RobotCo
 		}
 	}
 
-	//对Z轴的加减速判断
+	//Determining acceleration and deceleration on the Z-axis
 	float max_dw;
 	if( dvz * smoothcmd->Vz >= 0.0f )
 	{
@@ -1381,53 +1381,53 @@ static void _4ws_SpeedSmoothLimit(RobotControlCMDType_t* smoothcmd,const RobotCo
 	}
 	else
 	{
-		//反向指令:先按brake减速到0;若本帧内过零,剩余时间按start反向加速
+		//Reverse command: first press brake to decelerate to 0; if zero crossing occurs within this frame, apply reverse acceleration for the remaining time according to start
 		float t_brake = fabsf(smoothcmd->Vz) / accel_brake_w;
 		if( t_brake >= dt ) max_dw = accel_brake_w * dt;
 		else max_dw = fabsf(smoothcmd->Vz) + accel_start_w * (dt - t_brake);
 	}
 
-	//检查是否超出平滑加速度限制值
+	//Check if the smooth acceleration limit has been exceeded
 	if (fabsf(dvz) > max_dw + 0.00001f)
 	{
 		dvz = (dvz > 0.0f) ? max_dw : -max_dw;
 	}
 
-	//速度平滑
+	//Velocity smoothing
 	smoothcmd->Vx += dvx;
 	smoothcmd->Vy += dvy;
 	smoothcmd->Vz += dvz;
 
-	//死区清零,防止遥杆零飘导致车子轻微抖动
+	//Deadzone reset prevents remote stick zero drifting and slight vehicle shaking
 //	if (fabsf(smoothcmd->Vx) < 0.008f) smoothcmd->Vx = 0.0f;
 //	if (fabsf(smoothcmd->Vy) < 0.008f) smoothcmd->Vy = 0.0f;
 //	if (fabsf(smoothcmd->Vz) < 0.005f) smoothcmd->Vz = 0.0f;
 }
 
 /**
- * @brief  此函数执行结合IMU数据走直线功能
- * @param  小车目标速度值
- * @retval 无
+ * @brief This function performs the IMU data line routing function
+ * @param Car target speed value
+ * @retval None
  *
  * @details
- *  IMU和小车控制方向:逆时针旋转时,yaw为正,yaw速度为正. Vz为正时小车逆时针旋转
+ *  IMU and car control direction: when rotating counterclockwise, yaw is positive, yaw speed is positive. When Vz is positive, the car rotates counterclockwise
  */
 static void Linear_IMUHelp(RobotControlCMDType_t* cmdtarget)
 {
-	//用于延迟获取目标角度
+	//Used to delay the acquisition of the target angle
 	static uint8_t TargetCnt = 0;
 	#define DelayCNT 70
 
-	//目标角度
+	//Target angle
 	static float target_angle = 0;
 
-	//PID参数
+	//PID parameters
 	float linear_helpkp = 0.08f;
 	float linear_helpkd = 0.05f;
 
 	switch( RobotHardWareParam.CarType )
 	{
-		//不同车型在直线调节时PID参数不相同,与车身重量,车身结构,以及电机都有关系
+		//Different models have different PID parameters when adjusting in a straight line, which is related to body weight, body structure, and motor
 		case S100: linear_helpkp = 0.03f; linear_helpkd = 0.007f; break;
 		case S300Mini: linear_helpkp = 0.08f; linear_helpkd = 0.01f; break;
 		case S300: linear_helpkp = 0.06f; linear_helpkd = 0.015f; break;
@@ -1437,27 +1437,27 @@ static void Linear_IMUHelp(RobotControlCMDType_t* cmdtarget)
 
 	static uint8_t giveup_flag = 0;
 
-	//仅在Vx有速度时补偿,其余情况不补偿并更新目标角度
+	//Only compensates when Vx has speed; otherwise, no compensation and target angle is updated
 	if( (cmdtarget->Vx!=0 || cmdtarget->Vy!=0) && cmdtarget->Vz==0 && giveup_flag==0 )
 	{
-		//延迟获得目标角度
+		//Delay obtaining the target angle
 		TargetCnt++;
 		if( TargetCnt==DelayCNT )  target_angle = AttitudeVal.yaw;
 
-		//获取到目标角度后再执行PID控制
+		//After obtaining the target angle, execute PID control
 		if( TargetCnt >= DelayCNT )
 		{
-			//锁住计数值防止循环
+			//Lock the counter value to prevent cycling
 			TargetCnt=DelayCNT+1;
 
-			//误差计算
+			//Error calculation
 			float error = target_angle-AttitudeVal.yaw;
 
-			//对误差角度归一化
+			//Normalize error angles
 			if( error >  180.0f ) error -= 360.0f;
 			if( error < -180.0f ) error += 360.0f;
 
-			//当偏差过大时,放弃调整(如悬空控制).
+			//When the deviation is too large, abandon adjustments (such as suspension control).
 			if( fabs(error)> 30 )
 			{
 				giveup_flag = 1;
@@ -1465,7 +1465,7 @@ static void Linear_IMUHelp(RobotControlCMDType_t* cmdtarget)
 				return;
 			}
 
-			//PID调整小车走直线效果(仅超过一定速度才调整)
+			//PID adjusts the straight-line effect of the car (only adjusts when the speed exceeds a certain threshold)
 			static uint8_t AllowFilterCnt;
 			if( fabs(RobotControlParam.feedbackVx)>=0.05f || fabs(RobotControlParam.feedbackVy)>=0.05f )
 			{
@@ -1483,14 +1483,14 @@ static void Linear_IMUHelp(RobotControlCMDType_t* cmdtarget)
 				AllowFilterCnt=0;
 			}
 
-			//限制调整值
+			//Limit adjustment value
 			LinearHelp_Target.Vz = target_limit_float(LinearHelp_Target.Vz,-1.57f,1.57f);
 		}
 
 	}
 	else if( cmdtarget->Vx==0 && cmdtarget->Vy==0 && cmdtarget->Vz==0 )
 	{
-		//速度全0时静止一段时间则刷新目标角度
+		//Refresh target angles after remaining stationary with all velocities at 0 for a while
 		TargetCnt++;
 		if( TargetCnt>100 )  target_angle = AttitudeVal.yaw,TargetCnt=101;
 		LinearHelp_Target.Vx = 0;
@@ -1500,7 +1500,7 @@ static void Linear_IMUHelp(RobotControlCMDType_t* cmdtarget)
 	}
 	else
 	{
-		//其他情况则延迟目标角度的刷新,防止动态切换的过程目标角度刷新不准确
+		//In other cases, the refresh of the target angle is delayed to prevent inaccurate refresh during dynamic switching
 		TargetCnt=0;
 		LinearHelp_Target.Vx = 0;
 		LinearHelp_Target.Vy = 0;
@@ -1534,7 +1534,7 @@ float rpm_to_linearVel(float rpm,float wheelper)
 	return rpm/60.0f*(wheelper);
 }
 
-//复位进入bootloader函数
+//Reset to enter the bootloader function
 void _System_Reset_FromAPP_RTOS(char uart_recv)
 {
 	static char res_buf[5];
@@ -1550,7 +1550,7 @@ void _System_Reset_FromAPP_RTOS(char uart_recv)
 	if(res_count==5)
 	{
 		res_count = 0;
-		//接受到上位机请求的复位字符"reset",执行软件复位
+		//Execute software reset after receiving the reset character "reset" from the host
 		if( res_buf[0]=='r'&&res_buf[1]=='e'&&res_buf[2]=='s'&&res_buf[3]=='e'&&res_buf[4]=='t' )
 		{
 			RobotControlCMDType_t cmd = {
@@ -1558,23 +1558,23 @@ void _System_Reset_FromAPP_RTOS(char uart_recv)
 				0,0,0
 			};
 
-			//写入最高优先级指令停止小车运动
+			//Write the highest priority instruction to stop the chassis's movement
 			for(uint8_t i=0;i<10;i++)
 			{
 				WriteRobotControlQueue(&cmd,0);
 				vTaskDelay( pdMS_TO_TICKS(10) );
 			}
 
-			//复位系统
+			//Reset system
 			NVIC_SystemReset();
 		}
 	}
 }
 
-//调试模式
+//Debug mode
 void RobotControl_SetDebugLevel(char uart_recv)
 {
-	//调试任务句柄
+	//Debug task handles
 	extern TaskHandle_t g_reportErrTaskHandle;
 
 	static char res_buf[4];
@@ -1602,11 +1602,11 @@ void RobotControl_SetDebugLevel(char uart_recv)
 				default: RobotControlParam.DebugLevel = 0; break;
 			}
 
-			//操作提示音
+			//Operation prompt sound
 			pBuzzerInterface_t tips = &UserBuzzer;
 			tips->AddTask(1,200);
 
-			//发送任务通知
+			//Send task notifications
 			xTaskNotifyGive(g_reportErrTaskHandle);
 		}
 	}

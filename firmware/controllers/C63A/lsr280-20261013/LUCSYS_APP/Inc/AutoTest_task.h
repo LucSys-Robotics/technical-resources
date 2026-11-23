@@ -3,48 +3,48 @@
 
 #include <stdint.h>
 
-//场地自动测试属于研发设施,与数据观察共用同一个总开关.
-//DATALOG_ENABLE=0 时本文件不导出任何符号,任务也不会被创建 ——
-//出货固件里客户长按手柄上键不会误触发测试脚本.
+//On-site automated testing is a R&D facility and shares the same main switch as the data observation system.
+//DATALOG_ENABLE=0, this file does not export any symbols, and tasks will not be created —
+//In the shipping firmware, customers long-pressing the handle button will not accidentally trigger the test script.
 #include "datalog_task.h"
 
 #if DATALOG_ENABLE
 
 /**
- * 航向控制内部量,用于诊断平移段 Vz 的振荡
+ * Heading control internal quantity, used to diagnose oscillations in the translation segment Vz
  *
- * 日志任务按 10Hz 采样而本任务跑 50Hz,直接读瞬时值会混叠 —— 曾经就因此
- * 只看到 Vz 在 +0.30/-0.03 之间跳,查不出中间发生了什么。
- * 改为本任务每拍累积包络(vzMin/vzMax)与符号翻转次数,日志读走后调用
- * AutoTest_DbgWindowReset 清窗口,这样 100ms 内每一拍都被计入,与采样时机无关。
+ * The log task samples at 10Hz while this task runs at 50Hz. Reading instantaneous values directly causes aliasing — this was the case before
+ * only saw Vz jumping between +0.30/-0.03, unable to figure out what happened in between.
+ * Change to this task: cumulative envelope (vzMin/vzMax) and symbol flip count per beat, called after reading the log
+ * AutoTest_DbgWindowReset clears the window so that every tick within 100ms is counted, regardless of the sampling timing.
  */
 typedef struct{
-	float   yaw0;     //测试坐标系基准航向(度).启动后应恒定,若变化说明被重采了
-	float   yawErr;   //本拍航向误差(度),PD的输入
-	float   vzRaw;    //本拍限幅前的PD输出(rad/s),看它是否真的冲到限幅
-	float   vzLast;   //本拍实际下发的Vz
-	float   vzMin;    //窗口内下发Vz的下包络
-	float   vzMax;    //窗口内下发Vz的上包络
-	uint8_t flipCnt;  //窗口内Vz符号翻转次数,振荡的直接指标
-	uint8_t seg;      //当前段索引
-	uint8_t state;    //状态机状态 0=待机 1=执行 2=段间停顿 3=收尾
+	float   yaw0;     //Test coordinate system reference heading (degrees). After starting, it should remain constant; any changes indicate it has been retaken
+	float   yawErr;   //Heading error (degrees) for this shot, input for PD
+	float   vzRaw;    //The PD output (rad/s) before the current limit to see if it really reaches the limit
+	float   vzLast;   //The actual Vz issued in this auction
+	float   vzMin;    //Lower envelope of Vz within the window
+	float   vzMax;    //Send down the upper envelope of Vz within the window
+	uint8_t flipCnt;  //The number of times the Vz symbol flips in the window, a direct indicator of oscillation
+	uint8_t seg;      //Current segment index
+	uint8_t state;    //State machine state 0 = standby 1 = execute 2 = pause between segments 3 = finish
 }AutoTestDbg_t;
 
 extern volatile AutoTestDbg_t g_AutoTestDbg;
 
-//日志任务读走窗口量之后调用,重开下一个统计窗口
+//After reading the number of windows from the log task, call to reopen the next statistics window
 void AutoTest_DbgWindowReset(void);
 
-//场地自动测试任务:在2.4m x 2.4m场地内循环执行 直行/横移/倒退/斜移/旋转
+//Automated site testing task: Perform cyclical vertical movement/lateral movement/backward/tilt/rotation within a 2.4m x 2.4m site
 void AutoTest_task(void* param);
 
-//请求启动测试(手柄上键长按触发,可在任意任务/回调中调用)
+//Request to start a test (triggered by long-pressing the controller upper, can be called in any task/callback)
 void AutoTest_Start(void);
 
-//请求停止测试(手柄上键单击/双击触发)
+//Request to stop testing (triggered by a controller click/double-click)
 void AutoTest_Stop(void);
 
-//查询测试是否在运行
+//Query whether the test is running
 uint8_t AutoTest_IsRunning(void);
 
 #endif //DATALOG_ENABLE

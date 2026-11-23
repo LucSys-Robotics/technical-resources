@@ -10,7 +10,7 @@ enum
 };
 
 /*--------simulate iic config--------*/
-//模拟IIC 引脚配置
+//Simulate IIC pin configuration
 #define ENABLE_IIC_SCL_PIN_CLOCK RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE)
 #define ENABLE_IIC_SDA_PIN_CLOCK RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE)
 
@@ -20,12 +20,12 @@ enum
 
 #define IIC_SDA_PORT      GPIOB
 #define IIC_SDA_PIN       GPIO_Pin_8
-#define IIC_SDA_PIN_NUM   8          //SDA的引脚号
-#define IIC_SDA           PBout(8)   //输出SDA	 
-#define READ_SDA          PBin(8)    //输入SDA 
+#define IIC_SDA_PIN_NUM   8          //Pin number of the SDA
+#define IIC_SDA           PBout(8)   //SDA output
+#define READ_SDA          PBin(8)    //SDA input
 /*----------------------------------*/
 
-//根据用户配置自动适配，无需修改
+//Automatically adapts according to user configurations without modification
 #define SDA_IN()  {IIC_SDA_PORT->MODER&=~(3<<(IIC_SDA_PIN_NUM*2));IIC_SDA_PORT->MODER|=0<<IIC_SDA_PIN_NUM*2;}	
 #define SDA_OUT() {IIC_SDA_PORT->MODER&=~(3<<(IIC_SDA_PIN_NUM*2));IIC_SDA_PORT->MODER|=1<<IIC_SDA_PIN_NUM*2;} 
 

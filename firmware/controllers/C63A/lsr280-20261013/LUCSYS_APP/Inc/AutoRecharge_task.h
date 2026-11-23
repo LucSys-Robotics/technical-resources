@@ -10,10 +10,10 @@ typedef struct{
 	uint8_t L_A;
 	uint8_t L_B;
 	uint8_t RedNum;
-	uint8_t ChargingFlag;//是否已经在充电的标志位
-	uint8_t devState;    //充电装备内部状态机
-	float  ChargingCur;  //充电电流
-	float  ChargingVol;  //充电电压
+	uint8_t ChargingFlag;//Whether it is already at the charging marker
+	uint8_t devState;    //Internal state machine for charging equipment
+	float  ChargingCur;  //Charging current
+	float  ChargingVol;  //Charging voltage
 	
 	float dockerX;
 	float dockerY;

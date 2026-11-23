@@ -1,14 +1,14 @@
 #ifndef __SYSTEM_H
 #define __SYSTEM_H
 
-//设置程序起始偏移地址. 程序起始地址 = 0x8000000 + VECT_TAB_OFFSET
+//Set the program start offset address. Program start address = 0x8000000 + VECT_TAB_OFFSET
 #define VECT_TAB_OFFSET  0x00000
 
-//芯片头文件
+//Chip header file
 #include "stm32f4xx.h"
 
 //C library function related header file
-//C库函数的相关头文件
+//Header files related to C library functions
 #include <stdio.h> 
 #include <stdint.h>
 #include <stdlib.h>
@@ -17,7 +17,7 @@
 #include "stdarg.h"
 
 //FreeRTOS related header files
-// FreeRTOS相关头文件
+// FreeRTOS related header files
 #include "FreeRTOSConfig.h"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -26,7 +26,7 @@
 #include "semphr.h"
 
 //Board level support package related header files
-//板级支持包(硬件)相关头文件
+//Board-level support package (hardware) related header files
 #include "delay.h"
 #include "sys.h"
 #include "usart.h"
@@ -49,11 +49,11 @@
 #include "remote.h"
 #include "usb_host.h"
 
-//机器人本体参数相关头文件
+//Header files related to robot body parameters
 #include "robot_init.h"
 
 //Main logic code related header files
-//主逻辑相关头文件
+//Main logic related header files
 #include "balance_task.h"
 #include "imu_task.h"
 #include "show_task.h"
@@ -63,22 +63,22 @@
 
 
 //Check the multiple vehicle model definitions and ensure that only one model is allowed to exist at a time.
-//对多重车型定义检查,不允许多个车型同时存在.
+//Define inspections for multiple vehicle types, preventing multiple models from coexisting simultaneously.
 #if defined AKM_CAR + defined DIFF_CAR + defined MEC_CAR + defined _4WD_CAR + defined OMNI_CAR > 1
 	#error "ERROR: multiple vehicle model definitions."
 #endif
 
-//对外接口
+//External interface
 void systemInit(void);
 
-/***Macros define***/ /***宏定义***/
+/***Macros define***/ /***Macro Definition***/
 //After starting the car (1000/100Hz =10) for seconds, it is allowed to control the car to move
-//开机(1000/100hz=10)秒后才允许控制小车进行运动
+//The car is only allowed to be controlled after turning on (1000/100Hz=10) seconds after startup
 
-//TODO:恢复成1000
+//TODO: Restores to 1000
 #define CONTROL_DELAY		1000
 
-//RTOS任务频率
+//RTOS task frequency
 #define RATE_1_HZ		  1
 #define RATE_5_HZ		  5
 #define RATE_10_HZ		10

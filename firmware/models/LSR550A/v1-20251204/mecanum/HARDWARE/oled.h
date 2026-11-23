@@ -4,7 +4,7 @@
 #include "system.h"
 
 //Oled port macro definition
-//OLED端口宏定义
+//Definition of OLED port macros
 #define OLED_RST_Clr() PDout(5)=0   //RST
 #define OLED_RST_Set() PDout(5)=1   //RST
 
@@ -16,11 +16,11 @@
 
 #define OLED_SDIN_Clr()  PDout(6)=0   //SDA
 #define OLED_SDIN_Set()  PDout(6)=1   //SDA
-#define OLED_CMD  0	//Command //写命令
-#define OLED_DATA 1	//Data //写数据
+#define OLED_CMD  0	//Command // Write command
+#define OLED_DATA 1	//Data // Write data
 
 //Oled control function
-//OLED控制用函数
+//Functions for OLED control
 void OLED_WR_Byte(u8 dat,u8 cmd);	    
 void OLED_Display_On(void);
 void OLED_Display_Off(void);

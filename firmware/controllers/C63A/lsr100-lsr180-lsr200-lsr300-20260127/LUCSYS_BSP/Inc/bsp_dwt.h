@@ -5,12 +5,12 @@
 
 extern uint32_t SystemCoreClock;
 
-//DWT寄存器地址
+//DWT register address
 #define DWT_CTRL        *(uint32_t*)0xE0001000
 #define DWT_CYCCNT      *(uint32_t*)0xE0001004
 #define DEM_CR          *(uint32_t*)0xE000EDFC
 
-//DWT的32位计数器最大值
+//32-bit counter maximum value of the DWT
 #define DWT_CNT_MAX  4294967295u
 
 void DWT_Init(void);

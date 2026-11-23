@@ -1,29 +1,29 @@
 #include "balance_task.h"
 
-//与小车控制相关
+//Related to car control
 ROBOT_CONTROL_t robot_control;
 
-//与小车自检相关变量
+//Variables related to the car self-test
 ROBOT_SELFCHECK_t robot_check;
 SemaphoreHandle_t motorsMutex;
 
-//机器人驻车模式相关变量
+//Variables related to robot parking mode
 static ROBOT_PARKING_t park;
 int Servo1=0;
 float Position1=1500,Velocity1=0;
-//增量式PI控制器
+//Incremental PI controller
 PI_CONTROLLER PI_MotorA,PI_MotorB,PI_MotorC,PI_MotorD,PI_Servo;
 
 #if defined AKM_CAR
-AKM_SERVO_UNLOCK_t ServoState;//舵机非自锁控制器
+AKM_SERVO_UNLOCK_t ServoState;//Servo non-self-locking controller
 #endif
 /**************************************************************************
 Function: FreerTOS task, core motion control task
 Input   : none
 Output  : none
-函数功能：FreeRTOS任务，核心运动控制任务
-入口参数：无
-返回  值：无
+Functions: FreeRTOS tasks, core motion control tasks
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void Balance_task(void *pvParameters)
 {
@@ -35,68 +35,68 @@ void Balance_task(void *pvParameters)
     while(1)
     {
         // This task runs at a frequency of 100Hz (10ms control once)
-        //此任务以100Hz的频率运行（10ms控制一次）
+        //This task runs at 100Hz (controlled once every 10ms)
         vTaskDelayUntil(&lastWakeTime, F2T(BALANCE_TASK_RATE));
 
         //Time count is no longer needed after 30 seconds
-        //时间计数，30秒后不再需要
+        //Time count, no longer needed after 30 seconds
         if(SysVal.Time_count<3000) SysVal.Time_count++;
 		
         //and convert to transposition international units
-        //获取编码器数据反馈、舵机数据反馈
+        //Obtain encoder data feedback and servo data feedback
         Get_Robot_FeedBack();
 ////			printf("aaaa \n");
-		//自动回充设备、状态、航模遥控器等信号监测
+		//Automatic recharge equipment, status, RC transmitter, and other signal monitoring
 //		    Charger_DevCheck();
 		
         //Function to Scan User Key Press Status
-        //扫描用户按键状态
+        //Scan user key status
         UserKey_Scan( BALANCE_TASK_RATE );
 		
 		//Robot parking status monitoring, clearing residual motor control signals. \
 		  Reduce power consumption, reduce motor noise.
-		//机器人驻车状态监测,清除残余电机控制量.降低功耗,降低电机噪音.
+		//Robot parking status monitoring, clearing residual motor control input. Reduces power consumption and motor noise.
 		    Robot_ParkingCheck();
 		
-		//机器人上电自检
-        //等陀螺仪初始化完成后,检测机器人型号是否选择错误
+		//Robot power-on self-test
+        //After the gyroscope initialization is complete, check whether the robot model was selected incorrectly
         //When the gyroscope is initialized, check whether the robot model is selected incorrectly
         if(CONTROL_DELAY<SysVal.Time_count && SysVal.Time_count<CONTROL_DELAY+200)
         {
-            Drive_Motor(0.2f,0,0);//低速前进测试
-			//TODO:自检需要测试各种车型自检
-            robot_mode_check();  //Detection function //检测函数
+            Drive_Motor(0.2f,0,0);//Low-speed forward test
+			//TODO: Self-inspection requires testing various vehicle models
+            robot_mode_check();  //Detection function // Detection function
         }
         else if(CONTROL_DELAY+200<SysVal.Time_count && SysVal.Time_count<CONTROL_DELAY+230)
         {
 						robot_check.check_end = 1;
-            Drive_Motor(0,0,0); //The stop forward control is completed //检测完成停止前进控制
+            Drive_Motor(0,0,0); //Stop forward control completed // Stop forward control is completed
 						SysVal.LED_delay = 500;
         }
 		
 		//After the self-check is completed, obtain the control commands for the robot.
-        //自检结束后，获取机器人的控制命令
+        //After the self-test is complete, obtain the robot's control commands
         if(SysVal.Time_count>CONTROL_DELAY+230)
         {
-					if( 0 == SysVal.SecurityLevel )//0为最高安全等级,带有机器人控制命令丢失保护
+					if( 0 == SysVal.SecurityLevel )//0 is the highest safety level, with robot control command loss protection
 					{
-						//TODO:监测丢失,不同控制方式,监测丢失的频率不同,以实测生效为准.
-						//uart,ros,can,usb ps2,安卓app 可用,苹果app无法使用,航模需要其他实现
-						//TODO:安全等级只对uart,ros,can生效. ps2，app，航模信号丢失需要无条件停止
+						//TODO: Monitoring for loss. Different control methods require different frequency of detection; actual measurement is based on effectiveness.
+						//uart, ros, can, usb ps2, Android app usable, Apple app cannot be used, RC model needs other implementation
+						//TODO: safety level only applies to uart, ros, can. PS2, app, and model aircraft signal loss requires unconditional stopping
 						robot_control.command_lostcount++;
 						if( robot_control.command_lostcount>BALANCE_TASK_RATE )
 							robot_control.Vx = 0 , robot_control.Vy = 0 , robot_control.Vz = 0;
 					}				
-					//正常模式控制命令
+					//Normal mode control command
 					else
 					{
-						if      ( Get_Control_Mode(_APP_Control)  )    Get_APPcmd();      //Handle the APP remote commands //处理APP遥控命令
-						else if ( Get_Control_Mode(_RC_Control)   )    Remote_Control();  //Handle model aircraft remote commands //处理航模遥控命令
-						else if ( Get_Control_Mode(_PS2_Control)  )    PS2_control();     //Handle PS2 controller commands //处理PS2手柄控制命令
+						if      ( Get_Control_Mode(_APP_Control)  )    Get_APPcmd();      //Handle the APP remote commands // Handle APP remote commands
+						else if ( Get_Control_Mode(_RC_Control)   )    Remote_Control();  //Handle model aircraft remote commands // Handle model aircraft remote commands
+						else if ( Get_Control_Mode(_PS2_Control)  )    PS2_control();     //Handle PS2 controller commands // Handle PS2 controller commands
 						
 						//CAN, Uart x control can directly get the 3 axis target speed, 
 						//without additional processing
-						//CAN、串口x 控制直接得到3轴目标速度，无须额外处理
+						//CAN and serial port X control directly obtain 3-axis target velocity without additional processing
 						else    Drive_Motor(robot_control.Vx,robot_control.Vy,robot_control.Vz);
 						
 						if     (A280.control_mode==APP_Mode) 	Get_RC_ARM();
@@ -105,7 +105,7 @@ void Balance_task(void *pvParameters)
      
 //			
 
-		//深度自检模式,由用户需要时进入
+		//Deep self-test mode, accessible by the user when needed
 		if( 1 == robot_check.DeepCheck && SysVal.Time_count>CONTROL_DELAY+300)
 		{
 			if( 1 == Deep_SelfCheck( BALANCE_TASK_RATE ) )
@@ -118,49 +118,49 @@ void Balance_task(void *pvParameters)
 		//Robot Operation Status Inspection. Inspection Items: Check if the voltage is too low, \
 		if there are any self-test errors, and if the emergency stop switch has been pressed.   \
 		The robot will not be allowed to be controlled if any of these conditions are not met.
-		//机器人运行状态检测.检测内容：电压是否过低、自检是否出错、急停开关是否被按下.不符合条件时将不允许机器人被控制
+		//Robot operating status check. Detection content: whether voltage is too low, whether the self-check is incorrect, whether the emergency stop switch has been pressed. If conditions are not met, the robot will not be allowed to be controlled
 		robot_control.FlagStop = Turn_Off();
 		
 		#if defined AKM_CAR
-			Servo_UnLock_Check(robot_control.FlagStop);//舵机非自锁模式监测
+			Servo_UnLock_Check(robot_control.FlagStop);//Monitoring of servo non-self-locking modes
 		#endif
 		
-		//机器人允许被控制
+		//Robots are allowed to be controlled
 		if( 0 == robot_control.FlagStop )
 		{
-			//执行控制,根据车型、型号不同,进行不同的控制.
+			//Execute control, performing different controls according to different models and models.
 			ResponseControl();
 		}
-		else //失能控制.清空控制量.使用解轴的方式
+		else //Disable control and clear control outputs using shaft-release mode
 		{
 			UnResponseControl(UN_LOCK);
 		}
 		
 		
-		//保存FLash参数,内容包含阿克曼参数、纠偏系数等
+		//Save FLash parameters, including Ackermann parameters, correction factors, etc
 		uint8_t flash_check = 0;
-		flash_check = FlashParam_Save( &appkey.ParamSaveFlag ); //保存Flash参数
-		if( 1 == flash_check ) Buzzer_AddTask(1,100);      //保存成功,正常蜂鸣提示1秒
-		else if( 1 < flash_check ) Buzzer_AddTask(10,11); //保存失败,快速蜂鸣10声警告
+		flash_check = FlashParam_Save( &appkey.ParamSaveFlag ); //Save Flash parameters
+		if( 1 == flash_check ) Buzzer_AddTask(1,100);      //Saved successfully, normal beep prompt for 1 second
+		else if( 1 < flash_check ) Buzzer_AddTask(10,11); //Save failed, rapid beep with 10 warnings
 
     }
 }
 
 /**************************************************************************
-函数功能：输入舵机的目标角度输出对应的pwm值
-入口参数：舵机转向角度（单位：弧度）
-返回  值：对应输出的pwm值（范围：500——2500）
+Function: input the target angle to the servo and output the corresponding PWM value
+Inlet parameter: servo steering angle (unit: radians)
+Return value: corresponding output PWM value (range: 500--2500)
 **************************************************************************/
 int SERVO_PWM_VALUE(float angle)
 {
 		
 	    int Amplitude_H=2500, Amplitude_L=500; 
 		int K=1000;
-		float Ratio=0.6369; //180°舵机
-	    //float Ratio=0.4246; //270°舵机
+		float Ratio=0.6369; //180° servo
+	    //float Ratio = 0.4246; // 270° servo
 		int pwm_value;
 			
-		pwm_value=(SERVO_INIT-angle*K*Ratio); //舵机目标PWM数值
+		pwm_value=(SERVO_INIT-angle*K*Ratio); //Servo target PWM value
 	    if(pwm_value<Amplitude_L)  Servo1=Amplitude_L;	
 		if(pwm_value>Amplitude_H)  Servo1=Amplitude_H;	
 	    return pwm_value;
@@ -168,33 +168,33 @@ int SERVO_PWM_VALUE(float angle)
 }
 
 /**************************************************************************
-函数功能：位置式PID控制器
-入口参数：编码器测量位置信息，目标位置
-返回  值：电机PWM
-根据位置式离散PID公式 
+Function: Position-based PID controller
+Entry parameters: encoder measurement position information, target position
+Return value: motor PWM
+According to the positional discrete PID formula
 pwm=Kp*e(k)+Ki*∑e(k)+Kd[e（k）-e(k-1)]
-e(k)代表本次偏差 
-e(k-1)代表上一次的偏差  
-∑e(k)代表e(k)以及之前的偏差的累积和;其中k为1,2,,k;
-pwm代表输出
+e(k) represents the current deviation
+e(k-1) represents the previous deviation
+∑e(k) represents the cumulative sum of e(k) and previous deviations; where k is 1, 2, k;
+pwm represents output
 **************************************************************************/
 float Position_PID1 (float Encoder,float Target)
 { 	
 	 static float Bias,Pwm,Integral_bias,Last_Bias;
-	 Bias=Target-Encoder;                                  //计算偏差
-	 Integral_bias+=Bias;	                                 //求出偏差的积分
-	 Pwm=10*Bias/100+0*Integral_bias/100+18*(Bias-Last_Bias)/100;       //位置式PID控制器
-	 Last_Bias=Bias;                                       //保存上一次偏差 
+	 Bias=Target-Encoder;                                  //Calculate bias
+	 Integral_bias+=Bias;	                                 //Calculate the integral of the deviation
+	 Pwm=10*Bias/100+0*Integral_bias/100+18*(Bias-Last_Bias)/100;       //Position-based PID controller
+	 Last_Bias=Bias;                                       //Save the previous deviation
 	 if(Pwm<-120)  Pwm=-120;	
    if(Pwm>120)  Pwm=120;
-	 return Pwm;                                           //增量输出
+	 return Pwm;                                           //Incremental output
 }
 
 void Grap_Set_Pwm(float velocity1)
 {	
-		Position1+=velocity1;		   //速度的积分，得到舵机的位置	
-	  //赋值给STM32的寄存器
-	    TIM9->CCR2=(int)Position1;   //夹爪
+		Position1+=velocity1;		   //Integrate velocity to obtain servo position
+	  //Register assigned to STM32
+	    TIM9->CCR2=(int)Position1;   //Claw
 }
 
 
@@ -206,20 +206,20 @@ void Grap_Set_Pwm(float velocity1)
 
 
 /*-------------------------------- Functions Related to PI Controller ------------------------------------*/
-/*--------------------------------           PI 控制器相关函数          ------------------------------------*/
+/*-------------------------------- PI Controller Related Functions ------------------------------------*/
 /**************************************************************************
 Functionality: Set PID Control Parameters - Configures the proportional (Kp) and integral (Ki) parameters for PID control.
 Input Parameters: Kp parameter, Ki parameter.
 Return Value: None.
 Author: LUCSYS
-函数功能：设置PID控制的参数
-入口参数：Kp参数、Ki参数
-返回  值：无
-作    者：LUCSYS
+Function: Set parameters for PID control
+Entry parameters: Kp parameters, Ki parameters
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 static void PI_SetParam(PI_CONTROLLER* p,int kp,int ki)
 {
-	//PID参数不可为负,也不可为0.
+	//The PID parameter cannot be negative or 0.
 	if( kp > 0 ) 
 	{
 		p->kp = kp;
@@ -235,7 +235,7 @@ void Set_Robot_PI_Param(int kp,int ki)
 	if( kp > 0 ) robot.V_KP = kp;
 	if( ki > 0 ) robot.V_KI = ki;
 	
-	//设置四路pi参数
+	//Set the four PI parameters
 	PI_SetParam(&PI_MotorA,robot.V_KP,robot.V_KI);
 	PI_SetParam(&PI_MotorB,robot.V_KP,robot.V_KI);
 	PI_SetParam(&PI_MotorC,robot.V_KP,robot.V_KI);
@@ -247,10 +247,10 @@ Functionality: Incremental PI Controller Reset - Resets an incremental PI (Propo
 Input Parameters: PI controller.
 Return Value: None.
 Author: LUCSYS
-函数功能：增量式PI控制器复位
-入口参数：PI控制器
-返回  值：无
-作    者：LUCSYS
+Function: Incremental PI controller reset
+Entry parameters: PI controller
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 static void PI_Controller_Reset(PI_CONTROLLER *p)
 {
@@ -266,27 +266,27 @@ Functionality: Incremental PI Control - Implements the control logic for an
 Input Parameters: PI controller, feedback value, target value.
 Return Value: Control output result.
 Author: LUCSYS
-函数功能：增量式PI控制
-入口参数：PI控制器,反馈值,目标值
-返回  值：控制量结果输出
-作    者：LUCSYS
+Function: incremental PI control
+Entry parameters: PI controller, feedback value, target value
+Return value: control output
+Author: LUCSYS
 **************************************************************************/
 static int Incremental_MOTOR(PI_CONTROLLER* p,float current,float target)
 {
-	//计算偏差
+	//Calculate bias
 	p->Bias = target - current;
 	
-	//计算输出
+	//Calculating output
 	p->Output += p->kp * ( p->Bias - p->LastBias ) + p->ki * p->Bias;
 	
-	//输出限幅
+	//Output limiting
 	if( p->Output >   FULL_DUTYCYCLE ) p->Output =   FULL_DUTYCYCLE;
 	if( p->Output < - FULL_DUTYCYCLE ) p->Output = - FULL_DUTYCYCLE;
 	
-	//保存本次偏差
+	//Save the current deviation
 	p->LastBias = p->Bias;
 	
-	//输出
+	//Output
 	return p->Output;
 }
 
@@ -296,83 +296,83 @@ Functionality: Incremental PI Control - Implements the control logic for an
 Input Parameters: PI controller, feedback value, target value.
 Return Value: Control output result.
 Author: LUCSYS
-函数功能：增量式PI控制
-入口参数：PI控制器,反馈值,目标值
-返回  值：控制量结果输出
-作    者：LUCSYS
+Function: incremental PI control
+Entry parameters: PI controller, feedback value, target value
+Return value: control output
+Author: LUCSYS
 **************************************************************************/
 #if defined AKM_CAR
 static int Incremental_Servo(PI_CONTROLLER* p,float current,float target)
 {
-	//舵机独立PID参数,不开放用户修改.已调整为最佳值
+	//Servo independent PID parameters, not open for user modification. Adjusted to the optimal value
 	float servo_kp = 0;
 	float servo_ki = 0;
 	int8_t servo_dir = 1;
 	
-	//根据滑轨的行程、不同的车型 来确定PI参数
-	if( robot.type==2 || robot.type==3 ) //顶配摆式阿克曼
+	//Determine PI parameters based on the stroke of the rail and different vehicle models
+	if( robot.type==2 || robot.type==3 ) //Top-spec oscillating-axle Ackermann chassis
 	{
-		//因机械结构原因,右转的行程比较长,此时需要加快转向速度
+		//Due to mechanical structure, the travel for a right turn is relatively long, so you need to accelerate the steering speed
 		if( target<0 || current<-200 ) servo_kp = 0.002f*1.3f , servo_ki = 0.006f*1.3f;
 		else                           servo_kp = 0.002f , servo_ki = 0.006f;
 	}
-	else if( robot.type==4 || robot.type==5 ) //顶配独立阿克曼
+	else if( robot.type==4 || robot.type==5 ) //Top-spec independent-suspension Ackermann chassis
 	{
-		servo_dir = -1;//舵机反装,执行方向有变化
+		servo_dir = -1;//Servo reversed installation, with changes in execution direction
 		
-		//因机械结构原因,右转的行程比较长,此时需要加快转向速度
+		//Due to mechanical structure, the travel for a right turn is relatively long, so you need to accelerate the steering speed
 		if( target>0 || current<200 )  servo_kp = 0.002f*1.3f , servo_ki = 0.006f*1.3f;
 		else                           servo_kp = 0.002f , servo_ki = 0.006f;
 	}
 	
-	//低速舵机模式
+	//Low-speed servo mode
 	static uint16_t low_speedMode = 0;
 	if( robot_control.ServoLow_flag ) 
 	{
 		servo_kp = 0.001,servo_ki = 0.003;
 		low_speedMode++;
-		if( low_speedMode > BALANCE_TASK_RATE*2 ) //设置自动退出时间,2秒
+		if( low_speedMode > BALANCE_TASK_RATE*2 ) //Set the auto-exit time to 2 seconds
 		{
 			low_speedMode = 0;
-			robot_control.ServoLow_flag = 0;//自动退出低速模式
+			robot_control.ServoLow_flag = 0;//Automatically exit low-speed mode
 		}
 	}
 	else
 		low_speedMode = 0;
 	
-	//计算偏差
+	//Calculate bias
 	p->Bias = target - current ;
 	
-	//输出计算
+	//Output calculation
 	p->Output += (servo_kp*servo_dir) * ( p->Bias - p->LastBias ) + (servo_ki*servo_dir) * p->Bias;
 	
-	//输出限幅
+	//Output limiting
 	if( p->Output > Akm_Servo.Max )  p->Output = Akm_Servo.Max;
 	if( p->Output < Akm_Servo.Min )  p->Output = Akm_Servo.Min;
 	
-	//保存本次偏差
+	//Save the current deviation
 	p->LastBias = p->Bias;
 	
-	//舵机非自锁模式实现.通过在判断条件加入标志位可禁用非自锁模式
+	//Servo non-locking mode implementation. By adding flags to the judgment condition, non-self-locking mode can be disabled
 	static uint16_t count = 0;
-	if( robot_control.smooth_Servo == p->Output && robot_control.FlagStop==0 ) //仅在机器人允许控制时使用本逻辑
+	if( robot_control.smooth_Servo == p->Output && robot_control.FlagStop==0 ) //Use this logic only when the robot allows control
 	{
 		count++;
 		if( count>=BALANCE_TASK_RATE )
 		{
 			count=0;
-			ServoState.UnLock = 1;           //进入不自锁模式
-			ServoState.UnLock_Pos =  current;//并记录舵机当前的位置
-			ServoState.UnLock_Target = target - Akm_Servo.Bias;//记录舵机的目标位置
-			ServoState.UnLock_Output = robot.SERVO.Output;//记录舵机当前的pwm值
-			return 0;//舵机到达目标角度后,不自锁
+			ServoState.UnLock = 1;           //Enter non-self-locking mode
+			ServoState.UnLock_Pos =  current;//and record the servo's current position
+			ServoState.UnLock_Target = target - Akm_Servo.Bias;//Record the target position of the servo
+			ServoState.UnLock_Output = robot.SERVO.Output;//Record the servo's current PWM value
+			return 0;//The servo does not lock itself after reaching the target angle
 		}
 	}
 	else count = 0;
 	
 	#if 1
-	//舵机平滑控制,降低加速度
-	//让舵机值缓慢增加到的计算的目标值
+	//Smooth servo control to reduce acceleration
+	//Slowly increase the servo value to the calculated target value
 	if( robot_control.smooth_Servo > p->Output ) 
 	{
 		robot_control.smooth_Servo -= robot_control.smooth_ServoStep;
@@ -390,7 +390,7 @@ static int Incremental_Servo(PI_CONTROLLER* p,float current,float target)
 	
 	return (int)robot_control.smooth_Servo;
 	#else
-		//不使用滤波直接输出
+		//Outputs directly without filtering
 		return p->Output;
 	#endif
 }
@@ -403,24 +403,24 @@ Function function: Determine the PWM value of the servo motor based on the posit
 Entrance parameters: servo encoder reading
 Return value: Servo PWM
 Author: LUCSYS
-函数功能：通过滑轨位置判断舵机PWM值,仅顶配车型可用
-入口参数：舵机编码器读数
-返回  值：舵机PWM
-作    者：LUCSYS
+Function: Determines servo PWM value based on rail position, available only on top models
+Entry parameters: servo encoder reading
+Return value: servo PWM
+Author: LUCSYS
 **************************************************************************/
 short get_ServoPWM(short TmpPos)
 {
-	//公式拟合版本,效果好,但每台车公式不一样，客户可以自行拟合
-//	//估测舵机的位置与舵机中值的偏差
-//	//顶配摆式与顶配独立悬挂舵机方向相反.
+	//Formula fitting version, with good results, but each car has a different formula, so customers can fit it themselves
+//	//Estimate the deviation between the servo position and the median value of the servo
+//	//Top-spec oscillating-axle and independent-suspension servo directions are opposite.
 //	if( robot.type == 2 || robot.type == 3 )
 //	{
-//		//通过滑轨的位置猜测舵机的PWM数值大小.公式由采样几组数据进行拟合得出
+//		//Estimate servo PWM from slide-rail position; formula fitted from several sampled data sets
 //		return 1.57e+03 + 4.04e-01*TmpPos + (-5.82e-05)*pow(TmpPos,2);
 //	}
 //	else if( robot.type == 4 || robot.type == 5 )
 //	{
-//		//通过滑轨的位置猜测舵机的PWM数值大小.公式由采样几组数据进行拟合得出
+//		//Estimate servo PWM from slide-rail position; formula fitted from several sampled data sets
 ////		return 1.46e+03 + (-4.05e-01)*TmpPos + (-9.42e-07)*pow(TmpPos,2);
 //		return 1.48e+03 + (-2.39e-01)*TmpPos + (4.90e-06)*pow(TmpPos,2);	
 //	}
@@ -429,7 +429,7 @@ short get_ServoPWM(short TmpPos)
 	
 	uint16_t pwm_val = Akm_Servo.Mid;
 	
-	//估测版本
+	//Estimated version
 	if( robot.type==4||robot.type==5 )
 	{
 			 if( TmpPos>=500&&TmpPos<=1000 )    pwm_val = Akm_Servo.Mid - 250;
@@ -454,22 +454,22 @@ the position of the servo changes due to external factors, this function can be 
 Entrance parameters: None
 Return value: None
 Author: SHEELTEC
-函数功能：舵机校正函数.当舵机在非自锁模式下时,因为外界因素导致舵机位置发生变化,使用该函数校准
-入口参数：无
-返回  值：无
-作    者：LUCSYS
+Function: servo correction function. When the servo is in non-self-locking mode, if external factors cause changes in its position, use this function for calibration
+Entry parameters: None
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 static void ServoCalibration(void)
 {
 	short tmp_pwm;
-	tmp_pwm = get_ServoPWM( robot.SERVO.Encoder ); //获取当前位置对应PWM数值
-	SERVO_TOP = tmp_pwm;                  //初始化舵机的位置,该变量直接决定舵机的位置
-	PI_Controller_Reset(&PI_Servo);       //复位舵机的PI控制器
-	PI_Servo.Output = tmp_pwm;            //PI控制器的输出值,将会以该数值作为基础进行速度平滑.
-	robot_control.smooth_Servo = tmp_pwm; //平滑值,这是实际的控制量.
+	tmp_pwm = get_ServoPWM( robot.SERVO.Encoder ); //Get the PWM value corresponding to the current location
+	SERVO_TOP = tmp_pwm;                  //Initialize the servo position, which directly determines the servo position
+	PI_Controller_Reset(&PI_Servo);       //Reset the servo's PI controller
+	PI_Servo.Output = tmp_pwm;            //The output value of the PI controller will be used as the basis for speed smoothing.
+	robot_control.smooth_Servo = tmp_pwm; //Smoothing value, which is the actual control quantity.
 }
 
-//舵机非自锁模式监测
+//Monitoring of servo non-self-locking modes
 static void Servo_UnLock_Check(uint8_t car_stopflag)
 {
 	static uint8_t now = 0 ;
@@ -477,46 +477,46 @@ static void Servo_UnLock_Check(uint8_t car_stopflag)
 	
 	if(SysVal.Time_count < CONTROL_DELAY ) return;
 	
-	//舵机非自锁模式相关
-	if ( robot.type>=2 && robot.type!=9 ) //仅顶配车型
+	//Servo non-self-locking mode related
+	if ( robot.type>=2 && robot.type!=9 ) //Top trim only
 	{
-		//小车使能标志位检测
+		//Check chassis enable flag
 		now = car_stopflag;
-		if( now==1 && last==0 ) //小车被失能
+		if( now==1 && last==0 ) //The car is disabled
 		{
-			ServoState.UnLock_Pos = robot.SERVO.Encoder;//记录失能时舵机的位置
-			ServoState.UnLock_Output = robot.SERVO.Output;//舵机PWM值
+			ServoState.UnLock_Pos = robot.SERVO.Encoder;//Record the position of the servo during inoperability
+			ServoState.UnLock_Output = robot.SERVO.Output;//Servo PWM value
 		}
-		else if( now==0 && last==1 ) //小车被使能
+		else if( now==0 && last==1 ) //The car is enabled
 		{
-			if( fabs( ServoState.UnLock_Pos - robot.SERVO.Encoder ) > 100 ) //在失能期间,舵机位置被外界改变了,则重新矫正
+			if( fabs( ServoState.UnLock_Pos - robot.SERVO.Encoder ) > 100 ) //If servo position is externally changed while disabled, recalibrate it
 			{
 				ServoState.UnLock = 0;
-				ServoCalibration();//矫正舵机位置
-				robot_control.ServoLow_flag = 1;//进入舵机低速模式,保证舵机缓慢复位(仅顶配阿克曼)
+				ServoCalibration();//Correct the servo position
+				robot_control.ServoLow_flag = 1;//Enter low-speed servo mode to ensure slow servo reset (top-spec Ackermann only)
 			}
 		}
 		last = now;
 		
-		//非自锁模式退出检测
+		//Detect exit from non-self-locking mode
 		if( 1 == ServoState.UnLock )
 		{
-			//在非自锁期间,舵机角度被外接改变,需要进行校准.
+			//During non-self-locking periods, the servo angle is externally altered and requires calibration.
 			if( fabs( robot.SERVO.Encoder - ServoState.UnLock_Pos ) > 100 ) ServoState.wait_Calib = 1;
 			
-			//舵机有控制量时,解除非自锁,进入正常控制模式
+			//When the servo has a control load, release the non-self-locking and enter normal control mode
 			if( fabs( robot.SERVO.Target - ServoState.UnLock_Target ) > 50 || 1 == ValChangeCheck(BALANCE_TASK_RATE,Akm_Servo.Bias,3)) 
 			{
 				if( ServoState.wait_Calib ) 
 				{
-					ServoState.wait_Calib=0,ServoCalibration();//如有需要则先校准舵机
-					if( fabs(robot_control.smooth_Vx) < 0.001f ) robot_control.ServoLow_flag = 1;//如果小车不在行驶中，在矫正时使用低速矫正
+					ServoState.wait_Calib=0,ServoCalibration();//If necessary, calibrate the servo first
+					if( fabs(robot_control.smooth_Vx) < 0.001f ) robot_control.ServoLow_flag = 1;//If the vehicle is not moving, use low-speed correction during calibration
 				}
-				ServoState.UnLock = 0;//解除非自锁模式
+				ServoState.UnLock = 0;//Release non-self-locking mode
 			}		
 			
 		} 
-	}//车型判断end
+	}//Vehicle type judgment end
 }
 #endif
 /**************************************************************************
@@ -525,30 +525,30 @@ Functionality: PI Controller Clearing Function - Clears the output residue of a 
 Input Parameters: PI controller.
 Return Value: None.
 Author: LUCSYS
-函数功能：PI控制器清除函数,在机器人禁止时清空输出残余，降低功耗以及电机的噪音
-入口参数：PI控制器
-返回  值：无
-作    者：LUCSYS
+Function: PI controller clears the function to clear output residue when the robot is prohibited, reducing power consumption and motor noise
+Entry parameters: PI controller
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 static uint8_t PI_Clear_Output(PI_CONTROLLER* p)
 {
-	u8 state = 0;//清除标志位
+	u8 state = 0;//Clear flags
 	
 	if( p->Output > 0 ) p->Output -- ;
 	if( p->Output < 0 ) p->Output ++ ;
 	
-	//接近0时,直接置0
+	//When it approaches 0, set it directly to 0
 	if( p->Output < 2.0f && p->Output > -2.0f ) p->Output = 0 , state = 1;
 	
-	//返回清除结果. 0:未完成 1:清除完毕
+	//Return clear result: 0-incomplete; 1-cleared
 	return state;
 }
 
 /*-------------------------------- Function for Inverse Kinematics Solution ------------------------------------*/
-/*--------------------------------         各车型运动学逆解相关函数          ------------------------------------*/
+/*-------------------------------- Inverse Kinematics Functions for Various Vehicle Models ------------------------------------*/
 #if defined AKM_CAR
 
-//输入滑块位置，计算出当前的左前轮转角
+//Input slider position to calculate the current front-left wheel steering angle
 float SteeringStructure_ForwardKinematic(short ori_pos)
 {
     float pos;
@@ -564,31 +564,31 @@ float SteeringStructure_ForwardKinematic(short ori_pos)
     return tmp_theta/PI * 180.0f + 72.39f;
 }
 
-//输入左前轮转角,输出滑轨电位器的目标值
+//Input front-left wheel steering angle; output target slide-rail potentiometer value
 static int SteeringStructure_Reverse(float target_theta)
 {
 	float theta;
 	float pos;
 	
-	//顶配摆式阿克曼
+	//Top-spec oscillating-axle Ackermann chassis
 	if( 2 == robot.type || 3 == robot.type )
 	{
 		theta = target_theta - 1.26f;   //6768.4f
 		pos = 70.2f * cos(theta) + sqrt( 6084.0f - pow((70.2f*sin(theta)+57.8f),2) ) - 103;
 		pos /= 0.0244f;
 		
-		//电位器的输出需要保证在可达范围.
+		//The output of the potentiometer must be within the reachable range.
 		pos = target_limit_float(pos,-2000,2000);
 	}
 	
-	//顶配独立阿克曼
+	//Top-spec independent-suspension Ackermann chassis
 	else if( 4 == robot.type || 5 == robot.type )
 	{
 		theta = target_theta - 1.170f;    //24831.4f
 		pos = 95.15f * cos(theta) + sqrt( 24025.0f - pow((95.15f*sin(theta)+56.5f),2) ) - 191.54f;
 		pos /= 0.0244f;
 		
-		//电位器的输出需要保证在可达范围.
+		//The output of the potentiometer must be within the reachable range.
 		pos = target_limit_float(pos,-2000,2000);
 	}
 
@@ -601,110 +601,110 @@ Function function: Ackermann inverse kinematics solution
 Entrance parameters: X-axis velocity (in m/s), left front wheel angle (in rad)
 Return value: None
 Author: LUCSYS
-函数功能：阿克曼运动学逆解
-入口参数：X轴的速度(单位m/s)，左前轮的转角(单位rad)
-返回  值：无
-作    者：LUCSYS
+Function: Ackermann kinematic inverse solution
+Entry parameters: X-axis speed (unit: m/s), left front wheel angle (unit: rad)
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 static void InverseKinematics_akm(float Vx,float Vz) 
 {
-	//运动学分析前,优先采集舵机的电位器校准值,以便运动学分析结果调用
+	//Before kinematic analysis, acquire the servo potentiometer calibration value for use in the calculations
 	Akm_Servo.Bias = -get_DMA_ServoBias() / 5.0f;
 	
-	//非标定制车型,请根据舵机的类型不同来复制对应的运动学分析内容.
+	//Custom chassis: copy the appropriate kinematics according to servo type.
 	if( robot.type==6 )
 	{
 	  
 	}
-	//SENIOR_AKM - 高配阿克曼 
+	//SENIOR_AKM - High-end Ackermann
 	else if(robot.type==0||robot.type==1||robot.type==9) 
 	{
-		//Ackerman car specific related variables //阿克曼小车专用相关变量
+		//Ackermann car specific related variables // Ackermann car specific related variables
 		float TurnR=0, Left_Angle=0;
 		
 		// For Ackerman small car, Vz represents the front wheel steering Angle
-		//对于阿克曼小车Vz代表右前轮转向角度
+		//For the Ackermann car, Vz represents the right front wheel steering angle
 		Left_Angle = Vz;
 		
-		//限制左右转向的角度
+		//Limit left/right steering angles
 		const float limt_angle = 30.0f;
-		//左极限的转弯半径
+		//Turning radius of the left limit
 		float bd_turnR = robot.HardwareParam.AxleSpacing/tan(angle_to_rad(limt_angle)) + 0.5f*robot.HardwareParam.WheelSpacing;
-		//根据极限转弯半径,计算往右转时候的左轮角度
+		//Based on the ultimate turning radius, calculate the left wheel angle when turning right
 		float bd_rightAngle = atan(robot.HardwareParam.AxleSpacing/((-bd_turnR)-0.5f*robot.HardwareParam.WheelSpacing));
 		
 		// Front wheel steering Angle limit (front wheel steering Angle controlled by steering engine), unit: rad
-		//前轮转向角度限幅(舵机控制前轮转向角度)，单位：rad
+		//Front wheel steering angle limit (servo controls front wheel steering angle), unit: rad
 		Left_Angle=target_limit_float(Left_Angle,bd_rightAngle,angle_to_rad(limt_angle));
 		
-		//根据转向角度计算出当前的转弯半径
+		//Calculate the current turning radius based on the steering angle
 		if(Left_Angle!=0)
 			TurnR = robot.HardwareParam.AxleSpacing/tan(Left_Angle) + 0.5f*robot.HardwareParam.WheelSpacing;
 		
-		//根据转弯半径、轮距,逆解出左右轮的速度
-		//Inverse kinematics //运动学逆解
+		//Based on turning radius and track width, solve the speeds of the left and right wheels in reverse
+		//Inverse kinematics //Inverse kinematics
 		if(Left_Angle!=0)
-		{	//左右两轮目标速度,单位是m/s
+		{	//Target velocity for both left and right wheels, measured in m/s
 			robot.MOTOR_A.Target = Vx*(TurnR-0.5f*robot.HardwareParam.WheelSpacing)/TurnR;
 			robot.MOTOR_B.Target = Vx*(TurnR+0.5f*robot.HardwareParam.WheelSpacing)/TurnR;
 		}
-		else //不带转向的控制
+		else //Control without steering
 		{	
 			robot.MOTOR_A.Target = Vx;
 			robot.MOTOR_B.Target = Vx;
 		}
 		
 		// The PWM value of the servo controls the steering Angle of the front wheel
-		//舵机PWM值，舵机控制前轮转向角度
-		//前轮转角与舵机数值的对应关系
+		//Servo PWM value, which controls the steering angle of the front wheels
+		//The correspondence between the front wheel angle and the servo value
 //		robot.SERVO.Target    =  7.3f + 823.4f*Left_Angle + (-440.4f)*pow(Left_Angle,2) + (-28.8)*pow(Left_Angle,3);
 		robot.SERVO.Target    =  7.85f + 847.0f*Left_Angle + (-394.0f)*pow(Left_Angle,2) + (-74.2f)*pow(Left_Angle,3);
 		
-		//舵机最终输出 = 中值 + 电位器纠正值 + 计算值
+		//Final servo output = median value + potentiometer correction value + calculated value
 		robot.SERVO.Output = Akm_Servo.Mid + Akm_Servo.Bias + robot.SERVO.Target;
 	}
 	
-	//TOP_AKM_BS - 顶配阿克曼小车摆式悬挂
+	//TOP_AKM_BS - Top-tier Ackermann chassis swing suspension
 	else if( robot.type==2 || robot.type==3 )
 	{
-		//转弯半径、左轮角度
+		//Turning radius and left wheel angle
 		float TurnR = 0, Left_Angle = 0;
 		
-		//对于阿克曼小车Vz代表左前轮转向角度
+		//For the Ackermann car, Vz represents the left front wheel steering angle
 		Left_Angle = Vz;
 		
-		//限制左右转向的角度
+		//Limit left/right steering angles
 		const float limt_angle = 25.0f;
 		
-		//计算角度时的连杆距离K
+		//The link distance K when calculating the angle
 		const float K = 0.326f;
 		
-		//左极限的转弯半径
+		//Turning radius of the left limit
 		float bd_turnR = robot.HardwareParam.AxleSpacing/tan(angle_to_rad(limt_angle)) + 0.5f*K;
 		
-		//根据极限转弯半径,计算往右转时候的左轮角度
+		//Based on the ultimate turning radius, calculate the left wheel angle when turning right
 		float bd_rightAngle = atan(robot.HardwareParam.AxleSpacing/((-bd_turnR)-0.5f*K));
 		
-		//前轮转向角度限幅(舵机控制前轮转向角度)，单位：rad
-		Left_Angle=target_limit_float(Left_Angle,bd_rightAngle,angle_to_rad(limt_angle));//注: 左+ 右-
+		//Front wheel steering angle limit (servo controls front wheel steering angle), unit: rad
+		Left_Angle=target_limit_float(Left_Angle,bd_rightAngle,angle_to_rad(limt_angle));//Note: Left + Right -
 		
-		//滑轨目标值计算：
+		//Calculation of Rail Target Values:
 		robot.SERVO.Target = SteeringStructure_Reverse(Left_Angle);
-		//robot.SERVO.Target+=Akm_Servo.Bias;	//加入偏差值,实现前轮转角可用电位器调节补偿
+		//robot. SERVO. Target+=Akm_Servo.Bias; By adding deviation values, the front wheel angle can be adjusted and compensated by a potentiometer
 		
-		//根据转向角度计算出当前的转弯半径
+		//Calculate the current turning radius based on the steering angle
 		if(Left_Angle!=0)
 			TurnR = robot.HardwareParam.AxleSpacing/tan(Left_Angle) + 0.5f*K;
 		
-		//左右轮目标值计算：
-		//根据转弯半径、轮距,逆解出左右轮的速度
-		//Inverse kinematics //运动学逆解
+		//Calculation of Left and Right Wheel Target Values:
+		//Based on turning radius and track width, solve the speeds of the left and right wheels in reverse
+		//Inverse kinematics //Inverse kinematics
 		if(Left_Angle!=0)
 		{
 			robot.MOTOR_A.Target = Vx*(TurnR-0.5f*robot.HardwareParam.WheelSpacing)/TurnR;
 			robot.MOTOR_B.Target = Vx*(TurnR+0.5f*robot.HardwareParam.WheelSpacing)/TurnR;
 		}
-		else //不带转向的控制
+		else //Control without steering
 		{
 			robot.MOTOR_A.Target = Vx;
 			robot.MOTOR_B.Target = Vx;
@@ -714,43 +714,43 @@ static void InverseKinematics_akm(float Vx,float Vz)
 	
 	else if ( robot.type==4 || robot.type==5 )
 	{
-		//转弯半径、左轮角度
+		//Turning radius and left wheel angle
 		float TurnR = 0, Left_Angle = 0;
 		
-		//对于阿克曼小车Vz代表左前轮转向角度
+		//For the Ackermann car, Vz represents the left front wheel steering angle
 		Left_Angle = Vz;
 		
-		//限制左右转向的角度
+		//Limit left/right steering angles
 		const float limt_angle = 25.0f;
 		
-		//计算角度时的连杆距离K
+		//The link distance K when calculating the angle
 		const float K = 0.441f;
 		
-		//左极限的转弯半径
+		//Turning radius of the left limit
 		float bd_turnR = robot.HardwareParam.AxleSpacing/tan(angle_to_rad(limt_angle)) + 0.5f*K;
 		
-		//根据极限转弯半径,计算往右转时候的左轮角度
+		//Based on the ultimate turning radius, calculate the left wheel angle when turning right
 		float bd_rightAngle = atan(robot.HardwareParam.AxleSpacing/((-bd_turnR)-0.5f*K));
 		
-		//前轮转向角度限幅(舵机控制前轮转向角度)，单位：rad
-		Left_Angle=target_limit_float(Left_Angle,bd_rightAngle,angle_to_rad(limt_angle));//注: 左+ 右-
+		//Front wheel steering angle limit (servo controls front wheel steering angle), unit: rad
+		Left_Angle=target_limit_float(Left_Angle,bd_rightAngle,angle_to_rad(limt_angle));//Note: Left + Right -
 		
-		//滑轨目标值计算：
+		//Calculation of Rail Target Values:
 		robot.SERVO.Target = SteeringStructure_Reverse(Left_Angle);
 		
-		//根据转向角度计算出当前的转弯半径
+		//Calculate the current turning radius based on the steering angle
 		if(Left_Angle!=0)
 			TurnR = robot.HardwareParam.AxleSpacing/tan(Left_Angle) + 0.5f*K;
 		
-		//左右轮目标值计算：
-		//根据转弯半径、轮距,逆解出左右轮的速度
-		//Inverse kinematics //运动学逆解
+		//Calculation of Left and Right Wheel Target Values:
+		//Based on turning radius and track width, solve the speeds of the left and right wheels in reverse
+		//Inverse kinematics //Inverse kinematics
 		if(Left_Angle!=0)
 		{
 			robot.MOTOR_A.Target = Vx*(TurnR-0.5f*robot.HardwareParam.WheelSpacing)/TurnR;
 			robot.MOTOR_B.Target = Vx*(TurnR+0.5f*robot.HardwareParam.WheelSpacing)/TurnR;
 		}
-		else //不带转向的控制
+		else //Control without steering
 		{
 			robot.MOTOR_A.Target = Vx;
 			robot.MOTOR_B.Target = Vx;
@@ -763,24 +763,24 @@ Function function: Convert the target forward velocity Vx and target angular vel
                 the upper computer into the left front wheel steering angle of the Ackermann car
 Entrance parameters: target forward velocity Vx, target angular velocity Vz, unit: m/s, rad/s
 Return value: Left front wheel steering angle of Ackermann car, unit: rad
-函数功能：将上位机发过来目标前进速度Vx、目标角速度Vz，转换为阿克曼小车的左前轮转角
-入口参数：目标前进速度Vx、目标角速度Vz，单位：m/s，rad/s
-返回  值：阿克曼小车的左前轮转角，单位：rad
+Function: Converts the target forward speed Vx and target angular velocity Vz sent from the host computer into the left front wheel rotation angle of the Ackermann car
+Entry parameters: target forward velocity Vx, target angular velocity Vz, units: m/s, rad/s
+Return value: Ackermann chassis front-left wheel steering angle, unit: rad
 **************************************************************************/
 float Akm_Vz_to_Angle(float Vx,float Vz)
 {
-    float TurnR, Angle_Left;//转弯半径,左前轮角度
+    float TurnR, Angle_Left;//Turning radius, front-left wheel angle
 
     if(Vz!=0 && Vx!=0)
     {
-		//计算转弯半径
+		//Calculate the turning radius
 		TurnR = Vx/Vz;
 		
-        //确保转弯半径不会超出运动学公式的计算范围内
+        //Ensure the turning radius does not exceed the calculation range of the kinematic formula
         if( TurnR > 0 && TurnR <= 0.5f*robot.HardwareParam.WheelSpacing ) TurnR = 0.5f*robot.HardwareParam.WheelSpacing+0.01f;
         if( TurnR < 0 && TurnR >= -0.5f*robot.HardwareParam.WheelSpacing ) TurnR = -0.5f*robot.HardwareParam.WheelSpacing-0.01f;
 		
-		//根据转弯半径确定左前轮转角弧度
+		//Determine the left front wheel's turning angle curvature based on the turning radius
 		Angle_Left=atan(robot.HardwareParam.AxleSpacing/(TurnR - 0.5f*robot.HardwareParam.WheelSpacing));
 
     }
@@ -797,10 +797,10 @@ Function function: Differential robot inverse kinematics solution
 Entrance parameters: X-axis velocity (in m/s), Z-axis velocity (in rad/s)
 Return value: None
 Author: LUCSYS
-函数功能：差速机器人运动学逆解
-入口参数：X轴速度(单位m/s)、Z轴速度(单位 rad/s)
-返回  值：无
-作    者：LUCSYS
+Function: kinematic inverse solution of differential robots
+Inlet parameters: X-axis speed (unit: m/s), Z-axis speed (unit: rad/s)
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 #elif defined DIFF_CAR
 static void InverseKinematics_diff(float Vx,float Vz)
@@ -814,10 +814,10 @@ Function function: inverse kinematics solution of the wheat wheel robot
 Entrance parameters: X-axis velocity (in m/s), Y-axis velocity (in m/s), Z-axis velocity (in rad/s)
 Return value: None
 Author: LUCSYS
-函数功能：麦轮机器人运动学逆解
-入口参数：X轴速度(单位m/s)、Y轴速度(m/s)、Z轴速度(rad/s)
-返回  值：无
-作    者：LUCSYS
+Function: Kinematic inverse solution of the Mailun robot
+Entry parameters: X-axis speed (unit: m/s), Y-axis speed (m/s), Z-axis speed (rad/s)
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 #elif defined MEC_CAR
 static void InverseKinematics_mec(float Vx,float Vy,float Vz)
@@ -833,10 +833,10 @@ Function function: inverse kinematics solution of four-wheel drive robot
 Entrance parameters: X-axis velocity (in m/s), Y-axis velocity (in m/s), Z-axis velocity (in rad/s)
 Return value: None
 Author  :LUCSYS
-函数功能：四驱机器人运动学逆解
-入口参数：X轴速度(单位m/s)、Y轴速度(m/s)、Z轴速度(rad/s)
-返回  值：无
-作    者：LUCSYS
+Function: Kinematic inverse solution for four-wheel drive robots
+Entry parameters: X-axis speed (unit: m/s), Y-axis speed (m/s), Z-axis speed (rad/s)
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 #elif defined _4WD_CAR
 static void InverseKinematics_4wd(float Vx,float Vz)
@@ -852,10 +852,10 @@ Function function: Inverse kinematics solution for omnidirectional wheeled robot
 Entrance parameters: X-axis velocity (in m/s), Y-axis velocity (in m/s), Z-axis velocity (in rad/s)
 Return value: None
 Author: LUCSYS
-函数功能：全向轮机器人运动学逆解
-入口参数：X轴速度(单位m/s)、Y轴速度(m/s)、Z轴速度(rad/s)
-返回  值：无
-作    者：LUCSYS
+Function: Omnidirectional wheel robot inverse kinematics
+Entry parameters: X-axis speed (unit: m/s), Y-axis speed (m/s), Z-axis speed (rad/s)
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 #elif defined OMNI_CAR
 static void InverseKinematics_omni(float Vx,float Vy,float Vz)
@@ -868,48 +868,48 @@ static void InverseKinematics_omni(float Vx,float Vy,float Vz)
 #endif
 
 /*-------------------------------- Control class related functions ------------------------------------*/
-/*--------------------------------        控制类相关函数          ------------------------------------*/
-//计算纠偏系数
+/*-------------------------------- Control Class Related Functions ------------------------------------*/
+//Calculate the correction factor
 static float wheelCoefficient(uint32_t diffparam,uint8_t isLeftWheel)
 {
-	if( 1 == isLeftWheel ) //左轮纠偏,对应50~100对应1.0~1.2倍的纠偏系数
+	if( 1 == isLeftWheel ) //Left-wheel correction, corresponding to a correction factor of 50~100 and 1.0~1.2 times
 	{
 		if( diffparam>=50 )
 			return 1.0f + 0.004f*(diffparam-50);
 	}
-	else //右轮纠偏,50~0对应1.0~1.2倍的纠偏系数
+	else //Right wheel correction: 50~0 corresponds to a correction factor of 1.0~1.2 times
 	{
 		if( diffparam<=50 )
 			return 1.0f + 0.004f*(50-diffparam);
 	}
 	
-	return 1.0f;//不满足条件时,默认是1.
+	return 1.0f;//If the condition is not met, the default is 1.
 }
 
 /**************************************************************************
 Function: The inverse kinematics solution is used to calculate the target speed of each wheel according to the target speed of three axes
 Input   : X and Y, Z axis direction of the target movement speed
 Output  : none
-函数功能：执行运动学逆解函数，根据三轴目标速度计算各车轮目标转速
-入口参数：X、Y、Z三轴速度
-返回  值：无
+Function: Executes kinematic inverse solutions to calculate the target rotational speed of each wheel based on the target velocity of the three axes
+Inlet parameters: X, Y, Z axis speeds
+Return value: none
 **************************************************************************/
 static void Drive_Motor(float T_Vx,float T_Vy,float T_Vz)
 {
 	// Function to Limit Maximum Target Speed Input 
-	//对输入的目标速度进行最大值限幅,单位m/s
+	//Maximum limit for the input target speed, unit m/s
 	T_Vx = target_limit_float( T_Vx, -robot_control.limt_max_speed , robot_control.limt_max_speed );
 	T_Vy = target_limit_float( T_Vy, -robot_control.limt_max_speed , robot_control.limt_max_speed );
 	T_Vz = target_limit_float( T_Vz, -robot_control.limt_max_speed , robot_control.limt_max_speed );
 	
 	//Smoothly control the target speed input.
-	//对输入的目标速度进行平滑控制
+	//Smooth control of the input target speed
 	if( charger.AllowRecharge==0 )
 	{
 		robot_control.smooth_Vx = Vel_SmoothControl(robot_control.smooth_Vx,T_Vx,robot_control.smooth_MotorStep);
 		robot_control.smooth_Vy = Vel_SmoothControl(robot_control.smooth_Vy,T_Vy,robot_control.smooth_MotorStep);
 		
-		//阿克曼车型,Vz代表左前轮角度.这里不做平滑处理
+		//For Ackermann chassis, Vz represents front-left wheel angle; do not smooth it here
 		#if defined AKM_CAR
 			robot_control.smooth_Vz = T_Vz;
 		#else
@@ -918,13 +918,13 @@ static void Drive_Motor(float T_Vx,float T_Vy,float T_Vz)
 	}
 	else
 	{
-		robot_control.smooth_Vx = T_Vx;//自动回充模式下不使用平滑功能,提高小车的响应速度对接.
+		robot_control.smooth_Vx = T_Vx;//In automatic recharge mode, the smoothing function is not used, improving the vehicle's response speed and docking.
 		robot_control.smooth_Vy = T_Vy;
 		robot_control.smooth_Vz = T_Vz;
 	}
 
 	// Call Inverse Kinematics Function for Corresponding Vehicle Model to Obtain Target Values for Wheels and Steering Angle
-	//调用对应车型的运动学逆解函数,获得各个轮子的目标值、舵机角度
+	//Call the kinematic inverse solution function for the corresponding model to obtain the target values and servo angles for each wheel
 	#if defined AKM_CAR
 		InverseKinematics_akm(robot_control.smooth_Vx,robot_control.smooth_Vz);
 	#elif defined DIFF_CAR
@@ -937,12 +937,12 @@ static void Drive_Motor(float T_Vx,float T_Vy,float T_Vz)
 		InverseKinematics_omni(robot_control.smooth_Vx,robot_control.smooth_Vy,robot_control.smooth_Vz);
 	#endif
 
-	//纠偏系数计算
+	//Calculation of correction coefficient
 	float LeftWheelDiff = wheelCoefficient(robot_control.LineDiffParam,1);
 	float RightWheelDiff = wheelCoefficient(robot_control.LineDiffParam,0);
 	
 	// Limit Final Wheel Speeds or Servo Travel After Kinematic Analysis.
-	//经过运动学分析后输出各个轮子速度与舵机角度,下面对最终的轮速或舵机行程进行限幅.
+	//After kinematic analysis, output the speed and servo angle of each wheel. Below is a limit for the final wheel speed or servo stroke.
 	robot.MOTOR_A.Target = target_limit_float( robot.MOTOR_A.Target , -robot_control.limt_max_speed , robot_control.limt_max_speed );
 	robot.MOTOR_B.Target = target_limit_float( robot.MOTOR_B.Target , -robot_control.limt_max_speed , robot_control.limt_max_speed );
 	
@@ -970,41 +970,41 @@ of the executing mechanism through PID control
 Entrance parameters: None
 Return value: None
 Author: LUCSYS
-函数功能：控制相应函数.经过运动学逆解后得出机器人各个执行机构的目标值,通过PID控制执行机构运动
-入口参数：无
-返回  值：无
-作    者：LUCSYS
+Function: Control the corresponding function. After kinematic inverse solution, the target values of each actuator in the robot are derived, and the movement of the actuators is controlled via PID
+Entry parameters: None
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 static void ResponseControl(void)
 {
 	#if defined AKM_CAR
-	//PI控制
+	//PI control
 	robot.MOTOR_A.Output = Incremental_MOTOR( &PI_MotorA , robot.MOTOR_A.Encoder , robot.MOTOR_A.Target );
 	robot.MOTOR_B.Output = Incremental_MOTOR( &PI_MotorB , robot.MOTOR_B.Encoder , robot.MOTOR_B.Target );
 	
 	//The servo of the top of the line Ackermann model only requires PI control. \
 	The high-end model does not come with steering rail feedback
-	//仅顶配阿克曼车型的舵机需要PI控制.高配车型不带转向滑轨反馈.
+	//Only the servo on the top Ackermann model requires PI control. Higher trims do not have steering rail feedback.
 	if( robot.type>=2 && robot.type!=9 && robot.type!=7 )
 	{
 		if(ServoState.UnLock==0)
 			robot.SERVO.Output   = Incremental_Servo( &PI_Servo  , robot.SERVO.Encoder  ,  robot.SERVO.Target + Akm_Servo.Bias );	
 	}
 		
-	//将结果输出到执行机构
-	      if( robot.type == 6 )                      Set_Pwm(0,0,0,0,0); //非标预留定制车,请根据电机型号设置输出值的正负方向
-	else if ( robot.type <= 1 || robot.type == 9)   Set_Pwm( robot.MOTOR_A.Output , robot.MOTOR_B.Output , 0 , 0 ,robot.SERVO.Output ); //高配阿克曼-MD36电机
-	else if ( robot.type >= 2 && robot.type <= 5 )  Set_Pwm(-robot.MOTOR_A.Output ,-robot.MOTOR_B.Output , 0 , 0 ,robot.SERVO.Output ); //顶配阿克曼-MD60电机
-	else if ( robot.type == 7 )                     Set_Pwm( robot.MOTOR_A.Output , robot.MOTOR_B.Output , 0 , 0 , robot.SERVO.Output ); //安装测试专用.舵机开环控制
-	else if ( robot.type == 8 )                     Set_Pwm(-robot.MOTOR_A.Output ,-robot.MOTOR_B.Output , 0 , 0 , 1500 ); //安装测试专用.让舵机保持在中间位置校准
+	//Output results to the actuator
+	      if( robot.type == 6 )                      Set_Pwm(0,0,0,0,0); //Reserved custom chassis: set output signs according to motor type
+	else if ( robot.type <= 1 || robot.type == 9)   Set_Pwm( robot.MOTOR_A.Output , robot.MOTOR_B.Output , 0 , 0 ,robot.SERVO.Output ); //High-spec Ackermann chassis: MD36 motor
+	else if ( robot.type >= 2 && robot.type <= 5 )  Set_Pwm(-robot.MOTOR_A.Output ,-robot.MOTOR_B.Output , 0 , 0 ,robot.SERVO.Output ); //Top-spec Ackermann chassis: MD60 motor
+	else if ( robot.type == 7 )                     Set_Pwm( robot.MOTOR_A.Output , robot.MOTOR_B.Output , 0 , 0 , robot.SERVO.Output ); //Dedicated for installation and testing. Servo open-loop control
+	else if ( robot.type == 8 )                     Set_Pwm(-robot.MOTOR_A.Output ,-robot.MOTOR_B.Output , 0 , 0 , 1500 ); //Installation and testing only. Keep the servo in the middle position for calibration
 	
 	#elif defined DIFF_CAR
 	
 	robot.MOTOR_A.Output = Incremental_MOTOR(&PI_MotorA,robot.MOTOR_A.Encoder,robot.MOTOR_A.Target);
 	robot.MOTOR_B.Output = Incremental_MOTOR(&PI_MotorB,robot.MOTOR_B.Encoder,robot.MOTOR_B.Target);
 	
-	if( robot.type<=1 )  Set_Pwm( robot.MOTOR_A.Output , robot.MOTOR_B.Output ,0,0,0);//高配差速-MD36电机
-	else                 Set_Pwm(-robot.MOTOR_A.Output ,-robot.MOTOR_B.Output ,0,0,0);//顶配差速-MD60电机
+	if( robot.type<=1 )  Set_Pwm( robot.MOTOR_A.Output , robot.MOTOR_B.Output ,0,0,0);//High-spec differential chassis: MD36 motor
+	else                 Set_Pwm(-robot.MOTOR_A.Output ,-robot.MOTOR_B.Output ,0,0,0);//Top-spec differential chassis: MD60 motor
 	
 	#elif defined MEC_CAR
 	
@@ -1013,8 +1013,8 @@ static void ResponseControl(void)
 	robot.MOTOR_C.Output = Incremental_MOTOR(&PI_MotorC,robot.MOTOR_C.Encoder,robot.MOTOR_C.Target);
 	robot.MOTOR_D.Output = Incremental_MOTOR(&PI_MotorD,robot.MOTOR_D.Encoder,robot.MOTOR_D.Target);
 	
-	if( robot.type<=2 ) Set_Pwm( robot.MOTOR_A.Output, robot.MOTOR_B.Output, robot.MOTOR_C.Output, robot.MOTOR_D.Output,0);//高配麦轮-MD36电机
-	else                Set_Pwm(-robot.MOTOR_A.Output,-robot.MOTOR_B.Output,-robot.MOTOR_C.Output,-robot.MOTOR_D.Output,0);//顶配或旗舰麦轮-MD60电机
+	if( robot.type<=2 ) Set_Pwm( robot.MOTOR_A.Output, robot.MOTOR_B.Output, robot.MOTOR_C.Output, robot.MOTOR_D.Output,0);//High-spec Mecanum chassis: MD36 motor
+	else                Set_Pwm(-robot.MOTOR_A.Output,-robot.MOTOR_B.Output,-robot.MOTOR_C.Output,-robot.MOTOR_D.Output,0);//Top-spec or flagship Mecanum chassis: MD60 motor
 	
 	#elif defined _4WD_CAR
 	
@@ -1023,8 +1023,8 @@ static void ResponseControl(void)
 	robot.MOTOR_C.Output = Incremental_MOTOR(&PI_MotorC,robot.MOTOR_C.Encoder,robot.MOTOR_C.Target);
 	robot.MOTOR_D.Output = Incremental_MOTOR(&PI_MotorD,robot.MOTOR_D.Encoder,robot.MOTOR_D.Target);
 	
-	if( robot.type<=3 ) Set_Pwm( robot.MOTOR_A.Output, robot.MOTOR_B.Output, robot.MOTOR_C.Output, robot.MOTOR_D.Output,0);//高配四驱-MD36电机
-	else                Set_Pwm(-robot.MOTOR_A.Output,-robot.MOTOR_B.Output,-robot.MOTOR_C.Output,-robot.MOTOR_D.Output,0);//顶配或旗舰四驱-MD60电机
+	if( robot.type<=3 ) Set_Pwm( robot.MOTOR_A.Output, robot.MOTOR_B.Output, robot.MOTOR_C.Output, robot.MOTOR_D.Output,0);//High-spec 4WD chassis: MD36 motor
+	else                Set_Pwm(-robot.MOTOR_A.Output,-robot.MOTOR_B.Output,-robot.MOTOR_C.Output,-robot.MOTOR_D.Output,0);//Top-spec or flagship 4WD chassis: MD60 motor
 	
 	#elif defined OMNI_CAR
 	 
@@ -1032,8 +1032,8 @@ static void ResponseControl(void)
 	robot.MOTOR_B.Output = Incremental_MOTOR(&PI_MotorB,robot.MOTOR_B.Encoder,robot.MOTOR_B.Target);
 	robot.MOTOR_C.Output = Incremental_MOTOR(&PI_MotorC,robot.MOTOR_C.Encoder,robot.MOTOR_C.Target);
 	
-	if( robot.type<=1 ) Set_Pwm(-robot.MOTOR_A.Output,-robot.MOTOR_B.Output, robot.MOTOR_C.Output,0,0);//高配全向轮-MD36电机
-	else                Set_Pwm( robot.MOTOR_A.Output, robot.MOTOR_B.Output,-robot.MOTOR_C.Output,0,0);//顶配全向轮-MD60电机
+	if( robot.type<=1 ) Set_Pwm(-robot.MOTOR_A.Output,-robot.MOTOR_B.Output, robot.MOTOR_C.Output,0,0);//High-spec omni chassis: MD36 motor
+	else                Set_Pwm( robot.MOTOR_A.Output, robot.MOTOR_B.Output,-robot.MOTOR_C.Output,0,0);//Top-spec omni chassis: MD60 motor
 
 	#endif
 }
@@ -1044,30 +1044,30 @@ Input Parameters: Set the robot's stop mode: 0: Set to unclamp axes, allowing th
                   1: Set to clamp axes, locking all actuators.
 Return Value: None
 Author: LUCSYS
-函数功能：非控制响应函数,当机器人存在报错时,将执行此函数.禁止机器人的运动
-入口参数：设置机器人停止运动的方式: 0:设置为解轴,机器人可以随意推动  1:设置为锁轴,机器人锁住所有执行机构
-返回  值：无
-作    者：LUCSYS
+Function: Non-control response function; this function will be executed when the robot encounters an error. Robot movement is prohibited
+Input: robot stopping mode: 0-release shafts, allowing the robot to be pushed freely; 1-lock shafts, locking all actuators
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 static void UnResponseControl(uint8_t mode)
 {
-	//数据有效性校验
+	//Data validation
 	if(mode!=UN_LOCK && mode!=LOCK) mode = UN_LOCK;
 	
-	//解轴失能
+	//Disable with shaft release
 	if(mode==UN_LOCK)
 	{
-		//复位PI控制器,消除积累
+		//Reset the PI controller to eliminate accumulation
 		PI_Controller_Reset(&PI_MotorA);
 		PI_Controller_Reset(&PI_MotorB);
 		PI_Controller_Reset(&PI_MotorC);
 		PI_Controller_Reset(&PI_MotorD);
 		
-		//发送0停止电机的转动
+		//Send 0 to stop the motor from turning
 		Set_Pwm( 0 , 0 , 0 , 0 , 0 );
 	}
 	
-	//锁轴失能,无法推动小车
+	//Shaft-lock disable mode; chassis cannot be pushed
 	else if( mode==LOCK )
 	{
 		Drive_Motor(0,0,0);
@@ -1081,16 +1081,16 @@ Input Parameters: Control value for A wheel motor, control value for B wheel mot
                    control value for D wheel motor, control value for servo.
 Return Value: None.
 Author: LUCSYS
-函数功能：下发控制量到各个执行机构
-入口参数：A轮电机控制量、B轮电机控制量、C轮电机控制量、D轮电机控制量、舵机控制量
-返回  值：无
-作    者：LUCSYS
+Function: Send control values to various actuators
+Inlet parameters: Wheel A motor control quantity, wheel B motor control quantity, wheel C motor control quantity, D wheel motor control quantity, servo control quantity
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 static void Set_Pwm(int m_a,int m_b,int m_c,int m_d,int servo)
 {
 	#if defined AKM_CAR || defined DIFF_CAR
 	
-		//电机控制
+		//Motor control
 		if( m_a < 0 ) AIN1=1,AIN2=0;
 		else          AIN1=0,AIN2=1;
 		
@@ -1109,12 +1109,12 @@ static void Set_Pwm(int m_a,int m_b,int m_c,int m_d,int servo)
 		PWMB = abs(m_b);
 	
 		#if defined AKM_CAR
-		//舵机控制
-		if( robot.type == 0 || robot.type == 1 || robot.type==9 )//高配阿克曼车型
+		//Servo control
+		if( robot.type == 0 || robot.type == 1 || robot.type==9 )//High-spec Ackermann chassis
 		{
 			SERVO_SENIOR = servo;
 		}
-		else //顶配阿克曼车型
+		else //Top-spec Ackermann chassis
 		{
 			SERVO_TOP = servo;
 		}
@@ -1122,7 +1122,7 @@ static void Set_Pwm(int m_a,int m_b,int m_c,int m_d,int servo)
 		
 	#else 
 		
-		//电机控制
+		//Motor control
 		if( m_a > 0 ) AIN1=0,AIN2=1;
 		else          AIN1=1,AIN2=0;
 		
@@ -1154,29 +1154,29 @@ static void Set_Pwm(int m_a,int m_b,int m_c,int m_d,int servo)
 Function: Check the battery voltage, enable switch status, software failure flag status
 Input   : Voltage
 Output  : Whether control is allowed, 1: not allowed, 0 allowed
-函数功能：检查电池电压、使能开关状态、软件失能标志位状态
-入口参数：电压
-返回  值：是否允许控制，1：不允许，0允许
+Function: check battery voltage, enable switch state and software-disable flag
+Entry parameters: voltage
+Return value: whether control is allowed; 1-not allowed, 0-allowed
 **************************************************************************/
 static u8 Turn_Off(void)
 {
     u8 temp = 0;
 	static uint8_t saveflag = 0;
 	
-	//电压不满足要求：电压低于20V,且不是自动回充状态.(若是进入自动回充状态,则忽略电压)
+	//Voltage not meeting requirements: voltage below 20V and not in automatic recharge mode. (If automatic recharge is entered, voltage is ignored)
 	if( robot.voltage < 20.0f && charger.AllowRecharge==0 ) temp = 1;
 
-	//急停开关被按下
+	//The emergency stop switch has been pressed
 	if( EN==0 ) temp = 1;
 	
-	//机器人自检出错
+	//Robot self-check error
 	if( robot_check.errorflag==1 ) temp = 1;
 
-	//机器人通过软件设置了急停
+	//The robot set the emergency stop via software
 	if( robot_control.SoftWare_Stop==1 ) temp = 1;
 	
 	if( robot_control.control_arm==1 ) temp = 1;
-	//小车由失能变为使能的过程,清空目标速度.
+	//The process of a car changing from disabled to enabled, clearing the target speed.
 	if(temp==0 && saveflag==1)
 	{
 		robot_control.Vx = 0;
@@ -1204,13 +1204,13 @@ void Get_RC_ARM(void)
 
 
         //=====================================================================
-        // 逆解模式
+        // Inverse-kinematics mode
         //=====================================================================
         if (A280.kinematic_mode == Inverse_Kinematic)
         {
             float new_x = A280.ee_x;
             float new_y = A280.ee_y;
-            // 根据方向计算新位置
+            // Calculate the new position based on the orientation
             switch (appkey.DirectionFlag)
             {
                 case 1:  new_y += step; Flag_Move = 1; break;
@@ -1220,7 +1220,7 @@ void Get_RC_ARM(void)
                 default: Flag_Move = 0; break;
             }
 
-            // 先判断，再更新 
+            // Judge first, then update
             if (Flag_Move)
             {
 							  Flag_Move=0;
@@ -1233,7 +1233,7 @@ void Get_RC_ARM(void)
         }
 
         //=====================================================================
-        // 正解模式（保持原有逻辑）
+        // Correct Mode (Maintains Original Logic)
         //=====================================================================
         else if (A280.kinematic_mode == Forward_Kinematic)
         {
@@ -1293,13 +1293,13 @@ void Get_RC_ARM(void)
 Function: Processes the command sent by APP through usart x
 Input   : none
 Output  : none
-函数功能：对APP通过串口x发送过来的命令进行处理
-入口参数：无
-返回  值：无
+Function: Processes commands sent by the app via serial port x
+Entry parameters: None
+Return value: none
 **************************************************************************/
 static void Get_APPcmd(void)
 {
-	/*  APP摇杆与速度方向
+	/*  APP joystick and speed direction
 	     A
 	     ^  +Vx       ^ +Vz
    H     |       B    ）
@@ -1310,14 +1310,14 @@ static void Get_APPcmd(void)
 	     E
 	*/
 	
-	short m_sign = 1;         //符号变量
-	float base_vz= PI/4.0f;   //Z轴速度基准
+	short m_sign = 1;         //Symbolic variables
+	float base_vz= PI/4.0f;   //Z-axis speed reference
 	
-	//非全向移动小车
+	//Non-omnidirectional chassis
 	#if defined AKM_CAR || defined DIFF_CAR || defined _4WD_CAR
 	
 		#if defined AKM_CAR
-			m_sign = -1;                  //阿克曼Vz表示前轮转角,部分方向符号需要修改.
+			m_sign = -1;                  //Ackermann Vz represents front-wheel steering angle; some direction signs require adjustment.
 			base_vz = angle_to_rad(30);
 		#endif
 	
@@ -1336,7 +1336,7 @@ static void Get_APPcmd(void)
 	}
 	
 	
-	//可全向移动小车
+	//Able to move the chassis in all directions
 	#elif defined MEC_CAR || defined OMNI_CAR
 	
 	switch( appkey.DirectionFlag ) 
@@ -1353,7 +1353,7 @@ static void Get_APPcmd(void)
 		default : robot_control.Vx=0;robot_control.Vy=0;robot_control.Vz=0 , m_sign=0 ; break;
 	}
 	
-	//小车不存在x、y轴命令时,检查Z轴命令
+	//If the cart does not have x/y axis commands, check the Z-axis commands
 	if( m_sign==0 )
 	{
 		     if( appkey.TurnFlag==1 ) robot_control.Vz =  base_vz;
@@ -1363,13 +1363,13 @@ static void Get_APPcmd(void)
 	
 	#endif
 
-	//单位转换 mm/s -> m/s
+	//Unit conversion: mm/s - > m/s
 	robot_control.Vx = robot_control.Vx/1000.0f;
 	robot_control.Vy = robot_control.Vy/1000.0f;
-	robot_control.Vz = robot_control.Vz * ( robot_control.rc_speed/500.0f );//Z轴速度根据遥控速度调整.
+	robot_control.Vz = robot_control.Vz * ( robot_control.rc_speed/500.0f );//Z-axis speed is adjusted according to the remote control speed.
 
     //Control target value is obtained and kinematics analysis is performed
-    //得到控制目标值，进行运动学分析
+    //Get control target values for kinematic analysis
     Drive_Motor(robot_control.Vx,robot_control.Vy,robot_control.Vz);
 }
 
@@ -1377,83 +1377,83 @@ static void Get_APPcmd(void)
 Function: The remote control command of model aircraft is processed
 Input   : none
 Output  : none
-函数功能：对航模遥控控制命令进行处理
-入口参数：无
-返回  值：无
+Function: Processes remote control commands for model aircraft
+Entry parameters: None
+Return value: none
 **************************************************************************/
 static void Remote_Control(void)
 {
     //Data within 1 second after entering the model control mode will not be processed
-    //对进入航模控制模式后1秒内的数据不处理
+    //Data within 1 second after entering model aircraft control mode will not be processed
     static u8 thrice=BALANCE_TASK_RATE;
-    int Yuzhi=100; //Threshold to ignore small movements of the joystick //阈值，忽略摇杆小幅度动作
+    int Yuzhi=100; //Threshold to ignore small movements of the joystick // Threshold, ignore small movements of the joystick
 
-    //limiter //限幅
+    //limiter // Limit
     int LX,LY,RY,RX,Remote_RCvelocity;
-	float base_vz = PI/4.0f ;//Z轴速度基准
+	float base_vz = PI/4.0f ;//Z-axis speed reference
 	
-	//阿克曼Z轴代表左前轮角度,设置基准值为 30 度
+	//Ackermann Z represents front-left wheel angle; set reference to 30 degrees
 	#if defined AKM_CAR
 		base_vz = angle_to_rad(30.0f);
 	#endif
 	
-	//4个通道原始值限幅
+	//Four channels with raw value limits
 	remoter.ch1 = target_limit_int(remoter.ch1,1000,2000);
 	remoter.ch2 = target_limit_int(remoter.ch2,1000,2000);
 	remoter.ch3 = target_limit_int(remoter.ch3,1000,2000);
 	remoter.ch4 = target_limit_int(remoter.ch4,1000,2000);
 
     //Front and back direction of left rocker. Control forward and backward.
-    //左摇杆前后方向。控制前进后退。
+    //Left stick forward and backward direction. Controls forward and backward movement.
     LX=remoter.ch2-1500;
     
 	//The left joystick's horizontal directions control lateral \
 	  movement for omnidirectional mobile vehicles.
-    //左摇杆左右方向,对于全向移动小车可控制左右横移
+    //Left joystick moves left and right; for omnidirectional trolleys, control lateral movement left and right
     LY=remoter.ch4-1500;
 
     //Front and back direction of right rocker. Throttle/acceleration/deceleration.
-    //右摇杆前后方向。油门/加减速。
+    //Right stick forward and backward. Throttle/acceleration/deceleration.
     RX=remoter.ch3-1500;
 	
     //Right stick left and right. To control the rotation.
-    //右摇杆左右方向。控制自转。
-    RY=-(remoter.ch1-1500);//自转
+    //Right stick left and right direction. Controls rotation.
+    RY=-(remoter.ch1-1500);//Rotation
 
     if(LX>-Yuzhi&&LX<Yuzhi)LX=0;
     if(LY>-Yuzhi&&LY<Yuzhi)LY=0;
     if(RX>-Yuzhi&&RX<Yuzhi)RX=0;
     if(RY>-Yuzhi&&RY<Yuzhi)RY=0;
 
-	//油门调整速度 Remote_RCvelocity取值:0~1000
+	//Throttle adjustment speed Remote_RCvelocity value: 0~1000
     Remote_RCvelocity= robot_control.rc_speed + RX;
     if(Remote_RCvelocity<0)Remote_RCvelocity=0;
 
     //The remote control command of model aircraft is processed
-    //对航模遥控控制命令进行处理
+    //Processing remote control commands for model aircraft
 	
 	robot_control.Vx = LX * (float)Remote_RCvelocity/500.0f;
 	robot_control.Vy =-LY * (float)Remote_RCvelocity/500.0f;
 	
-	//基准:base_vz,自身倍数:RY/500,取值[-1~1],油门倍数:(Remote_RCvelocity/500.0f),取值[0,2]
+	//Reference: base_vz, Own multiplier: RY/500, Value: [-1~1], Throttle multiplier: (Remote_RCvelocity/500.0f), Value: [0,2]
 	robot_control.Vz = base_vz*((float)RY/500.0f) * ((float)Remote_RCvelocity/500.0f) ; 
 
-	//非阿克曼车型,在后退时转向方向取反.符合摇杆操作逻辑.
+	//For non-Ackermann chassis, reverse steering direction when moving backward to match joystick operation.
 	#if !defined AKM_CAR
 	if(  robot_control.Vx < 0 ) robot_control.Vz = -robot_control.Vz;
 	#endif
 
     //Unit conversion, mm/s -> m/s
-    //单位转换，mm/s -> m/s
+    //Unit conversion, mm/s - > m/s
 	robot_control.Vx = robot_control.Vx/1000.0f;
 	robot_control.Vy = robot_control.Vy/1000.0f;
 
     //Data within 1 second after entering the model control mode will not be processed
-    //对进入航模控制模式后1秒内的数据不处理
+    //Data within 1 second after entering model aircraft control mode will not be processed
     if(thrice>0) robot_control.Vx=0,robot_control.Vy=0,robot_control.Vz=0,thrice--;
 
     //Control target value is obtained and kinematics analysis is performed
-    //得到控制目标值，进行运动学分析
+    //Get control target values for kinematic analysis
     Drive_Motor(robot_control.Vx,robot_control.Vy,robot_control.Vz);
 }
 
@@ -1461,23 +1461,23 @@ static void Remote_Control(void)
 Function: Handle PS2 controller control commands
 Input   : none
 Output  : none
-函数功能：对PS2手柄控制命令进行处理
-入口参数：无
-返回  值：无
+Function: Handles PS2 controller control commands
+Entry parameters: None
+Return value: none
 **************************************************************************/
 #include "xbox360_gamepad.h"
 #include "WiredPS2_gamepad.h"
-//xbox360游戏手柄按键回调函数
+//Xbox 360 gamepad key callback function
 void Xbox360GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 {
 	static float step=0.02;
-	//按下start按键
+	//Press the Start button
 	if( keyid == Xbox360KEY_Menu && event == GamePadKeyEvent_SINGLECLICK )
 		GamePadInterface->StartFlag = 1;
 	
 	if( gamepad_brand == Xbox360 )
 	{
-		//手柄加减速
+		//Handle acceleration and deceleration
 		if( keyid == Xbox360KEY_LB && (event == GamePadKeyEvent_DOUBLECLICK || event == GamePadKeyEvent_SINGLECLICK )  )
 			robot_control.rc_speed -= 50;
 		else if( keyid == Xbox360KEY_RB && (event == GamePadKeyEvent_DOUBLECLICK || event == GamePadKeyEvent_SINGLECLICK )  )
@@ -1517,7 +1517,7 @@ void Xbox360GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 	}
 	
 	
-	//震动激活与取消
+	//Activate and cancel vibration
 	if( keyid == Xbox360KEY_SELECT && event == GamePadKeyEvent_LONGCLICK )
 	{
 		if( GamePadInterface->Vib_EN )
@@ -1535,14 +1535,14 @@ void Xbox360GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 	}
 }
 
-//有线USB手柄回调函数
+//Wired USB handle callback function
 void Wired_USB_PS2GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 {
-	//按下start按键
+	//Press the Start button
 	if( keyid == PS2KEY_START && event == GamePadKeyEvent_SINGLECLICK )
 		GamePadInterface->StartFlag = 1;
 	
-	//手柄加减速
+	//Handle acceleration and deceleration
 	else if( keyid == PS2KEY_L2 && (event == GamePadKeyEvent_DOUBLECLICK || event == GamePadKeyEvent_SINGLECLICK )  )
 		robot_control.rc_speed -= 50;
 	else if( keyid == PS2KEY_L1 && (event == GamePadKeyEvent_DOUBLECLICK || event == GamePadKeyEvent_SINGLECLICK )  )
@@ -1550,14 +1550,14 @@ void Wired_USB_PS2GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t 
 	if( robot_control.rc_speed < 0 ) robot_control.rc_speed = 0;
 }
 
-//经典PS2手柄回调函数,非USB款
+//Classic PS2 controller callback function, non-USB version
 void Classic_PS2GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 {
-	//按下start按键
+	//Press the Start button
 	if( keyid == PS2KEY_START && event == GamePadKeyEvent_SINGLECLICK )
 		GamePadInterface->StartFlag = 1;
 	
-	//手柄加减速
+	//Handle acceleration and deceleration
 	else if( keyid == PS2KEY_L2 && (event == GamePadKeyEvent_DOUBLECLICK || event == GamePadKeyEvent_SINGLECLICK )  )
 		robot_control.rc_speed -= 50;
 	else if( keyid == PS2KEY_L1 && (event == GamePadKeyEvent_DOUBLECLICK || event == GamePadKeyEvent_SINGLECLICK )  )
@@ -1567,39 +1567,39 @@ void Classic_PS2GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t ev
 }
 
 
-//手柄震动映射函数
+//Handle vibration mapping function
 static uint8_t map_to_vib(float x) {
-    // 检查输入范围，限制在 [0.2, 1.2] 内
+    // Check the input range, limited to [0.2, 1.2].
     if (x < 0.1f) return 0;
     if (x > 1.2f) x = 1.2f;
 
-    // 线性映射
+    // Linear mapping
     float result = 255.0f * (x - 0.1f) / 1.1f;
 
-    // 四舍五入并转换为 uint8_t
+    // Round and convert to uint8_t
     return (uint8_t)(result + 0.5f);
 }
 
 
 static float mapStickToAngleChange(float stickValue) {
-    // 基础灵敏度
+    // Base sensitivity
     const float baseSensitivity = 0.0001f;
     
-    // 计算非线性因子 - 摇杆值越大，变化越大
+    // Calculate nonlinear factors – the larger the joystick value, the greater the variation
     float factor = 1.0f + (fabsf(stickValue) / 50.0f);
     
-    // 计算角度变化量
+    // Calculate the angular change
     return stickValue * baseSensitivity * factor;
 }
 
 static float mapStickToPositionChange(float stickValue) {
-    // 基础灵敏度
+    // Base sensitivity
     const float baseSensitivity = 0.00001f;
     
-    // 计算非线性因子 - 摇杆值越大，变化越大
+    // Calculate nonlinear factors – the larger the joystick value, the greater the variation
     float factor = 1.0f + (fabsf(stickValue) / 50.0f);
     
-    // 计算角度变化量
+    // Calculate the angular change
     return stickValue * baseSensitivity * factor;
 }
 
@@ -1652,27 +1652,27 @@ static void PS2_control(void)
 {
 	float LX=127,LY=127,RX=127,RY=127;
 	float ThrottleTri = 255;
-	float base_vz = PI/4.0f ;//Z轴速度基准
+	float base_vz = PI/4.0f ;//Z-axis speed reference
 	
-	//前进摇杆
+	//Forward joystick
 	LY = GamePadInterface->LY - 127;
 	
-	//左右横移
+	//Horizontal movement left and right
 	LX = 127 - GamePadInterface->LX;
 	
-	//顺逆时针
+	//Clockwise/counterclockwise
 	RX = 127 - GamePadInterface->RX;
 	
 	RY = GamePadInterface->RY - 127;
-	//摇杆微小幅度过滤
+	//Joystick with a small amplitude filter
 	if( fabs(LY)<20 ) LY = 0;
 	if( fabs(LX)<20 ) LX = 0;
 	if( fabs(RX)<20 ) RX = 0;
 	
-	//针对xbox360手柄，扳机为模拟量时，允许使用扳机控制
+	//For Xbox360 gamepads with analog triggers, allow trigger-based control
 	if( gamepad_brand == Xbox360 )
 	{
-		//前进摇杆无值时,采用扳机的值
+		//When the forward joystick has no value, use the trigger value
 		if( (int)LY == 0 )
 		{
 			if( GamePadInterface->LT == 0 && GamePadInterface->RT != 0 )
@@ -1684,7 +1684,7 @@ static void PS2_control(void)
 		}
 	}
 	
-	//针对usb有线手柄,在非模拟量模式下的摇杆值映射
+	//Joystick value mapping in non-analog mode for USB wired gamepad
 	else if( gamepad_brand == PS2_USB_Wired ||  gamepad_brand == PS2_USB_WiredV2 )
 	{
 		if( fabs(RX)<0.0001f )
@@ -1707,19 +1707,19 @@ static void PS2_control(void)
 			#endif
 
 			//Unit conversion, mm/s -> m/s
-			//单位转换，mm/s -> m/s
+			//Unit conversion, mm/s - > m/s
 			robot_control.Vx = robot_control.Vx/1000.0f;
 			robot_control.Vy = robot_control.Vy/1000.0f;
 
 			//Control target value is obtained and kinematics analysis is performed
-			//得到控制目标值，进行运动学分析
+			//Get control target values for kinematic analysis
 			Drive_Motor(robot_control.Vx,robot_control.Vy,robot_control.Vz);
 	}
 	
-	//根据加速度反应震动情况传达到手柄
+	//Vibration is transmitted to the handle based on acceleration response
 	#include "bsp_gamepad.h"
 	
-	//Z轴数据判断震动强度
+	//Z-axis data to determine vibration intensity
 	float now_z = imu.accel.z/1671.84f;
 	static float last_z = 0;
 	float strength = fabs(last_z - now_z);
@@ -1730,7 +1730,7 @@ static void PS2_control(void)
 	const float vib_strength = 0.1f;
 	#endif
 	
-	//震动映射到手柄
+	//Map vibration to gamepad
 	if( strength>vib_strength && SysVal.Time_count>CONTROL_DELAY)
 	{
 		if( GamePadInterface->SetVibration!=NULL )
@@ -1738,13 +1738,13 @@ static void PS2_control(void)
 	}
 	last_z = now_z;
 		
-//	//TODO:适配PS2控制
+//	//TODO: Adapted for PS2 controls
 //    float LX,LY,RY;
-//    int Yuzhi=20; //Threshold to ignore small movements of the joystick //阈值，忽略摇杆小幅度动作
+//    int Yuzhi=20; // Threshold to ignore small joystick movements
 //	
-//	float base_vz = PI/4.0f ;//Z轴速度基准
+//	float base_vz = PI/4.0f; // Z-axis speed reference
 //	
-//	//针对 usb有线ps2手柄 数字模式控制转换
+//	//Digital-mode control conversion for USB wired PS2 gamepad
 //	if( SysVal.HardWare_Ver==V1_1 )
 //	{
 //		if( ps2_type == Normal_PS2 )
@@ -1760,34 +1760,34 @@ static void PS2_control(void)
 //	}
 //	
 //    //128 is the median.The definition of X and Y in the PS2 coordinate system is different from that in the ROS coordinate system
-//    //128为中值。PS2坐标系与ROS坐标系对X、Y的定义不一样
-//    LY=-(ps2_val.LX-128);//取值[-128,128]
+//    //128 is the median. The PS2 coordinate system and the ROS coordinate system define X and Y differently
+//    LY=-(ps2_val.LX-128); // value range [-128,128]
 //    LX=-(ps2_val.LY-128);
 //    RY=-(ps2_val.RX-128);
 
-//    //Ignore small movements of the joystick //忽略摇杆小幅度动作
+//    //Ignore small movements of the joystick
 //    if(LX>-Yuzhi&&LX<Yuzhi)LX=0;
 //    if(LY>-Yuzhi&&LY<Yuzhi)LY=0;
 //    if(RY>-Yuzhi&&RY<Yuzhi)RY=0;
 //	
 //	static uint8_t low_fre = 0;
-//	if(++low_fre==10)//降低按键扫描频率
+//	if(++low_fre==10) // Reduce the frequency of key scans
 //	{
 //		low_fre = 0;
-//		//PS2手柄,左扳机1号可加速,2号可减速
+//		//PS2 controller: left trigger 1 accelerates, 2 slows down
 //			 if( Read_PS2_KEY(L1_KEY)==PS2_KEY_ON ) robot_control.rc_speed+=20;
 //		else if( Read_PS2_KEY(L2_KEY)==PS2_KEY_ON ) robot_control.rc_speed-=20;
 //		
-//		//速度最大最小值限制
+//		//Maximum/minimum speed limits
 //		robot_control.rc_speed = target_limit_float(robot_control.rc_speed,0,robot_control.limt_max_speed*1000);
 //	}
 
 //	#if defined AKM_CAR
-//		base_vz = angle_to_rad(30.0f);//阿克曼Z轴基准角度
+//		base_vz = angle_to_rad(30.0f); Ackermann Z-axis reference angle
 //	#endif
 //	
 //    //Handle PS2 controller control commands
-//    //对PS2手柄控制命令进行处理
+//    //Handle PS2 controller control commands
 //	robot_control.Vx = (LX/128.0f) * robot_control.rc_speed;
 //	robot_control.Vy = (LY/128.0f) * robot_control.rc_speed;
 //	robot_control.Vz = base_vz * (RY/128.0f) * ( robot_control.rc_speed/500.0f );
@@ -1797,12 +1797,12 @@ static void PS2_control(void)
 //	#endif
 
 //    //Unit conversion, mm/s -> m/s
-//    //单位转换，mm/s -> m/s
+//    //Unit conversion, mm/s - > m/s
 //    robot_control.Vx = robot_control.Vx/1000.0f;
 //	robot_control.Vy = robot_control.Vy/1000.0f;
 
 //    //Control target value is obtained and kinematics analysis is performed
-//    //得到控制目标值，进行运动学分析
+//    //Get control target values for kinematic analysis
 //    Drive_Motor(robot_control.Vx,robot_control.Vy,robot_control.Vz);
 }
 
@@ -1811,30 +1811,30 @@ Functionality: Robot Self-Check Function - Performs a self-check on the robot to
 Input Parameters: None.
 Return Value: None.
 Author: LUCSYS
-函数功能： 机器人自检函数,检查机器人电机、编码器、驱动器是否存在错误接线
-入口参数：无
-返回  值：无
-作    者：LUCSYS
+Function: Robot self-check function to check whether the robot motor, encoder, or driver has incorrect wiring
+Entry parameters: None
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 static void robot_mode_check(void)
 {
-	//TODO:自检程序,同向电机接反难判断.
+	//TODO: Self-check procedure, faulty fault of the same motor is hard to judge.
 	
-	#define OVERLOAD_PWM 8000 //超载PWM预警值
-	#define ENCODER_LOST_PWM 5500 //编码器未接时,PWM报错阈值
+	#define OVERLOAD_PWM 8000 //Overload PWM warning value
+	#define ENCODER_LOST_PWM 5500 //PWM error threshold when encoder is not connected
 	
-    static u8 init=0;//初始化
+    static u8 init=0;//Initialize
     if( 0 == init ) 
 	{
 		ROBOT_SELFCHECK_t_Init(&robot_check);
 		init=1;
 	}
 
-    if( EN==1 && robot_check.errorflag ==0 ) //保留可以使用急停开关跳过自检的功能
+    if( EN==1 && robot_check.errorflag ==0 ) //Retain the ability to skip self-test using the emergency stop switch
     {
-		#if defined OMNI_CAR //全向轮小车结构特殊,独立自检逻辑
+		#if defined OMNI_CAR //The all-directional wheel chassis has a unique structure and independent self-check logic
 			
-			//1、全向轮自检时,仅B、C电机转动.若A路存在数值则说明驱动器或编码器线接错(/4代表四分一圈)
+			//1. During the omnidirectional wheel self-test, only motors B and C rotate. If there are values in line A, it indicates the driver or encoder wiring is connected incorrectly (/4 represents a quarter turn).
 			if( robot_check.check_a > robot.HardwareParam.Encoder_precision/4 || \
 				robot_check.check_a < -robot.HardwareParam.Encoder_precision/4	)
 			{
@@ -1842,7 +1842,7 @@ static void robot_mode_check(void)
 				robot_check.errorflag = 1;
 			}
 			
-			//2、车型不对或接线不对导致的电机反向错误
+			//2. Motor reversal error caused by incorrect model or wiring
 			if( robot_check.check_b > robot.HardwareParam.Encoder_precision/4 || \
 				robot_check.check_c < -robot.HardwareParam.Encoder_precision/4 )
 			{
@@ -1850,7 +1850,7 @@ static void robot_mode_check(void)
 				robot_check.errorflag = 1;
 			}
 			
-			//3、任意电机PWM输出到达阈值,对应的编码器数据很小(轮子转动不到12°)或无数据,则认为编码器线未接
+			//3. If any motor's PWM output reaches a threshold and the corresponding encoder data is very small (the wheel rotates less than 12°) or no data, it is considered that the encoder wire is not connected
 			if( ( fabs( robot.MOTOR_B.Output ) > ENCODER_LOST_PWM && robot_check.check_b > -robot.HardwareParam.Encoder_precision/30 ) || \
 				( fabs( robot.MOTOR_C.Output ) > ENCODER_LOST_PWM && robot_check.check_c < robot.HardwareParam.Encoder_precision/30 ) )
 			{
@@ -1858,7 +1858,7 @@ static void robot_mode_check(void)
 				robot_check.errorflag = 1;
 			}
 			
-			//4、任意电机PWM输出超过更大阈值,则认为小车过载
+			//4. If the PWM output of any motor exceeds a greater threshold, it is considered overloaded
 			if( fabs( robot.MOTOR_A.Output ) > OVERLOAD_PWM || fabs( robot.MOTOR_B.Output ) > OVERLOAD_PWM || \
 				fabs( robot.MOTOR_C.Output ) > OVERLOAD_PWM )
 			{
@@ -1870,7 +1870,7 @@ static void robot_mode_check(void)
 			static int last_a=0,last_b=0,last_c=0,last_d=0;
 			static u8 err_time = 0;
 			
-			//1、任意车轮反转 1/4 圈 认为是编码器线或驱动线接反,或者是车型选错.
+			//1. Any wheel reversed for 1/4 turn is considered to be due to the encoder or drive wire being reversed, or the wrong model selection.
 			if( robot_check.check_a < -robot.HardwareParam.Encoder_precision/4  || \
 				robot_check.check_b < -robot.HardwareParam.Encoder_precision/4  || \
 				robot_check.check_c < -robot.HardwareParam.Encoder_precision/4  || \
@@ -1880,7 +1880,7 @@ static void robot_mode_check(void)
 				Buzzer_AddTask(1,20);
 			}
 			
-			//2、任意电机PWM输出到达阈值,对应的编码器数据很小(轮子转动不到12°)或无数据,则认为编码器线未接
+			//2. If any motor's PWM output reaches the threshold and the corresponding encoder data is very small (the wheel rotates less than 12°) or no data, it is considered that the encoder wire is not connected
 			if( ( abs( robot.MOTOR_A.Output ) > ENCODER_LOST_PWM && robot_check.check_a < robot.HardwareParam.Encoder_precision/30 ) || \
 				( abs( robot.MOTOR_B.Output ) > ENCODER_LOST_PWM && robot_check.check_b < robot.HardwareParam.Encoder_precision/30 ) || \
 				( abs( robot.MOTOR_C.Output ) > ENCODER_LOST_PWM && robot_check.check_c < robot.HardwareParam.Encoder_precision/30 ) || \
@@ -1890,7 +1890,7 @@ static void robot_mode_check(void)
 				Buzzer_AddTask(2,20);
 			}
 			
-			//3、任意电机PWM输出超过更大阈值,则认为小车过载
+			//3. If the PWM output of any motor exceeds a greater threshold, it is considered overloaded
 			if( abs( robot.MOTOR_A.Output ) > OVERLOAD_PWM || abs( robot.MOTOR_B.Output ) > OVERLOAD_PWM || \
 				abs( robot.MOTOR_C.Output ) > OVERLOAD_PWM || abs( robot.MOTOR_D.Output ) > OVERLOAD_PWM	)
 			{
@@ -1898,7 +1898,7 @@ static void robot_mode_check(void)
 				Buzzer_AddTask(3,20);
 			}
 			
-			//4、出现多次累计值倒退,除了1中的异常,也可能是多种错误累计叠加的表现.
+			//4. Multiple cumulative value regressions occur, besides the abnormal in 1, it may also be a result of multiple errors cumulating together.
 			if( abs(robot_check.check_a) < abs(last_a) - 50 || abs(robot_check.check_b) < abs(last_b) - 50 || abs(robot_check.check_c) < abs(last_c) - 50|| abs(robot_check.check_d) < abs(last_d) - 50 )
 			{
 				err_time++;
@@ -1918,18 +1918,18 @@ Functionality: Read Feedback Values - Retrieves feedback values from each actuat
 Input Parameters: None.
 Return Value: None.
 Author: LUCSYS
-函数功能：读取机器各个执行机构的反馈值
-入口参数：无
-返回  值：无
-作    者：LUCSYS
+Function: reads feedback values from various actuators of the machine
+Entry parameters: None
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 static void Get_Robot_FeedBack(void)
 {
     //Retrieves the original data of the encoder
-    //获取编码器的原始数据
+    //Retrieve the original data of the encoder
     short Encoder_A_pr,Encoder_B_pr;
 	
-	//编码器原始值,读取后清空.
+	//Original encoder value, cleared after reading.
     Encoder_A_pr = Read_Encoder(Encoder_A);
     Encoder_B_pr = Read_Encoder(Encoder_B);
 	
@@ -1943,32 +1943,32 @@ static void Get_Robot_FeedBack(void)
 		Encoder_D_pr = Read_Encoder(Encoder_D);
 	#endif
 	
-	//计算纠偏系数
+	//Calculate the correction factor
 	float LeftWheelDiff = wheelCoefficient(robot_control.LineDiffParam,1);
 	float RightWheelDiff = wheelCoefficient(robot_control.LineDiffParam,0);
 	
     //The encoder converts the raw data to wheel speed in m/s
-    //编码器原始数据转换为车轮速度，单位m/s
+    //The encoder's raw data is converted into wheel speed, unit m/s
 	#if defined AKM_CAR
 	
-		//未完成自检时采集编码器数据进行判断
+		//When the self-test is not completed, encoder data is collected for judgment
 		if( robot_check.check_end == 0 )
 		{
 			robot_check.check_a +=  Encoder_A_pr;
 			robot_check.check_b += -Encoder_B_pr;
 		}
 		
-		//将两个电机的编码器的原始读数转换为 m/s 
+		//Converts the raw encoder readings of both motors into m/s
 		robot.MOTOR_A.Encoder =   Encoder_A_pr*BALANCE_TASK_RATE/( robot.HardwareParam.Encoder_precision )* robot.HardwareParam.Wheel_Circ / LeftWheelDiff;
 		robot.MOTOR_B.Encoder = - Encoder_B_pr*BALANCE_TASK_RATE/( robot.HardwareParam.Encoder_precision )* robot.HardwareParam.Wheel_Circ / RightWheelDiff;
 	
         //Gets the position of the slide, representing the front wheel rotation Angle
-        //获取滑轨位置,代表前轮转角角度.该数值由ADC2负责采集,DMA完成搬运,此处仅需处理数据即可
+        //Obtain the position of the slide rail, representing the front wheel rotation angle. This value is collected by ADC2, and the DMA completes the handling; only the data needs to be processed here
 		robot.SERVO.Encoder = get_DMA_SlideRes();
-		robot.SERVO.Encoder = Slide_Mean_Filter(robot.SERVO.Encoder);//将采集结果进行平滑滤波
+		robot.SERVO.Encoder = Slide_Mean_Filter(robot.SERVO.Encoder);//Smooth filter the collected results
 	
 	#elif defined DIFF_CAR
-		//未完成自检时采集编码器数据进行判断
+		//When the self-test is not completed, encoder data is collected for judgment
 		if( robot_check.check_end == 0 )
 		{
 			robot_check.check_a +=  Encoder_A_pr;
@@ -1979,7 +1979,7 @@ static void Get_Robot_FeedBack(void)
 		robot.MOTOR_B.Encoder = - Encoder_B_pr*BALANCE_TASK_RATE/( robot.HardwareParam.Encoder_precision )* robot.HardwareParam.Wheel_Circ / RightWheelDiff;	
 		
 	#elif defined MEC_CAR || defined _4WD_CAR	
-		//未完成自检时采集编码器数据进行判断
+		//When the self-test is not completed, encoder data is collected for judgment
 		if( robot_check.check_end == 0 )
 		{
 			robot_check.check_a +=  Encoder_A_pr;
@@ -1993,7 +1993,7 @@ static void Get_Robot_FeedBack(void)
 		robot.MOTOR_D.Encoder = - Encoder_D_pr*BALANCE_TASK_RATE/( robot.HardwareParam.Encoder_precision )* robot.HardwareParam.Wheel_Circ / RightWheelDiff;	
 		
 	#elif defined OMNI_CAR	
-		//未完成自检时采集编码器数据进行判断
+		//When the self-test is not completed, encoder data is collected for judgment
 		if( robot_check.check_end == 0 )
 		{
 			robot_check.check_a += -Encoder_A_pr;
@@ -2009,7 +2009,7 @@ static void Get_Robot_FeedBack(void)
 }
 
 /*-------------------------------- Robot state detection related functions ------------------------------------*/
-/*--------------------------------         机器人状态检测相关函数          ------------------------------------*/
+/*-------------------------------- Robot Status Detection Related Functions ------------------------------------*/
 /**************************************************************************
 Function Description: The function clears residual motor control signals when the robot \
   remains stationary on a non-sloping surface for a certain period of time. This helps  \
@@ -2017,70 +2017,70 @@ Function Description: The function clears residual motor control signals when th
 Input Parameters: None
 Return Value: None
 Author: LUCSYS
-函数功能：小车在非斜坡上静止超过一定时间,清除电机残余的控制量.降低机器人功耗以及降低电机的噪音
-入口参数：无
-返回  值：无
-作    者：LUCSYS
+Function: When the chassis remains stationary on a non-slope for more than a certain time, it removes residual motor control. This reduces robot power consumption and motor noise
+Entry parameters: None
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 static void Robot_ParkingCheck(void)
 {
-	#define PUSH_PWM 500 //推车累计的PWM阈值,超出将执行清除
+	#define PUSH_PWM 500 //Accumulated PWM threshold for carts; exceeding it will be cleared
 	
-    //小车姿态简易判断
-    float y_accle = (float)(imu.accel.y/1671.84f);//Y轴加速度实际值
-    float z_accle = (float)(imu.accel.z/1671.84f);//Z轴加速度实际值
+    //Simple assessment of the car's posture
+    float y_accle = (float)(imu.accel.y/1671.84f);//Actual value of Y-axis acceleration
+    float z_accle = (float)(imu.accel.z/1671.84f);//Actual Z-axis acceleration
     float diff;
 
-    //计算Y、Z加速度融合值，该值越接近9.8，表示小车姿态越水平
+    //Calculate the fusion of Y and Z accelerations; the closer this value is to 9.8, the more horizontal the car's attitude is
     if( y_accle > 0 ) diff  = z_accle - y_accle;
     else diff  = z_accle + y_accle;
 	
 	if( robot.MOTOR_A.Target != 0 || robot.MOTOR_B.Target!=0 || \
 		robot.MOTOR_C.Target != 0 || robot.MOTOR_D.Target!=0)
-	{   //小车被控制中,设置等待标志位.复位其他检测变量
-		park.wait_check = 1;  //等待检测
-		park.timecore = 0;    //复位检测相关变量
+	{   //The car is under control, and the waiting flag position is set. Reset other detection variables
+		park.wait_check = 1;  //Wait for detection
+		park.timecore = 0;    //Reset and detect relevant variables
 		park.clear_state = 0;
 		park.start_clear = 0;
 	}
 	else 
 	{
-		if( park.wait_check==1 ) //速度非0 -> 0 触发检测
+		if( park.wait_check==1 ) //Detect transition from nonzero velocity to 0
 		{
 			park.timecore++;
-			if( park.timecore >= BALANCE_TASK_RATE*5 ) //小车静止时间超过5秒
+			if( park.timecore >= BALANCE_TASK_RATE*5 ) //The car has been stationary for more than 5 seconds
 			{
 				park.wait_check=0;
 				park.timecore = 0;
 				
-				//若机器人不在斜面上,则进入驻车模式,清空电机控制量
+				//If the robot is not on an incline, enter parking mode to clear motor control
 				if( diff > 8.8f ) park.start_clear = 1 , park.clear_state = 0;
-				else  park.clear_state |= 1<<7 ; //在斜坡上,不可清除控制量.标记清除已完成
+				else  park.clear_state |= 1<<7 ; //On the slope, control quantities cannot be cleared. Mark clearing completed
 			}
 		}
 	}
 	
-	//检查是否已完成清除.完成清除后将会监测小车是否被动积累控制量(推车行为)
+	//Check whether the clearance has been completed. After clearing is complete, it will monitor whether the cart passively accumulates control (pushing behavior).
 	if( ((park.clear_state>>7)&0x01)==1  )
 	{
-		if(diff > 8.8f )//小车不在斜坡上作为前提.
+		if(diff > 8.8f )//The car is not on the slope as a prerequisite.
 		{
-			//出现推车行为
+			//Pushing the cart occurs
 			if( abs(robot.MOTOR_A.Output) > PUSH_PWM || abs(robot.MOTOR_B.Output) > PUSH_PWM || \
 				abs(robot.MOTOR_C.Output) > PUSH_PWM || abs(robot.MOTOR_D.Output) > PUSH_PWM)
 			{
 				park.timecore++;
-				if( park.timecore >= BALANCE_TASK_RATE*10 ) //小车pwm累计时间超过10秒
+				if( park.timecore >= BALANCE_TASK_RATE*10 ) //The car's PWM accumulated time exceeds 10 seconds
 				{
 					park.timecore = 0;
-					//进入驻车模式清除控制量
+					//Clear control output on entering parking mode
 					park.start_clear = 1 , park.clear_state = 0;
 				}
 			}
 		}
 	}
 	
-	//开启驻车模式,执行清除任务
+	//Activate parking mode to perform the cleanup task
 	if( park.start_clear==1 )
 	{
 		if( 1 == PI_Clear_Output(&PI_MotorA) ) park.clear_state |= 1<<0 ;
@@ -2095,11 +2095,11 @@ static void Robot_ParkingCheck(void)
 		if( 1 == PI_Clear_Output(&PI_MotorD) ) park.clear_state |= 1<<3 ;
 		else                                   park.clear_state &= ~(1<<3);
 		
-		//4个电机完成清除
+		//Four motors are cleared
 		if( (park.clear_state&0xff)==0x0f ) 
 		{
-			park.start_clear = 0;    //清除任务结束
-			park.clear_state |= 1<<7;//标记清除完成
+			park.start_clear = 0;    //Clearing task completed
+			park.clear_state |= 1<<7;//Marker clearing completed
 		}
 	}
 }
@@ -2109,28 +2109,28 @@ Function function: Scan user buttons and perform different functions through dif
 Entry parameter: Frequency of executing scanning tasks
 Return value: None
 Author: SHEELTEC
-函数功能：扫描用户按键,通过不同的按键状态执行不同的功能
-入口参数：执行扫描的任务频率
-返回  值：无
-作    者：LUCSYS
+Function: Scan user keys and perform different functions through different key states
+Entry parameters: frequency of tasks performing scans
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 static void UserKey_Scan(u16 rate)
 {
 	u8 state;
 	
-	//板子上的用户按键扫描
+	//User key scanning on the board
 	state = KEY_Scan(rate,0);
-	if(state==single_click) //单击
+	if(state==single_click) //Click
 	{
 		charger.AllowRecharge = ! charger.AllowRecharge;
 	}
-	else if( state==double_click )//双击重新标定imu数值
+	else if( state==double_click )//Double-click to recalibrate IMU values
 	{	
 		ImuData_copy(&imu.Deviation_gyro,&imu.Original_gyro);
 		ImuData_copy(&imu.Deviation_accel,&imu.Original_accel);
 	}
 	
-	else if( state==long_click ) //长按
+	else if( state==long_click ) //Long press
 	{
 		oled.page++;
 		if( oled.page > oled.MAX_PAGE ) oled.page = 1;
@@ -2143,24 +2143,24 @@ Functionality: Check Automatic Recharge Station Status - Verifies the status of 
 Input Parameters: None.
 Return Value: None.
 Author: LUCSYS
-函数功能：对自动回充设备状态进行检查
-入口参数：无
-返回  值：无
-作    者：LUCSYS
+Function: Checks the status of automatic recharge equipment
+Entry parameters: None
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 static void Charger_DevCheck(void)
 {
-	//用户设置进入自动回充状态,此时先确认系统上是否存在该设备
+	//The user settings enter automatic recharge mode. At this point, first confirm whether the device exists on the system
 	if( charger.AllowRecharge==1 )
-		if( SysVal.HardWare_charger==0 ) charger.AllowRecharge=0,Find_Charging_HardWare();//不存在充电装备硬件,通过访问特征码进行二次确认
+		if( SysVal.HardWare_charger==0 ) charger.AllowRecharge=0,Find_Charging_HardWare();//No charging hardware is present; secondary confirmation is performed by accessing the characteristic code
 	
-	//系统上存在该设备时,对自动回充进行硬件离线监测
+	//When the device exists on the system, perform hardware offline monitoring of automatic recharge
 	if(SysVal.HardWare_charger==1)
-	{   //回充装备硬件离线,执行回充设备软件复位
+	{   //Recharge equipment hardware is offline; perform software reset of recharge equipment
 		charger.OutLine_Check++;
-		if( charger.OutLine_Check>RATE_100_HZ) auto_recharge_reset() , charger.OutLine_Check=BALANCE_TASK_RATE+1;//隶属哪个任务,就用哪个任务频率,这里是“BALANCE_TASK_RATE”
+		if( charger.OutLine_Check>RATE_100_HZ) auto_recharge_reset() , charger.OutLine_Check=BALANCE_TASK_RATE+1;//Use the owning task's frequency; here it is BALANCE_TASK_RATE
 		
-		//存在自动回充设备时，若检测到小车电量低,且收到充电桩的红外信号，将会自行开启自动回充功能
+		//When an automatic recharge device is present, if the car detects low battery and receives infrared signals from the charging pile, it will automatically activate the automatic recharge function
 		static u8 once=1;
 		if( robot.voltage < 20.0f && charger.RED_STATE!=0 && once)
 		{
@@ -2169,27 +2169,27 @@ static void Charger_DevCheck(void)
 		}
 	}
 	
-	//航模遥控信号检测
-	remoter.check_count++;//此变量在航模油门接收时会被置0
-	if( remoter.check_count > Filter_Threshold )//超过设定的阈值,说明是无航模信号或者是干扰信号
+	//Remote control signal detection for model aircraft
+	remoter.check_count++;//This variable is set to 0 when receiving the model aircraft throttle input
+	if( remoter.check_count > Filter_Threshold )//Exceeding the set threshold indicates no model aircraft signal or interference signal
 	{
 		remoter.check_count = Filter_Threshold + 1;
-		remoter.ch1 = 1500;remoter.ch2=1500;remoter.ch3=1000;remoter.ch4=1500;//干扰或无信号,所有通道数值复位
+		remoter.ch1 = 1500;remoter.ch2=1500;remoter.ch3=1000;remoter.ch4=1500;//Interference or no signal, all channel values are reset
 	}
 }
 
 /*-------------------------------- Function auxiliary type related functions ------------------------------------*/
-/*--------------------------------         功能辅助类相关函数          ------------------------------------*/
+/*-------------------------------- Function Helper Class Related Functions ------------------------------------*/
 
 /**************************************************************************
 Function function: Save the steering variables of the Ackermann model's servo to Flash
 Entry parameter: Flag bit for executing save
 Return value: 1: Successfully saved 0: Not saved or failed to save
 Author: LUCSYS
-函数功能：保存阿克曼车型的舵机转向变量到Flash
-入口参数：是否执行保存的标志位
-返回  值：1:保存成功 0:不存在保存需求 >1:flash写入错误
-作    者：LUCSYS
+Function: Save Ackermann vehicle steering variables to Flash
+Entry parameter: whether to execute the saved flag
+Return value: 1-save succeeded; 0-no save required; >1-flash write error
+Author: LUCSYS
 **************************************************************************/
 static uint8_t FlashParam_Save(uint8_t *flag)
 {
@@ -2199,7 +2199,7 @@ static uint8_t FlashParam_Save(uint8_t *flag)
 	{
 		*flag = 0;
 		check = 1;
-		taskENTER_CRITICAL();//操作FLash进入临界，保证数据安全
+		taskENTER_CRITICAL();//Operate FLash to enter critical state to ensure data security
 		int buf[7]={0};
 		buf[0] = Akm_Servo.Min;
 		buf[1] = Akm_Servo.Mid;
@@ -2210,8 +2210,8 @@ static uint8_t FlashParam_Save(uint8_t *flag)
 		buf[6] = robot.V_KI;
 		check += Write_Flash( (u32*)buf , 7);
 		
-		taskEXIT_CRITICAL();//退出临界
-		//若全部写入成功,check==1
+		taskEXIT_CRITICAL();//Exit critical section
+		//If all writes succeed, check==1
 	}
 
 	return check;
@@ -2220,32 +2220,32 @@ static uint8_t FlashParam_Save(uint8_t *flag)
 void FlashParam_Read(void)
 {
 	int read;
-	read = Read_Flash(0);//读取下标为0的数据
+	read = Read_Flash(0);//Read data with index 0
 	if( read!=0xffffffff ) Akm_Servo.Min = read;
 	
-	read = Read_Flash(1);//读取下标为1的数据
+	read = Read_Flash(1);//Read data with subscript 1
 	if( read!=0xffffffff ) Akm_Servo.Mid = read;
 	
-	read = Read_Flash(2);//读取下标为2的数据
+	read = Read_Flash(2);//Read data with subscript 2
 	if( read!=0xffffffff ) Akm_Servo.Max = read;
 	
-	read = Read_Flash(3); //纠偏系数
+	read = Read_Flash(3); //Correction factor
 	if( read!=0xffffffff ) robot_control.LineDiffParam = read;
 	
 	
-	read = Read_Flash(4);//速度
+	read = Read_Flash(4);//Velocity
 	if( read!=0xffffffff ) robot_control.rc_speed = *((float*)&read);
-	if( robot_control.rc_speed < 0 || robot_control.rc_speed > 10000 )//异常速度数据过滤
+	if( robot_control.rc_speed < 0 || robot_control.rc_speed > 10000 )//Abnormal speed data filtering
 		robot_control.rc_speed = 500;
 	
 	
-	read = Read_Flash(5);//KP参数
+	read = Read_Flash(5);//KP parameters
 	if( read!=0xffffffff ) 
 	{
 		Set_Robot_PI_Param(read,-1);
 	}
 	
-	read = Read_Flash(6);//KI参数
+	read = Read_Flash(6);//KI parameter
 	if( read!=0xffffffff ) 
 	{
 		Set_Robot_PI_Param(-1,read);
@@ -2260,11 +2260,11 @@ void FlashParam_Read(void)
 //	{
 //		*flag = 0;
 //		check = 1;
-//		taskENTER_CRITICAL();//操作FLash进入临界，保证数据安全
+//		taskENTER_CRITICAL();// operate Flash entering critical section, ensure data safety
 //		int buf[4]={Akm_Servo.Min,Akm_Servo.Mid,Akm_Servo.Max,robot_control.LineDiffParam};
 //		check += Write_Flash( (u32*)buf , 4);
-//		taskEXIT_CRITICAL();//退出临界
-//		//若全部写入成功,check==1
+//		taskEXIT_CRITICAL();// exit critical section
+//		//If all writes succeed, check==1
 //	}
 
 //	return check;
@@ -2273,16 +2273,16 @@ void FlashParam_Read(void)
 //void Akm_ReadServo_Param(void)
 //{
 //	int read;
-//	read = Read_Flash(0);//读取下标为0的数据
+//	read = Read_Flash(0); Read data with index 0
 //	if( read!=0xffffffff ) Akm_Servo.Min = read;
 //	
-//	read = Read_Flash(1);//读取下标为1的数据
+//	read = Read_Flash(1); Read data with subscript 1
 //	if( read!=0xffffffff ) Akm_Servo.Mid = read;
 //	
-//	read = Read_Flash(2);//读取下标为2的数据
+//	read = Read_Flash(2); Read data with subscript 2
 //	if( read!=0xffffffff ) Akm_Servo.Max = read;
 //	
-//	read = Read_Flash(3); //纠偏系数
+//	read = Read_Flash(3); Correction coefficient
 //	if( read!=0xffffffff ) robot_control.LineDiffParam = read;
 //	
 //}
@@ -2292,10 +2292,10 @@ Functionality: Velocity Smoothing Function - Gradually adjusts the speed to the 
 Input Parameters: Current speed, target speed, smoothing step value.
 Return Value: Smoothed speed.
 Author: LUCSYS
-函数功能：速度平滑函数,让速度以设置的步进值到达目标速度
-入口参数：当前速度、目标速度、平滑的步进值
-返回  值：平滑后的速度
-作    者：LUCSYS
+Function: Speed smoothing function to ensure speed reaches the target speed at a set step value
+Entry parameters: current speed, target speed, smooth step values
+Return value: smoothed velocity
+Author: LUCSYS
 **************************************************************************/
 static float Vel_SmoothControl(float now_speed,float targetSpeed,float step)
 {
@@ -2317,9 +2317,9 @@ static float Vel_SmoothControl(float now_speed,float targetSpeed,float step)
 Function: Limiting function
 Input   : Value
 Output  : none
-函数功能：限幅函数
-入口参数：幅值
-返回  值：无
+Function: Limit function
+Entry parameters: magnitude
+Return value: none
 **************************************************************************/
 float target_limit_float(float insert,float low,float high)
 {
@@ -2345,10 +2345,10 @@ static int target_limit_int(int insert,int low,int high)
 Function: Data sliding filtering
 Input   : data
 Output  : Filtered data
-函数功能：阿克曼滑轨数据 滤波
-入口参数：新采集的数据
-返回  值：滤波后的数据
-作    者：LUCSYS
+Function: Ackermann slide track data filtering
+Entry parameters: newly collected data
+Return value: filtered data
+Author: LUCSYS
 **************************************************************************/
 #if defined AKM_CAR
 #define FILTERING_TIMES 20
@@ -2377,9 +2377,9 @@ static int Slide_Mean_Filter(int data)
 //Function: Smoothing the front wheel steering speed to prevent excessive steering gear current
 //Input   : Current servo PWM, Target servo PWM, Smooth value
 //Output  : none
-//函数功能：对前轮转向速度做平滑处理，防止舵机电流过大
-//入口参数：当前舵机控制PWM值 目标舵机控制PWM值 平滑值
-//返回  值：无
+//Function: smooths the steering speed of the front wheels to prevent excessive servo current
+//Entry parameters: Current servo control PWM value, target servo control PWM value, smoothing value
+//Return value: none
 //**************************************************************************/
 //int Smooth_steering(int currentPWM, int targetPWM, float step)
 //{
@@ -2397,10 +2397,10 @@ Functionality: Radian to Degree Conversion - Converts a given radian value to it
 Input Parameters: Radian value.
 Return Value: Degree value corresponding to the input radian.
 Author: LUCSYS
-函数功能：弧度转角度
-入口参数：弧度
-返回  值：输入弧度对应的角度
-作    者：LUCSYS
+Function: Radians to angles
+Entry parameter: radian
+Return value: angle in degrees corresponding to input radians
+Author: LUCSYS
 **************************************************************************/
 float rad_to_angle(const float rad)
 {
@@ -2412,10 +2412,10 @@ Functionality: Degree to Radian Conversion - Converts a given degree value to it
 Input Parameters: Degree value.
 Return Value: Radian value corresponding to the input degree.
 Author: LUCSYS
-函数功能：角度转弧度
-入口参数：角度
-返回  值：输入角度对应的弧度
-作    者：LUCSYS
+Function: angle to radian
+Entry parameter: Angle
+Return value: radians corresponding to input degrees
+Author: LUCSYS
 **************************************************************************/
 float angle_to_rad(const float angle)
 {
@@ -2424,17 +2424,17 @@ float angle_to_rad(const float angle)
 
 
 /*-------------------------------- Software initialization related functions ------------------------------------*/
-/*--------------------------------        软件初始化相关函数          ------------------------------------*/
+/*-------------------------------- Software initialization-related functions ------------------------------------*/
 /**************************************************************************
 Functionality: Incremental PI Controller Initialization - Initializes an incremental PI 
                (Proportional-Integral) controller with specified parameters.
 Input Parameters: PI controller, kp value (proportional gain), ki value (integral gain).
 Return Value: None.
 Author: LUCSYS
-函数功能：增量式PI控制器初始化
-入口参数：PI控制器、kp值、ki值
-返回  值：无
-作    者：LUCSYS
+Function: Incremental PI controller initialization
+Entry parameters: PI controller, kp value, ki value
+Return value: none
+Author: LUCSYS
 **************************************************************************/
 void PI_Controller_Init(PI_CONTROLLER* p,int kp,int ki)
 {
@@ -2445,23 +2445,23 @@ void PI_Controller_Init(PI_CONTROLLER* p,int kp,int ki)
 	p->ki = ki;
 }
 
-//机器人控制相关变量初始化
+//Initialize the robot control related variables
 void ROBOT_CONTROL_t_Init(ROBOT_CONTROL_t* p)
 {
-	//可调参数
-	p->limt_max_speed = 3.5f;    //机器人限制最大的运动速度 m/s
-	p->rc_speed = 500;           //机器人遥控速度基准,单位 mm/s
-	p->smooth_MotorStep = 0.02f; //机器人电机速度平滑步进值
-	p->smooth_ServoStep = 20;    //机器人舵机速度平滑步进值
-	p->SoftWare_Stop = 0;        //机器人软件失能位
+	//Adjustable parameters
+	p->limt_max_speed = 3.5f;    //The robot limits the maximum movement speed in m/s
+	p->rc_speed = 500;           //Robot remote control speed reference, unit: mm/s
+	p->smooth_MotorStep = 0.02f; //Robot motor speed smoothing step value
+	p->smooth_ServoStep = 20;    //Smoothing step value of the robot's servo speed
+	p->SoftWare_Stop = 0;        //Robot software disable position
 	
-	//高速阿克曼车型,将最大运动速度限制设置为 6 m/s
+	//High-speed Ackermann chassis: set maximum motion speed limit to 6 m/s
 	#if defined AKM_CAR
 		if(robot.type==9) p->limt_max_speed = 6.0f;
-		p->ServoLow_flag = 0;//低速舵机模式默认关闭
+		p->ServoLow_flag = 0;//Low-speed servo mode is off by default
 	#endif
 	
-	//只读参数,保持默认
+	//Read-only parameters, keep the default
 	p->Vx = 0;
 	p->Vy = 0;
 	p->Vz = 0;
@@ -2472,11 +2472,11 @@ void ROBOT_CONTROL_t_Init(ROBOT_CONTROL_t* p)
 	p->ControlMode = 1;
 	p->FlagStop = 0;
 	
-	//纠偏系数
+	//Correction factor
 	p->LineDiffParam = 50;
 }
 
-//自检变量初始化
+//Self-check variable initialization
 static void ROBOT_SELFCHECK_t_Init(ROBOT_SELFCHECK_t* p)
 {
 	p->check_a = 0;
@@ -2488,21 +2488,21 @@ static void ROBOT_SELFCHECK_t_Init(ROBOT_SELFCHECK_t* p)
 	p->DeepCheck = 0;
 }
 
-//检查某个变量是否发生改变
-//入口参数:执行该函数的频率、需要检查的数据、变化幅度超过多少表示变化
-//返回值：1发生了改变 0:未改变
+//Check if a variable has changed
+//Entry parameters: the frequency at which the function is executed, the data to be checked, and the extent of the change indicating a change
+//Return value: 1-changed; 0-unchanged
 uint8_t ValChangeCheck(const uint16_t rate,const short checkval,const uint8_t changeEva)
 {
 	static uint16_t timecore;
 	static short lastval;
 	
-	const uint8_t DivisionFac = 2;     //分频系数
-	if( rate < DivisionFac ) return 0;//频率过小，无法检测
+	const uint8_t DivisionFac = 2;     //Frequency division factor
+	if( rate < DivisionFac ) return 0;//Frequency too low to detect
 	
-	uint8_t changeflag = 0;//表示是否有改变
+	uint8_t changeflag = 0;//indicates whether there have been any changes
 
 	timecore++;
-	if( timecore >= rate/DivisionFac ) // 500ms检测1次
+	if( timecore >= rate/DivisionFac ) // One 500ms scan
 	{
 		timecore = 0;
 		if( abs( lastval - checkval ) > changeEva )  changeflag = 1;
@@ -2516,35 +2516,35 @@ uint8_t ValChangeCheck(const uint16_t rate,const short checkval,const uint8_t ch
 	return changeflag ;
 }
 
-//深度自检程序,需要把小车架起来后运行检查
+//Deep self-check procedure, which requires the cart to be set up and then run for inspection
 static uint8_t Deep_SelfCheck( u16 RATE )
 {	
 	static uint32_t timecore = 0;
 	static uint8_t errflag = 0;
 	uint8_t check_ready = 0;
 	
-	//测量方法：给定单个轮子的编码器目标值,观察各个数据情况.
+	//Measurement method: Given the encoder target value of a single wheel, observe the data conditions of each piece.
 	
 	/*
-	报错优先级：
-	1.出现负数,说明是车型选错,或者编码器AB相接反或者是电机输出端的正负接反
-	2.其他编码器有值,说明是电机驱动输出口接错,或者是编码器接口接错.
-	3.编码器没有值+PWM过大,则是编码器未接或者是电机接口未接
+	Error Priority:
+	1. If a negative number appears, it indicates the wrong model selection, or the encoder AB is connected incorrectly, or the motor output terminals are reversed
+	2. If other encoders have values, it means the motor driver output port is connected incorrectly, or the encoder interface is connected incorrectly.
+	3. If the encoder has no value + PWM is too large, it means the encoder is not connected or the motor interface is not connected
 	*/
 
 	timecore++;
 
 	if( timecore==1 )
 	{
-		if( data_TaskHandle!=NULL ) vTaskSuspend(data_TaskHandle);//在深度自检程序运行时,挂起数据发送任务(该任务占用串口1),以免资源冲突
+		if( data_TaskHandle!=NULL ) vTaskSuspend(data_TaskHandle);//While the deep self-test program is running, suspend the data sending task (which occupies serial port 1) to avoid resource conflicts
 		any_printf(USART1,"\r\n小车进入深度自检模式,电机的转动顺序为A、B、C、D.请观察转动情况与报错日志.\r\n");
-		Buzzer_AddTask(1,20);//蜂鸣器提示表示已进入深度自检模式
+		Buzzer_AddTask(1,20);//The buzzer indicates that deep self-test mode has been entered
 	}
 	
-	//第0~1秒前给定A轮速度
+	//Set the speed of round A before 0~1 second
 	if( timecore<RATE*2)
 	{
-		//直接指定电机的目标值并允许响应
+		//Directly specify the motor's target value and allow responses
 		robot.MOTOR_A.Target = 0.5f;
 		robot.MOTOR_B.Target = 0.0f;
 		robot.MOTOR_C.Target = 0.0f;
@@ -2552,71 +2552,71 @@ static uint8_t Deep_SelfCheck( u16 RATE )
 		ResponseControl();
 		PWMB = 0;PWMC = 0;PWMD = 0;
 	}
-	else if( timecore==RATE*2 ) //检查A轮是否存在异常
+	else if( timecore==RATE*2 ) //Check for any abnormalities in Series A
 	{
 		any_printf(USART1,"================= 电机A ================\r\n");
 		
-		//开始检查数据
+		//Start checking the data
 		if( robot.MOTOR_A.Encoder > 0.4f && robot.MOTOR_A.Encoder < 0.6f )
 		{
 			any_printf(USART1,"电机A正常.\r\n");
-			//正常情况
-			//A轮正常
+			//Normal Situation
+			//Series A is normal
 		}
 		else
 		{
-			errflag = 1; //出现错误
+			errflag = 1; //An error occurred
 			
-			//按报错优先级检查错误情况
+			//Check errors according to the error priority
 			if( robot.MOTOR_A.Encoder < - 0.2f ) 
 			{
 				any_printf(USART1,"检测到A电机编码器极性错误.\r\n");
 				any_printf(USART1,"请检查：\r\n1.车型选择是否正确\r\n2.电机A的正负极是否存在线序错误\r\n3.电机A的编码器AB相线序是否错误\r\n");
-				//对应接口出现负值,请检查：1.车型是否正确 2.电机的正负级是否反接 3.编码器AB相的线序是否正确
+				//If a negative value appears at the corresponding interface, please check: 1. Is the model correct 2. Is the motor's positive and negative stages reversed 3. Is the wiring sequence of the encoder phase AB correct?
 			}
 			else if( fabs(robot.MOTOR_B.Encoder) > 0.2f ) 
 			{
 				any_printf(USART1,"驱动电机A时,检测到编码器接口B的信号.\r\n自检时电机A是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口A、B是否存在调换\r\n否: 1.检查驱动器的A、B接口是否存在调换\r\n");
-				//编码器B有值,请检查：1.编码器接口A与接口B接线是否调换了 2.驱动器的A、B接口是否存在调换
+				//Encoder B has a value. Please check: 1. Whether the wiring between encoder interface A and interface B has been swapped. 2. Whether the driver's A and B interfaces have been swapped
 			}
 			else if( fabs(robot.MOTOR_C.Encoder) > 0.2f ) 
 			{
 				any_printf(USART1,"驱动电机A时,检测到编码器接口C的信号.\r\n自检时电机A是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口A、C是否存在调换\r\n否: 1.检查驱动器的A、C接口是否存在调换 2.检查板子右下角的两个牛角座是否存在调换\r\n");
-				//编码器C有值,请检查：1.编码器A与C接口接线是否调换了 2.驱动器A、C接口是否存在调换 3.板子的牛角座是否存在调换
+				//Encoder C has a value. Please check: 1. Whether the wiring between encoder A and port C has been swapped. 2. Whether there is a swap between driver A and C interfaces. 3. Whether the motherboard's horn holder has been swapped
 			}
 			else if( fabs(robot.MOTOR_D.Encoder) > 0.2f ) 
 			{
 				any_printf(USART1,"驱动电机A时,检测到编码器接口D的信号.\r\n自检时电机A是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口A、D是否存在调换\r\n否: 1.检查驱动器的A、D接口是否存在调换 2.检查板子右下角的两个牛角座是否存在调换\r\n");
-				//编码器D有值,请检查：1.编码器A与D接口接线是否调换了 2.驱动器A、D接口是否存在调换 3.板子的牛角座是否存在调换
+				//Encoder D has a value. Please check: 1. Whether the wiring between encoder A and interface D has been swapped. 2. Whether there is swapping between driver A and D interfaces. 3. Whether the board's horn holder has been swapped
 			}
 			else if( fabs(robot.MOTOR_A.Encoder) < 0.05f && PI_MotorA.Output > 5000 ) 
 			{
 				any_printf(USART1,"驱动电机A时,未检测到编码器信号.\r\n自检时电机A是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口A是否存在松动或未接\r\n否: 1.检查电机A的电源线是否存在松动或未接 2.检查板子右下角左边的牛角座是否松动或未接\r\n");
-				//编码器没有值,对应接口PWM值较大,请检查：1.编码器接口是否松动或未接 2.电机正负极接头是否松动或者未接
+				//The encoder has no value, but the corresponding interface PWM value is high. Please check: 1. Whether the encoder interface is loose or not connected. 2. Whether the motor positive and negative terminals are loose or not connected
 			}
 			
 		}
 		
 		any_printf(USART1,"================= 电机A ================\r\n\r\n");
 		
-		//检查完毕,复位PI控制器,防止下一个电机检查受到干扰
+		//After inspection, reset the PI controller to prevent interference with the next motor inspection
 		PI_Controller_Reset(&PI_MotorA);
 		PI_Controller_Reset(&PI_MotorB);
 		PI_Controller_Reset(&PI_MotorC);
 		PI_Controller_Reset(&PI_MotorD);
 	}
-	else if( timecore>RATE*2 && timecore<RATE*4 ) //B轮控制
+	else if( timecore>RATE*2 && timecore<RATE*4 ) //Series B control
 	{
 		robot.MOTOR_A.Target = 0.0f;robot.MOTOR_B.Target = 0.5f;
 		robot.MOTOR_C.Target = 0.0f;robot.MOTOR_D.Target = 0.0f;
 		ResponseControl();
 		PWMA = 0;PWMC = 0;PWMD = 0;
 	} 
-	else if( timecore==RATE*4 )  //B轮检查
+	else if( timecore==RATE*4 )  //Round B examination
 	{
 		any_printf(USART1,"================= 电机B ================\r\n");
 		
@@ -2626,41 +2626,41 @@ static uint8_t Deep_SelfCheck( u16 RATE )
 		}
 		else
 		{
-			errflag = 1; //出现错误
+			errflag = 1; //An error occurred
 			
 			if( robot.MOTOR_B.Encoder < - 0.2f ) 
 			{
 				any_printf(USART1,"检测到B电机编码器极性错误.\r\n");
 				any_printf(USART1,"请检查：\r\n1.车型选择是否正确\r\n2.电机B的正负极是否存在线序错误\r\n3.电机B的编码器AB相线序是否错误\r\n");
-				//对应接口出现负值,请检查：1.车型是否正确 2.电机的正负级是否反接 3.编码器AB相的线序是否正确
+				//If a negative value appears at the corresponding interface, please check: 1. Is the model correct 2. Is the motor's positive and negative stages reversed 3. Is the wiring sequence of the encoder phase AB correct?
 			}
 			else if( fabs(robot.MOTOR_A.Encoder) > 0.2f ) 
 			{
 				any_printf(USART1,"驱动电机B时,检测到编码器接口A的信号.\r\n自检时电机B是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口A、B是否存在调换\r\n否: 1.检查驱动器的A、B接口是否存在调换\r\n");
-				//编码器B有值,请检查：1.编码器接口B与接口A接线是否调换了 2.驱动器的B、A接口是否存在调换
+				//Encoder B has a value. Please check: 1. Whether the wiring between encoder interface B and interface A has been swapped. 2. Whether the driver's interfaces B and A have been swapped
 			}
 			else if( fabs(robot.MOTOR_C.Encoder) > 0.2f ) 
 			{
 				any_printf(USART1,"驱动电机B时,检测到编码器接口C的信号.\r\n自检时电机B是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口B、C是否存在调换\r\n否: 1.检查驱动器的B、C接口是否存在调换 2.检查板子右下角的两个牛角座是否存在调换\r\n");
-				//编码器C有值,请检查：1.编码器B与C接口接线是否调换了 2.驱动器B、C接口是否存在调换 3.板子的牛角座是否存在调换
+				//Encoder C has a value. Please check: 1. Whether the wiring between encoder B and interface C has been swapped. 2. Whether there is swapping between driver B and C interfaces. 3. Whether the motherboard's horn holder has been swapped
 			}
 			else if( fabs(robot.MOTOR_D.Encoder) > 0.2f ) 
 			{
 				any_printf(USART1,"驱动电机B时,检测到编码器接口D的信号.\r\n自检时电机B是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口B、D是否存在调换\r\n否: 1.检查驱动器的B、D接口是否存在调换 2.检查板子右下角的两个牛角座是否存在调换\r\n");
-				//编码器D有值,请检查：1.编码器B与D接口接线是否调换了 2.驱动器B、D接口是否存在调换 3.板子的牛角座是否存在调换
+				//Encoder D has a value. Please check: 1. Whether the wiring between encoder B and port D has been swapped. 2. Whether there is a swap between driver B and D interfaces. 3. Whether the board's horn holder has been swapped
 			}
 			else if( fabs(robot.MOTOR_B.Encoder) < 0.05f && PI_MotorB.Output > 5000 ) 
 			{
 				any_printf(USART1,"驱动电机B时,未检测到编码器信号.\r\n自检时电机B是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口B是否存在松动或未接\r\n否: 1.检查电机B的电源线是否存在松动或未接 2.检查板子右下角左边的牛角座是否松动或未接\r\n");
-				//编码器没有值,对应接口PWM值较大,请检查：1.编码器接口是否松动或未接 2.电机正负极接头是否松动或者未接
+				//The encoder has no value, but the corresponding interface PWM value is high. Please check: 1. Whether the encoder interface is loose or not connected. 2. Whether the motor positive and negative terminals are loose or not connected
 			}
 		}
 		any_printf(USART1,"================= 电机B ================\r\n\r\n");
-		//检查完毕,复位PI控制器,防止下一个电机检查受到干扰
+		//After inspection, reset the PI controller to prevent interference with the next motor inspection
 		PI_Controller_Reset(&PI_MotorA);
 		PI_Controller_Reset(&PI_MotorB);
 		PI_Controller_Reset(&PI_MotorC);
@@ -2669,14 +2669,14 @@ static uint8_t Deep_SelfCheck( u16 RATE )
 	
 	#if defined OMNI_CAR || defined _4WD_CAR || defined MEC_CAR
 	
-	else if( timecore>RATE*4 && timecore<RATE*6 )//C轮控制
+	else if( timecore>RATE*4 && timecore<RATE*6 )//C-wheel control
 	{
 		robot.MOTOR_A.Target = 0.0f;robot.MOTOR_B.Target = 0.0f;
 		robot.MOTOR_C.Target = 0.5f;robot.MOTOR_D.Target = 0.0f;
 		ResponseControl();
 		PWMA = 0;PWMB = 0;PWMD = 0;
 	} 
-	else if( timecore==RATE*6 )//C轮检查
+	else if( timecore==RATE*6 )//Round C examination
 	{
 		any_printf(USART1,"================= 电机C ================\r\n");
 		
@@ -2686,41 +2686,41 @@ static uint8_t Deep_SelfCheck( u16 RATE )
 		}
 		else
 		{
-			errflag = 1; //出现错误
+			errflag = 1; //An error occurred
 			
 			if( robot.MOTOR_C.Encoder < - 0.2f ) 
 			{
 				any_printf(USART1,"检测到C电机编码器极性错误.\r\n");
 				any_printf(USART1,"请检查：\r\n1.车型选择是否正确\r\n2.电机C的正负极是否存在线序错误\r\n3.电机C的编码器AB相线序是否错误\r\n");
-				//对应接口出现负值,请检查：1.车型是否正确 2.电机的正负级是否反接 3.编码器AB相的线序是否正确
+				//If a negative value appears at the corresponding interface, please check: 1. Is the model correct 2. Is the motor's positive and negative stages reversed 3. Is the wiring sequence of the encoder phase AB correct?
 			}
 			else if( fabs(robot.MOTOR_A.Encoder) > 0.2f ) 
 			{
 				any_printf(USART1,"驱动电机C时,检测到编码器接口A的信号.\r\n自检时电机C是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口A、C是否存在调换\r\n否: 1.检查驱动器的A、C接口是否存在调换 2.检查板子右下角的两个牛角座是否存在调换\r\n");
-				//编码器B有值,请检查：1.编码器接口C与接口A接线是否调换了 2.驱动器的C、A接口是否存在调换 3.板子的牛角座是否存在调换
+				//Encoder B has a value. Please check: 1. Whether the wiring between encoder interface C and interface A has been swapped. 2. Whether the driver's C and A interfaces have been swapped. 3. Whether the board's horn base has been swapped
 			}
 			else if( fabs(robot.MOTOR_B.Encoder) > 0.2f ) 
 			{
 				any_printf(USART1,"驱动电机C时,检测到编码器接口B的信号.\r\n自检时电机C是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口B、C是否存在调换\r\n否: 1.检查驱动器的B、C接口是否存在调换 2.检查板子右下角的两个牛角座是否存在调换\r\n");
-				//编码器C有值,请检查：1.编码器C与B接口接线是否调换了 2.驱动器C、B接口是否存在调换 3.板子的牛角座是否存在调换
+				//Encoder C has a value. Please check: 1. Whether the wiring between encoder C and port B has been swapped. 2. Whether there is swapping between driver C and port B interfaces. 3. Whether the motherboard's horn socket has been swapped
 			}
 			else if( fabs(robot.MOTOR_D.Encoder) > 0.2f ) 
 			{
 				any_printf(USART1,"驱动电机C时,检测到编码器接口D的信号.\r\n自检时电机C是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口C、D是否存在调换\r\n否: 1.检查驱动器的C、D接口是否存在调换\r\n");
-				//编码器D有值,请检查：1.编码器C与D接口接线是否调换了 2.驱动器C、D接口是否存在调换 
+				//Encoder D has a value. Please check: 1. Whether the wiring between encoder C and interface D has been swapped. 2. Whether there is a swap between driver C and D interfaces
 			}
 			else if( fabs(robot.MOTOR_C.Encoder) < 0.05f && PI_MotorC.Output > 5000 ) 
 			{
 				any_printf(USART1,"驱动电机C时,未检测到编码器信号.\r\n自检时电机C是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口C是否存在松动或未接\r\n否: 1.检查电机C的电源线是否存在松动或未接 2.检查板子右下角右边的牛角座是否松动或未接\r\n");
-				//编码器没有值,对应接口PWM值较大,请检查：1.编码器接口是否松动或未接 2.电机正负极接头是否松动或者未接
+				//The encoder has no value, but the corresponding interface PWM value is high. Please check: 1. Whether the encoder interface is loose or not connected. 2. Whether the motor positive and negative terminals are loose or not connected
 			}
 		}
 		any_printf(USART1,"================= 电机C ================\r\n\r\n");
-		//检查完毕,复位PI控制器,防止下一个电机检查受到干扰
+		//After inspection, reset the PI controller to prevent interference with the next motor inspection
 		PI_Controller_Reset(&PI_MotorA);
 		PI_Controller_Reset(&PI_MotorB);
 		PI_Controller_Reset(&PI_MotorC);
@@ -2731,14 +2731,14 @@ static uint8_t Deep_SelfCheck( u16 RATE )
 	
 	#if defined _4WD_CAR || defined MEC_CAR
 	
-	else if( timecore>RATE*6 && timecore<RATE*8 )//D轮控制
+	else if( timecore>RATE*6 && timecore<RATE*8 )//D-wheel control
 	{
 		robot.MOTOR_A.Target = 0.0f;robot.MOTOR_B.Target = 0.0f;
 		robot.MOTOR_C.Target = 0.0f;robot.MOTOR_D.Target = 0.5f;
 		ResponseControl();
 		PWMA = 0;PWMB = 0;PWMC = 0;
 	}
-	else if( timecore==RATE*8  )//D轮检查
+	else if( timecore==RATE*8  )//Wheel D check
 	{
 		any_printf(USART1,"================= 电机D ================\r\n");
 		
@@ -2748,43 +2748,43 @@ static uint8_t Deep_SelfCheck( u16 RATE )
 		}
 		else
 		{
-			errflag = 1; //出现错误
+			errflag = 1; //An error occurred
 			
 			if( robot.MOTOR_D.Encoder < - 0.2f ) 
 			{
 				any_printf(USART1,"检测到D电机编码器极性错误.\r\n");
 				any_printf(USART1,"请检查：\r\n1.车型选择是否正确\r\n2.电机D的正负极是否存在线序错误\r\n3.电机D的编码器AB相线序是否错误\r\n");
-				//对应接口出现负值,请检查：1.车型是否正确 2.电机的正负级是否反接 3.编码器AB相的线序是否正确
+				//If a negative value appears at the corresponding interface, please check: 1. Is the model correct 2. Is the motor's positive and negative stages reversed 3. Is the wiring sequence of the encoder phase AB correct?
 			}
 			else if( fabs(robot.MOTOR_A.Encoder) > 0.2f ) 
 			{
 				any_printf(USART1,"驱动电机D时,检测到编码器接口A的信号.\r\n自检时电机D是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口A、D是否存在调换\r\n否: 1.检查驱动器的A、D接口是否存在调换 2.检查板子右下角的两个牛角座是否存在调换\r\n");
-				//编码器B有值,请检查：1.编码器接口D与接口A接线是否调换了 2.驱动器的D、A接口是否存在调换 3.板子的牛角座是否存在调换
+				//Encoder B has a value. Please check: 1. Whether the wiring between encoder interface D and port A has been swapped. 2. Whether the driver's interfaces D and A have been swapped. 3. Whether the board's horn holder has been swapped
 			}
 			else if( fabs(robot.MOTOR_B.Encoder) > 0.2f ) 
 			{
 				any_printf(USART1,"驱动电机D时,检测到编码器接口B的信号.\r\n自检时电机D是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口B、D是否存在调换\r\n否: 1.检查驱动器的B、D接口是否存在调换 2.检查板子右下角的两个牛角座是否存在调换\r\n");
-				//编码器C有值,请检查：1.编码器D与B接口接线是否调换了 2.驱动器D、B接口是否存在调换 3.板子的牛角座是否存在调换
+				//Encoder C has a value. Please check: 1. Whether the wiring between encoder D and interface B has been swapped. 2. Whether the driver interfaces D and B have been swapped. 3. Whether the board's horn holder has been swapped
 			}
 			else if( fabs(robot.MOTOR_C.Encoder) > 0.2f ) 
 			{
 				any_printf(USART1,"驱动电机D时,检测到编码器接口C的信号.\r\n自检时电机D是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口C、D是否存在调换\r\n否: 1.检查驱动器的C、D接口是否存在调换\r\n");
-				//编码器D有值,请检查：1.编码器C与D接口接线是否调换了 2.驱动器C、D接口是否存在调换 
+				//Encoder D has a value. Please check: 1. Whether the wiring between encoder C and interface D has been swapped. 2. Whether there is a swap between driver C and D interfaces
 			}
 			else if( fabs(robot.MOTOR_D.Encoder) < 0.05f && PI_MotorD.Output > 5000 ) 
 			{
 				any_printf(USART1,"驱动电机D时,未检测到编码器信号.\r\n自检时电机D是否转动?\r\n");
 				any_printf(USART1,"是: 1.检查编码器接口D是否存在松动或未接\r\n否: 1.检查电机D的电源线是否存在松动或未接 2.检查板子右下角右边的牛角座是否松动或未接\r\n");
-				//编码器没有值,对应接口PWM值较大,请检查：1.编码器接口是否松动或未接 2.电机正负极接头是否松动或者未接
+				//The encoder has no value, but the corresponding interface PWM value is high. Please check: 1. Whether the encoder interface is loose or not connected. 2. Whether the motor positive and negative terminals are loose or not connected
 			}
 		}
 		
 		any_printf(USART1,"================= 电机D ================\r\n");
 		
-		//检查完毕,复位PI控制器,防止下一个电机检查受到干扰
+		//After inspection, reset the PI controller to prevent interference with the next motor inspection
 		PI_Controller_Reset(&PI_MotorA);
 		PI_Controller_Reset(&PI_MotorB);
 		PI_Controller_Reset(&PI_MotorC);
@@ -2801,9 +2801,9 @@ static uint8_t Deep_SelfCheck( u16 RATE )
 		robot.MOTOR_D.Target = 0.0f;
 		Set_Pwm(0,0,0,0,0);
 		any_printf(USART1,"\r\n\r\n");
-		Buzzer_AddTask(1,20);//蜂鸣器提示表示已完成深度自检
+		Buzzer_AddTask(1,20);//Buzzer prompt indicates that deep self-test has been completed
 		
-		//深度自检结束且无报错,恢复挂起的任务.
+		//Deep self-test completes with no errors, resuming the pending task.
 		if( 0 == errflag  )
 			if( data_TaskHandle!=NULL ) vTaskResume(data_TaskHandle);
 		

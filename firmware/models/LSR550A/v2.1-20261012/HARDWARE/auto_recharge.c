@@ -5,46 +5,46 @@
 CHARGER_t charger;
 
 
-//自动回充软件变量复位
+//Automatic recharge software variable reset
 void auto_recharge_reset(void)
 {
-	//自动回充模式
+	//Automatic recharge mode
 	charger.AllowRecharge = 0;
 	
-	//是否在充电
+	//Is it charging?
 	charger.Charging = 0;
 	
-	//充电电流
+	//Charging current
 	charger.ChargingCurrent = 0;
 	
-	//导航接管标志位
+	//Navigation takeover flag position
 	charger.NavWalk = 0;
 	
-	//离线监测
+	//Offline monitoring
 	charger.OutLine_Check = 0;
 	
-	//默认的对接速度设置
+	//Default docking speed setting
 	charger.Dock_MoveX = -0.1f;
 	charger.Dock_MoveY = 0;
 	charger.Dock_MoveZ = 0.2f;
 	
-	//4路红外信号
+	//4 infrared signals
 	charger.L_A = 0;
 	charger.L_B = 0;
 	charger.R_A = 0;
 	charger.R_B = 0;
 	charger.RED_STATE = 0;
 	
-	//红外刷新时间
+	//Infrared refresh time
 	#if defined AKM_CAR
-		//阿克曼小车设置
+		//Ackermann chassis configuration
 		charger.RedRefalsh_Time = 50;
 	#else
-		//非阿克曼小车设置0,代表使用充电装备上存在的默认时间
+		//For non-Ackermann chassis, set 0 to use the charging equipment's default time
 		charger.RedRefalsh_Time = 0;
 	#endif
 	
-	//红外控制、导航接管控制速度复位
+	//Infrared control, navigation takeover, and speed reset
 	charger.Red_MoveX = 0;
 	charger.Red_MoveY = 0;
 	charger.Red_MoveZ = 0;
@@ -52,29 +52,29 @@ void auto_recharge_reset(void)
 	charger.Up_MoveY = 0;
 	charger.Up_MoveZ = 0;
 	
-	//访问是否存在充电装备
+	//Check if charging equipment is available
 	Find_Charging_HardWare();
 }
 
 
-//访问当前是否存在充电装备硬件
-//发送 扩展帧id为0x12345678,内容为{1,1,1,1,1,1,1,1} 到充电装备,充电装备将返回一样的id和内容,说明充电装备已上线并成功连接.
+//Check if charging equipment hardware is currently present
+//Send extended frame ID 0x12345678, content {1,1,1,1,1,1,1,1} to charging equipment. Charging equipment will return the same ID and content, indicating it is online and successfully connected
 void Find_Charging_HardWare(void)
 {
     u8 tmpdata[8]= {1,1,1,1,1,1,1,1};
     CAN1_Send_EXTid_Num(0x12345678,tmpdata);
 }
 
-//设置充电装备上发的对接速度的大小,以及设置红外的刷新时间
+//Set the docking speed for charging equipment and set the infrared refresh time
 void CAN_Send_AutoRecharge(void)
 {
 	u8 CAN_SENT[8];
 	
-	//预留位
+	//Reserved bit
 	CAN_SENT[0]=0;
 	
 	//Set the speed of the infrared interconnection, unit m/s
-	//设置红外对接的速度大小，单位mm/s
+	//Set the speed and magnitude of infrared docking, unit: mm/s
 	CAN_SENT[1]=((short)(charger.Dock_MoveX*1000))>>8;
 	CAN_SENT[2]=((short)(charger.Dock_MoveX*1000));
 	CAN_SENT[3]=((short)(charger.Dock_MoveY*1000))>>8;
@@ -87,18 +87,18 @@ void CAN_Send_AutoRecharge(void)
 }
 
 
-//非阿克曼小车的自动回充处理逻辑
+//Automatic docking logic for non-Ackermann chassis
 #if !defined AKM_CAR
 void Handle_Normal_AutoRecharge(uint8_t* temp_rxbuf)
 {
 	//Calculate the three-axis target velocity, unit: mm/s
-	//计算三轴目标速度，单位：mm/s
+	//Calculate the three-axis target velocity, unit: mm/s
 	charger.Red_MoveX=((float)((short)((temp_rxbuf[0]<<8)+(temp_rxbuf[1]))))/1000; 
 	charger.Red_MoveY = 0;
 	//charger.Red_MoveY=((float)((short)((temp_rxbuf[2]<<8)+(temp_rxbuf[3]))))/1000;
 	charger.Red_MoveZ=((float)((short)((temp_rxbuf[4]<<8)+(temp_rxbuf[5]))))/1000;
 	
-	//差速车型5，带后部超声波
+	//Differential Model 5 with rear ultrasound
 	#if defined DIFF_CAR
 	if( (s21c_board.rangerE < 0.5f || s21c_board.rangerF < 0.5f) && robot.type==5 )
 		charger.Red_MoveX/=2.0f;
@@ -107,17 +107,17 @@ void Handle_Normal_AutoRecharge(uint8_t* temp_rxbuf)
 		charger.Red_MoveX/=2.0f;
 	#endif
 	
-	charger.Charging=temp_rxbuf[6]&1;		//充电状态标志位
+	charger.Charging=temp_rxbuf[6]&1;		//Charging status indicator
 	charger.L_A = (temp_rxbuf[6]>>5)&0x01;
 	charger.L_B = (temp_rxbuf[6]>>4)&0x01;
 	charger.R_B = (temp_rxbuf[6]>>3)&0x01;
 	charger.R_A = (temp_rxbuf[6]>>2)&0x01;
 	charger.RED_STATE = charger.L_A + charger.L_B + charger.R_B + charger.R_A;
 	
-	//不存在红外信号或小车在充电,清空目标速度
+	//No infrared signals or vehicles charging, clear target speed
 	if( 0 == charger.RED_STATE || 1 == charger.Charging  ) charger.Red_MoveX = 0 , charger.Red_MoveY = 0 , charger.Red_MoveZ = 0;
 	
-	//充电电流换算
+	//Charging current conversion
 	if(temp_rxbuf[7]>128) charger.ChargingCurrent=-(256-temp_rxbuf[7])*30;
 	else charger.ChargingCurrent=(temp_rxbuf[7]*30);
 }
@@ -127,112 +127,112 @@ void Handle_Normal_AutoRecharge(uint8_t* temp_rxbuf)
 
 
 #if defined AKM_CAR
-//便于debug的内部变量,在debug时可作为全局输出
-u8 liar_adjust=0;           //单边充电模式
-u8 last_state=0;            //保存红外信号的上一个状态
-u16 adjust_timeout=0;       //调节超时设置,用于统计调节时间是否过长
-u16 double_adjust_timeout=0;//双边调节超时设置,用于统计调节时间是否过长
-u8 red_now_state;           //红外信号当前的状态
-u8 touch_state;             //充电桩与充电装备弹片的接触状态
+//Internal variables that facilitate debugging and can serve as global output during debugging
+u8 liar_adjust=0;           //Single-side charging mode
+u8 last_state=0;            //Save the previous state of the infrared signal
+u16 adjust_timeout=0;       //Adjust timeout settings to track whether the adjustment time is too long
+u16 double_adjust_timeout=0;//Dual-side adjustment timeout setting, used to check if the adjustment time is too long
+u8 red_now_state;           //Current status of the infrared signal
+u8 touch_state;             //The contact status of the charging pile with the spring fragments of the charging equipment
 
 void Handle_AKM_AutoRecharge(uint8_t* temp_rxbuf)
 {
 	static u8 tmp_state=0;
 	static u8 last_touchstate=0;
 	
-	//接触弹片后的状态锁定
+	//State lock after contact with the spring
 	static u8 state_lock = 0;
 	
-	//接触弹片后离开时的姿态标志
+	//Posture marker when leaving after contact with shrapnel
 	static u8 change_state = 0;
 	
-	//接触弹片后离开时的走时内核
+	//Time-running core when leaving after contacting the spring piece
 	static u16 time_core = 0;
 	
-	//接触弹片时的滤波消抖变量
+	//Filtered anti-shake variables when contacting the spring
 	static u16 filter_cur = 0,filter_vol = 0;
 	
-	//小车充电姿态的调整次数
+	//Number of adjustments to the car's charging posture
 	static u8 adjust_times = 0;
 	static u8 adjust_vol = 0 , adjust_cur = 0;
 	
-	//单边充电标志位
+	//One-sided charging marker
 	static u8 liar_charge = 0;
 	
-	//两边都接触到了，标记调整1次
+	//Both sides touch, adjust the marker once
 	if(adjust_vol&&adjust_cur) adjust_vol = 0,adjust_cur = 0,adjust_times++;
 	
-	//红外状态解算
+	//Infrared state calculation
 	charger.L_A = (temp_rxbuf[6]>>5)&0x01;
 	charger.L_B = (temp_rxbuf[6]>>4)&0x01;
 	charger.R_B = (temp_rxbuf[6]>>3)&0x01;
 	charger.R_A = (temp_rxbuf[6]>>2)&0x01;
 	
-	//用于检查充电区、测压区接触情况
+	//Used to check contact in charging and pressure testing areas
 	touch_state = temp_rxbuf[2];
-	if( last_touchstate!=0xAA&&touch_state==0xAA ) adjust_timeout=0,liar_adjust++;//单边状态调整记录
-	if( (last_touchstate!=0xAA&&touch_state==0xAA) || (last_state!=0xBB&&touch_state==0xBB) ) double_adjust_timeout=0;//任意一边接触都清空双边延迟时间
+	if( last_touchstate!=0xAA&&touch_state==0xAA ) adjust_timeout=0,liar_adjust++;//Unilateral state adjustment records
+	if( (last_touchstate!=0xAA&&touch_state==0xAA) || (last_state!=0xBB&&touch_state==0xBB) ) double_adjust_timeout=0;//Clears bilateral delay time when any side contacts
 	last_touchstate = touch_state;
 	
-	//两边都无接触超过5秒，清空调整次数标定
+	//If neither side has no contact for more than 5 seconds, the number of clearing adjustments will be calibrated
 	if(adjust_times>0) double_adjust_timeout++;
 	if( double_adjust_timeout>250 ) adjust_times=0,double_adjust_timeout=0;
 	
-	//充电边无接触5秒，清空充电边调整次数标定
+	//Charging edge is contactless for 5 seconds; adjust the number of times to clear the charging edge and calibrate
 	if( liar_adjust>0 ) adjust_timeout++;
-	if( adjust_timeout>250 ) liar_adjust=0,adjust_timeout=0;//接触间隔大于5秒，判断为异常情况，清空调整次数记录。
+	if( adjust_timeout>250 ) liar_adjust=0,adjust_timeout=0;//If the contact interval is greater than 5 seconds, it is judged as an abnormal situation and the adjustment count record is cleared.
 	
 	
-	//检测到已经脱离充电口，则需要复位
+	//If it is detected to have detached from the charging port, reset is required
 	if(liar_charge==1&&touch_state!=0xAA&&touch_state!=0xCF) 
 	{
-		if( touch_state==0xAB && robot.voltage >=25.0f )//充满电了
+		if( touch_state==0xAB && robot.voltage >=25.0f )//Fully charged
 		{
 			charger.AllowRecharge=0;
 		}
 		adjust_times = 0,liar_charge=0;
 	}	
 	
-	//单边充电，自定义标志位touch_state
+	//Unilateral charging with customizable touch_state marks
 	if(liar_charge) touch_state = 0xFC;
 	
-	/* 针对不同车型设置不同参数 */
-	u16 leave_times = 75; //接触弹片后离开的时间 75*20ms = 1.5s
-	u8 yuzhi = 40;        //接触弹片后消抖的时间 40*20ms = 800ms
+	/* Set different parameters for different chassis types */
+	u16 leave_times = 75; //Time to leave after contact with shrapnel: 75*20ms = 1.5s
+	u8 yuzhi = 40;        //Time to de-shake after contact with the spring: 40 * 20 ms = 800 ms
 	if(charger.AllowRecharge==0) 
 	{
 
-		adjust_times = 0,liar_charge=0,liar_adjust=0;//关闭自动回充时，标定已调整的次数为0
+		adjust_times = 0,liar_charge=0,liar_adjust=0;//When auto-recharge is turned off, the calibration adjustment count is 0
 		if( robot.type==2 || robot.type==3 )  Set_Robot_PI_Param(300,300); 
 		if( robot.type==4 ) Set_Robot_PI_Param(400,100); 
 		if( robot.type==5 ) Set_Robot_PI_Param(50,200); 
 	}
 	else
 	{	
-		if( robot.type==0 || robot.type==1 ) leave_times=80, charger.RedRefalsh_Time=100; //原80，50
+		if( robot.type==0 || robot.type==1 ) leave_times=80, charger.RedRefalsh_Time=100; //Original 80, 50
 		if( robot.type==2 || robot.type==3 ) Set_Robot_PI_Param(600,600) , charger.RedRefalsh_Time=100; 
 		if( robot.type==4 || robot.type==5 ) 
 		{
-			//Red_Docker_X=-0.1f, Red_Docker_Y=0, Red_Docker_Z=0.2f; 默认值
+			//Red_Docker_X=-0.1f, Red_Docker_Y=0, Red_Docker_Z=0.2f; default values
 			charger.Dock_MoveX = -0.08f;
 			charger.Dock_MoveZ = 0.15f;
 			Set_Robot_PI_Param(600,600);
-			leave_times=113;//顶配独立悬挂电机响应较慢，需要更长的调节时间
-			charger.RedRefalsh_Time=150;//红外状态刷新时间(电机响应越慢，建议的时间越长，跟电机减速比、小车负载都有关系)
+			leave_times=113;//Top-spec independent-suspension motor responds more slowly and needs a longer adjustment time
+			charger.RedRefalsh_Time=150;//Infrared status refresh time (the slower the motor response, the longer the recommended duration; this is related to the motor reduction ratio and the car's load)
 		}
 	}
 
-	//将红外融合成一个数值表示状态，方便给状态标号
+	//Infrared fused into a single numerical state representation, making it easy to assign status numbers
 	red_now_state = charger.L_A << 3 | charger.L_B << 2 | charger.R_B << 1 | charger.R_A << 0 ;
 	
-	if( charger.AllowRecharge )//自动回充开启后才记录状态
+	if( charger.AllowRecharge )//Status is recorded only after automatic recharge is enabled
 	{
-		//红外状态发生改变时，保存上一个红外状态
+		//When the infrared state changes, save the previous infrared state
 		if(red_now_state!=tmp_state) last_state = tmp_state;	
 		tmp_state = red_now_state;
 	}
 	
-	////////////////////////////  对接逻辑处理 开始 ////////////////////////////	
+	////////////////////////////  Docking logic processing Start ////////////////////////////
 	charger.RED_STATE = charger.L_A + charger.L_B + charger.R_B + charger.R_A;
 	
 		 if(charger.L_A==0&&charger.L_B==0&&charger.R_B==0&&charger.R_A==1)  front_right; //1
@@ -246,7 +246,7 @@ void Handle_AKM_AutoRecharge(uint8_t* temp_rxbuf)
 		front_left; 
 	}	
 	
-	// charger.L_A==0&&charger.L_B==1&&charger.R_B==0&&charger.R_A==1 不存在 5 
+	// charger. L_A==0&&charger. L_B==1&&charger. R_B==0&&charger. R_A==1 does not exist 5
 	
 	else if(charger.L_A==0&&charger.L_B==1&&charger.R_B==1&&charger.R_A==0) //6
 	{
@@ -292,62 +292,62 @@ void Handle_AKM_AutoRecharge(uint8_t* temp_rxbuf)
 
 	else if(charger.L_A==1&&charger.L_B==1&&charger.R_B==1&&charger.R_A==1)  back;		  //15
 	
-	//其他情况，全0或者5
+	//In other cases, all 0s or 5s
 	else
 	{
-		charger.RED_STATE = 0;//红外识别状态设置为0
+		charger.RED_STATE = 0;//Infrared recognition status set to 0
 		stop;
 	}
 
 	
-	if(touch_state==0xAA||state_lock==1)//充电装备接触到了充电区
+	if(touch_state==0xAA||state_lock==1)//Charging equipment touches the charging area
 	{
 		stop;		
 
 		filter_cur++;   
-		if(filter_cur>yuzhi) //延迟消抖
+		if(filter_cur>yuzhi) //Delayed stabilization
 		{
-			adjust_cur = 1; //标记接触
+			adjust_cur = 1; //Tag contact
 			
-			filter_cur = yuzhi+1;//滤波变量自锁，防止循环溢出
+			filter_cur = yuzhi+1;//Filter variables lock themselves to prevent loop overflow
 			
-			state_lock = 1;//锁定接触状态，表示在更新状态前，会一直进入本判断
+			state_lock = 1;//Latch contact state so this branch continues until the state is updated
 			
-			cur_front_right;//调整姿态
+			cur_front_right;//Adjust posture
 			
-			//调整次数超过了限制，又接触到了充电区，不再调整了；使用单边充电
-			u8 allow_adjust = 2; //对接后允许调整位姿的次数
+			//The number of adjustments exceeds the limit, and the adjustment is touched by the charging area again, so no adjustment is done; Charging on one side is used
+			u8 allow_adjust = 2; //The number of times pose adjustments are allowed after docking
 			if(adjust_times==allow_adjust||( liar_adjust>=3&&adjust_times>0 ))
 			{
 				stop;		
-				liar_charge = 1;//不调整了，开启单边充电
+				liar_charge = 1;//No adjustment, enable unilateral charging
 				liar_adjust=0;
 			}
 		}
 		
 	}
-	else if(touch_state==0xBB||state_lock==2)//接触到了测压区
+	else if(touch_state==0xBB||state_lock==2)//Contacted the pressure measurement zone
 	{
 		stop;
 		
 		filter_vol++;   
-		if(filter_vol>yuzhi) //延迟消抖
+		if(filter_vol>yuzhi) //Delayed stabilization
 		{  
-			adjust_vol = 1; //标记接触1次
+			adjust_vol = 1; //Record 1 contact event
 			
 			filter_vol = yuzhi+1;
 			state_lock = 2;
-			cur_front_left;//调整姿态
+			cur_front_left;//Adjust posture
 		}
 	}
 	else if(touch_state==0xCF||touch_state==0xFC)
 	{
-		liar_charge=1;//同时接触测压区和充电区时，开放单边充电，提高稳定性
+		liar_charge=1;//When simultaneously touching the pressure measurement and charging zones, single-side charging is enabled to improve stability
 		liar_adjust=0;
 		stop;
 	}
 	
-	//弹片接触状态更新
+	//Spring contact status update
 	if(state_lock!=0)
 	{
 		time_core++;
@@ -361,36 +361,36 @@ void Handle_AKM_AutoRecharge(uint8_t* temp_rxbuf)
 	else
 		time_core =  0;
 	
-	//弹片状态更新后，屏蔽掉全1以外的所有红外情况
-	//接触过弹片又离开，则只接收全红外后退的数据，其他数据一律前进，无需转向
+	//After the shrapnel status update, all infrared effects except all 1 are blocked
+	//If it contacts the spring and then leaves, it only receives the full-infrared backward data; all other data moves forward without turning
 	if(change_state!=0)
 	{
 		static u8 shielding=0;
 		static u8 leaveCount=0;	
 
-		if(++leaveCount==255) leaveCount=0, change_state = 0,shielding=0;//限制总体的调整时间
+		if(++leaveCount==255) leaveCount=0, change_state = 0,shielding=0;//Limit total adjustment time
 		
-		if(red_now_state==9) {front_right;shielding++;}//特殊状态，靠太边了
-		else if( red_now_state==6 ) {front_left;shielding++;}//特殊状态，靠太边了
+		if(red_now_state==9) {front_right;shielding++;}//Special status, too far to the edge
+		else if( red_now_state==6 ) {front_left;shielding++;}//Special status, too far to the edge
 		else if( red_now_state!=15 ) {front;shielding=0;}
 		
-		//如果该变量一直自增，说明屏蔽时间太长了，清空调整次数重新开始
+		//If the variable keeps incrementing, it means the shielding period has been too long, so the number of clearing adjustments will start over
 		if(shielding>250) adjust_times=0,liar_adjust=0;
 		
 		if(last_state==15 || last_state==9 || last_state==6 ) leaveCount=0,change_state = 0,shielding=0;
 	}
 	
-	//Z速度转换为角度
+	//Convert Z velocity to angle
 	charger.Red_MoveZ = Akm_Vz_to_Angle(charger.Red_MoveX,charger.Red_MoveZ);
 
-	////////////////////////////  对接逻辑处理 结束 ////////////////////////////
+	////////////////////////////  Docking logic processing End ////////////////////////////
 	
-	if(liar_charge==1) charger.Charging = 1;//机器人正在充电
+	if(liar_charge==1) charger.Charging = 1;//The robot is charging
 	else charger.Charging = 0;
 	
 	if(charger.Charging==1) charger.Red_MoveX = 0, charger.Red_MoveY = 0 , charger.Red_MoveZ = 0;
 	
-	//充电电流换算
+	//Charging current conversion
 	if(temp_rxbuf[7]>128) charger.ChargingCurrent=-(256-temp_rxbuf[7])*30;
 	else  charger.ChargingCurrent=(temp_rxbuf[7]*30);
 }

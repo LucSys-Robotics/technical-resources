@@ -4,19 +4,19 @@
 #include "system.h"
 
 //Parameter structure of robot
-//机器人参数结构体
+//Robot parameter structure
 typedef struct  
 {
-  float WheelSpacing;      //Wheelspacing, 4wd_Car is half wheelspacing //轮距 四驱车为半轮距
-  float AxleSpacing;       //Axlespacing, 4wd_Car is half axlespacing //轴距 四驱车为半轴距	
-  int GearRatio;           //Motor_gear_ratio //电机减速比
-  int EncoderAccuracy;     //Number_of_encoder_lines //编码器精度(编码器线数)
-  float WheelDiameter;     //Diameter of driving wheel //主动轮直径	
-  float OmniTurnRadiaus;   //Rotation radius of omnidirectional trolley //全向轮小车旋转半径
+  float WheelSpacing;      //Wheelspacing, 4wd_Car is half wheelspacing // Wheel spacing, for 4WD car it's half wheel spacing
+  float AxleSpacing;       //Axlespacing, for 4wd car it is half of the wheelbase // Wheelbase, half wheelbase for 4wd car
+  int GearRatio;           //Motor_gear_ratio // Motor reduction ratio
+  int EncoderAccuracy;     //Number_of_encoder_lines // Encoder accuracy (number of encoder lines)
+  float WheelDiameter;     //Diameter of driving wheel // Diameter of the driving wheel
+  float OmniTurnRadiaus;   //Rotation radius of omnidirectional chassis // Rotation radius of omnidirectional chassis
 }Robot_Parament_InitTypeDef;
 
 
-//half wheelspacing //半轮距
+//half wheelspacing // half wheelspace
 #define SENIOR_4WD_BS_wheelspacing   0.176 
 //#define SENIOR_4WD_DL_wheelspacing   0.247 
 #define SENIOR_4WD_DL_wheelspacing   0.230
@@ -26,7 +26,7 @@ typedef struct
 
 #define FlagShip_4WD_DL_wheelspacing 0.24
 
-//half axlespacing //半轴距
+//half axlespacing // Half wheelbase
 //#define SENIOR_4WD_BS_axlespacing   0.156
 #define SENIOR_4WD_BS_axlespacing   0.150
 //#define SENIOR_4WD_DL_axlespacing   0.214 
@@ -38,7 +38,7 @@ typedef struct
 #define FlagShip_4WD_DL_axlespacing 0.14
 
 //Motor_gear_ratio
-//电机减速比
+//Motor reduction ratio
 #define   MD36N_5_18  5.18
 #define   MD36N_27    27
 #define   MD36N_51    51
@@ -47,19 +47,19 @@ typedef struct
 #define   MD60N_47    47
 
 //Number_of_encoder_lines
-//编码器精度
+//Encoder accuracy
 #define		Photoelectric_500 500
 #define	  Hall_13           13
 
 //4WD wheel tire diameter series
-//四驱车轮胎直径
+//Diameter of four-wheel drive tires
 #define		_4WD_225  0.225f
 #define		_4WD_250  0.250f
 #define   _4WD_152  0.152f
 
  
 //Omni wheel tire diameter series
-//轮径全向轮直径系列
+//Omni-wheel diameter series
 #define	  FullDirecion_75  0.075
 #define	  FullDirecion_127 0.127
 #define	  FullDirecion_152 0.152
@@ -67,19 +67,19 @@ typedef struct
 #define	  FullDirecion_217 0.217
 
 //Rotation radius of omnidirectional trolley
-//全向轮小车旋转半径
+//Radius of rotation of the omnidirectional wheel cart
 #define   Omni_Turn_Radiaus_164 0.164
-#define   Omni_Turn_Radiaus_180 0.160 //修正为160
-#define   Omni_Turn_Radiaus_290 0.280 //修正为280
+#define   Omni_Turn_Radiaus_180 0.160 //Revised to 160
+#define   Omni_Turn_Radiaus_290 0.280 //Revised to 280
 
 //The encoder octave depends on the encoder initialization Settings
-//编码器倍频数，取决于编码器初始化设置
+//The number of encoder multipliers, depending on the encoder initialization settings
 #define   EncoderMultiples 4
 //Encoder data reading frequency
-//编码器数据读取频率
+//Encoder data read frequency
 #define CONTROL_FREQUENCY 100
 
-//#define PI 3.1415f  //PI //圆周率
+//#define PI 3.1415f //PI //Pi
 
 void Robot_Select(void);
 #if _4WD

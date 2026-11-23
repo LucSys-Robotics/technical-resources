@@ -92,25 +92,25 @@ void HAL_HCD_MspInit(HCD_HandleTypeDef* hcdHandle)
 
 	GPIO_InitTypeDef  GPIO_InitStructure;
 	
-	//TOOD:USB FS设备时钟必须配置为48M
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);//使能GPIOA时钟
-	RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_OTG_FS, ENABLE);//使能USB OTG时钟	
-	//GPIOA11,A12设置
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11 | GPIO_Pin_12;//PA11/12复用功能输出	
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;//复用功能
+	//TOOD: USB FS device clocks must be configured to 48M
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);//Enable GPIOA clock
+	RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_OTG_FS, ENABLE);//Enable USB OTG clock
+	//GPIOA11, A12 settings
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11 | GPIO_Pin_12;//PA11/12 multiplexing function output
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;//Reuse function
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; 
-	GPIO_Init(GPIOA, &GPIO_InitStructure);//初始化
+	GPIO_Init(GPIOA, &GPIO_InitStructure);//Initialize
 
 	GPIO_PinAFConfig(GPIOA,GPIO_PinSource11,GPIO_AF_OTG_FS);//PA11,AF10(USB)
 	GPIO_PinAFConfig(GPIOA,GPIO_PinSource12,GPIO_AF_OTG_FS);//PA12,AF10(USB)
 	
-	//NVIC 配置
+	//NVIC configuration
 	NVIC_InitTypeDef NVIC_InitStructure;
 	NVIC_InitStructure.NVIC_IRQChannel = OTG_FS_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=5; //抢占优先级
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority =0;		//子优先级
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQ通道使能
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=5; //Preemption priority
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority =0;		//Sub-priority
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQ channel enabled
 	NVIC_Init(&NVIC_InitStructure);
 }
 
@@ -144,7 +144,7 @@ void HAL_HCD_MspDeInit(HCD_HandleTypeDef* hcdHandle)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; 
-	GPIO_Init(GPIOA, &GPIO_InitStructure);//初始化
+	GPIO_Init(GPIOA, &GPIO_InitStructure);//Initialize
 }
 
 /**

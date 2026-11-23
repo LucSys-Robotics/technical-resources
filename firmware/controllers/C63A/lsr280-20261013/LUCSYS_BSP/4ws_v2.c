@@ -2,7 +2,7 @@
 #include <math.h>
 
 #define PI 3.14159265358979323846f
-#define VEL_EPS 0.0001f //速度零判定阈值,避免浮点精确比较
+#define VEL_EPS 0.0001f //Zero-velocity threshold to avoid exact floating-point comparisons
 
 
 void FourWSCar_param_init(RobotParam_t *car,float m_W,float m_L,float WheelTurnR,float wp)
@@ -12,7 +12,7 @@ void FourWSCar_param_init(RobotParam_t *car,float m_W,float m_L,float WheelTurnR
 	car->hardware.WheelTurnR = WheelTurnR;
 	car->hardware.WheelPerimeter = wp;
 	
-	//目标/实际角度初始化为直行角度(AB:+90度,CD:-90度),与上电回零位置一致
+	//The target/actual angle is initialized to a straight angle (AB: +90 degrees, CD: -90 degrees), matching the power-on zero position
 	car->TargetMotorA.radian = PI/2.0f;
 	car->TargetMotorB.radian = PI/2.0f;
 	car->TargetMotorC.radian = -PI/2.0f;
@@ -22,30 +22,30 @@ void FourWSCar_param_init(RobotParam_t *car,float m_W,float m_L,float WheelTurnR
 	car->RealMotorC.radian = -PI/2.0f;
 	car->RealMotorD.radian = -PI/2.0f;
 
-	//逆解分支记忆清零,起始一律按"不翻转"起步
+	//Clear inverse-kinematics branch memory; start all wheels without flipping
 	for(uint8_t i=0;i<4;i++) car->pathFlip[i] = 0;
 }
 
 
 
-//物理限位版本
-// atan2取值范围：(-180°, 180°]
-// 为限制轮子的运动范围,对4个轮子的角度作以下限制
-// a轮限制： (-90,270)
-// b轮限制： (-90,270)
-// c轮限制： (-270,90)
-// d轮限制： (-270,90)
+//Physically limited version
+// atan2 value range: (-180°, 180°]
+// To limit the movement range of the wheels, the following restrictions are applied to the angles of the four wheels
+// Series A Limit: (-90,270)
+// Series B limit: (-90,270)
+// Wheel C limits: (-270,90)
+// D-axis limit: (-270, 90)
 #define RAD_90  (1.57079632679489661923f)
 #define RAD_50  (0.87266462599716478846f)
 #define RAD_180 PI
 #define RAD_220 (3.83972435438752506923f)    
 #define RAD_270 (4.71238898038468985769f)
-//路径判据的迟滞余量.仅在"两个候选都在机械范围内"时生效,不影响限位判定.
-//取值依据见对拍工程 T6:0度时28.8%的工况在分界附近来回翻,加到35度降到个位数.
-//代价是两条路都合法时可能多绕最多35度,但一定还在机械范围内.
+//Hysteresis margin of the path criterion. It only applies when "both candidates are within mechanical range" and does not affect the limit determination.
+//See test harness T6 for the threshold basis: at 0 degrees, 28.8% of cases flip around the boundary; at 35 degrees this falls to a single-digit percentage.
+//The trade-off is that when both roads are legal, you may detour up to 35 degrees more, but it will still be within mechanical limits.
 #define RAD_HYST  (0.61086523819801535192f)
 
-//角度归一化到各自的工作窗口:AB轮 (-90,270],CD轮 (-270,90]
+//Normalize angles to each working window: wheels A/B (-90,270], wheels C/D (-270,90]
 static float ab_wrap(float a)
 {
 	while( a <= -RAD_90 ) a += RAD_180*2.0f;
@@ -58,21 +58,21 @@ static float cd_wrap(float a)
 	while( a <= -RAD_270) a += RAD_180*2.0f;
 	return a;
 }
-//差值归一化到 (-180,180],用于比较哪条路更近
+//Difference normalized to (-180,180], used to compare which path is closer
 /* Bounded absolute-position steering cannot wrap through its end stops. */
 
 /**
- * AB轮(左侧)转向目标选路
+ * AB wheel (left side) turns to target and selects the route
  *
- * 逆解出的角度只有两个可用形态,相差180度:直接到位,或掉头180度并把轮速反向。
- * 两者的机械合法性先判,再谈哪条更近 —— 顺序不能反,限位优先于路径优化。
+ * Inverse kinematics provides two equivalent angle choices separated by 180 degrees: direct alignment, or turn 180 degrees and reverse wheel speed.
+ * Judge the mechanical legitimacy of both first, then discuss which is closer — order cannot be reversed, limits take precedence over path optimization.
  *
- * 关于"永远不会超出 [-50,220]":窗口(-90,270]内的非法区只有 (-90,-50) 和 (220,270],
- * 宽 40度 与 50度。c0落在前者时 c1=c0+180 落在(90,130),落在后者时 c1=c0-180 落在(40,90],
- * 两者都在合法带内。也就是说只要有一个非法,另一个必然合法,不存在无解。
+ * Regarding "never exceeding [-50,220]": the illegal zone within window (-90,270) only includes (-90,-50) and (220,270],
+ * Widths of 40 degrees and 50 degrees. When c0 falls on the former, c1 = c0 + 180 falls at (90, 130); when c0 falls on the latter, c1 = c0 - 180 falls at (40, 90],
+ * Both are within the legal zone. In other words, as long as one is illegal, the other must be legal; there is no unsolvable solution.
  *
- * flipped 记录上一次实际选中的是哪个候选(1=选了掉头那条),用于加迟滞。
- * 注意它记的是"实际输出",不是中间判据 —— 否则限位纠正过的结果会与记忆脱节。
+ * flipped records which candidate was actually selected the last time (1 = chose the U-turn one), used for adding hysteresis.
+ * Note that it records the "actual output," not an intermediate criterion — otherwise, the results of limit correction will be disconnected from memory.
  */
 void PathChange_AB(WheelInfo_t* wheel,float now_rad,uint8_t* flipped)
 {
@@ -85,14 +85,14 @@ void PathChange_AB(WheelInfo_t* wheel,float now_rad,uint8_t* flipped)
 
 	if( ok0 && ok1 )
 	{
-		//两条都能走,才比较路径长短.迟滞:维持上次的选择,除非另一条明显更近
+		//Both paths can be used to compare path length. Lag: Maintain the previous choice unless the other is noticeably closer
 		float d0 = fabsf(c0 - now_rad);
 		float d1 = fabsf(c1 - now_rad);
 		use1 = ( d1 < d0 + ((*flipped) ? RAD_HYST : -RAD_HYST) ) ? 1u : 0u;
 	}
 	else
 	{
-		//只有一条在机械范围内,只能走它,不参与路径比较也不加迟滞
+		//Only one path within the mechanical range can only be taken, without participating in path comparison or delay
 		use1 = ok1;
 	}
 
@@ -103,7 +103,7 @@ void PathChange_AB(WheelInfo_t* wheel,float now_rad,uint8_t* flipped)
 }
 
 /**
- * CD轮(右侧)转向目标选路:与 PathChange_AB 同理,窗口与合法带镜像
+ * CD wheel (right) turns to target for path selection: same as PathChange_AB, window and legal mirror with mirror
  */
 void PathChange_CD(WheelInfo_t* wheel,float now_rad,uint8_t* flipped)
 {
@@ -135,7 +135,7 @@ void four_ws_InverseKinematics(float Vx,float Vy,float Vz,RobotParam_t *car)
 {
 	if( fabsf(Vx)<VEL_EPS && fabsf(Vy)<VEL_EPS && fabsf(Vz)<VEL_EPS )
 	{
-		//零速:保持上次下发的目标角度不变,只把轮速清零
+		//Zero speed: retain the last transmitted target angles and set only wheel speeds to zero
 		car->TargetMotorA.speed = 0;
 		car->TargetMotorB.speed = 0;
 		car->TargetMotorC.speed = 0;
@@ -143,27 +143,27 @@ void four_ws_InverseKinematics(float Vx,float Vy,float Vz,RobotParam_t *car)
 		return;
 	}
 	
-	//将二维笛卡儿坐标系坐标转换为ROS坐标
+	//Convert 2D Cartesian coordinate system coordinates to ROS coordinates
 	float tmpVx=0,tmpVy=0;
 	tmpVx = Vx;
 	tmpVy = Vy;
 	Vx = -tmpVy;
 	Vy = tmpVx;
 	
-    // 车轮i的x和y轴速度
+    // The speed of the x and y axes of wheel i
     float Vxi=0, Vyi=0;
 	
-	//车轮初始坐标
-	float Car_Track = car->hardware.WheelSpacing;  //轮距(左右两轮中心距),对应轮子坐标的左右分量
-	float Car_Base  = car->hardware.AxleSpacing;   //轴距(前后两轮中心距),对应轮子坐标的前后分量
+	//Initial coordinates of the wheel
+	float Car_Track = car->hardware.WheelSpacing;  //Track width (distance between left and right wheel centers), corresponding to the lateral wheel-coordinate component
+	float Car_Base  = car->hardware.AxleSpacing;   //Wheelbase (distance between front and rear wheel centers), corresponding to the longitudinal wheel-coordinate component
 	float WheelPoint[4][2] = {
-		{-Car_Track / 2.0f, -Car_Base / 2.0f},  //A轮:左后
-		{-Car_Track / 2.0f, Car_Base / 2.0f},   //B轮:左前
-		{Car_Track / 2.0f, Car_Base / 2.0f},    //C轮:右前
-		{Car_Track / 2.0f, -Car_Base / 2.0f}    //D轮:右后
+		{-Car_Track / 2.0f, -Car_Base / 2.0f},  //A round: left rear
+		{-Car_Track / 2.0f, Car_Base / 2.0f},   //B Round: Front left
+		{Car_Track / 2.0f, Car_Base / 2.0f},    //C Wheel: Front right
+		{Car_Track / 2.0f, -Car_Base / 2.0f}    //D Wheel: Right rear
 	};
 	
-	//定义4个轮子临时数据
+	//Define temporary data for 4 wheels
 	WheelInfo_t car_wheel[4];
 	
     for (uint8_t i = 0; i < 4; i++)
@@ -171,28 +171,28 @@ void four_ws_InverseKinematics(float Vx,float Vy,float Vz,RobotParam_t *car)
         Vxi = Vx - WheelPoint[i][1] * Vz;
         Vyi = Vy + WheelPoint[i][0] * Vz;
 
-        // 得出车轮速度
+        // Obtain wheel speed
         car_wheel[i].speed = sqrtf(Vxi * Vxi + Vyi * Vyi);
 
-        // 得出车轮角度
+        // Obtain wheel angle
         car_wheel[i].radian = atan2f(Vyi, Vxi);
     }
 	
-    // atan2取值范围：(-180°, 180°]
-	// 为限制轮子的运动范围,对4个轮子的角度作以下限制
-    // a轮限制： (-90,270)
-    // b轮限制： (-90,270)
-    // c轮限制： (-270,90)
-    // d轮限制： (-270,90)
+    // atan2 value range: (-180°, 180°]
+	// To limit the movement range of the wheels, the following restrictions are applied to the angles of the four wheels
+    // Series A Limit: (-90,270)
+    // Series B limit: (-90,270)
+    // Wheel C limits: (-270,90)
+    // D-axis limit: (-270, 90)
 	PathChange_AB(&car_wheel[0],car->RealMotorA.radian,&car->pathFlip[0]);
 	PathChange_AB(&car_wheel[1],car->RealMotorB.radian,&car->pathFlip[1]);
 	PathChange_CD(&car_wheel[2],car->RealMotorC.radian,&car->pathFlip[2]);
 	PathChange_CD(&car_wheel[3],car->RealMotorD.radian,&car->pathFlip[3]);
 	
-	//若车轮存在转向半径,则进行一次迭代计算
+	//If the wheel has a turning radius, perform one iterative calculation
 	if( fabsf(car->hardware.WheelTurnR - 0) > 0.001f )
 	{
-		//根据初步取得的车轮角度,计算轮子的坐标值
+		//Based on the preliminary wheel angle, calculate the wheel's coordinate values
 		float WheelPoint_Diff[4][2] = {
 			{-Car_Track/2.0f-car->hardware.WheelTurnR*sin(car_wheel[0].radian), -Car_Base/2.0f+car->hardware.WheelTurnR*cos(car_wheel[0].radian)},
 			{-Car_Track/2.0f-car->hardware.WheelTurnR*sin(car_wheel[1].radian), Car_Base/2.0f+car->hardware.WheelTurnR*cos(car_wheel[1].radian)},
@@ -200,28 +200,28 @@ void four_ws_InverseKinematics(float Vx,float Vy,float Vz,RobotParam_t *car)
 			{Car_Track/2.0f-car->hardware.WheelTurnR*sin(car_wheel[3].radian), -Car_Base/2.0f+car->hardware.WheelTurnR*cos(car_wheel[3].radian)}
 		};
 		
-		//使用新轮子坐标,重新计算轮子真实角度(相当于一次迭代)
-		//实测角度基本不变,迭代1次足够
+		//Using new wheel coordinates, recalculate the true wheel angle (equivalent to one iteration)
+		//The measured angle remains basically unchanged, and one iteration is sufficient
 		for (uint8_t i = 0; i < 4; i++)
 		{
 			Vxi = Vx - WheelPoint_Diff[i][1] * Vz;
 			Vyi = Vy + WheelPoint_Diff[i][0] * Vz;
 
-			// 得出车轮速度
+			// Obtain wheel speed
 			car_wheel[i].speed = sqrtf(Vxi * Vxi + Vyi * Vyi);
 
-			// 得出车轮角度
+			// Obtain wheel angle
 			car_wheel[i].radian = atan2f(Vyi, Vxi);
 		}
 		
-		//对新的轮速与角度再作规范限制
+		//Further restrict the speed and angle of new wheels
 		PathChange_AB(&car_wheel[0],car->RealMotorA.radian,&car->pathFlip[0]);
 		PathChange_AB(&car_wheel[1],car->RealMotorB.radian,&car->pathFlip[1]);
 		PathChange_CD(&car_wheel[2],car->RealMotorC.radian,&car->pathFlip[2]);
 		PathChange_CD(&car_wheel[3],car->RealMotorD.radian,&car->pathFlip[3]);
 	}
 	
-	//输出目标轮速和角度,单位为 m/s 与 弧度rad
+	//Output target wheel speeds and angles, in m/s and radians (rad)
 	car->TargetMotorA.speed = car_wheel[0].speed;
 	car->TargetMotorA.radian = car_wheel[0].radian;
 	car->TargetMotorB.speed = car_wheel[1].speed;
@@ -234,15 +234,15 @@ void four_ws_InverseKinematics(float Vx,float Vy,float Vz,RobotParam_t *car)
 	
 }
 
-//根据轮子的角度和速度计算三轴速度
+//Calculate the three-axis speed based on the wheel's angle and speed
 void four_ws_kinematics(RobotParam_t* car)
 {
-	float Car_Track = car->hardware.WheelSpacing;  //轮距(左右两轮中心距),对应轮子坐标的左右分量
-	float Car_Base  = car->hardware.AxleSpacing;   //轴距(前后两轮中心距),对应轮子坐标的前后分量
+	float Car_Track = car->hardware.WheelSpacing;  //Track width (distance between left and right wheel centers), corresponding to the lateral wheel-coordinate component
+	float Car_Base  = car->hardware.AxleSpacing;   //Wheelbase (distance between front and rear wheel centers), corresponding to the longitudinal wheel-coordinate component
 	
 	float WheelPoint_Diff[4][2] = { 0 };
 	
-	//轮子存在运动半径时需要考虑运动半径影响
+	//Account for the wheel's turning radius when nonzero
 	if( fabsf(car->hardware.WheelTurnR - 0) > 0.001f )
 	{
 		WheelPoint_Diff[0][0]=-Car_Track/2.0f-car->hardware.WheelTurnR*sin(car->RealMotorA.radian);
@@ -283,7 +283,7 @@ void four_ws_kinematics(RobotParam_t* car)
     float Vz3 = (Vbx-Vdx)/ydb;
     float Vz4 = (Vby-Vdy)/xbc;
 	
-	//计算平均值
+	//Calculate the average
     car->feedback_Vz = (Vz1+Vz2+Vz3+Vz4)/4.0f;
 	
 	float Vx=0,Vy=0;
@@ -300,31 +300,31 @@ void four_ws_kinematics(RobotParam_t* car)
 	// car->feedback_Vx = Vx/4.0f;
 	// car->feedback_Vy = Vy/4.0f;
 
-	//计算平均值,将笛卡儿坐标系转换为ROS坐标
+	//Calculate the mean and convert the Cartesian coordinate system to ROS coordinates
 	car->feedback_Vx = Vy/4.0f;
 	car->feedback_Vy = -Vx/4.0f;
 }
 
-//按已解算的目标转向角,将三轴速度对应的各轮速度矢量投影到目标角方向,得到带符号轮速
-//保证轮速符号与已下发的转向角一致,避免二次逆解时翻转决策不一致的问题
+//Based on the calculated target steering angle, project the speed vectors corresponding to the three-axis speed of each wheel onto the target angle direction to obtain the signed wheel speed
+//Ensure that the wheel speed symbol matches the given steering angle, preventing inconsistent flip decisions during the second inverse solution
 void four_ws_WheelSpeedProjection(float Vx,float Vy,float Vz,RobotParam_t *car)
 {
-	//二维笛卡尔坐标系速度转换为ROS坐标(与逆解一致)
+	//Convert 2D Cartesian coordinate velocity to ROS coordinates (consistent with inverse solution)
 	float tmpVx = Vx;
 	float tmpVy = Vy;
 	Vx = -tmpVy;
 	Vy = tmpVx;
 	
-	float Car_Track = car->hardware.WheelSpacing;  //轮距(左右两轮中心距),对应轮子坐标的左右分量
-	float Car_Base  = car->hardware.AxleSpacing;   //轴距(前后两轮中心距),对应轮子坐标的前后分量
+	float Car_Track = car->hardware.WheelSpacing;  //Track width (distance between left and right wheel centers), corresponding to the lateral wheel-coordinate component
+	float Car_Base  = car->hardware.AxleSpacing;   //Wheelbase (distance between front and rear wheel centers), corresponding to the longitudinal wheel-coordinate component
 	float TurnR = car->hardware.WheelTurnR;
 	
 	WheelInfo_t* wheel[4] = { &car->TargetMotorA,&car->TargetMotorB,&car->TargetMotorC,&car->TargetMotorD };
 	float WheelPoint[4][2] = {
-		{-Car_Track / 2.0f, -Car_Base / 2.0f},  //A轮:左后
-		{-Car_Track / 2.0f, Car_Base / 2.0f},   //B轮:左前
-		{Car_Track / 2.0f, Car_Base / 2.0f},    //C轮:右前
-		{Car_Track / 2.0f, -Car_Base / 2.0f}    //D轮:右后
+		{-Car_Track / 2.0f, -Car_Base / 2.0f},  //A round: left rear
+		{-Car_Track / 2.0f, Car_Base / 2.0f},   //B Round: Front left
+		{Car_Track / 2.0f, Car_Base / 2.0f},    //C Wheel: Front right
+		{Car_Track / 2.0f, -Car_Base / 2.0f}    //D Wheel: Right rear
 	};
 	
 	for (uint8_t i = 0; i < 4; i++)
@@ -332,7 +332,7 @@ void four_ws_WheelSpeedProjection(float Vx,float Vy,float Vz,RobotParam_t *car)
 		float px = WheelPoint[i][0];
 		float py = WheelPoint[i][1];
 		
-		//存在转向偏心半径时修正轮子坐标
+		//Correct wheel coordinates when a steering eccentric radius exists
 		if( fabsf(TurnR - 0) > 0.001f )
 		{
 			px -= TurnR*sinf(wheel[i]->radian);
@@ -342,7 +342,7 @@ void four_ws_WheelSpeedProjection(float Vx,float Vy,float Vz,RobotParam_t *car)
 		float Vxi = Vx - py * Vz;
 		float Vyi = Vy + px * Vz;
 		
-		//沿目标转向角方向投影,得到带符号轮速
+		//Projecting along the target turning angle direction yields the signed wheel speed
 		wheel[i]->speed = Vxi*cosf(wheel[i]->radian) + Vyi*sinf(wheel[i]->radian);
 	}
 }

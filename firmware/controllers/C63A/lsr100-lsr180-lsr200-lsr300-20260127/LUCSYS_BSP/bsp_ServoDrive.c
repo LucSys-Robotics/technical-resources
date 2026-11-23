@@ -16,10 +16,10 @@
 
 extern QueueHandle_t g_xQueueCANopenCallback;
 
-//设置调试等级
+//Set the debug level
 #define DRIVER_DEBUG_LEVEL 0
 
-//调试日志输出方法
+//Debug log output methods
 #if (DRIVER_DEBUG_LEVEL > 0U)
 #define  Driver_UsrLog(...)   do { \
                             printf(__VA_ARGS__); \
@@ -28,7 +28,7 @@ extern QueueHandle_t g_xQueueCANopenCallback;
 #define Driver_UsrLog(...) do {} while (0)
 #endif
 
-//驱动器定义,每个驱动带2个轮毂电机
+//Driver definitions; each driver controls 2 hub motors
 ServoDriverHWType_t Driver1 = {
 	.NodeID = 1,
 	.comm_qua = 100,
@@ -59,13 +59,13 @@ ServoDriverHWType_t Driver3 = {
 	.errFlag = 0  
 };
 
-//可用驱动列表
+//List of available drivers
 ServoDriverHWType_t* g_ServoDriveList[] = {&Driver1,&Driver2,&Driver3};
 
-//所有伺服电机PID参数
+//All PID parameters of servo motors
 ServoDriverPIDType_t DrivePid = { 0 };
 
-//复位驱动器的状态数据
+//Reset the drive's status data
 static void DriverInfoReset(ServoDriverHWType_t* driver)
 {
 	driver->comm_cnt=0;
@@ -79,7 +79,7 @@ static void DriverInfoReset(ServoDriverHWType_t* driver)
 	driver->motorEnflag=0;
 }
 
-//比较CAN通信内容是否符合预期值
+//Compare whether the content of CAN communications meets expectations
 static uint8_t compare_canopen_msg(CANmsgType_t* a,CANmsgType_t* b)
 {
 	if( a->id == b->id )
@@ -95,7 +95,7 @@ static uint8_t compare_canopen_msg(CANmsgType_t* a,CANmsgType_t* b)
 	return 0;
 }
 
-//获取CANopen-RSDO服务器端写数据时内容
+//Retrieve the content of CANopen-RSDO server-side write data
 static void CANopen_getSendList(uint8_t id,uint16_t addr,uint8_t index,uint8_t byteNum,uint32_t writedata,CANmsgType_t* sendlist,CANmsgType_t* fblist)
 {
 	if( id<1 || id > 127 ) return;
@@ -103,20 +103,20 @@ static void CANopen_getSendList(uint8_t id,uint16_t addr,uint8_t index,uint8_t b
 	sendlist->id = 0x600 + id;
 	uint8_t i=0;
 	
-	//设置命令
+	//Set command
 	if( byteNum==1 ) sendlist->buffer[0]=0x2F;
 	else if( byteNum==2 ) sendlist->buffer[0]=0x2B;
 	else if( byteNum==3 ) sendlist->buffer[0]=0x27;
 	else sendlist->buffer[0]=0x23;
 	
-	//寄存器地址,低位在前
+	//Register address, with the lower bits coming first
 	sendlist->buffer[1]=addr;
 	sendlist->buffer[2]=addr>>8;
 	
-	//索引值
+	//Index value
 	sendlist->buffer[3]=index;
 	
-    //要写入的数据从低位向高位排序取出
+    //The data to be written is sorted from the lowest to the highest level
     for(i=0;i<4;i++)
     {
         sendlist->buffer[4+i] = ( writedata>>(8*i) )&0xff;
@@ -133,7 +133,7 @@ static void CANopen_getSendList(uint8_t id,uint16_t addr,uint8_t index,uint8_t b
 	fblist->buffer[7]=0;
 }
 
-//获取CANopen-RSDO服务器端读数据时内容
+//Retrieve the content when reading data from the CANopen-RSDO server
 static void CANopen_getReadList(uint8_t id,uint16_t addr,uint8_t index,uint8_t byteNum,CANmsgType_t* sendlist)
 {
 	if( id<1 || id > 127 ) return;
@@ -141,48 +141,48 @@ static void CANopen_getReadList(uint8_t id,uint16_t addr,uint8_t index,uint8_t b
 	sendlist->id = 0x600 + id;
 	uint8_t i=0;
 	
-	//读取命令
+	//Read command
 	sendlist->buffer[0]=0x40;
 
-	//寄存器地址,低位在前
+	//Register address, with the lower bits coming first
 	sendlist->buffer[1]=addr;
 	sendlist->buffer[2]=addr>>8;
 	
-	//索引值
+	//Index value
 	sendlist->buffer[3]=index;
 	
-    //读取时末尾无数值
+    //No value at the end when reading
     for(i=0;i<4;i++)
     {
         sendlist->buffer[4+i] = 0;
     }
 }
 
-//在FreeRTOS环境下读数据
+//Read data in a FreeRTOS environment
 int8_t CANopenRSDO_Read_RTOS(ServoDriverHWType_t* driver,uint16_t addr,uint8_t index,uint8_t byteNum,uint32_t* readdata,uint8_t retrytime)
 {
 	int8_t res = -1;
 	
-	//指定使用的CAN设备
+	//Specify the CAN device to use
 	pCANInterface_t candev = &UserCAN2Dev;
 	
-	//获取数据发送列表
+	//Obtain the data sending list
 	CANmsgType_t send,fbreal;
 	CANopen_getReadList(driver->NodeID,addr,index,byteNum,&send);
 	
-	//发送数据并等待处理反馈
+	//Send data and wait for processing feedback
 	uint8_t times = 1;
 	if( retrytime!=0 ) times = retrytime;
 	while( times-- )
 	{
-		driver->comm_cnt++;//统计通信的次数
+		driver->comm_cnt++;//Count the number of communications
 		
 		BaseType_t queue_state;
 		
-		//发送数据
+		//Send data
 		candev->sendStd(send.id,send.buffer,8);
 		
-		//读取反馈
+		//Read feedback
 		queue_state = xQueueReceive(g_xQueueCANopenCallback,&fbreal,pdMS_TO_TICKS(5));
 		
 		if( queue_state==pdTRUE )
@@ -192,7 +192,7 @@ int8_t CANopenRSDO_Read_RTOS(ServoDriverHWType_t* driver,uint16_t addr,uint8_t i
 //				printf("%02X\t",fbreal.buffer[i]);
 //			printf("\r\n");
 			
-			//比较反馈结果与预期结果
+			//Compare feedback results with expected outcomes
 			if( fbreal.id == driver->NodeID+0x580 && (fbreal.buffer[0]==0x4F || fbreal.buffer[0]==0x4B || fbreal.buffer[0]==0x47 ||fbreal.buffer[0]==0x43) )
 			{
 				*readdata = fbreal.buffer[7]<<24 | fbreal.buffer[6]<<16 | fbreal.buffer[5]<<8 | fbreal.buffer[4];
@@ -203,7 +203,7 @@ int8_t CANopenRSDO_Read_RTOS(ServoDriverHWType_t* driver,uint16_t addr,uint8_t i
 			{
 //				printf("read:err\r\n");
 				driver->comm_Errcnt++;
-				res = -2;//反馈内容错误
+				res = -2;//Feedback content error
 			}
 		}
 		else 
@@ -214,11 +214,11 @@ int8_t CANopenRSDO_Read_RTOS(ServoDriverHWType_t* driver,uint16_t addr,uint8_t i
 //				printf("%02X\t",send.buffer[i]);
 //			printf("\r\n");
 	
-			res = -1 , driver->comm_Errcnt++;//超时	
+			res = -1 , driver->comm_Errcnt++;//Timeout
 		}
 	}
 
-	//检测10秒内驱动的通信质量
+	//Detect communication quality within 10 seconds of driving
 	float err = ((float)driver->comm_Errcnt/(float)driver->comm_cnt)*100;
 	driver->comm_qua = 100.0f-err;
 	if( xTaskGetTickCount()-driver->time_tick > 10000 )
@@ -228,7 +228,7 @@ int8_t CANopenRSDO_Read_RTOS(ServoDriverHWType_t* driver,uint16_t addr,uint8_t i
 		driver->time_tick=xTaskGetTickCount();
 	}
 	
-	//通信质量小于50.0%,判定为驱动器离线
+	//Communication quality below 50.0% indicates the driver is offline
 //	if( driver->comm_qua <= 50.0f )
 //	{
 //		driver->onlineFlag = 0;
@@ -237,34 +237,34 @@ int8_t CANopenRSDO_Read_RTOS(ServoDriverHWType_t* driver,uint16_t addr,uint8_t i
 	return res;
 }
 
-//在FreeRTOS环境下写数据
+//Write data in a FreeRTOS environment
 int8_t CANopenRSDO_Write_RTOS(ServoDriverHWType_t* driver,uint16_t addr,uint8_t index,uint8_t byteNum,uint32_t writedata,uint8_t retrytime)
 {
 	int8_t res = -1;
 	
-	//指定使用的CAN设备
+	//Specify the CAN device to use
 	pCANInterface_t candev = &UserCAN2Dev;
 	
-	//获取数据发送列表
+	//Obtain the data sending list
 	CANmsgType_t send,fbwait,fbreal;
 	CANopen_getSendList(driver->NodeID,addr,index,byteNum,writedata,&send,&fbwait);
 	
-	//发送数据并等待处理反馈
+	//Send data and wait for processing feedback
 	uint8_t times = 1;
 	if( retrytime!=0 ) times = retrytime;
 	while( times-- )
 	{
-		driver->comm_cnt++;//统计通信的次数
+		driver->comm_cnt++;//Count the number of communications
 		
 		BaseType_t queue_state;
 		
-		//发送数据
+		//Send data
 		candev->sendStd(send.id,send.buffer,8);
 		
-		//读取反馈
+		//Read feedback
 		queue_state = xQueueReceive(g_xQueueCANopenCallback,&fbreal,pdMS_TO_TICKS(5));
 		
-		//比较反馈结果与预期结果
+		//Compare feedback results with expected outcomes
 		uint8_t compare_state = compare_canopen_msg(&fbwait,&fbreal);
 		
 //		printf("id=%X\r\n",fbreal.id);
@@ -272,7 +272,7 @@ int8_t CANopenRSDO_Write_RTOS(ServoDriverHWType_t* driver,uint16_t addr,uint8_t 
 //			printf("%02X\t",fbreal.buffer[i]);
 //		printf("\r\n");
 		
-		//实际反馈的内容与预期相同,本次通信成功
+		//The actual feedback was as expected, and this communication was successful
 		if( queue_state==pdTRUE )
 		{
 			if( compare_state == 1 )
@@ -283,17 +283,17 @@ int8_t CANopenRSDO_Write_RTOS(ServoDriverHWType_t* driver,uint16_t addr,uint8_t 
 			else 
 			{
 //				printf("write:err\r\n");
-				res = -2,driver->comm_Errcnt++;//反馈内容错误
+				res = -2,driver->comm_Errcnt++;//Feedback content error
 			}
 		}
 		else 
 		{
 //			printf("write:timeout\r\n");
-			res = -1,driver->comm_Errcnt++;//超时	
+			res = -1,driver->comm_Errcnt++;//Timeout
 		}
 	}
 	
-	//检测10秒内驱动的通信质量
+	//Detect communication quality within 10 seconds of driving
 	float err = ((float)driver->comm_Errcnt/(float)driver->comm_cnt)*100;
 	driver->comm_qua = 100.0f-err;
 	if( xTaskGetTickCount()-driver->time_tick > 10000 )
@@ -303,7 +303,7 @@ int8_t CANopenRSDO_Write_RTOS(ServoDriverHWType_t* driver,uint16_t addr,uint8_t 
 		driver->time_tick=xTaskGetTickCount();
 	}
 	
-	//通信质量小于50.0%,判定为驱动器离线
+	//Communication quality below 50.0% indicates the driver is offline
 //	if( driver->comm_qua <= 50.0f )
 //	{
 //		driver->onlineFlag = 0;
@@ -312,20 +312,20 @@ int8_t CANopenRSDO_Write_RTOS(ServoDriverHWType_t* driver,uint16_t addr,uint8_t 
 	return res;
 }
 
-//编码器参数设置
+//Encoder parameter settings
 int8_t set_encoder_accuracy(ServoDriverHWType_t* driver,uint16_t param)
 {
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 	
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x200E,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x200E,1,2,param,10);
 	
 	Driver_UsrLog("Lencoder:%d\r\n",tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x200E,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x200E,2,2,param,10);
@@ -340,18 +340,18 @@ int8_t set_HallOffset(ServoDriverHWType_t* driver,short param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 	
-	//限幅
+	//Clamp
 	if(param<-360) param=-360;
 	if(param> 360) param=360;
 	
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2011,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2011,1,2,param,10);
 	
 	Driver_UsrLog("L_Hall:%d\r\n",(short)tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2011,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2011,2,2,param,10);
@@ -366,18 +366,18 @@ int8_t set_poles(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param<4) param=4;
 	if(param>64) param=64;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x200C,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x200C,1,2,param,10);
 	
 	Driver_UsrLog("L_poles:%d\r\n",(short)tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x200C,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x200C,2,2,param,10);
@@ -393,17 +393,17 @@ int8_t set_rated_current(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>150) param=150;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2014,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2014,1,2,param,10);
 	
 	Driver_UsrLog("L_cur:%d\r\n",(short)tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2014,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2014,2,2,param,10);
@@ -419,17 +419,17 @@ int8_t set_max_current(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>300) param=300;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2015,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2015,1,2,param,10);
 	
 	Driver_UsrLog("L_MAXcur:%d\r\n",(short)tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2015,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2015,2,2,param,10);
@@ -444,7 +444,7 @@ int8_t set_max_rpm(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param<1)    param=1;
 	if(param>3000) param=3000;
 
@@ -462,17 +462,17 @@ int8_t set_overload_factor(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>300) param=300;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2012,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2012,1,2,param,10);
 	
 	Driver_UsrLog("L_OverLoad:%d\r\n",tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2012,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2012,2,2,param,10);
@@ -487,17 +487,17 @@ int8_t set_overload_time(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>6553) param=6553;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2016,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2016,1,2,param,10);
 	
 	Driver_UsrLog("L_OverLoadTime:%d\r\n",tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2016,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2016,2,2,param,10);
@@ -512,17 +512,17 @@ int8_t set_encoder_ErrorAlarm(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>6553) param=6553;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2017,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2017,1,2,param,10);
 	
 	Driver_UsrLog("L_Encoderdiff:%d\r\n",tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2017,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2017,2,2,param,10);
@@ -537,17 +537,17 @@ int8_t set_maxTemp(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>1200) param=1200;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2013,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2013,1,2,param,10);
 	
 	Driver_UsrLog("L_MaxTemp:%d\r\n",tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2013,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2013,2,2,param,10);
@@ -562,17 +562,17 @@ int8_t set_pos_kp(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>30000) param=30000;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2020,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2020,1,2,param,10);
 	
 	Driver_UsrLog("L_PosKp:%d\r\n",tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2020,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2020,2,2,param,10);
@@ -587,17 +587,17 @@ int8_t set_pos_kf(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>30000) param=30000;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2021,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2021,1,2,param,10);
 	
 	Driver_UsrLog("L_PosKf:%d\r\n",tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2021,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2021,2,2,param,10);
@@ -612,24 +612,24 @@ int8_t get_speed_kp(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>30000) param=30000;
 
-//	//左轮
+//	//Revolver
 //	comm_state = CANopenRSDO_Read_RTOS(driver,0x201D,1,2,&tmpRead,10);
 //	if( tmpRead!=param )
 //		comm_state = CANopenRSDO_Write_RTOS(driver,0x201D,1,2,param,10);
 //	
 //	Driver_UsrLog("L_speedKp:%d\r\n",tmpRead);
 //	
-//	//右轮
+//	//Right wheel
 //	comm_state = CANopenRSDO_Read_RTOS(driver,0x201D,2,2,&tmpRead,10);
 //	if( tmpRead!=param )
 //		comm_state = CANopenRSDO_Write_RTOS(driver,0x201D,2,2,param,10);
 //	
 //	Driver_UsrLog("R_speedKp:%d\r\n",tmpRead);
 	
-	//读取PID参数,仅用单边轮子的数据参考
+	//Read PID parameters, referencing only the data from the single-sided wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x201D,1,2,&tmpRead,10);
 	DrivePid.SpeedKp = tmpRead;
 	
@@ -642,7 +642,7 @@ int8_t ServoDrive_SetSpeedkp(uint16_t param)
 {
 	int8_t comm_state = 0;
 
-	//限幅
+	//Clamp
 	if(param>30000) param=30000;
 
 	#define DriveNum 3
@@ -651,13 +651,13 @@ int8_t ServoDrive_SetSpeedkp(uint16_t param)
 	{
 		if( g_ServoDriveList[i]->onlineFlag==1)
 		{
-			//设置参数
+			//Set parameters
 			comm_state += CANopenRSDO_Write_RTOS(g_ServoDriveList[i],0x201D,1,2,param,10);
 			comm_state += CANopenRSDO_Write_RTOS(g_ServoDriveList[i],0x201D,2,2,param,10);
 		}
 	}
 	
-	//仅在全部驱动写入成功时更新参数
+	//Only update parameters when all driver writes succeed
 	if( comm_state==0 ) DrivePid.SpeedKp = param;
 	
 	return comm_state;
@@ -668,24 +668,24 @@ int8_t get_speed_ki(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>30000) param=30000;
 
-//	//左轮
+//	//Revolver
 //	comm_state = CANopenRSDO_Read_RTOS(driver,0x201E,1,2,&tmpRead,10);
 //	if( tmpRead!=param )
 //		comm_state = CANopenRSDO_Write_RTOS(driver,0x201E,1,2,param,10);
 //	
 //	Driver_UsrLog("L_speedKi:%d\r\n",tmpRead);
 //	
-//	//右轮
+//	//Right wheel
 //	comm_state = CANopenRSDO_Read_RTOS(driver,0x201E,2,2,&tmpRead,10);
 //	if( tmpRead!=param )
 //		comm_state = CANopenRSDO_Write_RTOS(driver,0x201E,2,2,param,10);
 //	
 //	Driver_UsrLog("R_speedKi:%d\r\n",tmpRead);
 	
-	//读取PID参数,仅用单边轮子的数据参考
+	//Read PID parameters, referencing only the data from the single-sided wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x201E,1,2,&tmpRead,10);
 	DrivePid.SpeedKi = tmpRead;
 	
@@ -698,7 +698,7 @@ int8_t ServoDrive_SetSpeedki(uint16_t param)
 {
 	int8_t comm_state = 0;
 
-	//限幅
+	//Clamp
 	if(param>30000) param=30000;
 
 	#define DriveNum 3
@@ -707,13 +707,13 @@ int8_t ServoDrive_SetSpeedki(uint16_t param)
 	{
 		if( g_ServoDriveList[i]->onlineFlag==1)
 		{
-			//设置参数
+			//Set parameters
 			comm_state += CANopenRSDO_Write_RTOS(g_ServoDriveList[i],0x201E,1,2,param,10);
 			comm_state += CANopenRSDO_Write_RTOS(g_ServoDriveList[i],0x201E,2,2,param,10);
 		}
 	}
 	
-	//仅在全部驱动写入成功时更新参数
+	//Only update parameters when all driver writes succeed
 	if( comm_state==0 ) DrivePid.SpeedKi = param;
 	
 	return comm_state;
@@ -725,17 +725,17 @@ int8_t set_speed_kf(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>30000) param=30000;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x201F,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x201F,1,2,param,10);
 	
 	Driver_UsrLog("L_speedKf:%d\r\n",tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x201F,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x201F,2,2,param,10);
@@ -750,17 +750,17 @@ int8_t set_speed_smooth(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>30000) param=30000;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2018,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2018,1,2,param,10);
 	
 	Driver_UsrLog("L_speed_smooth:%d\r\n",tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2018,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x2018,2,2,param,10);
@@ -775,17 +775,17 @@ int8_t set_smooth_kf(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>30000) param=30000;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x201B,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x201B,1,2,param,10);
 	
 	Driver_UsrLog("L_smoothKf:%d\r\n",tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x201B,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x201B,2,2,param,10);
@@ -800,17 +800,17 @@ int8_t set_tor_smooth(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>30000) param=30000;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x201C,1,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x201C,1,2,param,10);
 	
 	Driver_UsrLog("L_torKf:%d\r\n",tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x201C,2,2,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x201C,2,2,param,10);
@@ -825,24 +825,24 @@ int8_t get_curloop_kp(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>30000) param=30000;
 
-//	//左轮
+//	//Revolver
 //	comm_state = CANopenRSDO_Read_RTOS(driver,0x2019,1,2,&tmpRead,10);
 //	if( tmpRead!=param )
 //		comm_state = CANopenRSDO_Write_RTOS(driver,0x2019,1,2,param,10);
 //	
 //	Driver_UsrLog("L_CurKp:%d\r\n",tmpRead);
 //	
-//	//右轮
+//	//Right wheel
 //	comm_state = CANopenRSDO_Read_RTOS(driver,0x2019,2,2,&tmpRead,10);
 //	if( tmpRead!=param )
 //		comm_state = CANopenRSDO_Write_RTOS(driver,0x2019,2,2,param,10);
 //	
 //	Driver_UsrLog("R_CurKp:%d\r\n",tmpRead);
 	
-	//读取PID参数,仅用单边轮子的数据参考
+	//Read PID parameters, referencing only the data from the single-sided wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2019,1,2,&tmpRead,10);
 	DrivePid.CurKp = tmpRead;
 	
@@ -855,7 +855,7 @@ int8_t ServoDrive_SetCurkp(uint16_t param)
 {
 	int8_t comm_state = 0;
 
-	//限幅
+	//Clamp
 	if(param>30000) param=30000;
 
 	#define DriveNum 3
@@ -864,13 +864,13 @@ int8_t ServoDrive_SetCurkp(uint16_t param)
 	{
 		if( g_ServoDriveList[i]->onlineFlag==1)
 		{
-			//设置参数
+			//Set parameters
 			comm_state += CANopenRSDO_Write_RTOS(g_ServoDriveList[i],0x2019,1,2,param,10);
 			comm_state += CANopenRSDO_Write_RTOS(g_ServoDriveList[i],0x2019,2,2,param,10);
 		}
 	}
 	
-	//仅在全部驱动写入成功时更新参数
+	//Only update parameters when all driver writes succeed
 	if( comm_state==0 ) DrivePid.CurKp = param;
 
 	
@@ -883,24 +883,24 @@ int8_t get_curloop_ki(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//限幅
+	//Clamp
 	if(param>30000) param=30000;
 
-//	//左轮
+//	//Revolver
 //	comm_state = CANopenRSDO_Read_RTOS(driver,0x201A,1,2,&tmpRead,10);
 //	if( tmpRead!=param )
 //		comm_state = CANopenRSDO_Write_RTOS(driver,0x201A,1,2,param,10);
 //	
 //	Driver_UsrLog("L_CurKi:%d\r\n",tmpRead);
 //	
-//	//右轮
+//	//Right wheel
 //	comm_state = CANopenRSDO_Read_RTOS(driver,0x201A,2,2,&tmpRead,10);
 //	if( tmpRead!=param )
 //		comm_state = CANopenRSDO_Write_RTOS(driver,0x201A,2,2,param,10);
 //	
 //	Driver_UsrLog("R_CurKi:%d\r\n",tmpRead);
 	
-	//读取PID参数,仅用单边轮子的数据参考
+	//Read PID parameters, referencing only the data from the single-sided wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x201A,1,2,&tmpRead,10);
 	DrivePid.CurKi = tmpRead;
 	
@@ -913,7 +913,7 @@ int8_t ServoDrive_SetCurki(uint16_t param)
 {
 	int8_t comm_state = 0;
 
-	//限幅
+	//Clamp
 	if(param>30000) param=30000;
 
 	#define DriveNum 3
@@ -922,13 +922,13 @@ int8_t ServoDrive_SetCurki(uint16_t param)
 	{
 		if( g_ServoDriveList[i]->onlineFlag==1)
 		{
-			//设置参数
+			//Set parameters
 			comm_state += CANopenRSDO_Write_RTOS(g_ServoDriveList[i],0x201A,1,2,param,10);
 			comm_state += CANopenRSDO_Write_RTOS(g_ServoDriveList[i],0x201A,2,2,param,10);
 		}
 	}
 	
-	//仅在全部驱动写入成功时更新参数
+	//Only update parameters when all driver writes succeed
 	if( comm_state==0 ) DrivePid.CurKi = param;
 	
 	return comm_state;
@@ -957,14 +957,14 @@ int8_t set_acctime(ServoDriverHWType_t* driver,uint32_t param)
 
 	if(param>32767) param=32767;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x6083,1,4,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x6083,1,4,param,10);
 	
 	Driver_UsrLog("L_AccTime:%d\r\n",tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x6083,2,4,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x6083,2,4,param,10);
@@ -981,14 +981,14 @@ int8_t set_dectime(ServoDriverHWType_t* driver,uint32_t param)
 
 	if(param>32767) param=32767;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x6084,1,4,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x6084,1,4,param,10);
 	
 	Driver_UsrLog("L_DecTime:%d\r\n",tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x6084,2,4,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x6084,2,4,param,10);
@@ -1005,14 +1005,14 @@ int8_t set_stoptime(ServoDriverHWType_t* driver,uint32_t param)
 
 	if(param>32767) param=32767;
 
-	//左轮
+	//Revolver
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x6085,1,4,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x6085,1,4,param,10);
 	
 	Driver_UsrLog("L_StopTime:%d\r\n",tmpRead);
 	
-	//右轮
+	//Right wheel
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x6085,2,4,&tmpRead,10);
 	if( tmpRead!=param )
 		comm_state = CANopenRSDO_Write_RTOS(driver,0x6085,2,4,param,10);
@@ -1027,7 +1027,7 @@ int8_t set_hearbeatTime(ServoDriverHWType_t* driver,uint16_t param)
 	int8_t comm_state = 0;
 	uint32_t tmpRead = 0;
 
-	//每个节点设置有一定间隔的心跳时间
+	//Each node is set with regular intervals in heartbeat duration
 	param = param + driver->NodeID*150;
 
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x1017,0,2,&tmpRead,10);
@@ -1039,12 +1039,12 @@ int8_t set_hearbeatTime(ServoDriverHWType_t* driver,uint16_t param)
 	return comm_state;
 }
 
-//设置电机控制模式
+//Set the motor control mode
 /*
-	1:相对位置模式
-	2:绝对位置模式
-	3:速度模式
-	4:转矩模式
+	1: Relative position mode
+	2: Absolute position mode
+	3: Speed mode
+	4: Torque mode
 */
 int8_t set_ControlMode(ServoDriverHWType_t* driver,uint8_t param)
 {
@@ -1074,7 +1074,7 @@ int8_t ServoDriver_Enable(ServoDriverHWType_t* driver)
 {
 	int8_t comm_state = 0;
 	
-	//使能步骤：对控制字写入06、07、0F
+	//Enable step: Write 06, 07, 0F to the control word
 	uint32_t param = 0x06;
 	comm_state += CANopenRSDO_Write_RTOS(driver,0x6040,0,2,param,10);
 	
@@ -1097,12 +1097,12 @@ int8_t ServoDriver_Disable(ServoDriverHWType_t* driver)
 	return comm_state;
 }
 
-//释放电机
+//Release motor
 int8_t ServoDriver_ReleaseMotor(ServoDriverHWType_t* driver)
 {
 	int8_t comm_state = 0;
 	
-	//电机位于使能状态,且驱动器无报错,才允许释放电机
+	//The motor is allowed to be released only when it is in the enabled state and the driver has no errors
 	if( driver->motorEnflag==1 && driver->errFlag==0 )
 	{
 		comm_state += ServoDriver_Disable(driver);
@@ -1112,30 +1112,30 @@ int8_t ServoDriver_ReleaseMotor(ServoDriverHWType_t* driver)
 	return comm_state;
 }
 
-//驻车模式设置
+//Set parking mode
 int8_t ServoDriver_ParkingMode(ServoDriverHWType_t* driver,uint8_t set)
 {
 	int8_t comm_state = 0;
 	
 	if(set==1)
 	{
-		//释放电机
+		//Release motor
 		comm_state += ServoDriver_ReleaseMotor(driver);
 	}
 
-	//驻车模式设置
+	//Set parking mode
 	comm_state += CANopenRSDO_Write_RTOS(driver,0x2026,4,2,set,5);
 	
 	return comm_state;
 }
 
 
-//清除驱动报错
+//Clear driver errors
 int8_t ServoDriver_ClearError(ServoDriverHWType_t* driver)
 {
 	int8_t comm_state = 0;
 
-	//bit7由 0->1 复位故障
+	//bit7 reset failure from 0->1
 	uint32_t param = 0x00;
 	comm_state += CANopenRSDO_Write_RTOS(driver,0x6040,0,2,param,10);
 	
@@ -1145,42 +1145,42 @@ int8_t ServoDriver_ClearError(ServoDriverHWType_t* driver)
 	return comm_state;
 }
 
-//TPDO0映射配置
+//TPDO0 mapping configuration
 int8_t ServoDriver_MappingTPDO0(ServoDriverHWType_t* driver,uint32_t COBID)
 {
 	int8_t comm_state = 0;
 
 	uint32_t param = 0;
 	
-	//清空TPDO0上的映射
+	//Clear the mapping on TPDO0
 	comm_state += CANopenRSDO_Write_RTOS(driver,0x1A00,0,1,param,10);
 	
-	//映射1,内容为 0x606C 地址,索引01,字节数0x20（32）
+	//Mapping 1, content is 0x606C address, index 01, byte count 0x20(32)
 	param = 0x606C0120;
 	comm_state += CANopenRSDO_Write_RTOS(driver,0x1A00,1,4,param,10);
 	
-	//映射2,内容为 0x606C 地址,索引02,字节数0x20（32）
+	//Mapping 2, content 0x606C address, index 02, byte count 0x20(32)
 	param = 0x606C0220;
 	comm_state += CANopenRSDO_Write_RTOS(driver,0x1A00,2,4,param,10);
 	
-	//设置TPDO上报时的帧ID
+	//Set the frame ID for TPDO reporting
 	comm_state += CANopenRSDO_Write_RTOS(driver,0x1800,1,4,COBID,10);
 	
-	//设置254事件,数据改变立即上报
+	//Set up 254 events; data changes are reported immediately
 	comm_state += CANopenRSDO_Write_RTOS(driver,0x1800,2,1,254,10);
 	
-	//设置禁止时间,若两次数据间隔没超过此时间则不会触发
+	//Set a ban time; if the data interval between two data does not exceed this time, it will not trigger
 	param = 100;
 	comm_state += CANopenRSDO_Write_RTOS(driver,0x1800,3,2,param,10);
 	
-	//开启2个TPDO0映射
+	//Enable two TPDO0 mappings
 	param = 2;
 	comm_state += CANopenRSDO_Write_RTOS(driver,0x1A00,0,1,param,10);
 	
 	return comm_state;
 }
 
-//保存参数
+//Save parameters
 int8_t ServoDriver_SaveEEPROM(ServoDriverHWType_t* driver)
 {
 	int8_t comm_state = 0;
@@ -1193,7 +1193,7 @@ int8_t ServoDriver_SaveEEPROM(ServoDriverHWType_t* driver)
 	return comm_state;
 }
 
-//驱动器自检获取报错信息
+//Get driver self-test error information
 int8_t ServoDriver_CheckError(ServoDriverHWType_t* driver)
 {
 	int8_t comm_state = 0;
@@ -1201,7 +1201,7 @@ int8_t ServoDriver_CheckError(ServoDriverHWType_t* driver)
 	uint16_t LeftMotor;
 	uint16_t RightMotor;
 	
-	//仅在驱动在线时,才执行自检
+	//Self-test is performed only when the driver is online
 	if( driver->onlineFlag == 1 )
 	{
 		comm_state = CANopenRSDO_Read_RTOS(driver,0x6041,0,4,&readtmp,10);
@@ -1210,14 +1210,14 @@ int8_t ServoDriver_CheckError(ServoDriverHWType_t* driver)
 			RightMotor = readtmp>>16;
 			LeftMotor = readtmp;
 			
-			//检查电机使能或释放状态
+			//Check the motor's enabled or released status
 			if( (LeftMotor&0x07)==7 && (RightMotor&0x07)==7 )
 			{
 				driver->motorEnflag = 1;
 			}
 			else driver->motorEnflag = 0;
 
-			//检查电机的报错码
+			//Check the error codes on the motor
 			if( 1 == ((RightMotor>>7)&0x01) || 1==((LeftMotor>>7)&0x01) ) 
 			{
 				driver->errFlag = 1;
@@ -1234,7 +1234,7 @@ int8_t ServoDriver_CheckError(ServoDriverHWType_t* driver)
 		}
 	}
 	
-	//驱动离线,复位该驱动器的信息
+	//Driver offline; reset its information
 	else
 	{
 		DriverInfoReset(driver);
@@ -1244,7 +1244,7 @@ int8_t ServoDriver_CheckError(ServoDriverHWType_t* driver)
 
 }
 
-//根据反馈的NodeID激活对应的在线标志位,用于心跳检测
+//Based on the feedback NodeID, activate the corresponding online flag for heartbeat detection
 void ServoDriver_OnLineCheck(uint8_t nodeid)
 {
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
@@ -1262,18 +1262,18 @@ void ServoDriver_OnLineCheck(uint8_t nodeid)
 	}
 }
 
-//伺服电机初始化
+//Servo motor initialization
 uint8_t ServoDriver_Init(ServoDriverHWType_t* driver)
 {
 	int8_t comm_state;
 	uint32_t readdata = 0;
 	
-	//进入预操作状态,停止映射,开始配置驱动器(关闭已经被配置过的映射,防止影响初始化进程)
+	//Enter pre-operational state, stop mapping and configure the driver (disable previously configured mappings to avoid interfering with initialization)
 	pCANInterface_t candev = &UserCAN2Dev;
 	uint8_t PreOp[8]= {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 	candev->sendStd(0x00,PreOp,8);
 	
-	//读取驱动器软件版本号,并判断驱动是否在线
+	//Read the drive software version number and check if the driver is online
 	comm_state = CANopenRSDO_Read_RTOS(driver,0x2031,0,2,&readdata,10);
 	if( comm_state==0 )
 	{
@@ -1286,19 +1286,19 @@ uint8_t ServoDriver_Init(ServoDriverHWType_t* driver)
 		return 0;
 	}
 	
-	//驱动器参数初始化
+	//Initialize driver parameters
 	#if 1
 	Driver_UsrLog("======= driver param init %d ========\r\n",driver->NodeID);
 	
-	//二次确认预操作
+	//Secondary confirmation of pre-operation
 	candev->sendStd(0x00,PreOp,8);
 	
-	//电机参数,根据车轮型号执行不同的初始化
+	//Motor parameters, which perform different initializations depending on the wheel model
 	if( RobotHardWareParam.wheeltype == SingleAxis_8inch )
 	{
-		comm_state += set_encoder_accuracy(driver,4096); //设置编码器线数
-		comm_state += set_HallOffset(driver,0);          //设置角度偏移
-		comm_state += set_poles(driver,15);              //设置电机极对数
+		comm_state += set_encoder_accuracy(driver,4096); //Set the number of encoder lines
+		comm_state += set_HallOffset(driver,0);          //Set the angle offset
+		comm_state += set_poles(driver,15);              //Set the number of motor pole pairs
 	}
 	else if( RobotHardWareParam.wheeltype == DoubleAxis_8inch )
 	{
@@ -1319,77 +1319,77 @@ uint8_t ServoDriver_Init(ServoDriverHWType_t* driver)
 		comm_state += set_poles(driver,10);             
 	}
 	
-	comm_state += set_rated_current(driver,150);     //设置额定电流
-	comm_state += set_max_current(driver,300);       //设置最大电流
-	comm_state += set_max_rpm(driver,1000);          //设置额定转速
-	comm_state += set_overload_factor(driver,300);   //过载系数
-	comm_state += set_overload_time(driver,6553);    //过载时间
-	comm_state += set_encoder_ErrorAlarm(driver,6553);//超差报警值
-	comm_state += set_maxTemp(driver,1200);           //温度保护阈值
+	comm_state += set_rated_current(driver,150);     //Set the rated current
+	comm_state += set_max_current(driver,300);       //Set the maximum current
+	comm_state += set_max_rpm(driver,1000);          //Set the rated speed
+	comm_state += set_overload_factor(driver,300);   //Overload coefficient
+	comm_state += set_overload_time(driver,6553);    //Overload time
+	comm_state += set_encoder_ErrorAlarm(driver,6553);//Deviation alarm value
+	comm_state += set_maxTemp(driver,1200);           //Temperature protection threshold
 	
-	//位置环参数
+	//Position ring parameters
 //	comm_state += set_pos_kp(driver,200);
 //	comm_state += set_pos_kf(driver,200);
 	
-	//速度环参数
+	//Speed-loop parameters
 	comm_state += get_speed_kp(driver,420);
 	comm_state += get_speed_ki(driver,200);
 //	comm_state += set_speed_kf(driver,800);
 	
-	//输出平滑系数
+	//Output smoothing coefficient
 //	comm_state += set_speed_smooth(driver,50);
 //	comm_state += set_smooth_kf(driver,100);
 //	comm_state += set_tor_smooth(driver,100);
 	
-	//电流环参数
+	//Current loop parameters
 	comm_state += get_curloop_kp(driver,300);
 	comm_state += get_curloop_ki(driver,200);
 	
-	comm_state += set_SynCon_state(driver,1);//设置同步控制
-	comm_state += set_acctime(driver,30);    //设置加速时间
-	comm_state += set_dectime(driver,30);    //设置减速时间
-	comm_state += set_stoptime(driver,30);   //设置急停减速时间
-	comm_state += set_ControlMode(driver,3); //设置速度控制模式
-	comm_state += ServoDriver_SaveEEPROM(driver);//保存上述参数到EEPROM
+	comm_state += set_SynCon_state(driver,1);//Set synchronization controls
+	comm_state += set_acctime(driver,30);    //Set acceleration time
+	comm_state += set_dectime(driver,30);    //Set the deceleration time
+	comm_state += set_stoptime(driver,30);   //Set emergency-stop deceleration time
+	comm_state += set_ControlMode(driver,3); //Set the speed control mode
+	comm_state += ServoDriver_SaveEEPROM(driver);//Save the above parameters to EEPROM
 	
-	comm_state += set_MotorRPM(driver,0,0);              //设置目标速度为0
-	comm_state += ServoDriver_MappingTPDO0(driver,(0x190+driver->NodeID-1));//TPDO0映射转速
-	comm_state += ServoDriver_Enable(driver);            //使能电机
-	comm_state += set_hearbeatTime(driver,5000);         //设置心跳时间
+	comm_state += set_MotorRPM(driver,0,0);              //Set target speed to 0
+	comm_state += ServoDriver_MappingTPDO0(driver,(0x190+driver->NodeID-1));//TPDO0 maps speed
+	comm_state += ServoDriver_Enable(driver);            //Enable motor
+	comm_state += set_hearbeatTime(driver,5000);         //Set the heartbeat time
 	
-	//配置完成,启动NMT,所有的TPDO和RPDO将开启映射
+	//Configuration complete; start NMT and enable mapping for all TPDOs and RPDOs
 	uint8_t start[8]= {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 	candev->sendStd(0x00,start,8);
 	
 	Driver_UsrLog("comm_state:%d\r\n",comm_state);
 	Driver_UsrLog("Qua:%.3f \r\n",driver->comm_qua);
-	#else //通信测试,无意义数据
-	comm_state += set_encoder_accuracy(driver,10); //设置编码器线数
-	comm_state += set_HallOffset(driver,11);          //设置角度偏移
-	comm_state += set_poles(driver,12);              //设置电机极对数
-	comm_state += set_rated_current(driver,13);     //设置额定电流
-	comm_state += set_max_current(driver,14);       //设置最大电流
-	comm_state += set_max_rpm(driver,15);          //设置额定转速
-	comm_state += set_overload_factor(driver,16);   //过载系数
-	comm_state += set_overload_time(driver,17);    //过载时间
-	comm_state += set_encoder_ErrorAlarm(driver,18);//超差报警值
-	comm_state += set_maxTemp(driver,19);           //温度保护阈值
+	#else //Communication test; dummy data
+	comm_state += set_encoder_accuracy(driver,10); //Set the number of encoder lines
+	comm_state += set_HallOffset(driver,11);          //Set the angle offset
+	comm_state += set_poles(driver,12);              //Set the number of motor pole pairs
+	comm_state += set_rated_current(driver,13);     //Set the rated current
+	comm_state += set_max_current(driver,14);       //Set the maximum current
+	comm_state += set_max_rpm(driver,15);          //Set the rated speed
+	comm_state += set_overload_factor(driver,16);   //Overload coefficient
+	comm_state += set_overload_time(driver,17);    //Overload time
+	comm_state += set_encoder_ErrorAlarm(driver,18);//Deviation alarm value
+	comm_state += set_maxTemp(driver,19);           //Temperature protection threshold
 	
-	//位置环
+	//Position ring
 	comm_state += set_pos_kp(driver,20);
 	comm_state += set_pos_kf(driver,21);
 	
-	//速度环
+	//Speed loop
 	comm_state += set_speed_kp(driver,22);
 	comm_state += set_speed_ki(driver,23);
 	comm_state += set_speed_kf(driver,24);
 	
-	//输出平滑系数
+	//Output smoothing coefficient
 	comm_state += set_speed_smooth(driver,25);
 	comm_state += set_smooth_kf(driver,26);
 	comm_state += set_tor_smooth(driver,27);
 	
-	//电流环
+	//Current Loop
 	comm_state += set_curloop_kp(driver,28);
 	comm_state += set_curloop_ki(driver,29);
 	#endif
@@ -1398,18 +1398,18 @@ uint8_t ServoDriver_Init(ServoDriverHWType_t* driver)
 }
 
 
-//伺服驱动心跳检测,用于判断驱动器是否在线
+//Servo-driven heartbeat detection to determine whether the drive is online
 void HeartbeatTask(void* param)
 {
 	while(1)
 	{
-		//心跳报文设置online_tick自增
+		//Heartbeat message settings online_tick increment
 		Driver1.online_tick=0;
 		Driver2.online_tick=0;
 		Driver3.online_tick=0;
 		vTaskDelay(5000);
 		
-		//若无心跳报文,说明驱动已经掉线
+		//If there is no heartbeat message, the driver has been disconnected
 		if( Driver1.online_tick==0 ) Driver1.onlineFlag = 0;
 		if( Driver2.online_tick==0 ) Driver2.onlineFlag = 0;
 		if( Driver3.online_tick==0 ) Driver3.onlineFlag = 0;

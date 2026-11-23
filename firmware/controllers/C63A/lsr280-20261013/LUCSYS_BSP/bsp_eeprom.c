@@ -1,14 +1,14 @@
 /**
  * @file    bsp_eeprom.c
- * @brief   BL24C02F-RRRC器件驱动(256bytes空间的EEPROM)
+ * @brief BL24C02F-RRRC device driver (256 bytes EEPROM space)
  * @note LucSys Robotics distribution maintenance; original authorship not claimed
  * @date    2025-08-05
  * @version 1.0.0
  *
  * @details
- * - C63X - V2.0版本才有此器件,V1.0版本没有此器件.软件通过此特征来区分当前的硬件运行环境
- * BL24C02F共有256bytes存储空间,分别是地址 0-255,支持单字节写入、多字节写入(最多一次性写入1页)
- * 一页为16bytes.
+ * - C63X - This device is only available in version V2.0; version V1.0 does not. The software distinguishes the current hardware runtime environment by this feature
+ * BL24C02F has a total of 256 bytes of storage space, with addresses 0-255, supporting single-byte and multi-byte writes (up to one page written at once).
+ * One page is 16 bytes.
  * @note
  * 
  * 
@@ -17,11 +17,11 @@
 #include "bsp_eeprom.h"
 #include "bsp_siic.h"
 
-//IIC驱动
+//IIC Driver
 static pIICInterface_t eeprom = &UserVer_sIICDev;
 	
-//EEPROM写入数据
-//1次最多写入16字节
+//EEPROM write data
+//Write up to 16 bytes at a time
 uint8_t eeprom_writebytes(uint8_t addr,uint8_t *data,uint8_t bufferLen)
 {
 	if( bufferLen > 16 ) return 1;
@@ -29,7 +29,7 @@ uint8_t eeprom_writebytes(uint8_t addr,uint8_t *data,uint8_t bufferLen)
 	return eeprom->write_reg(&eeprom->iic_io,0x50<<1,addr,data,bufferLen,0xFFFF);
 }
 	
-//EEPROM读数据
+//EEPROM read data
 uint8_t eeprom_readbytes(uint8_t addr,uint8_t* data,uint8_t readLen)
 {
 	uint8_t state = 0;

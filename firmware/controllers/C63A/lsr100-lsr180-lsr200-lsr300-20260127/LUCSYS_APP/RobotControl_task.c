@@ -1,14 +1,14 @@
 /**
  * @file    RobotControl_task.c
- * @brief   小车控制逻辑文件.
+ * @brief Cart control logic file.
  * @note LucSys Robotics distribution maintenance; original authorship not claimed
  * @date    2025-07-10
  * @version 1.0.0
  *
  * @details
- * - 本文件是小车运行的核心内容,由任务RobotControl_task，从控制队列中接收各种遥控或串口的
- *   速度指令信息，使用速度信息进行运动学分析解算后，获得小车各个轮子的转速，进而下发转速
- *   指令到驱动器，完成小车的驱动
+ * - This file is the core content of the chassis's operation, RobotControl_task by the task, receiving various remote or serial ports from the control queue
+ *   Velocity command data: use kinematics to calculate each wheel's rotational speed, then transmit the speeds
+ *   Command to the drive to complete the chassis drive
  * @note
  * 
  * 
@@ -37,13 +37,13 @@
 #include "xbox360_gamepad.h"
 #include "show_task.h"
 
-//用于存放小车的控制队列数据
+//Used to store the control queue data of the car
 QueueHandle_t  g_xQueueRobotControl = NULL;
 
-//用于记录小车当前的控制来源
+//Used to record the current control source of the car
 volatile uint8_t RobotControl_CMDsource = NONE_CMD; 
 
-//内部使用函数
+//Internal use function
 static float linearVel_to_rpm(float linearVel,float wheelper);
 static void Robot_DriverRecovery(void);
 static void robot_en_check(void);
@@ -54,42 +54,42 @@ static void Robot_DriverCheckError(void);
 static void Robot_DriverStop(void);
 static void Linear_IMUHelp(RobotControlCMDType_t* target);
 
-//IMU辅助小车走直线变量
+//IMU assists the cart in a straight line
 static RobotControlCMDType_t LinearHelp_Target = { 0 };
 
 void RobotControl_task(void* param)
 {
 	vTaskDelay(1000);
 	
-	//创建控制指令队列
+	//Create control command queue
 	g_xQueueRobotControl = xQueueCreate(1,sizeof(RobotControlCMDType_t));
 	
-	//获取时基,用于辅助任务能按固定频率运行
+	//Obtain the timebase, which can run at a fixed frequency for auxiliary tasks
 	TickType_t preTime = xTaskGetTickCount();
 	
-	//本任务的控制频率,单位为Hz
+	//The control frequency for this task, in Hz
 	const uint16_t TaskFreq = 100;
 
-	//调试变量
+	//Debug variables
 //	pRTOSDebugInterface_t debug = &RTOSDebugTimer;
 //	RTOSDebugPrivateVar priv = { 0 };
 	
-	//伺服电机自检变量
+	//Servo motor self-check variables
 	uint8_t driverCheck = 0;
 	
-	//空闲计数
+	//Idle count
 	TickType_t ActiveTick = xTaskGetTickCount();
 	
-	//队列无数据统计
+	//Empty-queue statistics
 	uint8_t LostCmdCounts = 0;
 	
-	//蜂鸣器接口
+	//Buzzer interface
 	pBuzzerInterface_t buzzer = &UserBuzzer;
 	
 	RobotControlCMDType_t cmd = { 0 };
 	while(1)
 	{
-		//从队列中读取控制指令
+		//Read control instructions from the queue
 		BaseType_t control_queue_state = pdFAIL;
 		control_queue_state = xQueueReceive(g_xQueueRobotControl,&cmd,0);
 		if( control_queue_state == pdPASS )
@@ -97,11 +97,11 @@ void RobotControl_task(void* param)
 		else 
 			LostCmdCounts++;
 
-		//超声波避障
+		//Ultrasonic obstacle avoidance
 		if( RobotControlParam.RangerAvoidEN == 1 && RobotControlParam.EmergencyMode==0 )
 			ranger_avoid(&cmd);
 		
-		//陀螺仪直线补偿
+		//Gyroscope straight-line compensation
 		if( RobotControlParam.ImuAssistedFlag == 1 )
 			Linear_IMUHelp(&cmd);
 		else
@@ -109,28 +109,28 @@ void RobotControl_task(void* param)
 			LinearHelp_Target.Vx=0;LinearHelp_Target.Vy=0;LinearHelp_Target.Vz=0;
 		}
 			
-		//运动学逆解,获取车轮线速度m/s
+		//Inverse kinematics: obtain wheel linear speed in m/s
 		Drive_Motor(&cmd);
 		
-		//小车使能状态检查,根据自检参数判断是否允许启动小车
+		//Cart enable status check, determining whether to start the chassis based on self-test parameters
 		robot_en_check();
 
-		//小车允许使能时,根据不同的车型控制电机运动
+		//When the car is enabled, the motor movement is controlled according to different vehicle models
 		static uint8_t ErrTipsFlag = 0;
 		if( RobotControlParam.en_flag == 1 )
 		{	
 			switch( RobotHardWareParam.CarType )
 			{
-				case S260: //6轮车
+				case S260: //6-wheeled vehicles
 					set_MotorRPM(&Driver1,RobotControlParam.MotorA.target,RobotControlParam.MotorF.target);
 					set_MotorRPM(&Driver2,RobotControlParam.MotorB.target,RobotControlParam.MotorE.target);
 					set_MotorRPM(&Driver3,RobotControlParam.MotorC.target,RobotControlParam.MotorD.target);
 					break;
-				case S200:case S200_OUTDOOR: //四驱车
+				case S200:case S200_OUTDOOR: //Four-wheel drive vehicles
 					set_MotorRPM(&Driver1,RobotControlParam.MotorA.target,RobotControlParam.MotorD.target);
 					set_MotorRPM(&Driver2,RobotControlParam.MotorB.target,RobotControlParam.MotorC.target);
 					break;
-				case S300: case S100: //两轮差速
+				case S300: case S100: //Two-wheel differential
 					set_MotorRPM(&Driver1,RobotControlParam.MotorA.target,RobotControlParam.MotorB.target);
 					break;
 				case S300Mini:
@@ -138,57 +138,57 @@ void RobotControl_task(void* param)
 					break;
 			}
 			
-			//允许使能后,关闭报错提示
+			//Allow to disable error prompts after enabling them
 			if( ErrTipsFlag==1 )
 			{
 				ErrTipsFlag = 0;
-				//可加入取消报错后操作
+				//Cancel post-error action can be added
 			}
 		}
-		else //小车被失能,发送0转速停止小车
+		else //Chassis disabled; transmit 0 speed to stop it
 		{
 			Robot_DriverStop();
 			
-			//小车被失能时收到控制命令,蜂鸣器提醒报错
+			//When the car is disabled, a control command is received, and the buzzer alerts with an error
 			//if( control_queue_state == pdPASS ) buzzer->AddTask(3,100);
 			
-			//被失能后,启动报错提示.
+			//After being disabled, an error prompt will be triggered.
 			if( ErrTipsFlag == 0 )
 			{
 				ErrTipsFlag=1;
-				//可加入报错后操作
+				//Post-error action can be added
 			}
 		}
 		
-		//运动学正解,根据车轮速度计算三轴速度
+		//Forward kinematics: calculate three-axis velocity from wheel speeds
 		Robot_Forwardkinematics(&RobotControlParam,&RobotHardWareParam);
 		
-		//判断当前是否有活跃的控制量
+		//Determine whether there is currently an active control quantity
 		if( cmd.Vx!=0 || cmd.Vy!=0 || cmd.Vz!=0 )
 		{
 			ActiveTick = xTaskGetTickCount();
 			if( RobotControlParam.ParkingMode==1 )
 			{
 				RobotControlParam.ParkingMode=0;
-				//驻车模式解除
+				//Release parking mode
 				Robot_DriverSetParkingMode(0);
 			}
 		}
 		
-		//小车失控保护设置(队列无数据超时情况)
+		//Car loss of control protection settings (queue without data timeout)
 		if( LostCmdCounts > TaskFreq )
 		{
 			LostCmdCounts=TaskFreq;
 			
 			switch( RobotControl_CMDsource )
 			{
-				//非上位机类型的控制默认需要保护
-				//此处原本APP控制也应执行,但为了兼容IOS APP(数据非连续发送),保护无法开启.
+				//Non-host control types require protection by default
+				//This protection would also apply to app control, but cannot be enabled for compatibility with the iOS app, which sends data intermittently.
 				case GamePad_CMD:case RCJOY_CMD: case Charger_CMD:
 					cmd.Vx=0;cmd.Vy=0;cmd.Vz=0;
 					break;
 				
-				//上位机类型,根据用户设置的安全级别启用保护
+				//Host type, protection enabled according to user-set safety levels
 				case ROS_CMD:case CAN_CMD:
 					if( RobotControlParam.SecurityLevel==0 ) 
 						cmd.Vx=0;cmd.Vy=0;cmd.Vz=0;
@@ -196,23 +196,23 @@ void RobotControl_task(void* param)
 			}
 		}
 		
-		//根据控制量是否活跃来判断是否进入驻车模式,若小车停止10秒后无控制量,将进入驻车模式省电
+		//Determine whether to enter parking mode based on whether the control amount is active. If the car stops for 10 seconds and there is no control mode, it will enter parking mode to save power
 		if( RobotControlParam.ParkingMode==0 && xTaskGetTickCount() - ActiveTick > 10000 )
 		{
-			//根据imu角度判断是否位于斜坡上
+			//Determine whether the site is on a slope based on the IMU angle
 			if(fabs(AttitudeVal.pitch) < 10.0f && fabs(AttitudeVal.roll)<10.0f )
 			{
 				RobotControlParam.ParkingMode=1;
-				//发送驻车指令
+				//Send a hold command
 				Robot_DriverSetParkingMode(1);
 			}
 			else
-			{	//小车位于斜坡上,刷新用于判断的时间
+			{	//The car is on a slope, refreshing the time used for judgment
 				ActiveTick = xTaskGetTickCount();
 			}
 		}
 		
-		//驱动器低频获取自检参数,包含电机报错码,驱动报错情况
+		//Poll driver self-test parameters at low frequency, including motor error codes and driver errors
 		driverCheck++;
 		if( driverCheck==10 )
 		{
@@ -220,14 +220,14 @@ void RobotControl_task(void* param)
 			Robot_DriverCheckError();
 		}
 		
-		//驱动报错恢复请求,驱动器报错后,用户可通过此标志位请求尝试清除报错
+		//Driver fault-recovery request; after a fault, users can set this flag to request an attempt to clear it
 		if( RobotControlParam.DriveErrRecovery )
 		{
 			RobotControlParam.DriveErrRecovery = 0;
 			Robot_DriverRecovery();
 		}
 		
-		//小车低电量蜂鸣器提示,仅无灯带车型使用蜂鸣器提示
+		//Low battery buzzer alert for small cars; only models without light strips use buzzer alerts
 		static uint32_t LowPowerTipsCnt = 0;
 		switch( RobotHardWareParam.CarType )
 		{
@@ -247,17 +247,17 @@ void RobotControl_task(void* param)
 		}
 		
 		
-		/* 延迟指定频率 */
+		/* Delay the specified frequency */
 		vTaskDelayUntil(&preTime,pdMS_TO_TICKS( (1.0f/(float)TaskFreq)*1000) );
 	}
 }
 
-//多模智控手柄按键回调函数,均与小车功能相关
+//Multi-mode intelligent control handle button callback functions, all related to the car's functions
 void Xbox360GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 {
 	pBuzzerInterface_t buzzer = &UserBuzzer;
 	
-	//LB左上按键：减速
+	//LB top-left button: decelerate
 	if( keyid == Xbox360KEY_LB )
 	{
 		RobotControlParam.defalutSpeed -= 50;
@@ -265,7 +265,7 @@ void Xbox360GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 		buzzer->AddTask(1,200);
 	}
 	
-	//RB右上按键：加速
+	//RB upper-right button: accelerate
 	if( keyid == Xbox360KEY_RB )
 	{
 		RobotControlParam.defalutSpeed += 50;
@@ -273,51 +273,51 @@ void Xbox360GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 		buzzer->AddTask(1,200);
 	}
 	
-	//右摇杆Rjoy:IMU标零
+	//Right joystick Rjoy: IMU marked zero
 	if( keyid == Xbox360KEY_RJoy && event == GamePadKeyEvent_LONGCLICK)
 	{
 		pIMUInterface_t imu = &UserICM20948;
 		imu->UpdateZeroPoint_axis();
 		imu->UpdateZeroPoint_attitude();
-		buzzer->AddTask(1,200);//使用蜂鸣器提示操作成功
+		buzzer->AddTask(1,200);//Use the buzzer to indicate the operation was successful
 	}
 		
-	//Y:自动回充开启/关闭
+	//Y: Auto recharge on/off
 	if( keyid == Xbox360KEY_Y && event == GamePadKeyEvent_LONGCLICK )
 	{
 		RobotControlParam.ChargeMode = !RobotControlParam.ChargeMode;
 		buzzer->AddTask(1,200);
 	}
 	
-	//B:清除电机报错请求
+	//B: Clear motor error requests
 	if( keyid == Xbox360KEY_B && event == GamePadKeyEvent_LONGCLICK )
 	{
 		RobotControlParam.DriveErrRecovery=1;
 		buzzer->AddTask(1,200);
 	}
 	
-	//A:避障请求
+	//A: Obstacle avoidance request
 	if( keyid == Xbox360KEY_A && event == GamePadKeyEvent_LONGCLICK )
 	{
 		RobotControlParam.RangerAvoidEN = !RobotControlParam.RangerAvoidEN;
 		buzzer->AddTask(1,200);
 	}
 	
-	//X:IMU辅助走直线开关
+	//X: IMU assists straight switching
 	if( keyid==Xbox360KEY_X && event == GamePadKeyEvent_LONGCLICK )
 	{
 		RobotControlParam.ImuAssistedFlag = !RobotControlParam.ImuAssistedFlag;
 		buzzer->AddTask(1,200);
 	}
 	
-	//左摇杆LJoy:应急模式
+	//Left analog stick LJoy: Emergency mode
 	if( keyid == Xbox360KEY_LJoy && event == GamePadKeyEvent_LONGCLICK )
 	{
 		RobotControlParam.EmergencyMode = !RobotControlParam.EmergencyMode;
 		buzzer->AddTask(1,200);
 	}
 	
-	//方向按键,左右对应OLED翻页
+	//Directional buttons for left and right OLED page turning
 	if( keyid == Xbox360KEY_LEFT )
 	{
 		oled_page_down();
@@ -331,33 +331,33 @@ void Xbox360GamePad_KeyEvent_Callback(uint8_t keyid,GamePadKeyEventType_t event)
 	}
 }
 
-//线速度m/s转RPM转速
+//Linear speed m/s to RPM speed
 static float linearVel_to_rpm(float linearVel,float wheelper)
 {
 	return linearVel*60.0f/wheelper;
 }
 
-//驱动报错恢复函数
+//Driver fault-recovery function
 static void Robot_DriverRecovery(void)
 {
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
 	{
-		//如果电机存在报错,则清除
+		//If the motor has errors, clear them
 		if(g_ServoDriveList[i]->errFlag==1)
 		{
 			ServoDriver_ClearError(g_ServoDriveList[i]);
 		}
 			
-		//根据使能开关的状态确定是否要使能电机
+		//Determine whether to enable the motor based on the state of the enable switch
 		if( RobotControlParam.Enkeystate==1 ) ServoDriver_Enable(g_ServoDriveList[i]);
 		else ServoDriver_Disable(g_ServoDriveList[i]);
 		
-		//转速清零
+		//Reset rotational speed to zero
 		set_MotorRPM(g_ServoDriveList[i],0,0);
 	}
 }
 
-//设置驻车模式
+//Set parking mode
 static void Robot_DriverSetParkingMode(uint8_t setflag)
 {
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
@@ -366,7 +366,7 @@ static void Robot_DriverSetParkingMode(uint8_t setflag)
 	}
 }
 
-//获取驱动报错信息
+//Obtain driver error information
 static void Robot_DriverCheckError(void)
 {
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
@@ -375,7 +375,7 @@ static void Robot_DriverCheckError(void)
 	}
 }
 
-//失能电机
+//Disable motor
 static void Robot_DriverDisable(void)
 {
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
@@ -384,7 +384,7 @@ static void Robot_DriverDisable(void)
 	}
 }
 
-//使能电机
+//Enable motor
 static void Robot_DriverEnable(void)
 {
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
@@ -393,7 +393,7 @@ static void Robot_DriverEnable(void)
 	}
 }
 
-//电机自锁停转
+//Motor self-locking stops
 static void Robot_DriverStop(void)
 {
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
@@ -402,30 +402,30 @@ static void Robot_DriverStop(void)
 	}
 }
 
-//小车使能状态检查
+//Cart enable status check
 static void robot_en_check(void)
 {
-	//报错码默认为0,根据下列报错情况而设置
+	//The default error code is 0, set according to the following error situations
 	RobotControlParam.ErrNum = 0;
 	
-	//计算机器人电池电压,电量不足时将禁止小车的控制
+	//Calculate the robot battery voltage; if the battery is insufficient, control of the chassis will be prohibited
 	RobotControlParam.Vol = (float)USER_ADC_Get_AdcBufValue(userconfigADC_VOL_CHANNEL)/4095.0f*3.3f*11;
 	
-	//软件急停开关状态
+	//Software emergency-stop switch state
 	if( RobotControlParam.softwareEnflag == 1 ) Set_RobotErrorCode(errCode_SoftWareStop);
 	
-	//读取机器人急停开关的状态,按键切换时作出对应操作
+	//Read the status of the robot's emergency stop switch and perform corresponding operations when switching buttons
 	static uint8_t last_EnKey = 1;
 	RobotControlParam.Enkeystate = get_EnKeyState();
 	if( RobotControlParam.Enkeystate==0 ) Set_RobotErrorCode(errCode_StopKeyEn);
 	
-	//使能开关按下
+	//Enable switch is pressed
 	if( RobotControlParam.Enkeystate==0 && last_EnKey==1 )
 	{
 		Robot_DriverDisable();
 	}
 	
-	//使能开关弹起
+	//Enable switch pops up
 	else if( last_EnKey==0 && RobotControlParam.Enkeystate==1 )
 	{
 		Robot_DriverEnable();
@@ -433,7 +433,7 @@ static void robot_en_check(void)
 	
 	last_EnKey = RobotControlParam.Enkeystate;
 	
-	//机器人电量低状态获取
+	//Robot low battery status acquisition
 	static uint32_t LowPowerCnt=0;
 	if( RobotControlParam.Vol>18.0f && RobotControlParam.Vol < 20.5f )
 	{
@@ -449,10 +449,10 @@ static void robot_en_check(void)
 		if( RobotControlParam.Vol>21.5f) RobotControlParam.LowPowerFlag=0;
 	}
 
-	//电压不足.(若开启了自动回充模式,则忽略电压)
+	//Insufficient voltage. (If automatic recharge mode is enabled, voltage is ignored)
 	if( RobotControlParam.Vol < 20.0f && RobotControlParam.ChargeMode==0 ) Set_RobotErrorCode(errCode_LowPower);
 	
-	//根据不同的驱动个数生成不同的报错码
+	//Generate different error codes based on the number of drivers
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
 	{
 		if( g_ServoDriveList[i]->errFlag==1 )
@@ -482,25 +482,25 @@ static void robot_en_check(void)
 
 
 /**
- * @brief  此函数用于写控制队列,所有需要控制小车的任务均需要通过此任务写入控制量.
- * @param  cmd:参数需要包含指令来源,以及指定小车的三轴目标速度大小
-           woken:如果是在中断中调用,需要传入此参数。非中断中调用直接写入0
- * @retval 0写入成功,1写入失败.写入失败原因：未指定控制指令来源或当前有更高优先级控制在活跃
+ * @brief This function is used to write control queues; all tasks that need to control the cart must write control quantities through this task.
+ * @param cmd: The parameter must include the instruction source and specify the three-axis target speed for the cart
+           woken: if called in an interrupt, this parameter needs to be passed. For non-interrupt calls, just write 0
+ * @retval 0 write successful, 1 write failed. Reason for write failure: No source of control instruction specified or a higher-priority control is currently active
  *
  * @details
- * - 用户需要新增控制方式时,需要先在RobotControl_task.h头文件新增一个控制类型的枚举并确定优先级,
- *   然后通过 WriteControlQueue 写控制队列进行小车的控制
+ * - When users need to add control methods, they must first add an enumeration of control types in the RobotControl_task.h header file and determine their priority.
+ *   Then control the cart via the WriteControlQueue write control queue
  */
 uint8_t WriteRobotControlQueue(RobotControlCMDType_t* cmd,BaseType_t* woken)
 {
 	static uint32_t lastTick = 0;
 	uint8_t writeflag = 0;
 	
-	//队列未创建或未指定的控制源,忽略写入
+	//Ignore writes if the queue is not created or the control source is unspecified
 	if(g_xQueueRobotControl == NULL || cmd->cmdsource == NONE_CMD || 
 		cmd->cmdsource >= UnKnownCMD ) return 1;
 	
-	//高优先级的控制指令,可直接抢占控制
+	//High-priority commands can preempt control directly
 	if( cmd->cmdsource <= RobotControl_CMDsource )
 	{
 		RobotControl_CMDsource = cmd->cmdsource;
@@ -508,12 +508,12 @@ uint8_t WriteRobotControlQueue(RobotControlCMDType_t* cmd,BaseType_t* woken)
 	}
 	else
 	{
-		//接受到低优先级控制指令,检查活跃时间戳
+		//Receive low-priority control instructions and check active timestamps
 		uint32_t tick = 0;
 		if( __get_IPSR()!=0 ) tick = xTaskGetTickCountFromISR();
 		else tick = xTaskGetTickCount();
 		
-		//高优先级指令超2000ms未活跃,则允许低优先级指令执行
+		//If a high-priority command is inactive for more than 2000ms, allow low-priority commands
 		if( tick - lastTick >= 2000 )
 		{
 			RobotControl_CMDsource = cmd->cmdsource;
@@ -521,10 +521,10 @@ uint8_t WriteRobotControlQueue(RobotControlCMDType_t* cmd,BaseType_t* woken)
 		}
 	}
 	
-	//允许写入队列
+	//Allow writing to the queue
 	if( writeflag )
 	{
-		if( __get_IPSR()!=0 ) //中断上下文判断
+		if( __get_IPSR()!=0 ) //Interrupt contextual judgment
 		{
 			lastTick = xTaskGetTickCountFromISR();
 			xQueueOverwriteFromISR(g_xQueueRobotControl,cmd,woken);
@@ -541,9 +541,9 @@ uint8_t WriteRobotControlQueue(RobotControlCMDType_t* cmd,BaseType_t* woken)
 }
 
 /**
- * @brief  此函数不同车型的运动学正解。根据不同的车型执行不同的正解公式，最终获得小车3轴速度
- * @param  robot:小车控制相关对象  robot_hw:小车硬件参数相关对象
- * @retval 无
+ * @brief This function provides the forward kinematics for different vehicle models. Different correct formulas are applied according to different vehicle models, ultimately obtaining the three-axis speed of the chassis
+ * @param robot: Object related to car control robot_hw: Object related to car hardware parameters
+ * @retval None
  *
  * @details
  * 
@@ -578,37 +578,37 @@ static void Robot_Forwardkinematics(RobotControlParmentType_t* robot,const Robot
 }
 
 /**
- * @brief  此函数用于计算纠偏系数,用于纠正小车走直线的效果
- * @param  纠偏系数值,左轮/右轮
- * @retval 纠偏倍数
+ * @brief This function is used to calculate the correction factor and to correct the effect of the cart moving in a straight line
+ * @param Correction coefficient value, left wheel/right wheel
+ * @retval Correction multiplier
  *
  * @details
- * 当小车无法走直线时,可通过调整纠偏系数来改善走直线的效果. 
- * 0-100为可调值,50表示无纠偏效果.大于50小车主动往右偏,
- * 小于50小车主动往左偏. 
+ * When the car can't go straight, you can adjust the correction factor to improve straight-line performance.
+ * 0-100 is an adjustable value, 50 means no correction effect. If the car is more than 50, it will automatically veer to the right,
+ * Cars less than 50 meters automatically veer to the left.
  *   
  */
 float wheelCoefficient(uint32_t diffparam,uint8_t isLeftWheel)
 {
-	if( 1 == isLeftWheel ) //左轮纠偏,对应50~100对应1.0~1.2倍的纠偏系数
+	if( 1 == isLeftWheel ) //Left-wheel correction, corresponding to a correction factor of 50~100 and 1.0~1.2 times
 	{
 		if( diffparam>50 )
 			return 1.0f + 0.004f*(diffparam-50);
 	}
-	else //右轮纠偏,50~0对应1.0~1.2倍的纠偏系数
+	else //Right wheel correction: 50~0 corresponds to a correction factor of 1.0~1.2 times
 	{
 		if( diffparam<50 )
 			return 1.0f + 0.004f*(50-diffparam);
 	}
 	
-	return 1.0f;//不满足条件时,默认是1.
+	return 1.0f;//If the condition is not met, the default is 1.
 }
 
 
 /**
- * @brief  此函数用于速度平滑控制以及运动学逆解。根据不同的车型执行不同的逆解公式，最终获得车轮速度
- * @param  Vx、Vy、Vz:小车的X轴、Y轴、Z轴三轴速度,单位 m/s
- * @retval 无
+ * @brief This function is used for speed smoothing control and kinematic inverse solutions. Different inverse formulas are applied depending on the vehicle model, ultimately obtaining the wheel speed
+ * @param Vx, Vy, Vz: The speed of the cart's X, Y, and Z axes, unit m/s
+ * @retval None
  *
  * @details
  * 
@@ -616,20 +616,20 @@ float wheelCoefficient(uint32_t diffparam,uint8_t isLeftWheel)
  */
 static void Drive_Motor(const RobotControlCMDType_t* target)
 {
-	//速度平滑值
+	//Smoothed velocity value
 	static RobotControlCMDType_t smooth = { 0 }; 
 	
 	//Wheel target speed limit 
-	//车轮目标速度限幅 单位m/s
+	//Wheel target speed limit, unit: m/s
 	float amplitude=3.5;
 	
-	//实际传入的控制为用户控制+陀螺仪补偿
+	//The actual incoming control is user control + gyroscope compensation
 	RobotControlCMDType_t control_val = { 0 };
 	control_val.Vx = target->Vx ;
 	control_val.Vy = target->Vy ;
 	control_val.Vz = target->Vz + LinearHelp_Target.Vz;
 	
-	//在自动回充模式下,只接收回充设备与ROS上位机的命令,其他命令设置速度为0
+	//In automatic recharge mode, only commands from the recharge device and ROS host computer are received; other commands are set to speed 0
 	if( RobotControlParam.ChargeMode==1 )
 	{
 		if( target->cmdsource!=Charger_CMD && target->cmdsource!=ROS_CMD )
@@ -638,17 +638,17 @@ static void Drive_Motor(const RobotControlCMDType_t* target)
 		}
 	}
 	
-	//速度平滑
+	//Velocity smoothing
 	Smooth_control(&smooth,&control_val,0.02f);
 	
-	//纠偏系数计算
+	//Calculation of correction coefficient
 	float LeftWheelDiff = wheelCoefficient(RobotControlParam.LineDiffParam,1);
 	float RightWheelDiff = wheelCoefficient(RobotControlParam.LineDiffParam,0);
 	
-	//6轮车运动学解算
+	//Kinematic solutions for six-wheelers
 	if( RobotHardWareParam.CarType == S260 )
 	{
-		//四驱车模型 轴距不是真正意义上的轴距,需要根据imu的数据来联合调试到一个合适的值
+		//Four-wheel drive model Wheelbase is not a true wheelbase; it needs to be coordinated to an appropriate value based on IMU data
 		RobotControlParam.MotorA.target = smooth.Vx - smooth.Vz*(RobotHardWareParam.AxleSpacing+RobotHardWareParam.WheelSpacing);
 		RobotControlParam.MotorB.target = smooth.Vx - smooth.Vz*(RobotHardWareParam.AxleSpacing+RobotHardWareParam.WheelSpacing);
 		RobotControlParam.MotorC.target = smooth.Vx - smooth.Vz*(RobotHardWareParam.AxleSpacing+RobotHardWareParam.WheelSpacing);
@@ -656,7 +656,7 @@ static void Drive_Motor(const RobotControlCMDType_t* target)
 		RobotControlParam.MotorE.target = smooth.Vx + smooth.Vz*(RobotHardWareParam.AxleSpacing+RobotHardWareParam.WheelSpacing);
 		RobotControlParam.MotorF.target = smooth.Vx + smooth.Vz*(RobotHardWareParam.AxleSpacing+RobotHardWareParam.WheelSpacing);
 
-		//纠偏系数赋值
+		//Assignment of correction coefficients
 		RobotControlParam.MotorA.target *= LeftWheelDiff;
 		RobotControlParam.MotorB.target *= LeftWheelDiff;
 		RobotControlParam.MotorC.target *= LeftWheelDiff;
@@ -664,7 +664,7 @@ static void Drive_Motor(const RobotControlCMDType_t* target)
 		RobotControlParam.MotorE.target *= RightWheelDiff;
 		RobotControlParam.MotorF.target *= RightWheelDiff;
 		
-		//最大轮速限幅
+		//Maximum wheel speed limit
 		RobotControlParam.MotorA.target = target_limit_float(RobotControlParam.MotorA.target,-amplitude,amplitude);
 		RobotControlParam.MotorB.target = target_limit_float(RobotControlParam.MotorB.target,-amplitude,amplitude);
 		RobotControlParam.MotorC.target = target_limit_float(RobotControlParam.MotorC.target,-amplitude,amplitude);
@@ -672,7 +672,7 @@ static void Drive_Motor(const RobotControlCMDType_t* target)
 		RobotControlParam.MotorE.target = target_limit_float(RobotControlParam.MotorE.target,-amplitude,amplitude);
 		RobotControlParam.MotorF.target = target_limit_float(RobotControlParam.MotorF.target,-amplitude,amplitude);
 		
-		//轮速转为rpm
+		//Convert wheel speed to rpm
 		RobotControlParam.MotorA.target = linearVel_to_rpm(RobotControlParam.MotorA.target,RobotHardWareParam.WheelPerimeter);
 		RobotControlParam.MotorB.target = linearVel_to_rpm(RobotControlParam.MotorB.target,RobotHardWareParam.WheelPerimeter);
 		RobotControlParam.MotorC.target = linearVel_to_rpm(RobotControlParam.MotorC.target,RobotHardWareParam.WheelPerimeter);
@@ -681,35 +681,35 @@ static void Drive_Motor(const RobotControlCMDType_t* target)
 		RobotControlParam.MotorF.target = -linearVel_to_rpm(RobotControlParam.MotorF.target,RobotHardWareParam.WheelPerimeter);
 	}
 	
-	//四驱车
+	//Four-wheel drive vehicles
 	else if( RobotHardWareParam.CarType == S200 || RobotHardWareParam.CarType == S200_OUTDOOR )
 	{
-		//获得线速度
+		//Obtain the linear velocity
 		RobotControlParam.MotorA.target = smooth.Vx - smooth.Vz*(RobotHardWareParam.AxleSpacing+RobotHardWareParam.WheelSpacing);
 		RobotControlParam.MotorB.target = smooth.Vx - smooth.Vz*(RobotHardWareParam.AxleSpacing+RobotHardWareParam.WheelSpacing);
 		RobotControlParam.MotorC.target = smooth.Vx + smooth.Vz*(RobotHardWareParam.AxleSpacing+RobotHardWareParam.WheelSpacing);
 		RobotControlParam.MotorD.target = smooth.Vx + smooth.Vz*(RobotHardWareParam.AxleSpacing+RobotHardWareParam.WheelSpacing);
 		
-		//纠偏系数赋值
+		//Assignment of correction coefficients
 		RobotControlParam.MotorA.target *= LeftWheelDiff;
 		RobotControlParam.MotorB.target *= LeftWheelDiff;
 		RobotControlParam.MotorC.target *= RightWheelDiff;
 		RobotControlParam.MotorD.target *= RightWheelDiff;
 		
-		//最大轮速限幅
+		//Maximum wheel speed limit
 		RobotControlParam.MotorA.target = target_limit_float(RobotControlParam.MotorA.target,-amplitude,amplitude);
 		RobotControlParam.MotorB.target = target_limit_float(RobotControlParam.MotorB.target,-amplitude,amplitude);
 		RobotControlParam.MotorC.target = target_limit_float(RobotControlParam.MotorC.target,-amplitude,amplitude);
 		RobotControlParam.MotorD.target = target_limit_float(RobotControlParam.MotorD.target,-amplitude,amplitude);
 		
-		//轮速转为rpm
+		//Convert wheel speed to rpm
 		RobotControlParam.MotorA.target = linearVel_to_rpm(RobotControlParam.MotorA.target,RobotHardWareParam.WheelPerimeter);
 		RobotControlParam.MotorB.target = linearVel_to_rpm(RobotControlParam.MotorB.target,RobotHardWareParam.WheelPerimeter);
 		RobotControlParam.MotorC.target = -linearVel_to_rpm(RobotControlParam.MotorC.target,RobotHardWareParam.WheelPerimeter);
 		RobotControlParam.MotorD.target = -linearVel_to_rpm(RobotControlParam.MotorD.target,RobotHardWareParam.WheelPerimeter);
 	}
 	
-	//两轮差速
+	//Two-wheel differential
 	else if( RobotHardWareParam.CarType == S300 || RobotHardWareParam.CarType == S300Mini ||
               RobotHardWareParam.CarType == S100 )
 	{
@@ -722,7 +722,7 @@ static void Drive_Motor(const RobotControlCMDType_t* target)
 		RobotControlParam.MotorA.target = -linearVel_to_rpm(RobotControlParam.MotorA.target,RobotHardWareParam.WheelPerimeter);
 		RobotControlParam.MotorB.target = linearVel_to_rpm(RobotControlParam.MotorB.target,RobotHardWareParam.WheelPerimeter);
 		
-		//S300轮子安装方向为反向
+		//The S300 wheels are installed in the opposite direction
 		if( RobotHardWareParam.CarType == S300 || RobotHardWareParam.CarType == S300Mini)
 		{
 			RobotControlParam.MotorA.target=-RobotControlParam.MotorA.target;
@@ -733,10 +733,10 @@ static void Drive_Motor(const RobotControlCMDType_t* target)
 }
 
 
-//速度平滑控制
+//Velocity smoothing control
 static void Smooth_control(RobotControlCMDType_t* cmd,const RobotControlCMDType_t* target,float step)
 {
-	//X轴速度平滑
+	//Smooth X-axis speed
 	if(target->Vx>cmd->Vx)
 	{
 		cmd->Vx+=step;
@@ -750,7 +750,7 @@ static void Smooth_control(RobotControlCMDType_t* cmd,const RobotControlCMDType_
 	else
 		 cmd->Vx=target->Vx;
 
-	//Y轴速度平滑
+	//Smooth Y-axis speed
 	if(target->Vy>cmd->Vy)
 	{
 		cmd->Vy+=step;
@@ -764,7 +764,7 @@ static void Smooth_control(RobotControlCMDType_t* cmd,const RobotControlCMDType_
 	else
 		 cmd->Vy=target->Vy;
 	
-	//Z轴速度平滑
+	//Smooth Z-axis speed
 //	if(target->Vz>cmd->Vz)
 //	{
 //		cmd->Vz+=step*2;
@@ -777,14 +777,14 @@ static void Smooth_control(RobotControlCMDType_t* cmd,const RobotControlCMDType_
 //	}
 //	else
 	
-	//Z轴不使用平滑
+	//Z axis does not use smoothing
 	cmd->Vz=target->Vz;
 }
 
 /**
- * @brief  此函数执行超声波避障逻辑
- * @param  小车目标速度值
- * @retval 无
+ * @brief This function executes ultrasonic obstacle avoidance logic
+ * @param Car target speed value
+ * @retval None
  *
  * @details
  * 
@@ -792,22 +792,22 @@ static void Smooth_control(RobotControlCMDType_t* cmd,const RobotControlCMDType_
  */
 static void ranger_avoid(RobotControlCMDType_t* target)
 {
-	//避障标志位-前
+	//Obstacle-avoidance flag: front
 	uint8_t avoid_front = 0;
 	
-	//避障标志位-后
+	//Obstacle-avoidance flag: rear
 	uint8_t avoid_back = 0;
 	
-	//避障时转换的Z轴速度基准
+	//Reference Z-axis velocity used during obstacle avoidance
 	float base_vz = PI/4.0f;
 	
-	//蜂鸣器提示接口
+	//Buzzer prompt interface
 	pBuzzerInterface_t tips = &UserBuzzer;
 	
-	//滤波值
+	//Filter value
 	static uint8_t FilterCnt = 0;
 	
-	//判断是否需要避障,避障距离由此设定
+	//Determine whether obstacle avoidance is needed, and set the obstacle avoidance distance accordingly
 	if( RobotHardWareParam.CarType == S300 )
 	{
 		if( RangerHAL_A.dis < 0.4f || RangerHAL_B.dis < 0.4f || RangerHAL_C.dis < 0.4f || 
@@ -832,7 +832,7 @@ static void ranger_avoid(RobotControlCMDType_t* target)
 	}
 	else if( RobotHardWareParam.CarType == S200_OUTDOOR || RobotHardWareParam.CarType == S260 )
 	{
-		static uint8_t BackFilterCnt = 0 ; //后避障传感器
+		static uint8_t BackFilterCnt = 0 ; //Rear obstacle avoidance sensor
 		if( RangerHAL_A.dis < 0.4f || RangerHAL_B.dis < 0.4f || RangerHAL_C.dis < 0.4f || 
 			RangerHAL_D.dis < 0.4f )
 		{
@@ -851,22 +851,22 @@ static void ranger_avoid(RobotControlCMDType_t* target)
 	}
 	
 	
-	//无需避障直接结束程序
+	//Terminate the program directly without obstacle avoidance
 	if( avoid_front == 0 && avoid_back==0 ) return;
 	
-	//避障逻辑,不同车型逻辑不同
+	//Obstacle-avoidance logic varies by chassis type
 	if( RobotHardWareParam.CarType == S300 )
 	{
 		if( target->Vx > 0 )
 		{
 			if( RangerHAL_A.dis+RangerHAL_B.dis+RangerHAL_C.dis > RangerHAL_D.dis+RangerHAL_E.dis+RangerHAL_F.dis)
 			{
-				//左转
+				//Turn left
 				target->Vz = (target->Vx/0.5f)*base_vz;
 			}
 			else
 			{
-				//右转
+				//Turn right
 				target->Vz = -(target->Vx/0.5f)*base_vz;
 			}
 			target->Vx = 0;
@@ -879,12 +879,12 @@ static void ranger_avoid(RobotControlCMDType_t* target)
 		{
 			if( RangerHAL_A.dis+RangerHAL_B.dis > RangerHAL_D.dis+RangerHAL_E.dis )
 			{
-				//左转
+				//Turn left
 				target->Vz = (target->Vx/0.5f)*base_vz;
 			}
 			else
 			{
-				//右转
+				//Turn right
 				target->Vz = -(target->Vx/0.5f)*base_vz;
 			}
 			target->Vx = 0;
@@ -893,27 +893,27 @@ static void ranger_avoid(RobotControlCMDType_t* target)
 	}
 	else if( RobotHardWareParam.CarType == S200_OUTDOOR || RobotHardWareParam.CarType == S260 )
 	{
-		//前避障
+		//Avoid obstacles in front
 		if( target->Vx > 0 && avoid_front==1 )
 		{
 			if( RangerHAL_A.dis+RangerHAL_B.dis > RangerHAL_C.dis+RangerHAL_D.dis )
 			{
-				//右转
+				//Turn right
 				target->Vz = -(target->Vx/0.5f)*base_vz;
 			}
 			else
 			{
-				//左转
+				//Turn left
 				target->Vz = (target->Vx/0.5f)*base_vz;
 			}
 			target->Vx=0;
 			tips->AddTask(3,100);
 		}
 		
-		//后避障(自动回充装备控制时不避障)
+		//Rear obstacle avoidance (does not avoid obstacles when automatically recharging equipment control)
 		else if( target->Vx < 0 && avoid_back==1 && RobotControl_CMDsource!=Charger_CMD )
 		{
-			target->Vx = 0;//后避障仅禁止后退
+			target->Vx = 0;//Rear obstacle avoidance is only prohibited from backward
 			tips->AddTask(3,100);
 		}
 	}
@@ -922,30 +922,30 @@ static void ranger_avoid(RobotControlCMDType_t* target)
 
 
 /**
- * @brief  此函数执行结合IMU数据走直线功能
- * @param  小车目标速度值
- * @retval 无
+ * @brief This function performs the IMU data line routing function
+ * @param Car target speed value
+ * @retval None
  *
  * @details
- *  IMU和小车控制方向：逆时针旋转时,yaw为正,yaw速度为正. Vz为正时小车逆时针旋转
+ *  IMU and cart control direction: When rotating counterclockwise, yaw is positive, yaw speed is positive. Vz is the correct time, the cart rotates counterclockwise
  *   
  */
 static void Linear_IMUHelp(RobotControlCMDType_t* target)
 {
-	//用于延迟获取目标角度
+	//Used to delay the acquisition of the target angle
 	static uint8_t TargetCnt = 0;
 	#define DelayCNT 70
 	
-	//目标角度
+	//Target angle
 	static float target_angle = 0;
 	
-	//PID参数
+	//PID parameters
 	float linear_helpkp = 0.08f;
 	float linear_helpkd = 0.05f;
 	
 	switch( RobotHardWareParam.CarType )
 	{
-		//不同车型在直线调节时PID参数不相同,与车身重量、车身结构、以及电机都有关系
+		//Different models have different PID parameters when adjusting in a straight line, which is related to body weight, body structure, and motor
 		case S100: linear_helpkp = 0.03f; linear_helpkd = 0.007f; break;
 		case S300Mini: linear_helpkp = 0.04f; linear_helpkd = 0.005f; break;
 		case S300: linear_helpkp = 0.06f; linear_helpkd = 0.015f; break;
@@ -954,27 +954,27 @@ static void Linear_IMUHelp(RobotControlCMDType_t* target)
 	
 	static uint8_t giveup_flag = 0;
 
-	//仅在Vx有速度时补偿,其余情况不补偿并更新目标角度
+	//Only compensates when Vx has speed; otherwise, no compensation and target angle is updated
 	if( target->Vx!=0 && target->Vy==0 && target->Vz==0 && giveup_flag==0 ) 
 	{
-		//延迟获得目标角度
+		//Delay obtaining the target angle
 		TargetCnt++;
 		if( TargetCnt==DelayCNT )  target_angle = AttitudeVal.yaw;
 
-		//获取到目标角度后再执行PID控制
+		//After obtaining the target angle, execute PID control
 		if( TargetCnt >= DelayCNT )
 		{
-			//锁住计数值防止循环
+			//Lock the counter value to prevent cycling
 			TargetCnt=DelayCNT+1;
 			
-			//误差计算
+			//Error calculation
 			float error = target_angle-AttitudeVal.yaw;
 			
-			//对误差角度归一化
+			//Normalize error angles
 			if( error >  180.0f ) error -= 360.0f;
 			if( error < -180.0f ) error += 360.0f;
 			
-			//当偏差过大时,放弃调整(如悬空控制).
+			//When the deviation is too large, abandon adjustments (such as suspension control).
 			if( fabs(error)> 30 ) 
 			{
 				giveup_flag = 1;
@@ -982,7 +982,7 @@ static void Linear_IMUHelp(RobotControlCMDType_t* target)
 				return;
 			}
 			
-			//PID调整小车走直线效果（仅超过一定速度才调整）
+			//PID adjusts the straight-line effect of the car (only adjusts when the speed exceeds a certain level)
 			static uint8_t AllowFilterCnt;
 			if( fabs(RobotControlParam.feedbackVx)>=0.05f )
 			{
@@ -1001,14 +1001,14 @@ static void Linear_IMUHelp(RobotControlCMDType_t* target)
 			}
 				
 			
-			//限制调整值
+			//Limit adjustment value
 			LinearHelp_Target.Vz = target_limit_float(LinearHelp_Target.Vz,-1.57f,1.57f);
 		}
 
 	}
 	else if( target->Vx==0 && target->Vy==0 && target->Vz==0 )
 	{
-		//速度全0时静止一段时间则刷新目标角度
+		//Refresh target angles after remaining stationary with all velocities at 0 for a while
 		TargetCnt++;
 		if( TargetCnt>100 )  target_angle = AttitudeVal.yaw,TargetCnt=101;
 		LinearHelp_Target.Vx = 0;
@@ -1018,7 +1018,7 @@ static void Linear_IMUHelp(RobotControlCMDType_t* target)
 	}
 	else
 	{	
-		//其他情况则延迟目标角度的刷新,防止动态切换的过程目标角度刷新不准确
+		//In other cases, the refresh of the target angle is delayed to prevent inaccurate refresh during dynamic switching
 		TargetCnt=0;
 		LinearHelp_Target.Vx = 0;
 		LinearHelp_Target.Vy = 0;
@@ -1053,7 +1053,7 @@ float rpm_to_linearVel(float rpm,float wheelper)
 	return rpm/60.0f*wheelper;
 }
 
-//复位进入bootloader函数
+//Reset to enter the bootloader function
 void _System_Reset_FromAPP_RTOS(char uart_recv)
 {
 	static char res_buf[5];
@@ -1069,7 +1069,7 @@ void _System_Reset_FromAPP_RTOS(char uart_recv)
 	if(res_count==5)
 	{
 		res_count = 0;
-		//接受到上位机请求的复位字符“reset”，执行软件复位
+		//Upon receiving the reset character "reset" requested by the host computer, perform a software reset
 		if( res_buf[0]=='r'&&res_buf[1]=='e'&&res_buf[2]=='s'&&res_buf[3]=='e'&&res_buf[4]=='t' )
 		{
 			RobotControlCMDType_t cmd = {
@@ -1077,23 +1077,23 @@ void _System_Reset_FromAPP_RTOS(char uart_recv)
 				0,0,0
 			};
 			
-			//写入最高优先级指令停止小车运动
+			//Write the highest priority instruction to stop the chassis's movement
 			for(uint8_t i=0;i<50;i++)
 			{
 				WriteRobotControlQueue(&cmd,0);
 				vTaskDelay( pdMS_TO_TICKS(10) );
 			}
 			
-			//复位系统
+			//Reset system
 			NVIC_SystemReset();
 		}
 	}
 }
 
-//调试模式
+//Debug mode
 void RobotControl_SetDebugLevel(char uart_recv)
 {
-	//调试任务句柄
+	//Debug task handles
 	extern TaskHandle_t g_reportErrTaskHandle;
 	
 	static char res_buf[4];
@@ -1121,11 +1121,11 @@ void RobotControl_SetDebugLevel(char uart_recv)
 				default: RobotControlParam.DebugLevel = 0; break;
 			}
 			
-			//操作提示音
+			//Operation prompt sound
 			pBuzzerInterface_t tips = &UserBuzzer;
 			tips->AddTask(1,200);
 			
-			//发送任务通知
+			//Send task notifications
 			xTaskNotifyGive(g_reportErrTaskHandle);
 		}
 	}

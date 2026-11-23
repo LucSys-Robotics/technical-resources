@@ -11,7 +11,7 @@ void oled_show(void);
 void APP_Show(void);
 
 extern u8 oled_page,oled_refresh_flag;
-#define OLED_MAX_Page 2 //OLED²Ëµ¥Ò³Êý
+#define OLED_MAX_Page 2 //OLED menu pages
 
 extern float base_vol;
 extern float VolMean_Filter(float data);

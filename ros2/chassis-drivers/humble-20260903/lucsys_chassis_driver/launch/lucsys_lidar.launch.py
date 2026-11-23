@@ -19,29 +19,29 @@ def load_yaml(path: Path) -> dict:
 
 
 def include_lidar_launch(context, *args, **kwargs):
-    # 1. 读取参数文件
+    # 1. Read parameter file
     yaml_path = LaunchConfiguration('lidar_type_yaml').perform(context)
     cfg = load_yaml(Path(yaml_path))
 
-    # 2. 取 lidar_type（优先命令行 > yaml 默认）
+    # 2. Get lidar_type (command line priority> yaml default)
     lidar_type = LaunchConfiguration('lidar_type').perform(context) or cfg['lidar_type']
     print(f'lidar_type:{lidar_type}')
-    # 3. 根据型号决定包路径
+    # 3. Decide the package path based on the model
     actions = []
-    if lidar_type.startswith('ls'):            # LS 系列
+    if lidar_type.startswith('ls'):            # LS series
         launch_dir = os.path.join(get_package_share_directory('lslidar_driver'), 'launch')
-                # 检测雷达类型是否以 _double 结尾
+                # Detects whether the radar type ends with _double
         if lidar_type.endswith('_double'):
             print(f'[LucSys LiDAR] 检测到双雷达模式，启动双雷达驱动和融合节点')
             lidar_launch = GroupAction(
                 actions=[
-                    # 1. 启动双雷达驱动
+                    # 1. Start dual radar driver
                     IncludeLaunchDescription(
                         PythonLaunchDescriptionSource(
                             os.path.join(launch_dir, 'lslidar_m10p_double.launch.py')
                         ),
                     ),
-                    # 2. 启动双雷达融合
+                    # 2. Initiated dual-radar fusion
                     IncludeLaunchDescription(
                         PythonLaunchDescriptionSource(
                             os.path.join(
@@ -68,7 +68,7 @@ def include_lidar_launch(context, *args, **kwargs):
                     LifecycleNode(package='lslidar_driver',
                                     executable='lslidar_driver_node',
                                     name='lslidar_driver_node',
-                                    namespace='cx', # 与对应yaml文件中命名空间一致
+                                    namespace='cx', # Matches the namespace in the corresponding YAML file
                                     parameters=[cx_cfg],
                                     output='screen'
                                     ),
@@ -108,7 +108,7 @@ def include_lidar_launch(context, *args, **kwargs):
             lidar_launch = LifecycleNode(package='lslidar_driver',
                                     executable='lslidar_driver_node',
                                     name='lslidar_driver_node',
-                                    namespace='x10', # 与对应yaml文件中命名空间一致
+                                    namespace='x10', # Matches the namespace in the corresponding YAML file
                                     parameters=[x10_cfg],
                                     output='screen'
                                     )
@@ -127,7 +127,7 @@ def include_lidar_launch(context, *args, **kwargs):
             PythonLaunchDescriptionSource(os.path.join(get_package_share_directory('rplidar_ros'), 'launch', 'rplidar_c1_launch.py')),)
     else:
         raise ValueError(f'Unsupported lidar: {lidar_type}')
-    # 4. 返回动作列表
+    # 4. Return to the action list
     actions.append(lidar_launch)  
     return actions
 

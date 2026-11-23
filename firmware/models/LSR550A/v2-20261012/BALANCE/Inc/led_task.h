@@ -3,8 +3,8 @@
 
 #include "system.h"
 
-#define LED_TASK_PRIO		2     //Task priority //任务优先级
-#define LED_STK_SIZE 		128   //Task stack size //任务堆栈大小
+#define LED_TASK_PRIO		2     //Task priority //Task Priority
+#define LED_STK_SIZE 		128   //Task stack size //Task Stack Size
 
 void led_task(void *pvParameters);
 

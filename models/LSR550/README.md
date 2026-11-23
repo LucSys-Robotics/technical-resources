@@ -9,7 +9,7 @@
 | Resource | Link |
 | --- | --- |
 | Driver source (Humble, 2026-09-03) | [Browse source](../../ros2/chassis-drivers/humble-20260903/) |
-| Driver download | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/source-2026-11-23-lucsys-models/lucsys_ros2_humble_20260903.zip) |
+| Driver download | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/source-2026-11-23-en/lucsys_ros2_humble_20260903.zip) |
 | Build and connection instructions | [Ubuntu 22.04 / ROS 2 Humble](../../ros2/chassis-drivers/humble-20260903/README.md#build) |
 
 The driver ZIP includes the chassis driver, message definitions and serial dependency. It is separate from the model package below and is not a complete navigation, sensor or robotic-arm SDK. Build and virtual-serial tests do not verify vehicle behavior.
@@ -42,7 +42,7 @@ The linked package README contains its build command and supported preview confi
 | Resource | Link |
 | --- | --- |
 | STM32 source | [Browse project](../../firmware/controllers/C50C/20261104/) |
-| STM32 download | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/source-2026-11-23-lucsys-models/lucsys_c50c_20261104.zip) |
+| STM32 download | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/source-2026-11-23-en/lucsys_c50c_20261104.zip) |
 | Compiler, target selection and flashing instructions | [Project guide](../../firmware/controllers/C50C/20261104/README.md#build-and-flash) |
 
 Select the matching controller target, motor/encoder configuration and hardware revision. This family reference does not confirm every suspension/package combination and does not automatically apply to LSR550A.
@@ -51,7 +51,7 @@ The selected project uses Keil MDK / ARM Compiler 5.06 update 7. Native Keil com
 
 ## 4. Download verification
 
-- [Driver and STM32 ZIP SHA256 checksums](https://github.com/LucSys-Robotics/technical-resources/releases/download/source-2026-11-23-lucsys-models/SHA256SUMS.txt)
+- [Driver and STM32 ZIP SHA256 checksums](https://github.com/LucSys-Robotics/technical-resources/releases/download/source-2026-11-23-en/SHA256SUMS.txt)
 - [Model ZIP SHA256 checksums](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/SHA256SUMS.txt)
 
 Extract each selected ROS package into a workspace `src/` directory and follow its linked build guide. Keep STM32 projects separate from the ROS workspace. Confirm the delivered configuration before hardware operation.

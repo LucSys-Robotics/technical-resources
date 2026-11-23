@@ -4,10 +4,10 @@
 
 /*
 
-使用说明：
-1.使用该功能前，请提供变量 RtosDebugPrivateVar task1debugVar; //变量名称随意
-2.使用接口： pRtosDebugInterface_t task1debug = &RTOSTaskDebug;
-3.在某个任务计算任务频率： task1freq = task1debug->UpdateFreq(&task1debugVar); //获取的返回值即该任务的频率
+Instructions for Use:
+1. Before using this feature, please provide the variable RtosDebugPrivateVar task1debugVar; Variable names are optional
+2. Using the interface: pRtosDebugInterface_t task1debug = &RTOSTaskDebug;
+3. Calculating the task frequency for a task: task1freq = task1debug->UpdateFreq(&task1debugVar); The returned value obtained is the frequency of that task
 
 */
 

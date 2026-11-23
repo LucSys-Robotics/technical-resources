@@ -8,26 +8,26 @@
 
 #include "robot_select_init.h"
 
-//控制指令优先级,数值越小优先级越高
-//高优先级控制可打断低优先级控制
+//Control instruction priority; the smaller the value, the higher the priority
+//High-priority control can interrupt low-priority control
 enum{
-	NONE_CMD   = 0,  //用户不可修改.0表示忽略控制量,以防用户未指定控制源就写入的异常情况。
-	BootLoader ,  //用户不可修改,BootLoader为最高优先级的系统控制量,用于小车无线更新程序使用,在 \
+	NONE_CMD   = 0,  //User cannot modify. 0 means ignore the control value to prevent writing without a specified source
+	BootLoader ,  //User cannot modify, BootLoader is the highest priority system control, used for wireless updates of the car \
 	                   程序更新前最高优先级控制量将介入控制小车停止。
 	
-	//用户自定义区域,优先级由高到低
-	GamePad_CMD , //游戏手柄
-	RCJOY_CMD   , //航模遥控
-	APP_CMD     , //手机APP
-	ROS_CMD     , //ROS或串口上位机
-	CAN_CMD     , //CAN1接口控制
-	Charger_CMD , //自动回充装备控制
-	AutoTest_CMD, //场地自动测试任务(最低优先级,任何手动控制均可抢占)
+	//User-defined zones, with priority from highest to lowest
+	GamePad_CMD , //Game controller
+	RCJOY_CMD   , //RC transmitter
+	APP_CMD     , //Mobile app
+	ROS_CMD     , //ROS or serial port upper computer
+	CAN_CMD     , //CAN1 interface control
+	Charger_CMD , //Automatic equipment recharge control
+	AutoTest_CMD, //Automated site testing tasks (lowest priority, any manual control can preemptive)
 	
-	UnKnownCMD     //用户不可修改,此枚举需要一直保留在最后一位.目的同样为禁止未指定控制源就写入的异常情况
+	UnKnownCMD     //User cannot modify, this enum must always stay at the last position to prevent writing control values without a specified source
 };
 
-//小车控制队列的数据格式
+//Data format for the cart control queue
 typedef struct{
 	uint8_t cmdsource;
 	float Vx;
@@ -35,31 +35,31 @@ typedef struct{
 	float Vz;
 }RobotControlCMDType_t;
 
-//小车最新的控制来源
+//The latest control source for small cars
 extern volatile uint8_t RobotControl_CMDsource;
 
-//小车主动失能的条件标志位,满足任意1个条件都会失能禁止控制
+//Flags for automatic chassis disable conditions; any 1 condition disables the chassis and prohibits control
 enum{
-	errCode_LowPower        = (1<<0), //电量不足
-	errCode_StopKeyEn       = (1<<1), //急停开关按下
-	errCode_SoftWareStop    = (1<<2), //软件急停被设置
-	errCode_Driver1_offline = (1<<3), //1号驱动器离线
-	errCode_Driver1_Err     = (1<<4), //1号驱动器报错
-	errCode_Driver2_offline = (1<<5), //2号驱动器离线
-	errCode_Driver2_Err     = (1<<6), //2号驱动器报错
-	errCode_Driver3_offline = (1<<7), //3号驱动器离线
-	errCode_Driver3_Err     = (1<<8), //3号驱动器报错
-	errCode_Driver4_offline = (1<<9), //4号驱动器离线
-	errCode_Driver4_Err     = (1<<10), //4号驱动器报错
-	errCode_SteeringHome    = (1<<11), //转向回零超时
+	errCode_LowPower        = (1<<0), //Low battery
+	errCode_StopKeyEn       = (1<<1), //Emergency-stop switch pressed
+	errCode_SoftWareStop    = (1<<2), //Software emergency stop is set
+	errCode_Driver1_offline = (1<<3), //Drive 1 is offline
+	errCode_Driver1_Err     = (1<<4), //Drive 1 has an error
+	errCode_Driver2_offline = (1<<5), //Drive 2 is offline
+	errCode_Driver2_Err     = (1<<6), //Drive 2 has an error
+	errCode_Driver3_offline = (1<<7), //Drive 3 is offline
+	errCode_Driver3_Err     = (1<<8), //Drive 3 has an error
+	errCode_Driver4_offline = (1<<9), //Drive 4 is offline
+	errCode_Driver4_Err     = (1<<10), //Drive 4 has an error
+	errCode_SteeringHome    = (1<<11), //Steering homing timeout
 };
 
-#define Clear_RobotErrorCode(mask)  (RobotControlParam.ErrNum &= ~(mask))    //清除报错标志位
-#define Set_RobotErrorCode(mask)    (RobotControlParam.ErrNum |= (mask))     //设置报错标志位
-#define Get_RobotErrorCode(mask)    (RobotControlParam.ErrNum & (mask))      //读取报错标志位
+#define Clear_RobotErrorCode(mask)  (RobotControlParam.ErrNum &= ~(mask))    //Clear error flags
+#define Set_RobotErrorCode(mask)    (RobotControlParam.ErrNum |= (mask))     //Set error flags
+#define Get_RobotErrorCode(mask)    (RobotControlParam.ErrNum & (mask))      //Read error flag bits
 
 
-//对外公开使用
+//Public use to the public
 uint8_t WriteRobotControlQueue(RobotControlCMDType_t* cmd,BaseType_t* woken);
 float target_limit_float(float insert,float low,float high);
 int target_limit_int(int insert,int low,int high);

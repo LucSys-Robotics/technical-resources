@@ -1,5 +1,5 @@
 # ===============================
-# 每个车型一个二级 key，名字与 car_mode 对应
+# Each model has a secondary key, with the name corresponding to car_mode
 robot_model:
   mini_mec:
     base_to_link: [0.0, 0.0, 0.074, 0.0, 0.0, 0.0]

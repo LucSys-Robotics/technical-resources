@@ -7,48 +7,48 @@
 #include "usbh_hid_GamePad.h"
 #include "bsp_gamepad.h"
 
-//手柄产品ID以及序列号
+//Handle product ID and serial number
 #define Xbox360_Manufacturer "Xbox360"
 #define Xbox360_SerialNum "5E904C0C"
 
-//手柄产品PID、VID
+//Handle products PID and VID
 #define Xbox360_GamePad_VID 0x045E
 #define Xbox360_GamePad_PID 0x028E
 
-//手柄的数据长度信息
+//Data length information for the handle
 #define Xbox360_GamePad_DataLen 64
 
-//15个按键组合
+//15 key combinations
 enum{
-	Xbox360KEY_UP = 0, //转轴十字-上
-	Xbox360KEY_DOWN,   //转轴十字-下
-	Xbox360KEY_LEFT,   //转轴十字-左
-	Xbox360KEY_RIGHT,  //转轴十字-右
-	Xbox360KEY_Menu,   // 菜单/star按键
-	Xbox360KEY_SELECT, // 窗口/select按键
-	Xbox360KEY_LJoy,   //左摇杆按键
-	Xbox360KEY_RJoy,   //右摇杆按键
-	Xbox360KEY_LB ,    //左上按键LB
-	Xbox360KEY_RB ,    //右上按键RB
-	Xbox360KEY_HOME ,  //logo按键Home
-	Xbox360_PaddingBit,//填充位,为了对齐按键功能使用,实际该位无意义
-	Xbox360KEY_A ,     //按键A
-	Xbox360KEY_B ,     //按键B
-	Xbox360KEY_X ,     //按键X
-	Xbox360KEY_Y ,     //按键Y
-	//扳机按键预留
+	Xbox360KEY_UP = 0, //D-pad axis: up
+	Xbox360KEY_DOWN,   //D-pad axis: down
+	Xbox360KEY_LEFT,   //D-pad axis: left
+	Xbox360KEY_RIGHT,  //D-pad axis: right
+	Xbox360KEY_Menu,   // Menu/star button
+	Xbox360KEY_SELECT, // Window/select key
+	Xbox360KEY_LJoy,   //Left analog stick button
+	Xbox360KEY_RJoy,   //Right analog stick button
+	Xbox360KEY_LB ,    //Upper left button LB
+	Xbox360KEY_RB ,    //Press the RB button at the top right
+	Xbox360KEY_HOME ,  //logo button Home
+	Xbox360_PaddingBit,//Fill bits, used to align key functions; in practice, this bit is meaningless
+	Xbox360KEY_A ,     //Button A
+	Xbox360KEY_B ,     //Button B
+	Xbox360KEY_X ,     //Button X
+	Xbox360KEY_Y ,     //Button Y
+	//Reserve trigger buttons
 };
 
-//手柄解码函数
+//Handle decoder function
 void Xbox360_gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,uint8_t datalen);
 
-//非阻塞震动后台处理
+//Nonblocking background vibration processing
 void Xbox360_GamePad_VibrationProcess(USBH_HandleTypeDef *phost);
 
-//重新接入时复位震动状态
+//Reset vibration state on reconnection
 void Xbox360_GamePad_VibrationReset(void);
 
-//对外提供手柄对象
+//Provide handle objects externally
 extern GamePadType_t Xbox360Gamepad;
 
 #endif /* __Xbox360_GAMEPAD_H */

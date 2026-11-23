@@ -1,13 +1,13 @@
 /**
  * @file    reportErr_task.c
- * @brief   小车自检调试文件
+ * @brief Vehicle self-inspection and commissioning documents
  * @author  LUCSYS
  * @date    2025-08-08
  * @version 1.0.0
  *
  * @details
- * - 本文件是小车调试相关内容，由任务 ReportErrTask 管理.当用户在串口或者蓝牙端输入 "LOG1~3"设置调试等级后，
- * 调试任务才会被触发，小车将自主上报报错信息，底盘的状态等内容.
+ * - This file is related to chassis debugging and is managed by the task ReportErrTask. When the user sets the debug level by entering "LOG1~3" on the serial port or Bluetooth end,
+ * The debugging task will be triggered, and the vehicle will autonomously report error information, chassis status, and other details.
  * @note
  * 
  * 
@@ -24,7 +24,7 @@ void Bluetooth_Transmit(uint8_t* buffer,uint8_t size,uint16_t timeout)
 	}
 }
 
-//对外数据汇报的接口，用于调试
+//Interface for external data reporting, used for debugging
 static void report_interface(char* buffer,uint16_t size)
 {
 	for(uint32_t k=0;k<size;k+=2)
@@ -39,7 +39,7 @@ static void report_interface(char* buffer,uint16_t size)
 
 
 
-//用于临时保存输出的数据
+//Used to temporarily store output data
 static char err_info[512] = { 0 };
 
 void ReportErrTask(void* param)
@@ -47,7 +47,7 @@ void ReportErrTask(void* param)
 
 	while(1)
 	{
-		//阻塞等待任务通知
+		//Block waiting for task notification
 //		ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 		
 		vTaskDelay(500);
@@ -56,17 +56,17 @@ void ReportErrTask(void* param)
 		{
 			extern uint8_t Received_IP[4];       
 			extern uint8_t IP_Frame_Valid;   
-			//若小车有主动失能的情况,则优先进行原因提示
+			//If the vehicle is actively disabled, the cause will be given priority
 			const char* head = "{#\r\n";
 			const char* end = "}$";
 			
-			// IP上报逻辑移植
-			if(IP_Frame_Valid)  // IP请求已关闭且IP帧有效
+			// IP reporting logic porting
+			if(IP_Frame_Valid)  // IP request is closed and IP frames are valid
 			{
-				// 第一步：发送统一的head（{#\r\n）
+				// Step 1: send the common header ({#\r\n)
 				Bluetooth_Transmit((uint8_t*)head,3,500);
 				vTaskDelay(2);
-				// 第二步：发送IP内容（仅保留核心信息，不带head/end）
+				// Step 2: Send IP content (retain only core information, no head/end)
 				sprintf(err_info,"IP:%d.%d.%d.%d\r\n", 
 						(uint8_t)Received_IP[0], 
 						(uint8_t)Received_IP[1], 
@@ -74,13 +74,13 @@ void ReportErrTask(void* param)
 						(uint8_t)Received_IP[3]);
 				report_interface(err_info, strlen(err_info));
 				vTaskDelay(2);
-				// 第三步：发送统一的end（}$）
+				// Step 3: Send a unified end(}$)
 				Bluetooth_Transmit((uint8_t*)end,2,500);
 				vTaskDelay(500);
 			}
-			else  // IP未知
+			else  // IP unknown
 			{
-				// 同样对齐格式：head + 内容 + end
+				// Align the format as well: head + content + end
 				Bluetooth_Transmit((uint8_t*)head,3,500);
 				vTaskDelay(2);
 				sprintf(err_info,"IP:unknow.\r\n");
@@ -98,7 +98,7 @@ void ReportErrTask(void* param)
 				if( Debug_Flag==0 ) break;
 			}
 			
-//			//使能开关
+//			//Enable switch
 //			if( RobotControlParam.ErrNum!=0 )
 //			{
 //				Bluetooth_Transmit(&huart2,(uint8_t*)head,3,500);
@@ -116,14 +116,14 @@ void ReportErrTask(void* param)
 //				if( Debug_Flag==0 ) break;
 //			}
 //			else if( RobotControlParam.ErrNum==0 && RobotControlParam.DebugLevel == 1 )
-//			{	//仅在调试等级为1时提示状态正常的情况
-//				sprintf(err_info,"%s","{#\r\n小车使能状态正常}$");
+//			{ // Only shows normal status when debug level is 1
+//				sprintf(err_info,"%s","{#rnThe cart enable status is normal}$");
 //				report_interface(err_info,strlen(err_info));
 //				vTaskDelay(3000);
 //				if( RobotControlParam.DebugLevel==0 ) break;
 //			}
 
-			//小车的详细自检参数汇报
+			//Detailed self-inspection parameter report for the chassis
 			if( Debug_Flag !=0 )
 			{
 				Bluetooth_Transmit((uint8_t*)head,3,500);
@@ -131,7 +131,7 @@ void ReportErrTask(void* param)
 				sprintf(err_info,"小车状态\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//车型信息
+				//Model information
 				#if defined AKM_CAR
 				sprintf(err_info,"    当前车型：Akm ，%02d\r\n",robot.type);
 				#elif  defined DIFF_CAR
@@ -157,7 +157,7 @@ void ReportErrTask(void* param)
 //				}
 //				report_interface(err_info,strlen(err_info));
 				
-				//硬件版本信息
+				//Hardware version information
 				sprintf(err_info,"    C50C版本：");
 				report_interface(err_info,strlen(err_info));
 				sprintf(err_info,(char*)getHW_Ver(SysVal.HardWare_Ver));
@@ -165,16 +165,16 @@ void ReportErrTask(void* param)
 				sprintf(err_info,"\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//电压信息
+				//Voltage information
 				sprintf(err_info,"    当前电压：%.2f V",robot.voltage);
 				size_t len = strlen(err_info);
 				if (len % 2 != 0) {
-					strcat(err_info, " \r\n"); // 如果长度为奇数，追加一个空格
+					strcat(err_info, " \r\n"); // If the length is odd, add a space
 				}
 				else strcat(err_info, "\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//急停开关信息
+				//Emergency stop switch information
 				sprintf(err_info,"    急停开关：");
 				report_interface(err_info,strlen(err_info));
 				if( EN == 0 ) 
@@ -183,7 +183,7 @@ void ReportErrTask(void* param)
 					sprintf(err_info,"弹起\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//使能状态信息
+				//Enable status information
 				sprintf(err_info,"    使能状态：");
 				report_interface(err_info,strlen(err_info));
 				if( robot_control.FlagStop == 0 )
@@ -192,7 +192,7 @@ void ReportErrTask(void* param)
 					sprintf(err_info,"失能\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//超声波避障信息
+				//Ultrasonic obstacle avoidance information
 				sprintf(err_info,"    超声波传感器：");
 				report_interface(err_info,strlen(err_info));
 				if( SysVal.HardWare_Ranger==0 )
@@ -201,7 +201,7 @@ void ReportErrTask(void* param)
 					sprintf(err_info,"设备存在\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//自动回充模式
+				//Automatic recharge mode
 				sprintf(err_info,"    自动回充模式：");
 				report_interface(err_info,strlen(err_info));
 				if( charger.AllowRecharge == 0 )
@@ -210,7 +210,7 @@ void ReportErrTask(void* param)
 					sprintf(err_info,"启用\r\n");
 				report_interface(err_info,strlen(err_info));
 				
-				//控制状态
+				//Control status
 				sprintf(err_info,"    控制方式：");
 				report_interface(err_info,strlen(err_info));
 				
@@ -244,7 +244,7 @@ void ReportErrTask(void* param)
 				}
 				else
 				{
-					//在线状态
+					//Online status
 					sprintf(err_info,"    在线状态：");
 					report_interface(err_info,strlen(err_info));
 					if( SysVal.HardWare_charger == 1 )
@@ -253,7 +253,7 @@ void ReportErrTask(void* param)
 						sprintf(err_info,"离线\r\n");
 					report_interface(err_info,strlen(err_info));
 					
-					//充电状态
+					//Charging status
 					sprintf(err_info,"    充电状态：");
 					report_interface(err_info,strlen(err_info));
 					if( charger.Charging==1 )
@@ -262,30 +262,30 @@ void ReportErrTask(void* param)
 						sprintf(err_info,"未充电\r\n");
 					report_interface(err_info,strlen(err_info));
 					
-					//电流值
+					//Current value
 					sprintf(err_info,"    测量电流值：%.2fA",(float)charger.ChargingCurrent/1000.0f);
 					len = strlen(err_info);
 					if (len % 2 != 0) {
-						strcat(err_info, " \r\n"); // 如果长度为奇数，追加一个空格
+						strcat(err_info, " \r\n"); // If the length is odd, add a space
 					}
 					else strcat(err_info, "\r\n");
 					report_interface(err_info,strlen(err_info));
 					
-					//电压值
-//					sprintf(err_info,"    测量电压值：%.2fV",ChargeDev.ChargingVol);
+					//Voltage value
+//					sprintf(err_info," Measurement voltage value: %.2fV",ChargeDev.ChargingVol);
 //					len = strlen(err_info);
 //					if (len % 2 != 0) {
-//						strcat(err_info, " \r\n"); // 如果长度为奇数，追加一个空格
+//						strcat(err_info, " rn"); // if the length is odd, append a space
 //					}
 //					else strcat(err_info, "\r\n");
 //					report_interface(err_info,strlen(err_info));
 					
-					//红外信号状态
+					//Infrared signal status
 					sprintf(err_info,"    红外信号状态：%d 个信号，%d %d %d %d ",charger.RED_STATE,
 						charger.L_A,charger.L_B,charger.R_B,charger.R_A);
 					len = strlen(err_info);
 					if (len % 2 != 0) {
-						strcat(err_info, " \r\n"); // 如果长度为奇数，追加一个空格
+						strcat(err_info, " \r\n"); // If the length is odd, add a space
 					}
 					else strcat(err_info, "\r\n");
 					report_interface(err_info,strlen(err_info));

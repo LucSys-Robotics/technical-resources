@@ -1,15 +1,15 @@
 /**
  * @file    tim_capture_callback.c
- * @brief   定时器输入捕获中断回调函数.
+ * @brief Timer input captures interrupt callback functions.
  * @note LucSys Robotics distribution maintenance; original authorship not claimed
  * @date    2025-07-10
  * @version 1.0.0
  *
  * @details
- * - 本文件主要内容为定时器输入捕获中断回调函数,在回调函数内处理航模手柄的底层信号,
- *   以及处理超声波的底层信号。航模遥控信号与超声波测距均依赖此回调函数获得数据。
-   - 回调函数处理内容兼容FreeRTOS,由xHigherPriorityTaskWoken确定是否需要发起任
-     务调度
+ * - This file mainly contains timer input capture interrupt callback functions, which process the underlying signals of the RC transmitter within the callback.
+ *   and the underlying signals for processing ultrasound. Both RC transmitter signals and ultrasonic ranging rely on this callback function to obtain data.
+   - The callback function processing content is compatible with FreeRTOS, and whether to initiate a task is determined by xHigherPriorityTaskWoken.
+     Dispatch tasks
  *      
  * @note
  * 
@@ -19,27 +19,27 @@
 #include "sensor_ranger.h"
 #include "rc_joystick.h"
 
-//定时器捕获回调函数,超声波捕获、航模遥控器通道捕获均使用
+//Timer capture callback function, ultrasonic capture, and RC transmitter channel capture are both used
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	
-	//此中断涉及操作系统的API,仅在调度器启动时才执行中断内容
+	//This interrupt involves the operating system's API and only executes the interrupt content when the scheduler starts
 	BaseType_t schedulerState = xTaskGetSchedulerState();
 	if( schedulerState!=taskSCHEDULER_RUNNING ) return;
 	
 	if( htim == &htim4 )
 	{
-		//航模手柄信号处理逻辑
+		//Signal processing logic for model aircraft handles
 		RCJoystick_IC_CaptureCallback(htim,&xHigherPriorityTaskWoken);
 	}
 	else
 	{
-		//超声波信号逻辑处理
+		//Ultrasonic signal logic processing
 		Ranger_IC_CaptureCallback(htim,&xHigherPriorityTaskWoken);
 	}
 	
-	//根据具体情况发起调度
+	//Initiate scheduling based on specific circumstances
 	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 

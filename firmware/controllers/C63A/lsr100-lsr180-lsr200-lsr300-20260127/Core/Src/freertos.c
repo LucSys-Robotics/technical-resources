@@ -55,10 +55,10 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-//FreeRTOS系统调试
-#define userconfig_OPEN_STACK_CHECK     0  //开启任务栈大小检查打印
-#define userconfig_OPEN_CPU_USAGE_CHECK 0  //开启检查CPU占比打印
-#define userconfig_OPEN_CHECK_HEAPSIZE  0  //检查剩余的堆大小
+//FreeRTOS system debugging
+#define userconfig_OPEN_STACK_CHECK     0  //Enable task stack size check printing
+#define userconfig_OPEN_CPU_USAGE_CHECK 0  //Enable the CPU percentage check for printing
+#define userconfig_OPEN_CHECK_HEAPSIZE  0  //Check the remaining heap size
 
 /* USER CODE END PD */
 
@@ -72,13 +72,13 @@
 
 QueueHandle_t g_xQueueCANopenCallback = NULL;
 
-//蓝牙数据队列
+//Bluetooth data queue
 QueueHandle_t g_xQueueBlueTooth = NULL;
 
-//ROS数据队列
+//ROS data queue
 QueueHandle_t  g_xQueueROSserial = NULL;
 
-//自动回充队列数据
+//Automatically refill queue data
 QueueHandle_t g_xQueueAutoRecharge = NULL;
 
 TaskHandle_t g_reportErrTaskHandle = NULL;
@@ -95,12 +95,12 @@ const osThreadAttr_t InitTask_attributes = {
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 
-//FreeRTOS系统调试任务
+//FreeRTOS system debugging tasks
 #if ( 1 == userconfig_OPEN_CPU_USAGE_CHECK ) || ( 1 == userconfig_OPEN_STACK_CHECK ) || ( 1 == userconfig_OPEN_CHECK_HEAPSIZE )
 void CpuUsageCheckTask(void *param);
 #endif
 
-//任务函数声明
+//Task function declaration
 void ultrasonic_task(void* param);
 void show_task(void* param);
 void ImuTask(void* param);
@@ -133,7 +133,7 @@ void vApplicationMallocFailedHook(void);
 /* Functions needed when configGENERATE_RUN_TIME_STATS is on */
 __weak void configureTimerForRunTimeStats(void)
 {
-	//使用cpu占比计时器前初始化内容
+	//Initialize content before using the CPU share timer
 	TIM6->CNT = 0;
 }
 
@@ -143,14 +143,14 @@ __weak unsigned long getRunTimeCounterValue(void)
 	static uint16_t lasttime = 0;
 	static uint16_t nowtime = 0;
 	
-	nowtime = TIM6->CNT; //获得当前计数值
+	nowtime = TIM6->CNT; //Get the current count value
 	
-	//如果本次计数值小于上次计数值，说明发生了定时器计数溢出
+	//If the current count is less than the previous count, it indicates a timer count overflow
 	if( nowtime < lasttime )
 	{
-		time += (nowtime + 0xffff - lasttime); //溢出后的时间增量
+		time += (nowtime + 0xffff - lasttime); //Time increment after overflow
 	}		
-	else time += ( nowtime - lasttime ) ; //未发生溢出，增量为本次时间-上次时间
+	else time += ( nowtime - lasttime ) ; //No overflow occurred; increments are from the current time to the previous time
 	
 	lasttime = nowtime;
 	
@@ -171,7 +171,7 @@ void vApplicationIdleHook( void )
    function, because it is the responsibility of the idle task to clean up
    memory allocated by the kernel to any task that has since been deleted. */
 	
-	//空闲任务钩子函数
+	//Idle task hook function
 }
 /* USER CODE END 2 */
 
@@ -182,7 +182,7 @@ void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
    configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
    called if a stack overflow is detected. */
 	
-	//任务栈溢出警告
+	//Task stack overflow warning
 	printf("%s stack overflow\r\n",pcTaskName);
 }
 /* USER CODE END 4 */
@@ -201,7 +201,7 @@ void vApplicationMallocFailedHook(void)
    to query the size of free heap space that remains (although it does not
    provide information on how the remaining heap might be fragmented). */
 	
-	//内存分配失败警告
+	//Memory allocation failure warning
 	printf("malloc failed.check heapsize\r\n");
 }
 /* USER CODE END 5 */
@@ -230,8 +230,8 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
-	g_xQueueBlueTooth = xQueueCreate(50,sizeof(char));//蓝牙数据队列
-	g_xQueueROSserial = xQueueCreate(50,sizeof(char));//ROS数据队列
+	g_xQueueBlueTooth = xQueueCreate(50,sizeof(char));//Bluetooth data queue
+	g_xQueueROSserial = xQueueCreate(50,sizeof(char));//ROS data queue
 	g_xQueueAutoRecharge = xQueueCreate(1,sizeof(CANmsgType_t));
 	
   /* USER CODE END RTOS_QUEUES */
@@ -242,45 +242,45 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  //小车控制任务
+  //Car control tasks
   xTaskCreate(RobotControl_task,"robotcontrol",128*4,NULL,osPriorityNormal1,NULL);
   
-  //超声波数据采集任务
+  //Ultrasonic data acquisition tasks
   xTaskCreate(ultrasonic_task,"ultraTask",128*2,NULL,osPriorityNormal,NULL);
   
-  //OLED显示任务
+  //OLED display tasks
   xTaskCreate(show_task,"showTask",128*4,NULL,osPriorityBelowNormal7,NULL);
 
-  //APP显示任务
+  //APP displays tasks
   xTaskCreate(APPshow_task,"AppShow",128*2,NULL,osPriorityBelowNormal7,NULL);
 
-  //陀螺仪数据获取
+  //Acquire gyroscope data
   xTaskCreate(ImuTask,"ImuTask",128*4,NULL,osPriorityNormal,NULL);
   
-  //蓝牙数据解析任务
+  //Bluetooth data parsing tasks
   xTaskCreate(BlueToothControlTask,"BTControlTask",128*2,NULL,osPriorityNormal,NULL);
   
-  //ROS串口数据解析任务
+  //ROS serial data parsing task
   xTaskCreate(SerialControlTask,"SerialConTask",128*2,NULL,osPriorityNormal,NULL);
   
-  //自动回充设备数据解析任务
+  //Automatic recharge device data analysis task
   xTaskCreate(AutoRechargeTask,"AutoRechargeTask",128*2,NULL,osPriorityNormal,NULL);
   
-  //数据外发任务
+  //Data outbound tasks
   xTaskCreate(RobotDataTransmitTask,"transmit_task",128*4,NULL,osPriorityNormal,NULL);
   
-  //RGB灯带管理任务
+  //RGB light strip management task
   xTaskCreate(RGBControl_task,"RGB_task",128*2,NULL,osPriorityBelowNormal7,NULL);
   
-  //CANopen心跳报文处理任务
+  //CANopen heartbeat packet processing task
   xTaskCreate(HeartbeatTask,"HeartbeatTask",128,NULL,osPriorityNormal1,NULL);
   
-  //小车自检上报调试任务
+  //Submit the vehicle self-inspection and debugging task
   xTaskCreate(ReportErrTask,"ReportErrTask",128*4,NULL,osPriorityNormal,&g_reportErrTaskHandle);
   
-	//FreeRTOS调试任务
+	//FreeRTOS debugging tasks
 	#if ( 1 == userconfig_OPEN_CPU_USAGE_CHECK ) || ( 1 == userconfig_OPEN_STACK_CHECK ) || ( 1 == userconfig_OPEN_CHECK_HEAPSIZE )
-	 static uint16_t delaytime = 5000;//打印时间间隔，单位tick
+	 static uint16_t delaytime = 5000;//Print time interval, unit tick
 	 xTaskCreate(CpuUsageCheckTask,"DebugTask",128, &delaytime ,osPriorityAboveNormal,NULL);
 	#endif
   /* USER CODE END RTOS_THREADS */
@@ -305,35 +305,35 @@ void StartInitTask(void *argument)
   /* USER CODE BEGIN StartInitTask */
   /* Infinite loop */
 	
-	//初始化任务，用于初始化部分依赖于FreeRTOS内核的项目
+	//Initialization tasks used to initialize projects that partially depend on the FreeRTOS kernel
 	
-	//CAN滤波器初始化
+	//Initialize the CAN filter
 	pCANInterface_t can = &UserCAN1Dev;
 	can->init();
 	can = &UserCAN2Dev;
 	can->init();
 	
-	//开机等待驱动器就绪
+	//Power on and wait for the drive to be ready
 	HAL_Delay(1200);
 	
-	//关闭CANopen所有映射关系,防止数据干扰
+	//Close all CANopen mapping relationships to prevent data interference
 	uint8_t PreOp[8]= {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 	can = &UserCAN2Dev;
 	can->sendStd(0x00,PreOp,8);
-	//启用反馈队列准备配置
+	//Enable feedback queue preparation configuration
 	g_xQueueCANopenCallback = xQueueCreate(1,sizeof(CANmsgType_t));
 	
-	//根据车型驱动数量初始化对应驱动器
+	//Initialize the corresponding driver based on the number of drives for the vehicle model
 	for(uint8_t i=0;i<RobotHardWareParam.driveCounts;i++)
 	{
-		ServoDriver_Init(g_ServoDriveList[i]);//从可用驱动列表中加载
+		ServoDriver_Init(g_ServoDriveList[i]);//Load from the list of available drivers
 	}
 
-	//开机提示
+	//Power-on prompt
 	pBuzzerInterface_t tips = &UserBuzzer;
 	tips->AddTask(1,700);
 
-	//初始化完成,删除自身
+	//Initialization complete, delete yourself
 	vTaskDelete(NULL);
   for(;;)
   {
@@ -354,7 +354,7 @@ void CpuUsageCheckTask(void *param)
 	while( 1 )
 	{
 #if 1 == userconfig_OPEN_CPU_USAGE_CHECK
-		//打印CPU占比
+		//Print CPU proportion
 		vTaskGetRunTimeStats(showbuf);
 		printf("TaskName\tUseTime\tCPU\r\n");
 		printf("%s\r\n",showbuf);
@@ -362,7 +362,7 @@ void CpuUsageCheckTask(void *param)
 #endif
 
 #if 1 == userconfig_OPEN_STACK_CHECK
-		//打印剩余任务栈大小,单位word
+		//Print the remaining task stack size, unit in word
 		vTaskList(showbuf);
 		printf("TaskName\tTaskState\tTaskPrio\tStackSize\tTaskNum\r\n");
 		printf("%s\r\n",showbuf);
@@ -370,7 +370,7 @@ void CpuUsageCheckTask(void *param)
 #endif
 		
 #if 1 == userconfig_OPEN_CHECK_HEAPSIZE
-		//打印剩余的堆区大小,单位bytes
+		//Print the remaining heap size, in bytes
 		printf("free heap size : %d bytes\r\n\r\n",xPortGetFreeHeapSize());
 		vTaskDelay(*delaytime);
 #endif

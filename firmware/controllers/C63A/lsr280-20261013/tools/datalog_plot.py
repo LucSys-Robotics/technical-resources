@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-T280 底盘数据观察 - 出图脚本
-适配 Python 3.8.10
+LSR280 chassis data observation - drawing script
+Compatible with Python 3.8.10
 
-用法:
+Usage:
     python3 datalog_plot.py 01
     python3 datalog_plot.py 01 --decimate 20 --logdir ./logs --outdir ./charts
 
-按数据组编号取 logs/01_data.csv, 图片输出到 charts/01/.
-也可以直接给 CSV 路径: python3 datalog_plot.py logs/01_data.csv
+Retrieve logs/01_data.csv by data group number, output images to charts/01/
+You can also directly provide the CSV path: python3 datalog_plot.py logs/01_data.csv
 
-会自动查找同组的 _event.csv, 把故障事件作为竖线标注叠加到相关图上.
+Automatically finds _event.csv within the same group and overlays fault events as vertical lines onto related diagrams.
 
-依赖:
+Dependency:
     pip3 install pandas matplotlib
-中文标题需要 CJK 字体, 缺失时自动退回英文:
+Chinese titles require CJK font; missing ones will automatically revert to English:
     sudo apt install fonts-noto-cjk && rm -rf ~/.cache/matplotlib
 """
 
@@ -31,7 +31,7 @@ except ImportError:
 
 try:
     import matplotlib
-    matplotlib.use("Agg")          # 无显示环境也能出图
+    matplotlib.use("Agg")          # Images can be produced even without a display environment
     import matplotlib.pyplot as plt
     from matplotlib import font_manager
 except ImportError:
@@ -40,8 +40,8 @@ except ImportError:
 
 
 # ----------------------------------------------------------------------------
-# 中文字体: Linux 上 matplotlib 默认字体没有中文字形, 不设置会显示成方块.
-# 找不到中文字体时自动退回英文标题, 保证图一定能看.
+# Chinese fonts: On Linux, matplotlib's default font does not include Chinese fonts; if not set, it will display as a block.
+# When Chinese fonts cannot be found, the English title is automatically returned to ensure the image is readable.
 # ----------------------------------------------------------------------------
 _CJK_CANDIDATES = [
     "Noto Sans CJK SC", "Noto Sans CJK JP", "Source Han Sans SC",
@@ -67,7 +67,7 @@ USE_CN = _setup_font()
 
 
 def T(cn, en):
-    """按字体可用性选择中文或英文文案"""
+    """Choose Chinese or English copy based on font availability"""
     return cn if USE_CN else en
 
 
@@ -90,7 +90,7 @@ def load_events(data_path):
 
 
 def mark_events(ax, events, t0_ms):
-    """把事件画成竖线, 只标注真正关心的几类, 避免图被塞满"""
+    """Draw events as vertical lines, marking only the categories you truly care about to avoid overcrowding the picture"""
     if events is None:
         return
     shown = set()
@@ -116,7 +116,7 @@ def save(fig, outdir, name):
 
 
 def resolve_group(group, logdir, outdir):
-    """把组编号解析成 (数据文件路径, 图片输出目录). 也接受直接给 CSV 路径"""
+    """Parse the group number to (data file path, image output directory). Also accept direct CSV paths"""
     if group.endswith(".csv"):
         data_path = group
         name = os.path.basename(group)
@@ -179,7 +179,7 @@ def main():
     x_lab = T("时间 (s)", "Time (s)")
     wl = T("轮 ", "Wheel ")
 
-    # ---- 1. 温度趋势 ----
+    # ---- 1. Temperature Trend ----
     fig, ax = plt.subplots(figsize=(14, 5))
     for w in WHEELS:
         ax.plot(t, df["tmp_" + w], label=wl + w, linewidth=1)
@@ -194,7 +194,7 @@ def main():
     ax.legend(loc="upper left", fontsize=8)
     save(fig, chart_dir, "01_temperature.png")
 
-    # ---- 2. 电流趋势 + 坡度 ----
+    # ---- 2. Current trend + slope ----
     fig, ax = plt.subplots(figsize=(14, 5))
     for w in WHEELS:
         ax.plot(t, df["cur_" + w], label=wl + w, linewidth=0.8)
@@ -212,7 +212,7 @@ def main():
     mark_events(ax, events, t0_ms)
     save(fig, chart_dir, "02_current.png")
 
-    # ---- 3. 转向跟随误差 + 限速比例 ----
+    # ---- 3. Steering Follow Error + Speed Limit Ratio ----
     fig, ax = plt.subplots(figsize=(14, 5))
     for w in WHEELS:
         ax.plot(t, df["st_err_%s_deg" % w], label=wl + w, linewidth=0.8)
@@ -230,7 +230,7 @@ def main():
     ax2.legend(loc="upper right", fontsize=8)
     save(fig, chart_dir, "03_steer_error.png")
 
-    # ---- 4. 打滑量 + 泄压闸 ----
+    # ---- 4. Slip amount + deceleration hold gate ----
     fig, ax = plt.subplots(figsize=(14, 5))
     ax.plot(t, df["slip_radps"], color="crimson", linewidth=0.8,
             label=T("打滑量 fb_vz - gyro_z", "Slip = fb_vz - gyro_z"))
@@ -251,7 +251,7 @@ def main():
     ax2.set_ylim(-0.1, 1.5)
     save(fig, chart_dir, "04_slip.png")
 
-    # ---- 5. 指令跟随链 ----
+    # ---- 5. Instruction Tracking Chain ----
     fig, axes = plt.subplots(3, 1, figsize=(14, 9), sharex=True)
     has_steer = "st_vz" in df.columns
     for i, (axis, unit) in enumerate((("vx", "m/s"), ("vy", "m/s"), ("vz", "rad/s"))):
@@ -271,7 +271,7 @@ def main():
     axes[-1].set_xlabel(x_lab)
     save(fig, chart_dir, "05_command_chain.png")
 
-    # ---- 6. 电压 vs 总电流 ----
+    # ---- 6. Voltage vs. Total Current ----
     fig, ax = plt.subplots(figsize=(14, 5))
     ax.plot(t, df["vol"], color="darkblue", linewidth=1,
             label=T("电池电压", "Battery voltage"))
@@ -295,7 +295,7 @@ def main():
     mark_events(ax, events, t0_ms)
     save(fig, chart_dir, "06_power.png")
 
-    # ---- 7. 运行总览 ----
+    # ---- 7. Run Overview ----
     fig, ax = plt.subplots(figsize=(14, 5))
     ax.plot(t, df["spd_mps"], color="teal", linewidth=0.8,
             label=T("合成线速度", "Speed"))
@@ -314,7 +314,7 @@ def main():
     ax.legend(loc="upper left", fontsize=8)
     save(fig, chart_dir, "07_overview.png")
 
-    # ---- 汇总 ----
+    # ---- Summary ----
     print("\n关键统计:")
     print("  运行时长      : %.2f 小时" % dur_h)
     hottest = max(WHEELS, key=lambda w: df["tmp_" + w].max())

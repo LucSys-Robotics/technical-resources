@@ -1,21 +1,21 @@
  
 #include "DataScope_DP.h"
   /**************************************************************************
-作者：LucSys Robotics
+By LucSys Robotics
 **************************************************************************/
-unsigned char DataScope_OutPut_Buffer[42] = {0};	   //串口发送缓冲区
+unsigned char DataScope_OutPut_Buffer[42] = {0};	   //Serial port send buffer
 
 
-//函数说明：将单精度浮点数据转成4字节数据并存入指定地址 
-//附加说明：用户无需直接操作此函数 
-//target:目标单精度数据
-//buf:待写入数组
-//beg:指定从数组第几个元素开始写入
-//函数无返回 
+//Function description: Converts single-precision floating-point data into 4 bytes and stores it at the specified address
+//Additional note: users do not need to call this function directly
+//target: target single-precision data
+//buf: Array to be written
+//beg: Specifies from which element of the array the write begins
+//function does not return
 void Float2Byte(float *target,unsigned char *buf,unsigned char beg)
 {
     unsigned char *point;
-    point = (unsigned char*)target;	  //得到float的地址
+    point = (unsigned char*)target;	  //Get float address
     buf[beg]   = point[0];
     buf[beg+1] = point[1];
     buf[beg+2] = point[2];
@@ -23,13 +23,13 @@ void Float2Byte(float *target,unsigned char *buf,unsigned char beg)
 }
  
  
-//函数说明：将待发送通道的单精度浮点数据写入发送缓冲区
-//Data：通道数据
-//Channel：选择通道（1-10）
-//函数无返回 
+//Function description: Writes single-precision floating-point data from the channel to be sent into the send buffer
+//Data: Channel data
+//Channel: Select channels (1-10)
+//function does not return
 void DataScope_Get_Channel_Data(float Data,unsigned char Channel)
 {
-	if ( (Channel > 10) || (Channel == 0) ) return;  //通道个数大于10或等于0，直接跳出，不执行函数
+	if ( (Channel > 10) || (Channel == 0) ) return;  //If channel count is greater than 10 or equal to 0, return immediately without executing the function
   else
   {
      switch (Channel)
@@ -49,16 +49,16 @@ void DataScope_Get_Channel_Data(float Data,unsigned char Channel)
 }
 
 
-//函数说明：生成 DataScopeV1.0 能正确识别的帧格式
-//Channel_Number，需要发送的通道个数
-//返回发送缓冲区数据个数
-//返回0表示帧格式生成失败 
+//Function Description: Generates frame formats correctly recognized by DataScope V1.0
+//Channel_Number, the number of channels to be sent
+//Return number of data items in the transmit buffer
+//Return 0 if frame generation failed
 unsigned char DataScope_Data_Generate(unsigned char Channel_Number)
 {
-	if ( (Channel_Number > 10) || (Channel_Number == 0) ) { return 0; }  //通道个数大于10或等于0，直接跳出，不执行函数
+	if ( (Channel_Number > 10) || (Channel_Number == 0) ) { return 0; }  //If channel count is greater than 10 or equal to 0, return immediately without executing the function
   else
   {	
-	 DataScope_OutPut_Buffer[0] = '$';  //帧头
+	 DataScope_OutPut_Buffer[0] = '$';  //Frame header
 		
 	 switch(Channel_Number)   
    { 

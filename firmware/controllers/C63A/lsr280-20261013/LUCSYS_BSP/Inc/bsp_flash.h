@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-//FLASH 参数保存与读取功能
+//FLASH parameter save and read function
 int8_t User_Flash_SaveParam(uint32_t* data,uint16_t datalen);
 void User_Flash_ReadParam(uint32_t* p,uint16_t datalen);
 

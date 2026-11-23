@@ -9,7 +9,7 @@
 | Resource | Link |
 | --- | --- |
 | Driver source (Humble, 2026-09-03) | [Browse source](../../ros2/chassis-drivers/humble-20260903/) |
-| Driver download | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/source-2026-11-23-lucsys-models/lucsys_ros2_humble_20260903.zip) |
+| Driver download | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/source-2026-11-23-en/lucsys_ros2_humble_20260903.zip) |
 | Build and connection instructions | [Ubuntu 22.04 / ROS 2 Humble](../../ros2/chassis-drivers/humble-20260903/README.md#build) |
 
 The driver ZIP includes the chassis driver, message definitions and serial dependency. It is separate from the model package below and is not a complete navigation, sensor or robotic-arm SDK. Build and virtual-serial tests do not verify vehicle behavior.
@@ -31,7 +31,7 @@ The linked package README contains its build command and supported preview confi
 | Resource | Link |
 | --- | --- |
 | STM32 source | [Browse project](../../firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/) |
-| STM32 download | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/source-2026-11-23-lucsys-models/lucsys_lsr100_lsr180_lsr200_lsr300_20260127.zip) |
+| STM32 download | [ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/source-2026-11-23-en/lucsys_lsr100_lsr180_lsr200_lsr300_20260127.zip) |
 | Compiler, target selection and flashing instructions | [Project guide](../../firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/README.md#build-and-flash) |
 
 LSR100, LSR180, LSR200 and LSR300 link to the same source archive. Select the matching mode and delivered hardware; shared storage does not make their parameters interchangeable. Do not use the LSR280 branch as a substitute.
@@ -40,7 +40,7 @@ The selected project uses Keil MDK / ARM Compiler 5.06 update 7. Native Keil com
 
 ## 4. Download verification
 
-- [Driver and STM32 ZIP SHA256 checksums](https://github.com/LucSys-Robotics/technical-resources/releases/download/source-2026-11-23-lucsys-models/SHA256SUMS.txt)
+- [Driver and STM32 ZIP SHA256 checksums](https://github.com/LucSys-Robotics/technical-resources/releases/download/source-2026-11-23-en/SHA256SUMS.txt)
 - [Model ZIP SHA256 checksums](https://github.com/LucSys-Robotics/technical-resources/releases/download/ros2-humble-v1.0.0/SHA256SUMS.txt)
 
 Extract each selected ROS package into a workspace `src/` directory and follow its linked build guide. Keep STM32 projects separate from the ROS workspace. Confirm the delivered configuration before hardware operation.

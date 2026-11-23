@@ -4,9 +4,9 @@
 #include <stdint.h>
 
 typedef struct{
-	void (*init)(void);                                        //CAN初始化
-	uint8_t (*sendStd)(uint32_t id,uint8_t *pData,uint8_t Len); //发送标准帧数据
-	uint8_t (*sendExt)(uint32_t id,uint8_t *pData,uint8_t Len); //发送扩展帧数据
+	void (*init)(void);                                        //CAN initialization
+	uint8_t (*sendStd)(uint32_t id,uint8_t *pData,uint8_t Len); //Send standard frame data
+	uint8_t (*sendExt)(uint32_t id,uint8_t *pData,uint8_t Len); //Send extended frame data
 }CANInterface_t,*pCANInterface_t; 
 
 typedef struct{

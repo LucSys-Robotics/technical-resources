@@ -10,9 +10,9 @@ u8 oled_page=0;
 Function: Read the battery voltage, buzzer alarm, start the self-test, send data to APP, OLED display task
 Input   : none
 Output  : none
-函数功能：读取电池电压、蜂鸣器报警、开启自检、向APP发送数据、OLED显示屏显示任务
-入口参数：无
-返回  值：无
+Function: reads battery voltage, alarms with buzzer, enables self-test, sends data to the app, displays tasks on the OLED screen
+Entry parameters: None
+Return value: none
 **************************************************************************/
 int Buzzer_count=25;
 void show_task(void *pvParameters)
@@ -22,19 +22,19 @@ void show_task(void *pvParameters)
    {	
 		int i=0;
 		static int LowVoltage_1=0, LowVoltage_2=0;
-		vTaskDelayUntil(&lastWakeTime, F2T(RATE_10_HZ));//This task runs at 10Hz //此任务以10Hz的频率运行
+		vTaskDelayUntil(&lastWakeTime, F2T(RATE_10_HZ));//This task runs at 10Hz // This task runs at 10Hz
 		
-		//开机时蜂鸣器短暂蜂鸣，开机提醒
+		//The buzzer briefly beeps at startup to remind you on startup
 		//The buzzer will beep briefly when the machine is switched on
 		if(Time_count<50)Buzzer=1; 
 		else if(Time_count>=51 && Time_count<100)Buzzer=0;
 		 
 		if(LowVoltage_1==1 || LowVoltage_2==1)Buzzer_count=0;
 		if(Buzzer_count<5)Buzzer_count++;
-		if(Buzzer_count<5)Buzzer=1; //The buzzer is buzzing //蜂鸣器蜂鸣
+		if(Buzzer_count<5)Buzzer=1; //The buzzer is buzzing // Buzzer is buzzing
 		else if(Buzzer_count==5)Buzzer=0;
 		
-		//Read the battery voltage //读取电池电压
+		//Read the battery voltage //Read battery voltage
 		for(i=0;i<100;i++)
 		{
 			Voltage_All+=Get_battery_volt(); 
@@ -45,12 +45,12 @@ void show_task(void *pvParameters)
 		
 
 		
-		if(LowVoltage_1==1)LowVoltage_1++; //Make sure the buzzer only rings for 0.5 seconds //确保蜂鸣器只响0.5秒
-		if(LowVoltage_2==1)LowVoltage_2++; //Make sure the buzzer only rings for 0.5 seconds //确保蜂鸣器只响0.5秒					
-		APP_Show();	 //Send data to the APP //向APP发送数据
+		if(LowVoltage_1==1)LowVoltage_1++; //Make sure the buzzer only rings for 0.5 seconds // Make sure the buzzer only rings for 0.5 seconds
+		if(LowVoltage_2==1)LowVoltage_2++; //Make sure the buzzer only rings for 0.5 seconds // Make sure the buzzer only rings for 0.5 seconds
+		APP_Show();	 //Send data to the APP //Send data to the APP
 		
 		if(oled_refresh_flag) OLED_Clear(),oled_refresh_flag=0;
-		else oled_show(); //Tasks are displayed on the screen //显示屏显示任务
+		else oled_show(); //Tasks are displayed on the screen //Display Tasks on Screen
    }
 }  
 
@@ -58,9 +58,9 @@ void show_task(void *pvParameters)
 Function: The OLED display displays tasks
 Input   : none
 Output  : none
-函数功能：OLED显示屏显示任务
-入口参数：无
-返回  值：无
+Function: OLED display displays tasks
+Entry parameters: None
+Return value: none
 **************************************************************************/
 extern u8 start_clear;
 extern u8 clear_state;
@@ -70,16 +70,16 @@ void oled_show(void)
 
     //Collect the tap information of the potentiometer,
     //and display the car model to be fitted when the car starts up in real time
-    //采集电位器档位信息，实时显示小车开机时要适配的小车型号
+    //Read potentiometer setting and display the chassis type selected for startup in real time
     Car_Mode_Show=(int) (Get_adc_Average(CAR_MODE_ADC,10)/Divisor_Mode);
 
     Voltage_Show=Voltage*100;
 
     //The first line of the display displays the content//
-    //显示屏第1行显示内容//
+    //Display content in line 1 //
     OLED_ShowString(0,0,"TYPE:");
-    if (robot_mode_check_flag==0) OLED_ShowNumber(40,0,Car_Mode_Show,2,12);	 //Display robot type //显示机器人类型
-    else if (robot_mode_check_flag==1) OLED_ShowString(40,0,"X");            //Type mismatch displays "X" //类型不适配时显示”X“
+    if (robot_mode_check_flag==0) OLED_ShowNumber(40,0,Car_Mode_Show,2,12);	 //Display robot type // Display robot type
+    else if (robot_mode_check_flag==1) OLED_ShowString(40,0,"X");            //Type mismatch displays "X" // Show "X" when type mismatches
 
     OLED_ShowString(0,10,"A");
     if( MOTOR_A.Target<0)	OLED_ShowString(15,10,"-"),
@@ -93,9 +93,9 @@ void oled_show(void)
                                 OLED_ShowNumber(75,10, MOTOR_A.Encoder*1000,5,12);
 
     //The third line of the display displays the content//
-    //显示屏第3行显示内容//
+    //Display content in line 3 //
     //Display the target speed and current speed of motor B
-    //显示电机B的目标速度和当前速度
+    //Displays the target speed and current speed of motor B
     OLED_ShowString(0,20,"B");
     if( MOTOR_B.Target<0)	OLED_ShowString(15,20,"-"),
           OLED_ShowNumber(20,20,-MOTOR_B.Target*1000,5,12);
@@ -108,9 +108,9 @@ void oled_show(void)
                                 OLED_ShowNumber(75,20, MOTOR_B.Encoder*1000,5,12);
 
     //The fourth line of the display displays the content//
-    //显示屏第4行显示内容//
+    //Display content in line 4 //
     //Display the target speed and current speed of motor C
-    //显示电机C的目标速度和当前速度
+    //Displays the target speed and current speed of motor C
     OLED_ShowString(0,30,"C");
     if( MOTOR_C.Target<0)	OLED_ShowString(15,30,"-"),
           OLED_ShowNumber(20,30,- MOTOR_C.Target*1000,5,12);
@@ -123,9 +123,9 @@ void oled_show(void)
                                 OLED_ShowNumber(75,30, MOTOR_C.Encoder*1000,5,12);
 
     //Line 5 of the display displays the content//
-    //显示屏第5行显示内容//
+    //Display content in line 5 //
 #if Mec
-    //麦轮小车显示电机C的目标速度和当前速度
+    //Mecanum chassis displays motor C target and current speeds
     //Wheel trolley displays the target speed and current speed of motor C
     OLED_ShowString(0,40,"D");
     if( MOTOR_D.Target<0)	OLED_ShowString(15,40,"-"),
@@ -140,7 +140,7 @@ void oled_show(void)
 
 #elif Omni
     // Omnidirectional wheel shows Z-axis speed (1000 times magnification) in rad/s //
-    // 全向轮车显示Z轴速度(放大1000倍), 单位rad/s //
+    // Omnidirectional wheel displays Z-axis speed (magnified 1000x), unit: rad/s //
     OLED_ShowString(0,40,"MOVE_Z");
     if( Send_Data.Sensor_Str.X_speed<0)	OLED_ShowString(60,40,"-"),
         OLED_ShowNumber(75,40,-Send_Data.Sensor_Str.X_speed,5,12);
@@ -148,9 +148,9 @@ void oled_show(void)
                                 OLED_ShowNumber(75,40, Send_Data.Sensor_Str.X_speed,5,12);
 #endif
 
-    //显示屏第6行显示内容
+    //Content displayed in line 6 of the display
     //Line 6 of the display displays the contents
-    //Displays the current control mode //显示当前控制模式
+    //Displays the current control mode // Display the current control mode
 
 //    if      (PS2_ON_Flag==1)
 //        OLED_ShowString(0,50,"PS2  ");
@@ -183,19 +183,19 @@ void oled_show(void)
 //        OLED_ShowString(70,0,"ARM-NO ");
 
     //Displays whether controls are allowed in the current car
-    //显示当前小车是否允许控制
+    //Shows whether the current chassis is allowed to be controlled
     if(EN==1&&Flag_Stop==0)   OLED_ShowString(45,50,"O N");
     else                      OLED_ShowString(45,50,"OFF");
 
     //Displays the current battery voltage
-    //显示当前电池电压
+    //Displays the current battery voltage
     OLED_ShowString(88,50,".");
     OLED_ShowString(110,50,"V");
     OLED_ShowNumber(75,50,Voltage_Show/100,2,12);
     OLED_ShowNumber(98,50,Voltage_Show%100,2,12);
     if(Voltage_Show%100<10) 	OLED_ShowNumber(92,50,0,2,12);
 
-    //Refresh the screen //刷新屏幕
+    //Refresh the screen // Refresh the screen
     OLED_Refresh_Gram();
 	
 }
@@ -203,9 +203,9 @@ void oled_show(void)
 Function: Send data to the APP
 Input   : none
 Output  : none
-函数功能：向APP发送数据
-入口参数：无
-返回  值：无
+Function: Send data to the app
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void APP_Show(void)
 {    
@@ -213,36 +213,36 @@ void APP_Show(void)
 	 int Left_Figure,Right_Figure,Voltage_Show;
 	
 	 //The battery voltage is processed as a percentage
-	 //对电池电压处理成百分比形式
+	 //Processing battery voltage as a percentage
 	 Voltage_Show=(Voltage*100-2000)*5/26;
 	 if(Voltage_Show>100)Voltage_Show=100; 
 	
 	 //Wheel speed unit is converted to 0.01m/s for easy display in APP
-	 //车轮速度单位转换为0.01m/s，方便在APP显示
+	 //Wheel speed units are converted to 0.01 m/s, making it easy to display in the app
 	 Left_Figure=MOTOR_A.Encoder*100;  if(Left_Figure<0)Left_Figure=-Left_Figure;	 
 	 Right_Figure=MOTOR_B.Encoder*100; if(Right_Figure<0)Right_Figure=-Right_Figure;
 	
 	 //Used to alternately print APP data and display waveform
-	 //用于交替打印APP数据和显示波形
+	 //Used to alternately print APP data and display waveform
 	 flag_show=!flag_show;
 	
  if(PID_Send==1)
 	 {
 		 //Send parameters to the APP, the APP is displayed in the debug screen
-		 //发送参数到APP，APP在调试界面显示
-		 printf("{C%d:%d:%d}$",(int)RC_Velocity,(int)Velocity_KP,(int)Velocity_KI);//打印到APP上面
+		 //Send parameters to the app, which displays them on the debug interface
+		 printf("{C%d:%d:%d}$",(int)RC_Velocity,(int)Velocity_KP,(int)Velocity_KI);//Print it onto the app
 		 PID_Send=0;	
 	 }	
 	 else	if(flag_show==0)
 	 {
 		 //Send parameters to the APP and the APP will be displayed on the front page
-		 //发送参数到APP，APP在首页显示
+		 //Send parameters to the app, which will display them on the homepage
 	   printf("{A%d:%d:%d:%d}$",(u8)Left_Figure,(u8)Right_Figure,Voltage_Show,(int)gyro[2]); 
 	 }
 	 else
 	 {
 		 //Send parameters to the APP, the APP is displayed in the waveform interface
-		 //发送参数到APP，APP在波形界面显示
+		 //Send parameters to the app, which displays them on the waveform interface
 	   printf("{B%d:%d:%d}$",(int)gyro[0],(int)gyro[1],(int)gyro[2]);
 	 }
 
@@ -257,7 +257,7 @@ float VolMean_Filter(float data)
     float Filter_Speed;
     static  float Speed_Buf[VOL_COUNT]= {0};
 	
-	/*----------- 数组初始化 -----------*/
+	/*----------- Array Initialization -----------*/
 	static u8 once=1;
 	if(once)
 	{

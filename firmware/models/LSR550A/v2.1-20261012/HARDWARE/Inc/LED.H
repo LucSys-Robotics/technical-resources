@@ -2,7 +2,7 @@
 #define __LED_H
 #include "sys.h"
 
-//LED颜色定义
+//LED color definition
 typedef enum{
 	LED_Red     , 
 	LED_Purple  ,
@@ -13,13 +13,13 @@ typedef enum{
 	LED_White   ,
 }LED_COLOR;
 
-//LED开关状态定义
+//LED switch status definition
 enum{
 	LED_ON  = 0 ,
 	LED_OFF = 1
 };
 
-//RGB灯带定义
+//Define the RGB light strip
 enum{
 	RGB_FULL_ON  = 255,
 	RGB_FULL_OFF = 0
@@ -36,7 +36,7 @@ void LightStrip_SetColor( uint8_t r,uint8_t g,uint8_t b );
 /*----------------------------------*/
 
 /*--------LED config--------*/
-//LED灯珠
+//LED light beads
 #define ENABLE_LED_R_PIN_CLOCK RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE)
 #define ENABLE_LED_G_PIN_CLOCK RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE)
 #define ENABLE_LED_B_PIN_CLOCK RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE)
@@ -56,7 +56,7 @@ void LightStrip_SetColor( uint8_t r,uint8_t g,uint8_t b );
 
 
 /*--------LED V1.0 config--------*/
-//LED灯珠
+//LED light beads
 #define V1_0_ENABLE_LED_R_PIN_CLOCK RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE)
 #define V1_0_ENABLE_LED_G_PIN_CLOCK RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE)
 #define V1_0_ENABLE_LED_B_PIN_CLOCK RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE)
@@ -75,32 +75,32 @@ void LightStrip_SetColor( uint8_t r,uint8_t g,uint8_t b );
 /*----------------------------------*/
 
 /*--------LightStrip config--------*/
-/*-------- RGB灯带配置 --------*/
-#define ENABLE_LightStrip_R_TIM_CLOCK   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM12,ENABLE) //定时器
+/*-------- RGB Light Strip Configuration --------*/
+#define ENABLE_LightStrip_R_TIM_CLOCK   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM12,ENABLE) //Timer
 #define ENABLE_LightStrip_G_TIM_CLOCK   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9,ENABLE) 
 #define ENABLE_LightStrip_B_TIM_CLOCK   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM12,ENABLE) 
 
-#define ENABLE_LightStrip_R_PORT_CLOCK   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE) //引脚端口
+#define ENABLE_LightStrip_R_PORT_CLOCK   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE) //Pin port
 #define ENABLE_LightStrip_G_PORT_CLOCK   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE,ENABLE) 
 #define ENABLE_LightStrip_B_PORT_CLOCK   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE)
 	
-#define LightStrip_R_PORT      GPIOB            //引脚端口
-#define LightStrip_R_PIN       GPIO_Pin_15      //引脚
-#define LightStrip_R_TIM       TIM12            //使用的定时器
-#define LightStrip_R_Channel   2                //使用了定时器的哪一个通道CCRx(1~4)
+#define LightStrip_R_PORT      GPIOB            //Pin port
+#define LightStrip_R_PIN       GPIO_Pin_15      //Pin
+#define LightStrip_R_TIM       TIM12            //Timer used
+#define LightStrip_R_Channel   2                //Which channel is the timer used for CCRx(1~4)?
 
-#define LightStrip_G_PORT      GPIOE            //引脚端口 （此处注意,高配阿克曼舵机pwm信号也使用了TIM9定时器）
-#define LightStrip_G_PIN       GPIO_Pin_6       //引脚
-#define LightStrip_G_TIM       TIM9             //使用的定时器
-#define LightStrip_G_Channel   2                //使用了定时器的哪一个通道CCRx(1~4)
+#define LightStrip_G_PORT      GPIOE            //Pin Ports (Note here: high-end Ackermann servo PWM signals also use TIM9 timers)
+#define LightStrip_G_PIN       GPIO_Pin_6       //Pin
+#define LightStrip_G_TIM       TIM9             //Timer used
+#define LightStrip_G_Channel   2                //Which channel is the timer used for CCRx(1~4)?
 
-#define LightStrip_B_PORT      GPIOB            //引脚端口
-#define LightStrip_B_PIN       GPIO_Pin_14      //引脚
-#define LightStrip_B_TIM       TIM12            //使用的定时器
-#define LightStrip_B_Channel   1                //使用了定时器的哪一个通道CCRx(1~4)
+#define LightStrip_B_PORT      GPIOB            //Pin port
+#define LightStrip_B_PIN       GPIO_Pin_14      //Pin
+#define LightStrip_B_TIM       TIM12            //Timer used
+#define LightStrip_B_Channel   1                //Which channel is the timer used for CCRx(1~4)?
 /*--------------------------------------------*/
 
-//定时器通道宏：根据用户选择的通道自动判断,用户无需修改以下内容
+//Timer channel macro: Automatically judges channels selected by the user, without requiring modifications
 #if LightStrip_R_Channel==1
 	#define LightStrip_R           LightStrip_R_TIM->CCR1
 #elif LightStrip_R_Channel == 2

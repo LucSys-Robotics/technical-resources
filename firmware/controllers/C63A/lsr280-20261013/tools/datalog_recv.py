@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-T280 底盘数据观察接收端
-适配 Python 3.8.10 / Linux / CH343 USB 串口
+LSR280 chassis data observation receiver
+Compatible with Python 3.8.10 / Linux / CH343 USB serial
 
-用法:
+Usage:
     python3 datalog_recv.py 01
     python3 datalog_recv.py 01 --port /dev/ttyCH343USB0 --outdir ./logs
 
-按数据组编号命名, 上面的例子会生成:
+Name by data group number, the above example will generate:
     logs/01_data.csv  logs/01_event.csv  logs/01_stat.csv  logs/01_raw.txt
 
-该组任一文件已存在时直接拒绝运行, 避免覆盖已采集的长测数据.
-确实要重采时加 --force.
+If any file in the group already exists, directly refuse to run to avoid overwriting collected long-term test data.
+Add --force when remining is necessary.
 
-依赖:
+Dependency:
     pip3 install pyserial
 """
 
@@ -36,8 +36,8 @@ except ImportError:
 
 
 # ----------------------------------------------------------------------------
-# 与固件 datalog_task.h 保持一致的列定义与缩放系数
-# 修改固件字段时, 必须同步修改这里
+# Column definitions consistent with firmware datalog_task.h and scaling factors
+# When modifying firmware fields, you must update them simultaneously
 # ----------------------------------------------------------------------------
 
 SCALE_VEL = 1000.0   # mm/s      -> m/s
@@ -47,12 +47,12 @@ SCALE_CUR = 10.0     # 0.1A      -> A
 SCALE_TMP = 10.0     # 0.1degC   -> degC
 SCALE_VOL = 100.0    # 0.01V     -> V
 SCALE_ANG = 100.0    # 0.01deg   -> deg
-SCALE_SCL = 1000.0   # 千分比    -> 比例
+SCALE_SCL = 1000.0   # Per mille -> ratio
 
 COUNTS_PER_REV = 16384.0
 COUNTS_PER_DEG = COUNTS_PER_REV / 360.0
 
-# (列名, 缩放除数)  缩放为 None 表示保持整数原样
+# (column name, scaling divisor) scaling to None means keeping the integer intact as is
 D_FIELDS = [
     ("t_ms",   None), ("seq",    None), ("src",  None), ("en",   None),
     ("err",    None), ("hold",   None), ("park", None),
@@ -81,30 +81,30 @@ D_FIELDS = [
     ("online_bm", None), ("err_bm", None), ("comm_qua", None), ("fw_drop", None),
     ("send_cnt", None),
 
-    # AutoTest 航向控制内部量.
-    # vz_min/vz_max/vz_flip 是固件按 50Hz 在过去 100ms 窗口内累积的, 不是采样瞬时值 ——
-    # 平移段 Vz 的振荡只能从包络宽度和翻转次数上看出来, 10Hz 采样直接读会混叠。
-    ("at_yaw0",   SCALE_ANG),   # 测试坐标系基准航向, 启动后应恒定
-    ("at_yaw_err", SCALE_ANG),  # PD 的输入
-    ("at_vz_raw", SCALE_OMG),   # 限幅前的 PD 输出
-    ("at_vz_min", SCALE_OMG),   # 窗口内下发 Vz 的下包络
-    ("at_vz_max", SCALE_OMG),   # 窗口内下发 Vz 的上包络
-    ("at_vz_flip", None),       # 窗口内 Vz 符号翻转次数, 振荡的直接指标
-    ("at_seg",    None),        # 当前段索引
-    ("at_state",  None),        # 0=待机 1=执行 2=段间停顿 3=收尾
+    # AutoTest internal variables for heading control.
+    # vz_min/vz_max/vz_flip are accumulated by the firmware over a 100ms window at 50Hz, not instantaneous sample values
+    # The oscillation of the translation segment Vz can only be seen from the envelope width and number of flips; a 10Hz sample will be assorted directly when read.
+    ("at_yaw0",   SCALE_ANG),   # Test coordinate system reference heading; after starting, it should remain constant
+    ("at_yaw_err", SCALE_ANG),  # input for PD
+    ("at_vz_raw", SCALE_OMG),   # PD output before limiting
+    ("at_vz_min", SCALE_OMG),   # Send the lower envelope of Vz within the window
+    ("at_vz_max", SCALE_OMG),   # Upper envelope of Vz is sent down within the window
+    ("at_vz_flip", None),       # The number of times the Vz symbol flips in the window, a direct indicator of oscillations
+    ("at_seg",    None),        # Current segment index
+    ("at_state",  None),        # 0 = Standby 1 = Execute 2 = Pause between segments 3 = Finish
 ]
 
-# 接收端计算的派生列 (放在 CSV 末尾, 便于直接出图)
+# Derived columns computed by the receiver (placed at the end of the CSV for direct plot output)
 DERIVED_FIELDS = [
-    "t_s",            # 从第一帧起的秒数, 画图用横轴
-    "spd_mps",        # 合成线速度 sqrt(fb_vx^2+fb_vy^2)
-    "slip_radps",     # 打滑量 = fb_vz - gyro_z, 四轮四转最关键的诊断量
-    "st_err_A_deg", "st_err_B_deg", "st_err_C_deg", "st_err_D_deg",  # 转向跟随误差
-    "mprg_deg",       # 最大转向偏差(度)
-    "cur_sum_A",      # 四轮电流绝对值之和, 看整车负载
-    "send_rate",      # set_MotorPos 次/秒, 直接反映 CAN 下发负载
-    "at_vz_span",     # 窗口内 Vz 包络宽度 = max-min, 一眼看出振荡幅度
-    "host_ts",        # 上位机接收时刻, 用于核对固件时基
+    "t_s",            # Seconds from the first frame, drawing with the horizontal axis
+    "spd_mps",        # Composite linear velocity sqrt(fb_vx^2 + fb_vy^2)
+    "slip_radps",     # Slip amount = fb_vz - gyro_z, the most critical diagnostic volume for four wheels and four turns
+    "st_err_A_deg", "st_err_B_deg", "st_err_C_deg", "st_err_D_deg",  # Steering following error
+    "mprg_deg",       # Maximum steering deviation (degrees)
+    "cur_sum_A",      # Sum of the absolute currents of all four wheels, indicating total chassis load
+    "send_rate",      # set_MotorPos times/second, directly reflecting CAN load dispatch
+    "at_vz_span",     # Width of the Vz envelope inside the window = max-min, instantly showing the oscillation amplitude
+    "host_ts",        # The host computer receives the time, used to verify the firmware timebase
 ]
 
 D_HEADER = [name for name, _ in D_FIELDS] + DERIVED_FIELDS
@@ -115,7 +115,7 @@ S_HEADER = ["t_ms", "uptime_s", "dist_m", "hold_cnt", "err_cnt",
 SUFFIXES = ("_data.csv", "_event.csv", "_stat.csv", "_raw.txt")
 
 
-# 报错码位定义, 与 RobotControl_task.h 的 errCode_* 一致
+# Error code point definition, consistent with errCode_* in RobotControl_task.h
 ERR_BITS = [
     (1 << 0,  "LowPower"),
     (1 << 1,  "StopKeyEn"),
@@ -138,7 +138,7 @@ CMD_SOURCE = {
 
 
 def decode_err(value):
-    """把 ErrNum 位图翻成可读字符串"""
+    """Translate the ErrNum bitmap into a readable string"""
     try:
         v = int(value)
     except (TypeError, ValueError):
@@ -150,7 +150,7 @@ def decode_err(value):
 
 
 def check_group(group, outdir, force):
-    """校验组名并检查是否已存在. 返回文件前缀"""
+    """Validate the group name and check if it already exists. Returns the file prefix"""
     if not re.match(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$", group):
         sys.stderr.write(
             "组名 '%s' 不合法.\n"
@@ -181,7 +181,7 @@ def check_group(group, outdir, force):
 
 
 class Session(object):
-    """一次采集会话, 负责 4 个输出文件的写入"""
+    """One acquisition session is responsible for writing 4 output files"""
 
     def __init__(self, prefix):
         self.prefix = prefix
@@ -199,19 +199,19 @@ class Session(object):
         self.w_evt.writerow(E_HEADER)
         self.w_stat.writerow(S_HEADER)
 
-        self.t0_ms = None          # 第一帧的固件时间戳
+        self.t0_ms = None          # Firmware timestamp of the first frame
         self.last_seq = None
-        self.last_send = None      # 上一帧的 set_MotorPos 累计次数
+        self.last_send = None      # The set_MotorPos count of the previous frame
         self.last_send_t = 0.0
-        self.warned_fields = False # 字段数不匹配只警告一次
+        self.warned_fields = False # Field count mismatch only triggers one warning
         self.n_data = 0
         self.n_evt = 0
         self.n_stat = 0
         self.n_bad = 0
-        self.n_lost = 0            # 按 seq 断号推算的丢帧数
+        self.n_lost = 0            # Estimated frame loss based on seq breaks
         self.last_flush = time.time()
 
-    # ---------- 行处理 ----------
+    # ---------- Row Processing ----------
 
     def feed(self, line):
         self.f_raw.write(line + "\n")
@@ -230,7 +230,7 @@ class Session(object):
             else:
                 self.n_bad += 1
         except Exception:
-            # 单行解析失败不能影响长时间采集
+            # Single-line parsing failures cannot affect long-term acquisition
             self.n_bad += 1
 
         if time.time() - self.last_flush > 2.0:
@@ -242,10 +242,10 @@ class Session(object):
 
     def _on_data(self, line):
         parts = line.split(",")
-        # 首字段 D + len(D_FIELDS) 个数据字段
+        # First field D followed by len(D_FIELDS) data fields
         if len(parts) != len(D_FIELDS) + 1:
             self.n_bad += 1
-            # 字段数对不上会导致整轮数据全丢, 必须立刻喊出来而不是静默计数
+            # If the number of fields doesn't match, the entire round of data will be lost. You must shout it out immediately instead of counting silently
             if not self.warned_fields:
                 self.warned_fields = True
                 sys.stdout.write(
@@ -271,13 +271,13 @@ class Session(object):
             val[name] = v
             row.append(v)
 
-        # 丢帧统计
+        # Frame loss statistics
         seq = int(val["seq"])
         if self.last_seq is not None and seq > self.last_seq + 1:
             self.n_lost += seq - self.last_seq - 1
         self.last_seq = seq
 
-        # 派生列
+        # Derived column
         if self.t0_ms is None:
             self.t0_ms = val["t_ms"]
         t_s = (val["t_ms"] - self.t0_ms) / 1000.0
@@ -291,7 +291,7 @@ class Session(object):
         mprg_deg = val["mprg"] / COUNTS_PER_DEG
         cur_sum = sum(abs(val["cur_" + ax]) for ax in ("A", "B", "C", "D"))
 
-        # set_MotorPos 下发速率 (次/秒), 由累计计数差分得到
+        # set_MotorPos Delivery rate (times/second), obtained from the cumulative count difference
         send_rate = 0.0
         if self.last_send is not None and t_s > self.last_send_t:
             send_rate = (val["send_cnt"] - self.last_send) / (t_s - self.last_send_t)
@@ -322,7 +322,7 @@ class Session(object):
         self.w_evt.writerow([t_ms, etype, oldv, newv, host])
         self.n_evt += 1
 
-        # 事件直接打到终端, 现场能立刻看到
+        # Events directly printed to the terminal, visible on site immediately
         note = ""
         try:
             if etype == "ERR":
@@ -355,7 +355,7 @@ class Session(object):
                               cur_peak, tmp_peak, drop, host])
         self.n_stat += 1
 
-    # ---------- 维护 ----------
+    # ---------- Maintenance ----------
 
     def flush(self):
         self.f_raw.flush()
@@ -407,7 +407,7 @@ def main():
 
     signal.signal(signal.SIGINT, _on_sigint)
 
-    # ---- 离线重解析模式 ----
+    # ---- Offline Re-parsing Mode ----
     if args.replay:
         if not os.path.isfile(args.replay):
             sys.stderr.write("找不到原始文件: %s\n" % args.replay)
@@ -443,7 +443,7 @@ def main():
 
     try:
         while _running:
-            # ---- 连接 / 重连 ----
+            # ---- Connect / Reconnect ----
             if ser is None:
                 try:
                     ser = serial.Serial(args.port, args.baud, timeout=0.2)
@@ -456,7 +456,7 @@ def main():
                     time.sleep(2.0)
                     continue
 
-            # ---- 读取 ----
+            # ---- Read ----
             try:
                 chunk = ser.read(4096)
             except Exception as e:
@@ -477,12 +477,12 @@ def main():
                     line = raw.decode("utf-8", errors="replace").strip("\r\n \t")
                     if line:
                         sess.feed(line)
-                # 防止异常情况下缓冲无限增长
+                # Prevent unbounded buffer growth under abnormal conditions
                 if len(buf) > 65536:
                     buf = b""
                     sess.n_bad += 1
 
-            # ---- 每5秒打一次状态 ----
+            # ---- Status every 5 seconds----
             now = time.time()
             if now - last_report >= 5.0:
                 rate = (sess.n_data - last_n) / (now - last_report)

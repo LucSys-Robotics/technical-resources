@@ -12,41 +12,41 @@
 //}CANOpenType_t;
 
 
-//电机类型枚举
+//Enumeration of motor types
 enum{
-	SingleAxis_5inch = 0,  //5寸单出轴电机,适配型号S100
-	DoubleAxis_5inch ,     //5寸双出轴电机,适配型号S300Mini(S150)
-	SingleAxis_8inch ,     //8寸单出轴电机,适配型号S200、S200户外版本(S200_OUTDOOR)、S260
-	DoubleAxis_8inch ,     //8寸双出轴电机,适配型号S300
-	SteeringMotor ,        //中空电机,用于转向
+	SingleAxis_5inch = 0,  //5-inch single-shaft motor, compatible with model S100
+	DoubleAxis_5inch ,     //5-inch dual shaft motor, compatible with model S300Mini (S150)
+	SingleAxis_8inch ,     //8-inch single-shaft motor, compatible with models S200, S200 outdoor version (S200_OUTDOOR), and S260
+	DoubleAxis_8inch ,     //8-inch dual-shaft motor, compatible with model S300
+	SteeringMotor ,        //Hollow motor for steering
 };
 
-//电机运行模式
+//Motor operating mode
 enum{
 	SpeedMode = 0,
 	PosMode = 1,
 };
 
-//伺服电机驱动器结构体
+//Servo motor driver structure
 typedef struct{
-	uint8_t NodeID;       //驱动器的节点ID
-	uint8_t  onlineFlag;  //在线标志位
-	uint8_t  errFlag;     //驱动报错标志位
-	uint8_t  motorEnflag; //电机使能或释放标志位
-	uint8_t  initMode;    //初始化类型(速度模式、位置模式、转矩模式)
-	uint8_t  motorType;   //电机类型
-	uint16_t SoftWareVer; //驱动器软件版本
-	uint16_t LeftMotorErr;//左轮报错码
-	uint16_t RightMotorErr;//右轮报错码
-	float comm_qua;      //通信质量,百分比表示
-	uint32_t comm_cnt;   //私有变量,统计单位时间内的通信次数
-	uint32_t comm_Errcnt;//私有变量,统计单位时间内的通信错误次数
-	uint32_t time_tick;  //私有变量,统计时间
-	uint32_t online_tick;//私有变量,统计心跳时间
+	uint8_t NodeID;       //Driver node ID
+	uint8_t  onlineFlag;  //Online Flag Spots
+	uint8_t  errFlag;     //Driver fault flag
+	uint8_t  motorEnflag; //Motor enables or releases marker positions
+	uint8_t  initMode;    //Initialization types (speed mode, position mode, torque mode)
+	uint8_t  motorType;   //Motor type
+	uint16_t SoftWareVer; //Driver software version
+	uint16_t LeftMotorErr;//Revolver error code
+	uint16_t RightMotorErr;//Right-wheel error code
+	float comm_qua;      //Communication quality as a percentage
+	uint32_t comm_cnt;   //Private variable, which counts the number of communications per unit time
+	uint32_t comm_Errcnt;//Private variables that count the number of communication errors per unit time
+	uint32_t time_tick;  //Private variable, statistical time
+	uint32_t online_tick;//Private variables to count heartbeat times
 }ServoDriverHWType_t;
 
 
-//伺服驱动器部分PID,用于调节轮子上锁时松紧度
+//Servo drive part PID used to adjust the tightness of the wheel when it locks
 typedef struct{
 	uint16_t SpeedKp;
 	uint16_t SpeedKi;

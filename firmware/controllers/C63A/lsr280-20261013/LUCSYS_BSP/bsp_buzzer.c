@@ -5,8 +5,8 @@
 #include "task.h"
 #include "cmsis_os.h"
 
-static uint8_t TaskTipsCount = 0;   //蜂鸣次数
-static uint16_t TaskTipsTimeInt = 0;//蜂鸣时间间隔
+static uint8_t TaskTipsCount = 0;   //Number of beeps
+static uint16_t TaskTipsTimeInt = 0;//Beep interval
 volatile static uint8_t taskRunning = 0;
 
 static void buzzer_init(void)
@@ -40,7 +40,7 @@ static void buzzer_start_task(void* param)
 	}
 	
 	taskRunning=0;
-	vTaskDelete(NULL); //设置完成,删除任务
+	vTaskDelete(NULL); //Set up and delete the task
 }
 
 static void buzzer_SetTask(uint8_t tipscnt,uint16_t time_int )

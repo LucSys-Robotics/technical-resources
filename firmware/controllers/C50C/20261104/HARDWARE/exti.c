@@ -3,18 +3,18 @@
 Distribution maintenance: LucSys Robotics 
 **************************************************************************/
 /**************************************************************************
-函数功能：外部中断初始化
-入口参数：无
-返回  值：无 
+Function: Initialize external interrupts
+Entry parameters: None
+Return value: none
 **************************************************************************/
 void EXTI1_Init(void)
 {
-//	RCC->APB2ENR|=1<<3;    //使能PORTB时钟	   	 
+//	RCC->APB2ENR|=1<<3; //Enable PORTB clock
 //	GPIOB->CRH&=0X0FFFFFFF; 
-//	GPIOB->CRH|=0X80000000;//PB5上拉输入
-//  GPIOB->ODR|=1<<15;      //PB5上拉	
-//	Ex_NVIC_Config(GPIO_B,15,FTIR);		//下降沿触发
-//	MY_NVIC_Init(2,1,EXTI15_10_IRQn,2);  	//抢占2，子优先级1，组2
+//	GPIOB->CRH|=0X80000000; PB5 pulls up input
+//  GPIOB->ODR|=1<<15; PB5 pulls up
+//	Ex_NVIC_Config(GPIO_B,15,FTIR); // Trigger on falling edge
+//	MY_NVIC_Init(2,1,EXTI15_10_IRQn,2); Preemption 2, Sub-priority 1, Group 2
 }
 
 

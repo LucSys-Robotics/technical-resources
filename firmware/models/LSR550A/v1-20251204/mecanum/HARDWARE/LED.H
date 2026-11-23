@@ -3,8 +3,8 @@
 #include "sys.h"
 #include "system.h"
 
-#define LED_TASK_PRIO		3     //Task priority //任务优先级
-#define LED_STK_SIZE 		128   //Task stack size //任务堆栈大小
+#define LED_TASK_PRIO		3     //Task priority //Task Priority
+#define LED_STK_SIZE 		128   //Task stack size //Task Stack Size
 
 
 /*--------Buzzer control pin--------*/
@@ -24,13 +24,13 @@
 /*----------------------------------*/
 
 #define LED_OFF (LED_R=1,LED_G=1,LED_B=1)
-#define LED_Red(n)    n?(LED_R=0,LED_G=1,LED_B=1):LED_OFF /* 红 */
-#define LED_Purple(n) n?(LED_R=0,LED_G=1,LED_B=0):LED_OFF /* 紫 */
-#define LED_Blue(n)   n?(LED_R=1,LED_G=1,LED_B=0):LED_OFF /* 蓝 */
-#define LED_Cyan(n)   n?(LED_R=1,LED_G=0,LED_B=0):LED_OFF /* 青 */
-#define LED_Green(n)  n?(LED_R=1,LED_G=0,LED_B=1):LED_OFF /* 绿 */
-#define LED_Yellow(n) n?(LED_R=0,LED_G=0,LED_B=1):LED_OFF /* 黄 */
-#define LED_White(n)  n?(LED_R=0,LED_G=0,LED_B=0):LED_OFF /* 白 */
+#define LED_Red(n)    n?(LED_R=0,LED_G=1,LED_B=1):LED_OFF /* Red */
+#define LED_Purple(n) n?(LED_R=0,LED_G=1,LED_B=0):LED_OFF /* Purple */
+#define LED_Blue(n)   n?(LED_R=1,LED_G=1,LED_B=0):LED_OFF /* Blue */
+#define LED_Cyan(n)   n?(LED_R=1,LED_G=0,LED_B=0):LED_OFF /* Cyan */
+#define LED_Green(n)  n?(LED_R=1,LED_G=0,LED_B=1):LED_OFF /* Green */
+#define LED_Yellow(n) n?(LED_R=0,LED_G=0,LED_B=1):LED_OFF /* Yellow */
+#define LED_White(n)  n?(LED_R=0,LED_G=0,LED_B=0):LED_OFF /* White */
 
 void LED_Init(void);  
 void Buzzer_Init(void); 

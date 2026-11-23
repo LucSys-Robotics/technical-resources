@@ -8,24 +8,24 @@
 //	uint8_t buffer[8];
 //}CANOpenType_t;
 
-//伺服电机驱动器结构体
+//Servo motor driver structure
 typedef struct{
-	uint8_t NodeID;       //驱动器的节点ID
-	float comm_qua;      //通信质量,百分比表示
-	uint16_t SoftWareVer; //驱动器软件版本
-	uint8_t  onlineFlag;  //在线标志位
-	uint8_t  errFlag;     //驱动报错标志位
-	uint8_t  motorEnflag; //电机使能或释放标志位
-	uint16_t LeftMotorErr;//左轮报错码
-	uint16_t RightMotorErr;//右轮报错码
-	uint32_t comm_cnt;   //私有变量,统计单位时间内的通信次数
-	uint32_t comm_Errcnt;//私有变量,统计单位时间内的通信错误次数
-	uint32_t time_tick;  //私有变量,统计时间
-	uint32_t online_tick;//私有变量,统计心跳时间
+	uint8_t NodeID;       //Driver node ID
+	float comm_qua;      //Communication quality as a percentage
+	uint16_t SoftWareVer; //Driver software version
+	uint8_t  onlineFlag;  //Online Flag Spots
+	uint8_t  errFlag;     //Driver fault flag
+	uint8_t  motorEnflag; //Motor enables or releases marker positions
+	uint16_t LeftMotorErr;//Revolver error code
+	uint16_t RightMotorErr;//Right-wheel error code
+	uint32_t comm_cnt;   //Private variable, which counts the number of communications per unit time
+	uint32_t comm_Errcnt;//Private variables that count the number of communication errors per unit time
+	uint32_t time_tick;  //Private variable, statistical time
+	uint32_t online_tick;//Private variables to count heartbeat times
 }ServoDriverHWType_t;
 
 
-//伺服驱动器部分PID,用于调节轮子上锁时松紧度
+//Servo drive part PID used to adjust the tightness of the wheel when it locks
 typedef struct{
 	uint16_t SpeedKp;
 	uint16_t SpeedKi;

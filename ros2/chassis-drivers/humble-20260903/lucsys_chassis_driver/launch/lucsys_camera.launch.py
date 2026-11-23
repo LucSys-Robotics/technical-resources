@@ -16,16 +16,16 @@ def load_yaml(file_path: Path) -> dict:
         return yaml.safe_load(f)
 
 def spawn_camera_nodes(context, *args, **kwargs):
-    # 1. 取 yaml 文件路径
+    # 1. Get yaml file path
     param_file = LaunchConfiguration('camera_modes_yaml').perform(context)
     cfg = load_yaml(Path(param_file))
 
-    # 2. 决定使用哪个相机
+    # 2. Decide which camera to use
     camera_mode_ = LaunchConfiguration('camera_mode').perform(context) or cfg['camera_mode']
     print(f'camera_mode:{camera_mode_}')
     file_name = f'{camera_mode_}.launch.xml'
 
-    # 3. 构造相机节点
+    # 3. Construct camera nodes
     astra_dir = get_package_share_directory('astra_camera')
     astra_launch_dir = os.path.join(astra_dir, 'launch')
     
@@ -62,7 +62,7 @@ def spawn_camera_nodes(context, *args, **kwargs):
         ],
         parameters=[{
             'format': 'jpeg',
-            'jpeg_quality': 85  # 0~100，值越大越清晰但带宽占用越高
+            'jpeg_quality': 85  # 0~100, the higher the value, the clearer but the higher the bandwidth usage
         }]
     )
 
@@ -92,7 +92,7 @@ def generate_launch_description():
             description='Path to camera_modes.yaml'),
         DeclareLaunchArgument(
             'camera_mode',
-            default_value='',   # 空则使用 yaml 内默认值
+            default_value='',   # empty uses the default value in YAML
             description='Which camera mode to launch'),
         OpaqueFunction(function=spawn_camera_nodes),
     ])

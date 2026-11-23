@@ -4,20 +4,20 @@
 #include "FreeRTOS.h"
 #include "timers.h"
 
-//手柄支持包
+//Handle support pack
 #include "bsp_gamepad.h"
 
-//xbox360手柄
+//Xbox 360 controller
 #include "xbox360_gamepad.h"
 
-//有线 USB PS2手柄
+//Wired USB PS2 controller
 #include "WiredPS2_gamepad.h"
 
-//游戏手柄的特征参数,当PID、VID相同时,依靠此类参数区分不同品牌
+//Characteristic parameters of game controllers: when PID and VID are the same, these parameters are used to distinguish different brands
 char GamePad_Manufacturer[100] = { 0 };
 char GamePad_iSerialNum[100] = { 0 } ;
 
-//GamePad_HID类相关函数声明
+//GamePad_HID class-related function declarations
 static USBH_StatusTypeDef USBH_HID_InterfaceInit(USBH_HandleTypeDef *phost);
 static USBH_StatusTypeDef USBH_HID_InterfaceDeInit(USBH_HandleTypeDef *phost);
 static USBH_StatusTypeDef USBH_HID_ClassRequest(USBH_HandleTypeDef *phost);
@@ -25,17 +25,17 @@ static USBH_StatusTypeDef USBH_HID_Process(USBH_HandleTypeDef *phost);
 static USBH_StatusTypeDef USBH_HID_SOFProcess(USBH_HandleTypeDef *phost);
 static void USBH_HID_ParseHIDDesc(HID_DescTypeDef *desc, uint8_t *buf);
 
-//usb手柄的初始化声明
+//usb controller initialization declaration
 extern USBH_StatusTypeDef USBH_HID_GamePadInit(USBH_HandleTypeDef *phost);
 
-//特殊需要初始化的手柄类型
+//Handle types for special initialization needs
 void SwitchPro_GamePad_Init(USBH_HandleTypeDef *phost);
 
-//定义ps2的hid类
+//Define the hid class for PS2
 USBH_ClassTypeDef  GamePad_HID_Class =
 {
   .Name = "HID",
-  .ClassCode = USB_HID_CLASS, //默认为HID设备
+  .ClassCode = USB_HID_CLASS, //Defaults to an HID device
   .Init = USBH_HID_InterfaceInit,
   .DeInit = USBH_HID_InterfaceDeInit,
   .Requests = USBH_HID_ClassRequest,
@@ -44,11 +44,11 @@ USBH_ClassTypeDef  GamePad_HID_Class =
   .pData = NULL,
 };
 
-//非标准HID
+//Nonstandard HID
 USBH_ClassTypeDef  GamePad_NonStdHID_Class =
 {
   .Name = "HID",
-  .ClassCode = 0xff, //有些手柄的类并不是标准的HID设备,而是0xff
+  .ClassCode = 0xff, //Some controllers are not standard HID devices but 0xff
   .Init = USBH_HID_InterfaceInit,
   .DeInit = USBH_HID_InterfaceDeInit,
   .Requests = USBH_HID_ClassRequest,
@@ -75,10 +75,10 @@ static USBH_StatusTypeDef USBH_HID_InterfaceInit(USBH_HandleTypeDef *phost)
 
 	USBH_UsrLog("start find interface now");
 	
-	//接口匹配,主要对下面的这个数组接口进行匹配
+	//Interface matching, mainly matching the following array interface
 	//phost->device.CfgDesc.Itf_Desc[0,1,2,3...,n...].bInterfaceSubClass
 
-	//0xff表示匹配所有类型
+	//0xff indicates matching all types
 	interface = USBH_FindInterface(phost, 0xFFU, 0xFFU, 0xFFU);
 	
 	if ((interface == 0xFFU) || (interface >= USBH_MAX_NUM_INTERFACES)) /* No Valid Interface */
@@ -108,9 +108,9 @@ static USBH_StatusTypeDef USBH_HID_InterfaceInit(USBH_HandleTypeDef *phost)
 
   HID_Handle->state = USBH_HID_ERROR;
 
-  //根据HID设备的 PID、VID进行不同的设备类型识别
+  //Identify different device types based on the PID and VID of HID devices
   if( phost->device.DevDesc.idProduct == Wired_PS2_PID && phost->device.DevDesc.idVendor==Wired_PS2_VID )
-  {	  //有线PS2手柄的PID/VID
+  {	  //PID/VID for wired PS2 controllers
 	  USBH_UsrLog("Wired PS2 device found!");
 	  gamepad_brand = PS2_USB_Wired;
 	  GamePadInterface = &Wired_USB_PS2Gamepad;
@@ -118,7 +118,7 @@ static USBH_StatusTypeDef USBH_HID_InterfaceInit(USBH_HandleTypeDef *phost)
   }
   else if( phost->device.DevDesc.idProduct == WiredV2_PS2_PID && phost->device.DevDesc.idVendor==WiredV2_PS2_VID )
   {
-	  //第二代usb有线
+	  //Second-generation USB wired
 	  USBH_UsrLog("Wired PS2 V2 device found!");
 	  gamepad_brand = PS2_USB_WiredV2;
 	  GamePadInterface = &Wired_USB_PS2Gamepad;
@@ -126,7 +126,7 @@ static USBH_StatusTypeDef USBH_HID_InterfaceInit(USBH_HandleTypeDef *phost)
   }
   
 //  else if( phost->device.DevDesc.idProduct == Wireless_PC_PS2_PID && phost->device.DevDesc.idVendor==Wireless_PC_PS2_VID )
-//  {	  //无线PS2手柄 PC模式 PID/VID
+//  { // Wireless PS2 controller PC mode PID/VID
 //	  USBH_UsrLog("Wireless PC PS2 device found!");
 //	  gamepad_brand = PS2_Wiredless_PC;
 //	  HID_Handle->Init = USBH_HID_GamePadInit;
@@ -134,7 +134,7 @@ static USBH_StatusTypeDef USBH_HID_InterfaceInit(USBH_HandleTypeDef *phost)
   
   else if( phost->device.DevDesc.idProduct == Xbox360_GamePad_PID && phost->device.DevDesc.idVendor==Xbox360_GamePad_VID )
   {	
-		//以制造商数据区分同样的PID、VID产品
+		//Distinguish identical PID and VID products using manufacturer data
 		if( strcmp(GamePad_Manufacturer,"Flydigi") == 0 )
 		{
 			gamepad_brand = Xbox360;
@@ -143,7 +143,7 @@ static USBH_StatusTypeDef USBH_HID_InterfaceInit(USBH_HandleTypeDef *phost)
 		{
 			gamepad_brand = PS2_USB_Wiredless;
 		}
-		//XBOX360平台
+		//XBOX360 platform
 		USBH_UsrLog("XBox360 device found!");
 		GamePadInterface = &Xbox360Gamepad;
 		HID_Handle->Init = USBH_HID_GamePadInit;
@@ -151,7 +151,7 @@ static USBH_StatusTypeDef USBH_HID_InterfaceInit(USBH_HandleTypeDef *phost)
   
   else
   {
-	gamepad_brand = UnKnown_Dev;//未知的设备类型
+	gamepad_brand = UnKnown_Dev;//Unknown device type
 	USBH_UsrLog("Protocol not supported.PID:%X\tVID:%X\r\n",phost->device.DevDesc.idProduct,phost->device.DevDesc.idVendor);
     return USBH_FAIL;
   }
@@ -240,7 +240,7 @@ static USBH_StatusTypeDef USBH_HID_InterfaceDeInit(USBH_HandleTypeDef *phost)
     phost->pActiveClass->pData = 0U;
   }
 
-  //设备拔出时,将进行反初始化
+  //Deinitialization will occur when the device is removed
   USB_GamePad_PullOutCallback();
   
   return USBH_OK;
@@ -380,7 +380,7 @@ static USBH_StatusTypeDef USBH_HID_Process(USBH_HandleTypeDef *phost)
 
     case USBH_HID_IDLE:
 		
-	//发送GetReport请求，请求HID设备返回数据.在此之前 HID_Handle->pData 必须完成初始化,这一步通常在 HID_Handle->Init 函数完成,否则将无法请求成功
+	//Send a GetReport request to request the HID device to return data. Before this, HID_Handle->pData must complete initialization, which is usually done in the HID_Handle-> Init function; otherwise, the request will not succeed
 	
       status = USBH_HID_GetReport(phost, 0x01U, 0U, HID_Handle->pData, (uint8_t)HID_Handle->length);
 
@@ -433,7 +433,7 @@ static USBH_StatusTypeDef USBH_HID_Process(USBH_HandleTypeDef *phost)
 
     case USBH_HID_GET_DATA:
 		
-	//接收HID设备的数据,保存在 HID_Handle->pData
+	//Receive data from HID devices and save it in HID_Handle->pData
       (void)USBH_InterruptReceiveData(phost, HID_Handle->pData,
                                       (uint8_t)HID_Handle->length,
                                       HID_Handle->InPipe);
@@ -450,7 +450,7 @@ static USBH_StatusTypeDef USBH_HID_Process(USBH_HandleTypeDef *phost)
 
         if ((HID_Handle->DataReady == 0U) && (XferSize != 0U) && (HID_Handle->fifo.buf != NULL))
         {
-		  //将保存在HID_Handle->pData的HID设备数据写入到fifo中，后续通过fifo来获取hid设备的数据
+		  //Write HID device data stored in HID_Handle->pData to FIFO, which then retrieves HID device data through FIFO
           (void)USBH_HID_FifoWrite(&HID_Handle->fifo, HID_Handle->pData, HID_Handle->length); 
           HID_Handle->DataReady = 1U;
           USBH_HID_EventCallback(phost);
@@ -554,38 +554,38 @@ static void USBH_HID_ParseHIDDesc(HID_DescTypeDef *desc, uint8_t *buf)
   }
 }
 
-///////////////////////// 初始化、数据解码 ///////////////////////////////
-//手柄通用输入报告
-static uint8_t GamePadReportData[128] = { 0 }; //用于存放HID设备发送过来的数据
+///////////////////////// Initialization, Data Decoding, ///////////////////////////////
+//Handle general input report
+static uint8_t GamePadReportData[128] = { 0 }; //Used to store data sent from HID device
 
-//ps2初始化函数
+//PS2 initialization function
 USBH_StatusTypeDef USBH_HID_GamePadInit(USBH_HandleTypeDef *phost)
 {
 	HID_HandleTypeDef *HID_Handle = (HID_HandleTypeDef *) phost->pActiveClass->pData;
 	
-	//HID_Handle->length在初始化设备时由HID设备确定
+	//HID_Handle->length is determined by the HID device when initializing the device
 	if (HID_Handle->length > sizeof(GamePadReportData))
 	{
 		HID_Handle->length = (uint16_t)sizeof(GamePadReportData);
 	}
 	
-	//初始化pData,必须步骤.
+	//Initializing pData is a necessary step.
 	HID_Handle->pData = GamePadReportData;
 	
 	if ((HID_QUEUE_SIZE * sizeof(GamePadReportData)) > sizeof(phost->device.Data))
-	{	//sizeof(phost->device.Data) 大小由 USBH_MAX_DATA_BUFFER 配置
+	{	//sizeof(phost->device. Data) size is configured by USBH_MAX_DATA_BUFFER
 		return USBH_FAIL;
 	}
 	else
 	{
-		//初始化fifo
+		//Initialize the FIFO
 		USBH_HID_FifoInit(&HID_Handle->fifo, phost->device.Data, (uint16_t)(HID_QUEUE_SIZE * sizeof(GamePadReportData)));
 	}
 	
-	//USB插入
+	//USB plugged in
 	USB_GamePad_InsertCallback();
 	
-	//switch pro手柄,需要特殊初始化
+	//switch pro handle, requires special initialization
 	if( gamepad_brand == SwitchPro )
 	{
 		SwitchPro_GamePad_Init(phost);
@@ -594,35 +594,35 @@ USBH_StatusTypeDef USBH_HID_GamePadInit(USBH_HandleTypeDef *phost)
 	return USBH_OK;
 }
 
-//ps2数据解码,入口参数为HID设备.运行环境为任务.
+//PS2 data decoding, input parameter set to HID device. Operating environment set to task.
 USBH_StatusTypeDef USBH_HID_PS2_Decode(USBH_HandleTypeDef *phost)
 {
 	HID_HandleTypeDef *HID_Handle = (HID_HandleTypeDef *) phost->pActiveClass->pData;
 	
-	//检查是否成功识别到手柄类型
+	//Check whether the handle type is successfully identified
 	if( gamepad_brand == UnKnown_Dev ) return USBH_FAIL;
 	
-	//检查hid设备是否有数据
+	//Check if the HID device has data
 	if ((HID_Handle->length == 0U) || (HID_Handle->fifo.buf == NULL))
 	{
 		return USBH_FAIL;
 	}
 	
-	//从fifo中读取hid数据放入GamePadReportData，并进行解析
+	//Read HID data from the FIFO, place it into GamePadReportData, and parse it
 	if (USBH_HID_FifoRead(&HID_Handle->fifo, (uint8_t* )GamePadReportData, HID_Handle->length) == HID_Handle->length)
 	{
-		/* 根据实际接入的不同游戏手柄,调用不同的处理函数 */
-		GamePadDebug.ready = 1;//手柄调试,表示有数据接收
+		/* Call different processing functions depending on the actual game controller you access */
+		GamePadDebug.ready = 1;//Handle debugging, indicating data reception
 		
-		//xbox360格式解码
-		//LX  GamePadReportData[7]  左段128-0,右段0-127
-		//LY GamePadReportData[9]  下段128-0,上段0-127 
-		//RX GamePadReportData[11]  左段128-0,右段0-127
-		//RY GamePadReportData[13]  下段128-0,上段0-127 
+		//Decode for Xbox 360 format
+		//LX GamePadReportData[7] left section 128-0, right section 0-127
+		//LY GamePadReportData[9] lower section 128-0, upper section 0-127
+		//RX GamePadReportData[11] Left stick 128-0, right stick 0-127
+		//RY GamePadReportData[13] Down 128-0, Up 0-127
 		//LT GamePadReportData[4] 0-255
 		//RT GamePadReportData[5] 0-255
 		// GamePadReportData[3] 1:LB 2:RB 3:logo 4:? 5:A 6:B 7:X 8:Y
-		// GamePadReportData[2] 1234:上下左右 5:start 6:seltec 7:Lrock 8:Rrock
+		// GamePadReportData[2] 1234: Up, down, left, right 5:start 6:seltec 7:Lrock 8:Rrock
 
 		if( gamepad_brand == Xbox360 || gamepad_brand == PS2_USB_Wiredless )
 		{
@@ -644,7 +644,7 @@ USBH_StatusTypeDef USBH_HID_PS2_Decode(USBH_HandleTypeDef *phost)
 
 }
 
-//SwitchPro手柄初始化
+//Initialize the SwitchPro controller
 void SwitchPro_GamePad_Init(USBH_HandleTypeDef *phost)
 {
 	#define DelayTime 100
@@ -652,7 +652,7 @@ void SwitchPro_GamePad_Init(USBH_HandleTypeDef *phost)
 	
 	USBH_UsrLog("switch pro init now...");
 	
-	/* 以下数据来源于逆向工程抓包,不必理会含义 */
+	/* The following data is sourced from reverse engineering packet capture; the meaning is not required */
 	
 	uint8_t initcode[64] = { 0 };
 	initcode[0] = 0x80; initcode[1] = 0x01;
@@ -677,6 +677,6 @@ void SwitchPro_GamePad_Init(USBH_HandleTypeDef *phost)
 
 	USBH_UsrLog("switch pro init ok!");
 	
-	/* 写入上述信息后,switch pro手柄才会激活数据输出 */
+	/* Only after writing the above info will the Switch Pro controller activate data output */
 }
 

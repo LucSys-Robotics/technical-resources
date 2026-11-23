@@ -2,13 +2,13 @@
 #define __USRATX_H 
 #include "sys.h"
 
-//APP控制相关变量结构体
+//APP controls related variable structures
 typedef struct{
-	u8 TurnPage;      //APP进入转向页面标志位
-	u8 DirectionFlag; //APP方向标志
-	u8 ParamSaveFlag; //APP保存参数标志位
-	u8 ParamSendflag; //APP发送数据标志位
-	u8 TurnFlag;      //APP转向标志
+	u8 TurnPage;      //APP enters the turn page marker
+	u8 DirectionFlag; //APP directional signs
+	u8 ParamSaveFlag; //APP saves parameter flags
+	u8 ParamSendflag; //APP sends data flags
+	u8 TurnFlag;      //APP turn sign
 }APP_CONTROL_t;
 
 

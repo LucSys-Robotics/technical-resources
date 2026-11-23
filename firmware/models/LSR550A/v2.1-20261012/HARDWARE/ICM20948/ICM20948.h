@@ -125,14 +125,14 @@ typedef struct imu_st_sensor_data_tag
 	int16_t s16Z;
 }IMU_ST_SENSOR_DATA;
 
-//对外接口函数
+//External interface functions
 void invMSInit(void);
 u8 ICM20948_Get_Gyroscope(void);
 u8 ICM20948_Get_Accel(void);
 uint8_t ICM20948_getDeviceID(void);
 
 
-//内部使用函数
+//Internal use function
 static void invmsICM20948Init(void);
 static void invmsICM20948GyroRead(int16_t* ps16X, int16_t* ps16Y, int16_t* ps16Z);
 static void invmsICM20948AccelRead(int16_t* ps16X, int16_t* ps16Y, int16_t* ps16Z);

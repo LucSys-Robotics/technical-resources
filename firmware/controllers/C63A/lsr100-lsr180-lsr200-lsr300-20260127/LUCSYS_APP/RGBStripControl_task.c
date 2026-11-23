@@ -13,89 +13,89 @@
 #include "robot_select_init.h"
 #include "sensor_ranger.h"
 
-//灯带控制优先级由高到低
+//Light strip control priority from high to low
 enum{
-	RGB_Charging = 0,                //充电中
-	RGB_FindChargingStations = 1,    //寻找充电桩
-	RGB_LowPower = 2,                //电量低
-	RGB_RangerWarning = 3,           //超声波识别障碍物警示
-	RGB_UserDefined = 4,             //用户自定义
-	RGB_Default = 5                  //默认状态
+	RGB_Charging = 0,                //Charging
+	RGB_FindChargingStations = 1,    //Find charging stations
+	RGB_LowPower = 2,                //Low battery level
+	RGB_RangerWarning = 3,           //Ultrasonic detection of obstacle warnings
+	RGB_UserDefined = 4,             //User-defined
+	RGB_Default = 5                  //Default state
 };
 
-//用户自定义RGB状态
+//User-defined RGB status
 uint8_t userdefine_rgb[4]={ 0 };
 
-//充电指示灯标志位
+//Charging indicator light marker
 static uint8_t charging_color=0;
 
 static uint8_t RGB_PriorityManagement(void)
 {
-	//自动回充相关标志位
+	//Automatically recharge relevant flag slots
 	static uint32_t charging_green=0;
 	static uint32_t charging_red=0;
 	
-	//自动回充判定
+	//Automatic recharge determination
 	if( RobotControlParam.ChargeMode == 1 )
 	{
-		//充电两种状态使用标志位切换
+		//Charging two modes switch using the marker
 		if( ChargeDev.ChargingFlag==0 )
 		{
 			charging_green=0;
 			charging_red=0;
-			charging_color=0;//未充电时,清空相关标志位
+			charging_color=0;//When not charging, clear the relevant marker positions
 		}
 		else if( ChargeDev.ChargingFlag==1 && ChargeDev.ChargingCur < 0.65f )
 		{
 			charging_green++;
 			charging_red=0;
-			if( charging_green > 5*5 ) charging_color = 1;//绿灯常亮
+			if( charging_green > 5*5 ) charging_color = 1;//Green light always on
 		}
 		else if( ChargeDev.ChargingFlag==1 && ChargeDev.ChargingCur >= 0.65f )
 		{
 			charging_green=0;
 			charging_red++;
-			if( charging_red > 5*2 ) charging_color = 2;//红灯常亮
+			if( charging_red > 5*2 ) charging_color = 2;//Always on the red light
 		}
 		
-		//模拟调试
+		//Simulation debugging
 //		if( g_sys_debug.chargingfull==1 )
 //		{
 //			ChargeDev.ChargingFlag=1;
 //			charging_green++;
 //			charging_red=0;
-//			if( charging_green > 5*5 ) charging_color = 1;//绿灯常亮
+//			if( charging_green > 5*5 ) charging_color = 1; The green light is always on
 //		}
 //		else if( g_sys_debug.chargingON==1 )
 //		{
 //			ChargeDev.ChargingFlag=1;
 //			charging_green=0;
 //			charging_red++;
-//			if( charging_red > 5*2 ) charging_color = 2;//红灯常亮
+//			if( charging_red > 5*2 ) charging_color = 2; The red light is always on
 //		}
 		
-		//返回充电中或寻找充电桩状态
+		//Return charging or docking-station search state
 		if( ChargeDev.ChargingFlag==1 ) return RGB_Charging;
 		else return RGB_FindChargingStations;
 	}
 	
-	//电量低判断
+	//Low battery judgment
 	if( RobotControlParam.LowPowerFlag ) return RGB_LowPower;
 	
-	//超声波警示判断
+	//Ultrasonic warning judgment
 	if( RangerHAL_A.dis < 0.5f || RangerHAL_B.dis < 0.5f || RangerHAL_C.dis < 0.5f ||
 		RangerHAL_D.dis < 0.5f || RangerHAL_E.dis < 0.5f || RangerHAL_F.dis < 0.5f )
 	{
 		return RGB_RangerWarning;
 	}
 	
-	//用户自定义
+	//User-defined
 	if( userdefine_rgb[0]==1 ) 
 	{
 		return RGB_UserDefined;
 	}
 	
-	//默认状态
+	//Default state
 	return RGB_Default;
 
 }
@@ -104,16 +104,16 @@ void RGBControl_task(void* param)
 {
 	const uint16_t TaskFreq = 5;
 	
-	//获取时基,用于辅助任务能按固定频率运行
+	//Obtain the timebase, which can run at a fixed frequency for auxiliary tasks
 	TickType_t preTime = xTaskGetTickCount();
 	
-	//RGB灯带对象
+	//RGB light strip object
 	pRGBLightInterface_t rgb = &UserRGBLight;
 	
-	//实时状态机
+	//Real-time state machine
 	uint8_t RGB_Sm = RGB_Default;
 	
-	//灯带初始化与自检
+	//Initialization and self-test of light strips
 	rgb->init();
 	rgb->SetColor(255,0,0);
 	vTaskDelay(1000);
@@ -124,13 +124,13 @@ void RGBControl_task(void* param)
 	
 	while(1)
 	{
-		//获取RGB状态灯状态
+		//Get the RGB status of the status lights
 		RGB_Sm = RGB_PriorityManagement();
 		
 		switch( RGB_Sm )
 		{
 			case RGB_Charging:
-				//即将充满为绿色,充电中为红色
+				//When about to fully charge, green is available; when charging, red is present
 				if( charging_color==2 )
 				{
 					rgb->SetColorFade(32,0,0);
@@ -141,30 +141,30 @@ void RGBControl_task(void* param)
 				}
 				break;
 			case RGB_FindChargingStations:
-				//紫灯常亮
+				//The purple lamp stays on
 				rgb->SetColorFade(100,0,128);
 				break;
 			case RGB_LowPower:
-				//紫灯低频闪烁
+				//Purple light flickers low
 				rgb->SetBlink(100,0,128,2000);
 				break;
 			case RGB_RangerWarning:
-				//黄灯警示
+				//Yellow warning light
 				rgb->SetColorFade(255,128,0);
 				break;
 			case RGB_UserDefined:
-				//用户自定义
+				//User-defined
 				rgb->SetColorFade(userdefine_rgb[1],userdefine_rgb[2],userdefine_rgb[3]);
 				break;
 			case RGB_Default:
-				//设置灯带默认状态
+				//Set the default state of the light strip
 				rgb->turnoff();
 				break;
 			default:
 				break;
 		}	
 		
-		/* 延迟指定频率 */
+		/* Delay the specified frequency */
 		vTaskDelayUntil(&preTime,pdMS_TO_TICKS( (1.0f/(float)TaskFreq)*1000) );
 	}
 }

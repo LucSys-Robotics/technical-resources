@@ -4,11 +4,11 @@
 Function: Motor orientation pin initialization
 Input   : none
 Output  : none
-函数功能：电机方向引脚初始化
-入口参数：无
-返回  值：无
+Function: Initialize motor orientation pins
+Entry parameters: None
+Return value: none
 **************************************************************************/
-//引脚通用配置：将传入的引脚设置为推挽输出模式
+//General pin configuration: Set the incoming pin to push-pull output mode
 static void GPIO_Output_Init(GPIO_TypeDef* GPIOx,uint16_t PINx)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
@@ -20,32 +20,32 @@ static void GPIO_Output_Init(GPIO_TypeDef* GPIOx,uint16_t PINx)
     GPIO_Init(GPIOx, &GPIO_InitStructure);
 }
 
-//定时器通用配置：将输入的定时器、对应的引脚，配置为PWM1输出模式 
+//Timer General Configuration: Set the input timer and corresponding pins to PWM1 output mode
 void TIMx_PWM1_Mode_Init(GPIO_TypeDef* GPIOx,uint16_t PINx,TIM_TypeDef* TIMx,uint8_t TIM_Channel,u16 arr,u16 psc,u16 init_val)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
     TIM_OCInitTypeDef  TIM_OCInitStructure;
 	
-	//确认复用的引脚号
+	//Confirm the multiplexed pin number
 	uint8_t PinSource=0;
 	for(PinSource=0;PinSource<16;PinSource++)
 	{
 		if( ( (PINx>>PinSource)&0x01 )==1 ) break;
 	}
 	
-	//确认复用的定时器
-	//除TIM6、7无通道外,其他均有通道,对应使用复用功能
+	//Confirm the timer for reuse
+	//All timers except TIM6 and TIM7 have channels; use their corresponding alternate functions
 	uint8_t GPIO_AF;
 	      if( TIMx == TIM1 || TIMx == TIM2 )                                       GPIO_AF = 0x01;
 	else if( TIMx == TIM3  || TIMx == TIM4  || TIMx == TIM5 )                     GPIO_AF = 0x02;
 	else if( TIMx == TIM8  || TIMx == TIM9  || TIMx == TIM10 || TIMx == TIM11 )   GPIO_AF = 0x03;
 	else if( TIMx == TIM12 || TIMx == TIM13 || TIMx == TIM14)                     GPIO_AF = 0x09;
 	
-	//复用配置
+	//Reuse configuration
 	GPIO_PinAFConfig(GPIOx,PinSource,GPIO_AF);
 	
-	//配置对应引脚为复用功能
+	//Configure corresponding pins for alternate function
     GPIO_InitStructure.GPIO_Pin = PINx;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;       
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	
@@ -54,33 +54,33 @@ void TIMx_PWM1_Mode_Init(GPIO_TypeDef* GPIOx,uint16_t PINx,TIM_TypeDef* TIMx,uin
     GPIO_Init(GPIOx,&GPIO_InitStructure);           
 	
     //Sets the value of the auto-reload register cycle for the next update event load activity
-    //设置在下一个更新事件装入活动的自动重装载寄存器周期的值
+    //Set the value of the automatic reload register cycle for the next update event to load the activity
     TIM_TimeBaseStructure.TIM_Period = arr;
     //Sets the pre-divider value used as the TIMX clock frequency divisor
-    //设置用来作为TIMx时钟频率除数的预分频值
+    //Set the predivision value used as the divisor of the TIMx clock frequency
     TIM_TimeBaseStructure.TIM_Prescaler =psc;
     //Set the clock split :TDTS = Tck_tim
-    //设置时钟分割:TDTS = Tck_tim
+    //Set clock split: TDTS = Tck_tim
     TIM_TimeBaseStructure.TIM_ClockDivision = 1;
     //Up counting mode
-    //向上计数模式
+    //Count Up mode
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
     //Initializes the timebase unit for TIMX based on the parameter specified in TIM_TIMEBASEINITSTRUCT
-    //根据TIM_TimeBaseInitStruct中指定的参数初始化TIMx的时间基数单位
+    //Initialize TIMx time base units based on the parameters specified in the TIM_TimeBaseInitStruct
     TIM_TimeBaseInit(TIMx, &TIM_TimeBaseStructure);
 
     //Select Timer mode :TIM Pulse Width Modulation mode 1
-    //选择定时器模式:TIM脉冲宽度调制模式1
+    //Select timer mode: TIM pulse-width modulation mode 1
     TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
     //Compare output enablement
-    //比较输出使能
+    //Compare output enablement
     TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
     //Output polarity :TIM output polarity is higher
-    //输出极性:TIM输出比较极性高
+    //Output polarity: TIM output compare active high
     TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 	
     //Initialize the peripheral TIMX based on the parameter specified in TIM_OCINITSTRUCT
-    //根据TIM_OCInitStruct中指定的参数初始化外设TIMx
+    //Initialize the peripheral TIMx according to the parameters specified in the TIM_OCInitStruct
 	if( TIM_Channel==1 )
 	{
 		TIM_OC1Init(TIMx, &TIM_OCInitStructure);
@@ -110,22 +110,22 @@ void TIMx_PWM1_Mode_Init(GPIO_TypeDef* GPIOx,uint16_t PINx,TIM_TypeDef* TIMx,uin
 	if( TIMx==TIM1 || TIMx==TIM8  || TIMx==TIM9)
 	{
 		// Advanced timer output must be enabled
-		//高级定时器输出必须使能这句
+		//This statement is required to enable advanced-timer output
 		TIM_CtrlPWMOutputs(TIMx,ENABLE);
 	}
 
     // Enable the TIMX preloaded register on the ARR
-    //使能TIMx在ARR上的预装载寄存器
+    //Enable TIMx preload registers on ARR
     TIM_ARRPreloadConfig(TIMx, ENABLE);
 	
     //Enable TIM
-    //使能定时器
+    //Enable timers
     TIM_Cmd(TIMx, ENABLE);
 }
 
 static void MiniBalance_Motor_Init(void)
 {
-	//开启对应引脚时钟
+	//Turn on the corresponding pin clock
 	ENABLE_AIN1_CLOCK;
 	ENABLE_AIN2_CLOCK;
 	ENABLE_BIN1_CLOCK;
@@ -135,7 +135,7 @@ static void MiniBalance_Motor_Init(void)
 	ENABLE_DIN1_CLOCK;
 	ENABLE_DIN2_CLOCK;
 	
-	//设置对应引脚推挽输出
+	//Set the corresponding pin push-pull output
 	GPIO_Output_Init(AIN1_PORT,AIN1_PIN);
 	GPIO_Output_Init(AIN2_PORT,AIN2_PIN);
 	
@@ -156,7 +156,7 @@ static void MiniBalance_Motor_Init(void)
 
 static void V1_0_MiniBalance_Motor_Init(void)
 {
-	//开启对应引脚时钟
+	//Turn on the corresponding pin clock
 	ENABLE_AIN1_CLOCK;
 	ENABLE_AIN2_CLOCK;
 	V1_0_ENABLE_BIN1_CLOCK;
@@ -166,7 +166,7 @@ static void V1_0_MiniBalance_Motor_Init(void)
 	ENABLE_DIN1_CLOCK;
 	ENABLE_DIN2_CLOCK;
 	
-	//设置对应引脚推挽输出
+	//Set the corresponding pin push-pull output
 	GPIO_Output_Init(AIN1_PORT,AIN1_PIN);
 	GPIO_Output_Init(AIN2_PORT,AIN2_PIN);
 	
@@ -189,15 +189,15 @@ static void V1_0_MiniBalance_Motor_Init(void)
 Function: The motor PWM initialization
 Input   : arr: Automatic reload value, psc: clock preset frequency
 Output  : none
-函数功能：电机PWM引脚初始化
-入口参数：arr：自动重装值  psc：时钟预分频数
-返回  值：无
+Function: Initialization of motor PWM pins
+Entry parameters: arr: auto-reset value, psc: clock predivision count
+Return value: none
 **************************************************************************/
 void MiniBalance_PWM_Init(u16 arr,u16 psc)
 {
-	MiniBalance_Motor_Init();//电机方向引脚初始化
+	MiniBalance_Motor_Init();//Initialize the motor direction pin
 	
-	//使能PWM对应的定时器与引脚端口时钟
+	//Enable PWM-corresponding timers and pin port clocks
 	ENABLE_PWMA_TIM_CLOCK;
 	ENABLE_PWMA_PORT_CLOCK;
 	
@@ -210,7 +210,7 @@ void MiniBalance_PWM_Init(u16 arr,u16 psc)
 	ENABLE_PWMD_TIM_CLOCK;
 	ENABLE_PWMD_PORT_CLOCK;
 	
-	//将对应的定时器与对应的引脚配置为 PWM1 模式
+	//Configure the corresponding timer and pin to PWM1 mode
 	TIMx_PWM1_Mode_Init(PWMA_PORT,PWMA_PIN,PWMA_TIM,PWMA_Channel,arr,psc,0);
 	TIMx_PWM1_Mode_Init(PWMB_PORT,PWMB_PIN,PWMB_TIM,PWMB_Channel,arr,psc,0);
 	TIMx_PWM1_Mode_Init(PWMC_PORT,PWMC_PIN,PWMC_TIM,PWMC_Channel,arr,psc,0);
@@ -220,9 +220,9 @@ void MiniBalance_PWM_Init(u16 arr,u16 psc)
 
 void V1_0_MiniBalance_PWM_Init(u16 arr,u16 psc)
 {
-	V1_0_MiniBalance_Motor_Init();//电机方向引脚初始化
+	V1_0_MiniBalance_Motor_Init();//Initialize the motor direction pin
 	
-	//使能PWM对应的定时器与引脚端口时钟
+	//Enable PWM-corresponding timers and pin port clocks
 	ENABLE_PWMA_TIM_CLOCK;
 	ENABLE_PWMA_PORT_CLOCK;
 	
@@ -235,7 +235,7 @@ void V1_0_MiniBalance_PWM_Init(u16 arr,u16 psc)
 	ENABLE_PWMD_TIM_CLOCK;
 	ENABLE_PWMD_PORT_CLOCK;
 	
-	//将对应的定时器与对应的引脚配置为 PWM1 模式
+	//Configure the corresponding timer and pin to PWM1 mode
 	TIMx_PWM1_Mode_Init(PWMA_PORT,PWMA_PIN,PWMA_TIM,PWMA_Channel,arr,psc,0);
 	TIMx_PWM1_Mode_Init(PWMB_PORT,PWMB_PIN,PWMB_TIM,PWMB_Channel,arr,psc,0);
 	TIMx_PWM1_Mode_Init(PWMC_PORT,PWMC_PIN,PWMC_TIM,PWMC_Channel,arr,psc,0);
@@ -246,9 +246,9 @@ void V1_0_MiniBalance_PWM_Init(u16 arr,u16 psc)
 Function: Senior Ackerman model servo initialization
 Input   : ARR: Automatic reload value  PSC: clock preset frequency
 Output  : none
-函数功能：高配阿克曼车型舵机初始化
-入口参数：arr：自动重装值  psc：时钟预分频数
-返回  值：无
+Function: servo initialization for high-end Ackermann models
+Entry parameters: arr: auto-reset value, psc: clock predivision count
+Return value: none
 **************************************************************************/
 void Servo_Senior_Init(u16 arr,u16 psc,int servomid)
 {

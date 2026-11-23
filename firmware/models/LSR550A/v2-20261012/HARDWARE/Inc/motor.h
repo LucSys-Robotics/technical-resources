@@ -4,30 +4,30 @@
 #include "sys.h"
 
 /*--------moto Interface Fun --------*/
-//对外开放的接口
-#define SERVO_INIT     1500                             //Servo zero point //舵机零点
-#define FULL_DUTYCYCLE 16800                            //轮子电机的满占空比数值,与初始化设置相关.
-void MiniBalance_PWM_Init(u16 arr,u16 psc);            //直流电机初始化
-void V1_0_MiniBalance_PWM_Init(u16 arr,u16 psc);      //直流电机初始化
-void Servo_Senior_Init(u16 arr,u16 psc,int servomid); //高配阿克曼车型舵机初始化
-void Servo_Top_Init(u16 arr,u16 psc,int servomid);    //顶配阿克曼车型舵机初始化
+//Interfaces open to the public
+#define SERVO_INIT     1500                             //Servo zero point // servo zero point
+#define FULL_DUTYCYCLE 16800                            //Wheel motor full-duty-cycle value; depends on initialization settings.
+void MiniBalance_PWM_Init(u16 arr,u16 psc);            //DC motor initialization
+void V1_0_MiniBalance_PWM_Init(u16 arr,u16 psc);      //DC motor initialization
+void Servo_Senior_Init(u16 arr,u16 psc,int servomid); //Initialize high-spec Ackermann servo
+void Servo_Top_Init(u16 arr,u16 psc,int servomid);    //Initialize top-spec Ackermann servo
 void TIM9_Init(u16 arr,u16 psc);
 
 /*--------------------------------------------*/
 
 
-//用户配置User config,当不涉及功能修改时,若发生引脚更换,仅修改该文件下的引脚参数即可
+//User config configuration: When no functional changes are involved, if a pin change occurs, only modify the pin parameters in that file
 /*--------Motor_A User config--------*/
-//PWM引脚配置
-#define ENABLE_PWMA_TIM_CLOCK   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8,ENABLE)  //PWMA时钟使能
-#define ENABLE_PWMA_PORT_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE) //PWMA对应的引脚端口使能
+//PWM pin configuration
+#define ENABLE_PWMA_TIM_CLOCK   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8,ENABLE)  //PWMA clock enabled
+#define ENABLE_PWMA_PORT_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE) //Enable the pin port corresponding to PWMA
 	
-#define PWMA_PORT      GPIOC            //PWMA引脚端口
-#define PWMA_PIN       GPIO_Pin_9       //PWMA引脚
-#define PWMA_TIM       TIM8             //PWMA使用的定时器
-#define PWMA_Channel   4                //使用了定时器的哪一个通道CCRx(1~4)
+#define PWMA_PORT      GPIOC            //PWMA pin port
+#define PWMA_PIN       GPIO_Pin_9       //PWMA pin
+#define PWMA_TIM       TIM8             //Timer used by PWMA
+#define PWMA_Channel   4                //Which channel is the timer used for CCRx(1~4)?
 
-//电机方向引脚配置
+//Motor direction pin configuration
 #define ENABLE_AIN1_CLOCK   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE)
 #define ENABLE_AIN2_CLOCK   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE)
 
@@ -41,16 +41,16 @@ void TIM9_Init(u16 arr,u16 psc);
 /*----------------------------------*/
 
 /*--------Motor_B User config--------*/
-//PWM引脚配置
-#define ENABLE_PWMB_TIM_CLOCK   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8,ENABLE)  //PWMB时钟使能
-#define ENABLE_PWMB_PORT_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE) //PWMB对应的引脚端口使能
+//PWM pin configuration
+#define ENABLE_PWMB_TIM_CLOCK   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8,ENABLE)  //PWMB clock enabled
+#define ENABLE_PWMB_PORT_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE) //Enable the pin ports corresponding to PWMB
 	
-#define PWMB_PORT      GPIOC            //PWMB引脚端口
-#define PWMB_PIN       GPIO_Pin_8       //PWMB引脚
-#define PWMB_TIM       TIM8             //PWMB使用的定时器
-#define PWMB_Channel   3                //使用了定时器的哪一个通道CCRx(1~4)
+#define PWMB_PORT      GPIOC            //PWMB pin port
+#define PWMB_PIN       GPIO_Pin_8       //PWMB pin
+#define PWMB_TIM       TIM8             //Timer used by PWMB
+#define PWMB_Channel   3                //Which channel is the timer used for CCRx(1~4)?
 
-//电机方向引脚配置
+//Motor direction pin configuration
 #define ENABLE_BIN1_CLOCK   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE)
 #define ENABLE_BIN2_CLOCK   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE,ENABLE)
 
@@ -64,16 +64,16 @@ void TIM9_Init(u16 arr,u16 psc);
 /*----------------------------------*/
 
 /*--------Motor_C User config--------*/
-//PWM引脚配置
-#define ENABLE_PWMC_TIM_CLOCK   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8,ENABLE) //PWMC时钟使能
-#define ENABLE_PWMC_PORT_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE) //PWMC对应的引脚端口使能
+//PWM pin configuration
+#define ENABLE_PWMC_TIM_CLOCK   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8,ENABLE) //PWMC clock enablement
+#define ENABLE_PWMC_PORT_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE) //Enable the pin port corresponding to PWMC
 	
-#define PWMC_PORT      GPIOC            //PWMC引脚端口
-#define PWMC_PIN       GPIO_Pin_7       //PWMC引脚
-#define PWMC_TIM       TIM8             //PWMC使用的定时器
-#define PWMC_Channel   2                //使用了定时器的哪一个通道CCRx(1~4)
+#define PWMC_PORT      GPIOC            //PWMC pin port
+#define PWMC_PIN       GPIO_Pin_7       //PWMC pin
+#define PWMC_TIM       TIM8             //Timer used by PWMC
+#define PWMC_Channel   2                //Which channel is the timer used for CCRx(1~4)?
 
-//电机方向引脚配置
+//Motor direction pin configuration
 #define ENABLE_CIN1_CLOCK   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD,ENABLE)
 #define ENABLE_CIN2_CLOCK   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD,ENABLE)
 
@@ -87,16 +87,16 @@ void TIM9_Init(u16 arr,u16 psc);
 /*----------------------------------*/
 
 /*--------Motor_D User config--------*/
-//PWM引脚配置
-#define ENABLE_PWMD_TIM_CLOCK   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8,ENABLE) //PWMD时钟使能
-#define ENABLE_PWMD_PORT_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE) //PWMD对应的引脚端口使能
+//PWM pin configuration
+#define ENABLE_PWMD_TIM_CLOCK   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8,ENABLE) //PWMD clock enabled
+#define ENABLE_PWMD_PORT_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE) //Enable the corresponding pin port of PWMD
 	
-#define PWMD_PORT      GPIOC            //PWMD引脚端口
-#define PWMD_PIN       GPIO_Pin_6       //PWMD引脚
-#define PWMD_TIM       TIM8             //PWMD使用的定时器
-#define PWMD_Channel   1                //使用了定时器的哪一个通道CCRx(1~4)
+#define PWMD_PORT      GPIOC            //PWMD pin port
+#define PWMD_PIN       GPIO_Pin_6       //PWMD pin
+#define PWMD_TIM       TIM8             //Timer used by PWMD
+#define PWMD_Channel   1                //Which channel is the timer used for CCRx(1~4)?
 
-//电机方向引脚配置
+//Motor direction pin configuration
 #define ENABLE_DIN1_CLOCK   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE)
 #define ENABLE_DIN2_CLOCK   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE)
 
@@ -110,30 +110,30 @@ void TIM9_Init(u16 arr,u16 psc);
 /*----------------------------------*/
 
 /*--------Senior akm Servo User config--------*/
-//高配阿克曼车型舵机配置
-//PWM引脚配置
-#define ENABLE_SERVO_SENIOR_TIM_CLOCK   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9,ENABLE)  //舵机定时器时钟使能
-#define ENABLE_SERVO_SENIOR_PORT_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE) //舵机对应的引脚端口使能
+//Configure high-spec Ackermann servo
+//PWM pin configuration
+#define ENABLE_SERVO_SENIOR_TIM_CLOCK   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9,ENABLE)  //Servo timer clock enabled
+#define ENABLE_SERVO_SENIOR_PORT_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE) //Enable the pin ports corresponding to servos
 	
-#define SERVO_SENIOR_PORT      GPIOA            //舵机引脚端口
-#define SERVO_SENIOR_PIN       GPIO_Pin_2       //舵机引脚
-#define SERVO_SENIOR_TIM       TIM9             //舵机使用的定时器
-#define SERVO_SENIOR_Channel   1                //使用了定时器的哪一个通道CCRx(1~4)
+#define SERVO_SENIOR_PORT      GPIOA            //Servo pin port
+#define SERVO_SENIOR_PIN       GPIO_Pin_2       //Servo pin
+#define SERVO_SENIOR_TIM       TIM9             //Timer used by servos
+#define SERVO_SENIOR_Channel   1                //Which channel is the timer used for CCRx(1~4)?
 /*--------------------------------------------*/
 
 /*--------Top akm Servo User config--------*/
-//顶配阿克曼车型舵机配置
-#define ENABLE_SERVO_TOP_TIM_CLOCK   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4,ENABLE) //舵机时钟使能
-#define ENABLE_SERVO_TOP_PORT_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE) //舵机对应的引脚端口使能
+//Configure top-spec Ackermann servo
+#define ENABLE_SERVO_TOP_TIM_CLOCK   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4,ENABLE) //Servo clock enabled
+#define ENABLE_SERVO_TOP_PORT_CLOCK  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE) //Enable the pin ports corresponding to servos
 	
-#define SERVO_TOP_PORT      GPIOB            //舵机引脚端口
-#define SERVO_TOP_PIN       GPIO_Pin_7       //舵机引脚
-#define SERVO_TOP_TIM       TIM4             //舵机使用的定时器
-#define SERVO_TOP_Channel   2                //使用了定时器的哪一个通道CCRx(1~4)
+#define SERVO_TOP_PORT      GPIOB            //Servo pin port
+#define SERVO_TOP_PIN       GPIO_Pin_7       //Servo pin
+#define SERVO_TOP_TIM       TIM4             //Timer used by servos
+#define SERVO_TOP_Channel   2                //Which channel is the timer used for CCRx(1~4)?
 /*--------------------------------------------*/
 
 /*-------- V1.0 Motor_B User config--------*/
-//V1.00版本硬件的电机方向引脚配置
+//Motor direction pin configuration of V1.00 hardware
 #define V1_0_ENABLE_BIN1_CLOCK   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE)
 #define V1_0_ENABLE_BIN2_CLOCK   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE)
 
@@ -148,7 +148,7 @@ void TIM9_Init(u16 arr,u16 psc);
 
 
 
-//根据用户配置生成的配置,不需要用户修改
+//Configuration generated based on user configuration, no user modification required
 //The configuration generated based on user configuration does not require user modification
 #if PWMA_Channel==1
 	#define PWMA           PWMA_TIM->CCR1

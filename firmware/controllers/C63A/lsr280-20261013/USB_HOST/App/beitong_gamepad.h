@@ -8,42 +8,42 @@
 #include "bsp_gamepad.h"
 
 
-//手柄产品PID、VID
+//Handle products PID and VID
 #define BeiTong_GamePad_VID 0x20BC
 #define BeiTong_GamePad_PID 0x516A
 
 #define BEITONG_KP20_XINPUT_VID 0x20BCU
 #define BEITONG_KP20_XINPUT_PID 0x5128U
 
-//手柄的数据长度信息
+//Data length information for the handle
 #define BeiTong_GamePad_DataLen 64
 
-//15个按键组合
-//按键复用Xbox360的表达方式
+//15 key combinations
+//Button multiplexing using Xbox 360 style
 //enum{
-//	Xbox360KEY_UP = 0, //转轴十字-上
-//	Xbox360KEY_DOWN,   //转轴十字-下
-//	Xbox360KEY_LEFT,   //转轴十字-左
-//	Xbox360KEY_RIGHT,  //转轴十字-右
-//	Xbox360KEY_Menu,   // 菜单/star按键
-//	Xbox360KEY_SELECT, // 窗口/select按键
-//	Xbox360KEY_LJoy,   //左摇杆按键
-//	Xbox360KEY_RJoy,   //右摇杆按键
-//	Xbox360KEY_LB ,    //左上按键LB
-//	Xbox360KEY_RB ,    //右上按键RB
-//	Xbox360KEY_HOME ,  //logo按键Home
-//	Xbox360_PaddingBit,//填充位,为了对齐按键功能使用,实际该位无意义
-//	Xbox360KEY_A ,     //按键A
-//	Xbox360KEY_B ,     //按键B
-//	Xbox360KEY_X ,     //按键X
-//	Xbox360KEY_Y ,     //按键Y
-//	//扳机按键预留
+//	Xbox360KEY_UP = 0, // Axis cross - up
+//	Xbox360KEY_DOWN, // Pivot cross - down
+//	Xbox360KEY_LEFT, // Pivot cross - left
+//	Xbox360KEY_RIGHT, // Pivot cross - right
+//	Xbox360KEY_Menu, // Menu/star key
+//	Xbox360KEY_SELECT, // Window/select key
+//	Xbox360KEY_LJoy, // Left stick button
+//	Xbox360KEY_RJoy, // Right stick button
+//	Xbox360KEY_LB , // Upper left key LB
+//	Xbox360KEY_RB , // Upper right key RB
+//	Xbox360KEY_HOME , // logo key Home
+//	Xbox360_PaddingBit, // fills bits, used to align key functions, but actually this bit is meaningless
+//	Xbox360KEY_A , // Press key A
+//	Xbox360KEY_B , // Press key B
+//	Xbox360KEY_X , // Press X key
+//	Xbox360KEY_Y , // Press the Y key
+//	//Reserve trigger buttons
 //};
 
-//手柄解码函数
+//Handle decoder function
 void BeiTong_gamepad_Decode(USBH_HandleTypeDef *phost,uint8_t* buffer,uint8_t datalen);
 
-//对外提供手柄对象
+//Provide handle objects externally
 extern GamePadType_t BeiTongGamepad;
 
 #endif /* __Xbox360_GAMEPAD_H */

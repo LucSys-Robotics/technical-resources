@@ -9,7 +9,7 @@
 #define osCMSIS               0x20001U
 
 /******************************************
- **********   USB HOST地址驱动  ************
+ **********   USB HOST address driver ************
 ******************************************/
 /*!< USB registers base address */
 #define USB_OTG_HS_PERIPH_BASE               0x40040000UL
@@ -1333,7 +1333,7 @@
 #define USB_OTG_FRMNUM_3                         (0x8UL << USB_OTG_FRMNUM_Pos)  /*!< 0x01000000 */
 
 /******************************************
- * 少部分HAL库、LL库模组,仅USB_HOST驱动使用 *
+ * A small number of HAL and LL library modules are only used USB_HOST drivers *
 ******************************************/
 typedef enum 
 {
@@ -1370,7 +1370,7 @@ typedef enum
 								  (__HANDLE__)->Lock = HAL_UNLOCKED;    \
 								}while (0U)
 
-//__packed放置--->usbh_def.h line499
+//__packed place --->usbh_def.h line499
 #ifndef   __PACKED
   #define __PACKED                               __attribute__((packed))
 #endif

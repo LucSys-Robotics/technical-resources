@@ -3,10 +3,10 @@
 #include "sys.h"
 
 //CAN1 receives RX0 interrupt enablement
-//CAN1接收中断使能位
+//CAN1 receives the interrupt enable bit
 #define CAN1_RX0_INT_ENABLE	1	
 
-//CAN2接收中断使能位
+//CAN2 receives the interrupt enable bit
 #define CAN2_RX1_INT_ENABLE	0	
 
 /*--------CAN1 config--------*/

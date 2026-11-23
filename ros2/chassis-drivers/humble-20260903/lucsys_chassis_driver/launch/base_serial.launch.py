@@ -14,17 +14,17 @@ from launch_ros.descriptions import ComposableNode
 
 
 # -------------------------------------------------
-# 工具函数：读取 yaml
+# Utility function: Read YAML
 # -------------------------------------------------
 def load_yaml(file_path: str) -> dict:
     return yaml.safe_load(Path(file_path).read_text())
 
 
 # -------------------------------------------------
-# 根据 imu_mode 生成节点列表
+# Generate a list of nodes based on imu_mode
 # -------------------------------------------------
 def include_imu_launch(context, *args, **kwargs):
-    # 1) 读取默认 imu_mode（yaml 中）
+    # 1) Read default imu_mode (in yaml)
     cfg_path = LaunchConfiguration('imu_mode_yaml').perform(context)
     cfg = load_yaml(cfg_path)
     imu_mode = LaunchConfiguration('imu_mode').perform(context) or cfg['imu_mode']
@@ -40,7 +40,7 @@ def include_imu_launch(context, *args, **kwargs):
     ultrasonic_avoid =  car_cfg['ultrasonic_avoid']
     print(f'ultrasonic_avoid:{ultrasonic_avoid}')
 
-    # 公共参数
+    # Public parameters
     common_params = {
         'usart_port_name': '/dev/wheeltec_controller',
         'serial_baud_rate': 115200,
@@ -118,11 +118,11 @@ def include_imu_launch(context, *args, **kwargs):
 
 
 # -------------------------------------------------
-# 主入口
+# Main entry
 # -------------------------------------------------
 def generate_launch_description():
 
-    # 2) 声明可覆盖的参数
+    # 2) Declare parameters that can be overridden
     declare_imu_path = DeclareLaunchArgument(
         'imu_mode_yaml',
         default_value=os.path.join(
@@ -144,7 +144,7 @@ def generate_launch_description():
             'config', 'lucsys_param.yaml'),
         description='Path to lucsys_param.yaml'
     )
-    # 添加 car_mode 的声明
+    # Add a declaration for car_mode
     declare_car_mode = DeclareLaunchArgument(
         'car_mode',
         default_value='',
@@ -177,7 +177,7 @@ def generate_launch_description():
     output='screen',)
 
 
-    # 3) 使用 OpaqueFunction 在运行时生成节点
+    # 3) Use OpaqueFunction to generate nodes at runtime
     return LaunchDescription([
         declare_imu_path,
         declare_imu_mode,

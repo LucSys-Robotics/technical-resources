@@ -4,20 +4,20 @@
 #include "sys.h"
 #include "system.h"
       
-#define PS2_TASK_PRIO		4     //Task priority //任务优先级
-#define PS2_STK_SIZE 		256   //Task stack size //任务堆栈大小
+#define PS2_TASK_PRIO		4     //Task priority //Task Priority
+#define PS2_STK_SIZE 		256   //Task stack size //Task Stack Size
 
 
-#define DI   PEin(15)     //Input pin //输入引脚
+#define DI   PEin(15)     //Input pin
 
-#define DO_H PEout(12)=1   //Command height //命令位高
-#define DO_L PEout(12)=0   //Command low //命令位低
+#define DO_H PEout(12)=1   //Command height // Command high
+#define DO_L PEout(12)=0   //Command low // Command low
 
-#define CS_H PEout(10)=1  //Cs pull up //CS拉高
-#define CS_L PEout(10)=0  //Cs drawdown //CS拉低
+#define CS_H PEout(10)=1  //Cs pull up // CS pull up
+#define CS_L PEout(10)=0  //Cs drawdown // CS pulls down
 
-#define CLK_H PEout(8)=1 //Clock lift //时钟拉高
-#define CLK_L PEout(8)=0 //Clock down //时钟拉低
+#define CLK_H PEout(8)=1 //Clock lift // Clock lift
+#define CLK_L PEout(8)=0 //Clock down // Clock pull down
 
 //These are our button constants
 #define PSB_SELECT      1
@@ -42,10 +42,10 @@
 #define PSB_CROSS       15
 #define PSB_SQUARE      16
 
-#define PSS_RX 5   //Right rocker x shaft data   //右摇杆X轴数据
-#define PSS_RY 6   //The left rocker y axis data //左摇杆Y轴数据
-#define PSS_LX 7   //Right rocker x axis data    //右摇杆X轴数据
-#define PSS_LY 8   //The left rocker y axis data //左摇杆Y轴数据
+#define PSS_RX 5   //Right rocker x shaft data // Right joystick X-axis data
+#define PSS_RY 6   //The left rocker y axis data // Left joystick Y-axis data
+#define PSS_LX 7   //Right rocker x axis data // Right joystick X-axis data
+#define PSS_LY 8   //The left rocker y axis data // Left joystick Y-axis data
 
 extern u8 Data[9];
 extern u16 MASK[16];

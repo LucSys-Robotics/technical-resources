@@ -1,0 +1,69 @@
+HISTORICAL SOURCE CHANGELOG
+Translated from the supplied version history. Entries describe changes in the source branch, not verified behavior or fitted equipment on every delivered robot.
+
+2023.07.25
+1. Fixed the failure to control the robot over CAN.
+2. Reduced slight steering-servo jitter when the robot starts moving forward.
+3. Fixed delayed response under serial or CAN control when a requested target speed greatly exceeds the robot's achievable speed.
+
+2023.08.18
+1. Changed the hardware revision from C50B to C50C.
+2. Added automatic clearing of residual PWM when the robot is on non-sloped ground.
+3. Revised self-test for greater sensitivity and fewer false detections. The emergency-stop switch can still be used to skip self-test in this historical implementation.
+
+2023.11.24
+1. Improved RC transmitter signal acquisition.
+2. Reduced fluctuations in reported battery voltage.
+3. Improved startup behavior when the steering servo is off-center, addressing rapid recentering that could damage the board.
+4. Added automatic recharging.
+
+
+2024.11.25
+1. Combined five chassis-type codebases; select the chassis target in the project before compiling.
+2. Improved Ackermann steering by refitting the formula.
+
+2024.11.28
+1. Added an app-adjustable straight-line correction parameter to compensate for a consistent hardware-related tracking offset.
+
+2024.12.13
+1. Fixed reversed Ackermann steering when Vz is very large.
+2. Fixed abnormal automatic-recharging behavior for the omnidirectional chassis.
+3. Corrected Ackermann inverse kinematics to match the kinematics documentation.
+
+2024.12.24
+1. Added USB controller support.
+
+2025.04.29
+1. Added multimode controller support and improved the controller-related code.
+2. Fixed incorrect wheel selection for the differential-drive chassis.
+3. Corrected inaccurate odometry for some Mecanum configurations.
+
+2025.05.08
+1. Added nonvolatile storage for PID parameters and default speed, enabled through the app's save-to-nonvolatile-memory setting.
+
+2025.05.22
+1. Corrected the PID formula.
+2. Improved parts of the USB driver.
+
+
+2025.08.07
+1. Fixed the inability to tune Ackermann chassis selection 7.
+
+2025.10.17
+1. In handheld-control mode, added automatic stopping and reconnection attempts following an unexpected USB controller disconnection.
+
+2025.12.26
+1. Added IP-frame reception on UART3.
+2. Added IP-address display on the screen and in Bluetooth diagnostics.
+3. Updated the low-battery alarm: the buzzer sounds at 1 Hz.
+
+2026.04.28
+1. Added Bluetooth diagnostics: send "LOG3" in the Bluetooth chat window to receive the robot's self-test information.
+2. Added ultrasonic-data reception from the S21C module.
+3. Updated LED-strip and ultrasonic code for Mecanum selection 9 and differential-drive selection 5.
+
+2026.05.29
+1. Added support for the C50C variant with an RS-485 interface.
+
+2026.10.12
+1. Adjusted gripper-servo opening and closing angles to avoid damage from sustained heating.
