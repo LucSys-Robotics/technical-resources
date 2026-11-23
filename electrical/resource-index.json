@@ -3,37 +3,37 @@
   "resources": [
     {
       "public_path": "electrical/controllers/C30D_V2_2_Schematic_Reference.pdf",
-      "sha256": "f655d2ed68aecf26ef8987d609a55158f45e220c7c38b918bf6b7b12f369634e",
+      "sha256": "e201ed44cc7d9fbe3ed0ca46e5ee29f911f78d3b32e0fff5dac204994c2b5dbd",
       "name": "C30D_V2_2"
     },
     {
       "public_path": "electrical/controllers/C30D_V2_3_Schematic_Reference.pdf",
-      "sha256": "dd5e5af257f7ffbb50b219794afb5778fc6440b5d85c713d4b9141ce4c292b68",
+      "sha256": "03191e1589ba800b12777c5f6ac245bc9e4bc9dbd0887f1b7309664bf648bee6",
       "name": "C30D_V2_3"
     },
     {
       "public_path": "electrical/controllers/C63A_V2_1_Schematic_Reference.pdf",
-      "sha256": "9c8267a19648ecd533671580f225ff7225fab2a87f26b3da1db268871c7e053d",
+      "sha256": "4bd1e664be1fa45351077746cc9ee3f9563be6c75b11a206149e09a84582faa5",
       "name": "C63A_V2_1"
     },
     {
       "public_path": "electrical/controllers/C63A_V2_2_Schematic_Reference.pdf",
-      "sha256": "f32cd02f18ed605e92ac685849712b22a4aad94dbf008cb3d1faba2e04acb69a",
+      "sha256": "16040c83105155792b146f4ea2df9c7dfba4752dd3172b1ba97f0e5453d6f3b3",
       "name": "C63A_V2_2"
     },
     {
       "public_path": "electrical/controllers/C50C_V4_0_Schematic_Reference.pdf",
-      "sha256": "a1845ab3e6c6fb4ac597fde1c5fc33b0ffe35176b5ad4b64cf768b348ddbbcc7",
+      "sha256": "48be8035f3d746dad5586376fb6709beb3578714c8878de3ac7cdd60a5e7d078",
       "name": "C50C_V4_0"
     },
     {
       "public_path": "electrical/controllers/C50C_V4_1_V4_2_Schematic_Reference.pdf",
-      "sha256": "58c01da6c7d7380ecdde71189fa86efac00c6619bdce6ec3f1969da52795df7d",
+      "sha256": "7beb9e3a0aed06ff7f0d3dafeeee04264957e863e231423b8bab484d936bb5bf",
       "name": "C50C_V4_1_V4_2"
     },
     {
       "public_path": "electrical/controllers/C50C_V4_3_Schematic_Reference.pdf",
-      "sha256": "2d87180a40b8b59ceff3b67cb53139e06c1849f184dae1fd8f38f30e294489b7",
+      "sha256": "53ffc6a1f396084ffda11ee8f209c2592b06c0fb720ad0356bb672aedd2aa681",
       "name": "C50C_V4_3"
     },
     {
