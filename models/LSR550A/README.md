@@ -27,9 +27,9 @@ The linked package README contains its build command and supported preview confi
 
 ## 3. STM32 source and build instructions
 
-**UNCONFIRMED: no STM32 archive is assigned to this model here.** The available projects have not been matched to the actual delivered controller/firmware. Do not use a related chassis project as a replacement. Consequently, no model-specific STM32 build/flash instructions can be selected reliably yet.
+**Versioned LSR550A source references are available. The actual delivered firmware version remains UNCONFIRMED.**
 
-[Available STM32 library and limitations](../../firmware/README.md) — reference inventory only, not a recommendation to flash any listed project.
+[Open the LSR550A STM32 version selector](../../firmware/models/LSR550A/README.md) for V1 (2025-12-04), V2 and V2.1 (2026-10-12), source ZIPs and version-specific Keil build instructions. These are LSR550A archives, not substitute LSR550 code. V1 is associated with wired PS2; V2 with multimode USB wireless control. The exact V2/V2.1 hardware-selection conditions still require confirmation.
 
 ## 4. Download verification
 

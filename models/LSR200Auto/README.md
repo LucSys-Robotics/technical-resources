@@ -29,9 +29,13 @@ The linked package README contains its build command and supported preview confi
 
 ## 3. STM32 source and build instructions
 
-**UNCONFIRMED: no STM32 archive is assigned to this model here.** The available projects have not been matched to the actual delivered controller/firmware. Do not use a related chassis project as a replacement. Consequently, no model-specific STM32 build/flash instructions can be selected reliably yet.
+**Shared LSR200 / LSR200Auto technical reference, confirmed by LucSys on 2026-11-23.** The actual delivered firmware revision and configuration still need matching.
 
-[Available STM32 library and limitations](../../firmware/README.md) — reference inventory only, not a recommendation to flash any listed project.
+- [Shared STM32 source](../../firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/)
+- [Keil compiler, target selection and build instructions](../../firmware/controllers/C63A/lsr100-lsr180-lsr200-lsr300-20260127/README.md#build-and-flash)
+- [Download the existing shared source ZIP](https://github.com/LucSys-Robotics/technical-resources/releases/download/source-2026-11-23-lucsys-models/lucsys_lsr100_lsr180_lsr200_lsr300_20260127.zip)
+
+This links the same source used by the LSR200 entry without copying it. Confirm the delivered controller, drive mode, motor/encoder setup and firmware build before flashing. Shared documentation does not independently verify automatic charging, docking-station integration, safety behavior or compatibility of every sales configuration. Native Keil compilation and vehicle testing were not performed for this distribution.
 
 ## 4. Download verification
 

@@ -4,7 +4,7 @@ Snapshot: lsr100-lsr180-lsr200-lsr300-20260127. MCU selected in Keil: `STM32F407
 
 ## Applicability and editing locations
 
-This C63A project is associated with LSR100 / LSR180 / LSR200 / LSR300, as confirmed by LucSys. Use the separate project for other LucSys models. Mode selection is implemented in LUCSYS_APP/robot_select_init.c. This model association does not confirm the firmware installed on a particular delivered robot, nor compatibility with every hardware revision or configuration. Do not extend it to LSR200Auto.
+This C63A project is associated with LSR100 / LSR180 / LSR200 / LSR300, as confirmed by LucSys. Use the separate project for other LucSys models. Mode selection is implemented in LUCSYS_APP/robot_select_init.c. This model association does not confirm the firmware installed on a particular delivered robot, nor compatibility with every hardware revision or configuration. LucSys confirmed on 2026-11-23 that LSR200Auto shares the LSR200 technical materials; the [LSR200Auto entry](../../../../models/LSR200Auto/README.md) links this same reference. This does not establish installed firmware, automatic-charge integration or per-configuration behavior.
 
 Control and initialization: LUCSYS_APP/RobotControl_task*.c and robot_select_init.c. Driver/CAN/encoder processing: LUCSYS_BSP and LUCSYS_APP/can_callback.c (inspect actual project references). Some motor control is delegated to external drivers; do not assume there is a universal on-MCU PID or raw encoder interface. Use the actual driver implementation and parameter structures. STM32 HAL, CMSIS, FreeRTOS and USB host components remain included with notices.
 
