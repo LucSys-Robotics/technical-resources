@@ -4,7 +4,7 @@ Snapshot: v2-gmr-20260921. MCU selected in Keil: `STM32F407ZG`. Targets: `FreeRT
 
 ## Applicability and editing locations
 
-Selected C30D 2.0 GMR-encoder snapshot. The input folder identifies the C30D 2.0 board branch; this is not interchangeable with the separate Hall-encoder variant or C30D 1.0. It is indexed with LSE550/LSV550 for resource discovery, not an as-built confirmation for every model. Inspect BALANCE/robot_select_init.c and its headers for mode selection, encoder resolution and geometry. Inspect BALANCE/balance_task.c for the active PI loop and HARDWARE/encoder.c for capture setup. Exact delivered configuration remains a commissioning prerequisite.
+Selected C30D 2.0 GMR-encoder snapshot. The input folder identifies the C30D 2.0 board branch; this is not interchangeable with the separate Hall-encoder variant or C30D 1.0. It is indexed with LSE550/LSV550 for resource discovery, not an as-built confirmation for every model. Inspect BALANCE/robot_select_init.c and its headers for mode selection, encoder resolution and geometry. Inspect BALANCE/balance.c for the active PI loop and HARDWARE/encoder.c for capture setup. Exact delivered configuration remains a commissioning prerequisite.
 
 ## Build and flash
 

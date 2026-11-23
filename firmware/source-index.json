@@ -1098,8 +1098,8 @@
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/README.md",
-      "sha256": "54351bafd2821ca0bb4739d7a01ad0afd30e7394a0ea8a3b12eae1fcd02b18bb",
-      "size": 2940
+      "sha256": "67d24f3786d9036ce84de076527b5625c077d0540ba1059371694442735426f1",
+      "size": 2935
     },
     {
       "path": "firmware/controllers/C30D/v2-gmr-20260921/SYSTEM/delay/delay.c",
