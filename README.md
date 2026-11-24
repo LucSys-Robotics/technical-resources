@@ -1,10 +1,10 @@
 # LucSys Robotics — Technical Resources
 
-Development resources for robotics research, education and system integration.
+Select your robot model to access firmware, ROS 2 packages, URDF/meshes, electrical drawings, manuals and CAD files.
 
 | Start here | Find what you need |
 | --- | --- |
-| [**Browse by Robot Model**](models/README.md) | Model-specific STM32 source, ROS 2 driver, URDF/meshes, manuals, electrical references and product ordering |
+| [**Robot Resources — Browse by Model**](Robot-Resources/) | Open model folders and download actual ZIP, PDF and STEP files |
 | [**Development Source**](https://github.com/LucSys-Robotics/technical-resources/releases/tag/development-source-20261123) | 7 STM32 archives, 1 ROS 2 driver archive, 26 model packages and versioned SHA256 checksums |
 | [**Technical Documentation**](manuals/README.md) | Development manuals, communication protocol, wiring and controller references |
 
